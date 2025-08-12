@@ -1,9 +1,8 @@
 /**
  * Shadcn UI theme overrides so every component pulls from tokens.css.
  */
-import { createTheme } from "@shadcn-ui/react";
 
-export const wbTheme = createTheme({
+export const wbTheme = {
   colors: {
     primary: "hsl(var(--wb-color-accent) / <alpha-value>)",
     foreground: "hsl(var(--wb-gray-900) / <alpha-value>)",
@@ -20,4 +19,4 @@ export const wbTheme = createTheme({
     md: "var(--wb-elev-md)",
     lg: "var(--wb-elev-lg)"
   },
-});
+};
