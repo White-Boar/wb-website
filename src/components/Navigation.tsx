@@ -53,7 +53,7 @@ export function Navigation() {
             <Link href="/" className="flex items-center space-x-3 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2">
               <div className="h-20 w-20 flex items-center justify-center">
                 <Image 
-                  src="/images/logo-pig.svg" 
+                  src="/images/logo.png" 
                   alt="WhiteBoar Logo" 
                   width={100} 
                   height={100} 
