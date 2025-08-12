@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "packages": "Packages",
+    "clients": "Clients",
+    "start": "Start",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "language": {
+      "english": "English",
+      "italian": "Italian"
+    }
+  },
+  "hero": {
+    "title": "Brand. Build. Boom.",
+    "subtitle": "AI-driven websites live in days, not months.",
+    "cta": "Start now!"
+  },
+  "pricing": {
+    "title": "Packages",
+    "fast": {
+      "name": "Fast & Simple",
+      "tagline": "Let the world know you exist.",
+      "price": "€40 / month",
+      "feature1": "Branding",
+      "feature2": "One-page custom design",
+      "feature3": "2 business-day delivery",
+      "feature4": "Copy in EN+IT",
+      "feature5": "SEO meta",
+      "feature6": "1 revision",
+      "feature7": "Managed hosting (10k visits)"
+    },
+    "custom": {
+      "name": "Custom-made",
+      "tagline": "Custom web apps. No limits. Just results.",
+      "price": "from €5,000 + €40 / month",
+      "feature1": "SaaS platforms",
+      "feature2": "Web portals & dashboards",
+      "feature3": "Auth & admin",
+      "feature4": "API integrations",
+      "feature5": "Scalable infra"
+    },
+    "addons": "Add-ons",
+    "addonsDescription": "Enhance your package with additional services"
+  },
+  "portfolio": {
+    "title": "Clients",
+    "subtitle": "See what we've built for businesses like yours"
+  },
+  "footer": {
+    "brandDescription": "AI-driven digital agency empowering small businesses with professional online presence.",
+    "quickLinks": "Quick Links",
+    "followUs": "Follow Us",
+    "copyright": "© 2025 WhiteBoar · VAT No. 1234567890"
+  },
+  "meta": {
+    "title": "WhiteBoar - AI-Driven Digital Agency",
+    "description": "Transform your business with AI-driven websites and branding. Professional online presence in days, not months."
+  }
+}
