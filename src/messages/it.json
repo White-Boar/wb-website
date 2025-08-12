@@ -1,0 +1,62 @@
+{
+  "nav": {
+    "packages": "Pacchetti",
+    "clients": "Clienti",
+    "start": "Inizia",
+    "theme": {
+      "light": "Chiaro",
+      "dark": "Scuro",
+      "system": "Sistema"
+    },
+    "language": {
+      "english": "Inglese",
+      "italian": "Italiano"
+    }
+  },
+  "hero": {
+    "title": "Brand. Build. Boom.",
+    "subtitle": "Siti web guidati dall'AI online in giorni, non mesi.",
+    "cta": "Inizia ora!"
+  },
+  "pricing": {
+    "title": "Pacchetti",
+    "fast": {
+      "name": "Veloce e Semplice",
+      "tagline": "Fai sapere al mondo che esisti.",
+      "price": "€40 / mese",
+      "feature1": "Branding",
+      "feature2": "Design personalizzato a pagina singola",
+      "feature3": "Consegna in 2 giorni lavorativi",
+      "feature4": "Copia in EN+IT",
+      "feature5": "Meta SEO",
+      "feature6": "1 revisione",
+      "feature7": "Hosting gestito (10k visite)"
+    },
+    "custom": {
+      "name": "Su Misura",
+      "tagline": "App web personalizzate. Nessun limite. Solo risultati.",
+      "price": "da €5.000 + €40 / mese",
+      "feature1": "Piattaforme SaaS",
+      "feature2": "Portali web e dashboard",
+      "feature3": "Auth e admin",
+      "feature4": "Integrazioni API",
+      "feature5": "Infrastruttura scalabile"
+    },
+    "addons": "Componenti aggiuntivi",
+    "addonsDescription": "Migliora il tuo pacchetto con servizi aggiuntivi"
+  },
+  "portfolio": {
+    "title": "Clienti",
+    "subtitle": "Guarda cosa abbiamo costruito per aziende come la tua"
+  },
+  "footer": {
+    "brandDescription": "Agenzia digitale guidata dall'AI che potenzia le piccole imprese con una presenza online professionale.",
+    "quickLinks": "Link Rapidi",
+    "followUs": "Seguici",
+    "copyright": "© 2025 WhiteBoar · P.IVA 1234567890"
+  },
+  "meta": {
+    "title": "WhiteBoar - Agenzia Digitale Guidata dall'AI",
+    "description": "Trasforma la tua attività con siti web e branding guidati dall'AI. Presenza online professionale in giorni, non mesi."
+  }
+}
