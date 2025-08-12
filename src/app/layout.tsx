@@ -1,14 +1,16 @@
 import { locales } from '@/lib/i18n';
 import { notFound } from 'next/navigation';
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-  params: { locale }
+  params
 }: {
   children: React.ReactNode;
-  params: { locale?: string };
+  params: Promise<{ locale?: string }>;
 }) {
-  if (locale && !locales.includes(locale as any)) {
+  const { locale } = await params;
+  
+  if (locale && !locales.includes(locale as typeof locales[number])) {
     notFound();
   }
 

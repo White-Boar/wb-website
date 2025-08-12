@@ -47,5 +47,8 @@
     "@playwright/test": "^1.49.1",
     "@axe-core/playwright": "^4.10.2",
     "web-vitals": "^4.2.4"
+  },
+  "pnpm": {
+    "ignore-scripts": false
   }
 }
