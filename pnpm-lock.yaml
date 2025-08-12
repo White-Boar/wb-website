@@ -100,7 +100,7 @@ importers:
         specifier: ^3.4.17
         version: 3.4.17
       typescript:
-        specifier: ^5.7.2
+        specifier: ^5.8.4
         version: 5.9.2
       web-vitals:
         specifier: ^4.2.4
