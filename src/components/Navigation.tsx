@@ -120,7 +120,7 @@ export function Navigation() {
 
             {/* CTA Button */}
             <Button asChild>
-              <Link href="/checkout">{t('start')}</Link>
+              <Link href="/onboarding">{t('start')}</Link>
             </Button>
 
             {/* Language & Theme Controls */}
@@ -182,7 +182,7 @@ export function Navigation() {
                 {/* Mobile CTA */}
                 <div className="px-3">
                   <Button asChild className="w-full">
-                    <Link href="/checkout" onClick={() => setMobileMenuOpen(false)}>
+                    <Link href="/onboarding" onClick={() => setMobileMenuOpen(false)}>
                       {t('start')}
                     </Link>
                   </Button>

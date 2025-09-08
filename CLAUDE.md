@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**WhiteBoar** is an AI-driven digital agency homepage built with Next.js 15+, featuring modern web standards and multilingual support. This is a production-ready website implementing the business requirements outlined in `CONTEXT.md`.
+**WhiteBoar** is an AI-driven digital agency homepage built with Next.js 15+, featuring modern web standards and multilingual support. This is a production-ready website implementing the business requirements outlined in `context/CONTEXT.md`.
 
 ## Development Commands
 
@@ -58,7 +58,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Framer Motion animations with `useReducedMotion()` support
 - Keyboard navigation and focus management throughout
 
-### Performance Requirements (from CONTEXT.md)
+### Performance Requirements (from context/CONTEXT.md)
 - Largest Contentful Paint ≤ 1.8s
 - Cumulative Layout Shift < 0.1
 - No unused JS > 50KB
@@ -115,4 +115,4 @@ GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 4. Playwright e2e tests including performance validation
 5. Accessibility testing with axe-core
 
-The project is production-ready and meets all requirements specified in `CONTEXT.md`.
+The project is production-ready and meets all requirements specified in `context/CONTEXT.md`.
