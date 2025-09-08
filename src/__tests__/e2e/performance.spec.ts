@@ -41,7 +41,7 @@ test.describe('Performance Tests', () => {
     
     console.log('Core Web Vitals:', vitals);
     
-    // Assert performance requirements from CONTEXT.md
+    // Assert performance requirements from context/CONTEXT.md
     // LCP should be ≤ 1.8s (1800ms)
     if (vitals.LCP) {
       expect(vitals.LCP).toBeLessThanOrEqual(1800);

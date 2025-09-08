@@ -58,5 +58,25 @@
   "meta": {
     "title": "WhiteBoar - Agenzia Digitale Guidata dall'AI",
     "description": "Trasforma la tua attività con siti web e branding guidati dall'AI. Presenza online professionale in giorni, non mesi."
+  },
+  "onboarding": {
+    "title": "Inizia con WhiteBoar",
+    "description": "Scegli il tuo percorso verso una presenza online potente. Ti guideremo attraverso ogni passaggio.",
+    "step1": {
+      "title": "Veloce e Semplice",
+      "description": "Perfetto per le piccole imprese che hanno bisogno di una presenza online professionale rapidamente. Ottieni un sito web personalizzato a pagina singola con branding in soli 2 giorni lavorativi.",
+      "button": "Scegli Veloce e Semplice"
+    },
+    "step2": {
+      "title": "Soluzione Personalizzata",
+      "description": "Hai bisogno di qualcosa di più complesso? Parliamo della tua applicazione web personalizzata, piattaforma SaaS o requisiti aziendali avanzati.",
+      "button": "Inizia Progetto Personalizzato"
+    },
+    "help_text": "Non sei sicuro di quale opzione sia giusta per te?",
+    "contact_support": "Contatta il nostro team per una consulenza",
+    "meta": {
+      "title": "Inizia - WhiteBoar",
+      "description": "Inizia il tuo viaggio con WhiteBoar. Scegli tra soluzioni Veloci e Semplici o Personalizzate per le tue esigenze aziendali."
+    }
   }
 }

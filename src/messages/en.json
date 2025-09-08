@@ -58,5 +58,25 @@
   "meta": {
     "title": "WhiteBoar - AI-Driven Digital Agency",
     "description": "Transform your business with AI-driven websites and branding. Professional online presence in days, not months."
+  },
+  "onboarding": {
+    "title": "Get Started with WhiteBoar",
+    "description": "Choose your path to a powerful online presence. We'll guide you through every step.",
+    "step1": {
+      "title": "Fast & Simple",
+      "description": "Perfect for small businesses who need a professional online presence quickly. Get a custom one-page website with branding in just 2 business days.",
+      "button": "Choose Fast & Simple"
+    },
+    "step2": {
+      "title": "Custom Solution",
+      "description": "Need something more complex? Let's discuss your custom web application, SaaS platform, or advanced business requirements.",
+      "button": "Start Custom Project"
+    },
+    "help_text": "Not sure which option is right for you?",
+    "contact_support": "Contact our team for guidance",
+    "meta": {
+      "title": "Get Started - WhiteBoar",
+      "description": "Begin your journey with WhiteBoar. Choose between Fast & Simple or Custom solutions for your business needs."
+    }
   }
 }

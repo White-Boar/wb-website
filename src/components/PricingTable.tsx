@@ -62,8 +62,8 @@ export function PricingTable() {
 
   const handlePlanSelect = (planId: string) => {
     setSelectedPlan(planId)
-    // Navigate to checkout with plan parameter
-    window.location.href = `/checkout?plan=${planId}`
+    // Navigate to onboarding with plan parameter
+    window.location.href = `/onboarding?plan=${planId}`
   }
 
   return (

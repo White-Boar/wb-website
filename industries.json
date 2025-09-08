@@ -1,0 +1,22 @@
+[
+  { "category": "Agriculture & Agribusiness", "description": "Farms, greenhouses, producers of fruits, vegetables, dairy, and olive oil" },
+  { "category": "Artisan & Craftsmanship", "description": "Furniture makers, ceramicists, leather artisans, and other handmade goods producers" },
+  { "category": "Automotive & Mobility Services", "description": "Car repair shops, tire services, car washes, and scooter/bike rentals" },
+  { "category": "Beauty & Personal Care", "description": "Hairdressers, barbers, nail studios, and beauty salons" },
+  { "category": "Cleaning & Maintenance Services", "description": "Residential and commercial cleaners, window washers, janitorial services" },
+  { "category": "Construction & Renovation", "description": "Builders, electricians, plumbers, roofers, and general contractors" },
+  { "category": "Education & Training", "description": "Language schools, tutoring centers, music academies, and vocational training" },
+  { "category": "Events & Creative Services", "description": "Photographers, videographers, event planners, and graphic designers" },
+  { "category": "Fashion & Apparel", "description": "Clothing boutiques, tailors, shoemakers, and accessory designers" },
+  { "category": "Food & Beverage", "description": "Restaurants, cafés, bakeries, and artisanal food producers like cheese or cured meats" },
+  { "category": "Health & Wellness", "description": "Pharmacies, physiotherapists, private clinics, spas, and wellness centers" },
+  { "category": "Hospitality & Tourism", "description": "Hotels, B&Bs, agriturismi, and travel services targeting local and international guests" },
+  { "category": "Pet Services & Supplies", "description": "Pet groomers, boarding facilities, pet shops, and dog walking businesses" },
+  { "category": "Professional Services", "description": "Accountants, notaries, lawyers, architects, and business consultants" },
+  { "category": "Real Estate & Property Management", "description": "Real estate agencies, property managers, and vacation rental hosts" },
+  { "category": "Retail & Local Shops", "description": "Grocery stores, bookshops, florists, toy stores, and general neighborhood retailers" },
+  { "category": "Sports & Recreation", "description": "Gyms, yoga/pilates studios, dance schools, martial arts centers, and sports clubs" },
+  { "category": "Technology & IT Services", "description": "Web developers, software firms, IT consultants, and cybersecurity services" },
+  { "category": "Transport & Delivery Services", "description": "Local couriers, moving companies, shuttle services, and freight handlers" },
+  { "category": "Wine, Beer & Distilleries", "description": "Small vineyards, craft breweries, grappa distillers, and tasting rooms" }
+]

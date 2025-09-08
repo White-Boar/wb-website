@@ -58,7 +58,7 @@ export function Hero() {
         
         <motion.div variants={variants.cta}>
           <Button size="lg" className="text-lg px-8 py-3" asChild>
-            <Link href="/checkout">
+            <Link href="/onboarding">
               {t('cta')}
             </Link>
           </Button>
