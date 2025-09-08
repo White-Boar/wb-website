@@ -1,1 +1,1 @@
-module.exports = require('./design-system/tailwind.config.js');
+module.exports = require('./context/design-system/tailwind.config.js');

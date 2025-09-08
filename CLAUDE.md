@@ -106,6 +106,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Keep translations in sync** - update both `en.json` and `it.json`
 - **Follow component patterns** - use existing shadcn/ui + design tokens approach
 - **Performance first** - validate LCP and CLS requirements with tests
+- **Always** - run playright MCP after making changes to the UI to ensure that the changes are as intended. Check both light and dark themes. Check mobile and desktop layouts.
 
 ## CI/CD Pipeline
 

@@ -6,7 +6,7 @@ import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { fadeInUp, slideFade, staggerChildren } from "../../design-system/motion/variants"
+import { fadeInUp, slideFade, staggerChildren } from "../../context/design-system/motion/variants"
 
 export function Hero() {
   const t = useTranslations('hero')
