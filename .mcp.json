@@ -8,10 +8,6 @@
       ],
       "env": {}
     },
-    "context7": {
-      "type": "sse",
-      "url": "https://mcp.context7.com/sse"
-    },
     "shadcn-ui": {
       "command": "npx",
       "args": [
