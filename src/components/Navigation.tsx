@@ -9,7 +9,7 @@ import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { LanguageSelector } from "@/components/LanguageSelector"
-import { slideFade } from "../../design-system/motion/variants"
+import { slideFade } from "../../context/design-system/motion/variants"
 
 export function Navigation() {
   const t = useTranslations('nav')

@@ -76,7 +76,7 @@ jest.mock('framer-motion', () => ({
 }))
 
 // Mock design system motion variants
-jest.mock('./design-system/motion/variants', () => ({
+jest.mock('./context/design-system/motion/variants', () => ({
   fadeInUp: { hidden: {}, show: {} },
   slideFade: () => ({ hidden: {}, show: {} }),
   staggerChildren: { hidden: {}, show: {} },

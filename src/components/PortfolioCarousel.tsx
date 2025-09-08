@@ -16,7 +16,7 @@ import {
   Card,
   CardContent,
 } from "@/components/ui/card"
-import { fadeInUp, slideUp } from "../../design-system/motion/variants"
+import { fadeInUp, slideUp } from "../../context/design-system/motion/variants"
 
 const portfolioItems = [
   {

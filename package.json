@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:css": "stylelint '**/*.css' --config design-system/stylelint.config.cjs",
+    "lint:css": "stylelint '**/*.css' --config context/design-system/stylelint.config.cjs",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test"
