@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { AddOnsPopover } from "@/components/AddOnsPopover"
-import { fadeInUp, staggerChildren, scaleIn } from "../../design-system/motion/variants"
+import { fadeInUp, staggerChildren, scaleIn } from "../../context/design-system/motion/variants"
 
 export function PricingTable() {
   const t = useTranslations('pricing')
@@ -89,9 +89,9 @@ export function PricingTable() {
           viewport={{ once: true, margin: "-100px" }}
         >
           {plans.map((plan) => (
-            <motion.div key={plan.id} variants={variants.card}>
+            <motion.div key={plan.id} variants={variants.card} className="h-full">
               <Card 
-                className={`relative ${plan.popular ? 'ring-2 ring-accent shadow-lg' : ''}`}
+                className={`relative h-full flex flex-col ${plan.popular ? 'ring-2 ring-accent shadow-lg' : ''}`}
               >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -102,14 +102,14 @@ export function PricingTable() {
               )}
               
               <CardHeader className="text-center pb-8">
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                <CardTitle className="text-2xl text-gray-900 dark:text-white">{plan.name}</CardTitle>
                 <CardDescription className="text-lg">{plan.tagline}</CardDescription>
                 <div className="mt-4">
                   <span className="text-3xl font-bold text-accent">{plan.price}</span>
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 flex-grow">
                 <ul className="space-y-3">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
