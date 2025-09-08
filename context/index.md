@@ -16,6 +16,7 @@ Please reference './whiteboar-business-overview.md'.
 | **Testing**      | Jest + React Testing Library unit tests for each component (interaction & aria). Playwright e2e that: ① loads `/`, ② switches language, ③ toggles dark/light, ④ selects pricing plan, ⑤ checks CLS < 0.1 with `web-vitals`. |
 | **CI**           | Include `github/workflows/test.yml` running `pnpm test` & playwright.                                                                                                                                                       |
 
+
 ## Design
 Please reference the design system under './context/design-system'.
 
