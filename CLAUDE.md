@@ -33,7 +33,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 │   └── ui/               # shadcn/ui base components
 ├── lib/                  # Utilities and configuration
 ├── messages/             # i18n translation files
-├── design-system/        # Design tokens and theme configuration
+├── context/              # project specification and including the design system for AI agents
 ├── __tests__/           # Jest and Playwright tests
 └── public/              # Static assets
 ```
@@ -41,10 +41,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Key Implementation Details
 
 ### Design System Integration
-- Uses existing `design-system/tokens.css` as single source of truth
+- Uses existing `context/design-system/tokens.css` as single source of truth
 - All colors, spacing, typography defined as CSS custom properties
 - Tailwind config consumes design tokens via `--wb-*` variables
 - Theme switching via localStorage with system preference fallback
+- Framer motion for animations
 
 ### Internationalization
 - Default locale: English (`/`)
@@ -105,6 +106,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Keep translations in sync** - update both `en.json` and `it.json`
 - **Follow component patterns** - use existing shadcn/ui + design tokens approach
 - **Performance first** - validate LCP and CLS requirements with tests
+- **Always** - run playright MCP after making changes to the UI to ensure that the changes are as intended. Check both light and dark themes. Check mobile and desktop layouts.
 
 ## CI/CD Pipeline
 
@@ -115,4 +117,4 @@ GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 4. Playwright e2e tests including performance validation
 5. Accessibility testing with axe-core
 
-The project is production-ready and meets all requirements specified in `context/CONTEXT.md`.
+The project is production-ready when it meets all requirements specified in `./context`.
