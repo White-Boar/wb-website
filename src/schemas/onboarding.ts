@@ -1,0 +1,462 @@
+import { z } from 'zod'
+
+// =============================================================================
+// VALIDATION SCHEMAS FOR ALL 13 ONBOARDING STEPS
+// =============================================================================
+
+// Helper schemas and validators
+const emailSchema = z.string()
+  .email('Please enter a valid email address')
+  .min(1, 'Email is required')
+
+const urlSchema = z.string()
+  .url('Please enter a valid URL (including https://)')
+  .min(1, 'URL is required')
+
+const phoneSchema = z.string()
+  .regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number')
+  .min(1, 'Phone number is required')
+
+const italianVatSchema = z.string()
+  .regex(/^IT\d{11}$/, 'Please enter a valid Italian VAT number (IT followed by 11 digits)')
+  .optional()
+  .or(z.literal(''))
+
+// Address schema with Italian focus
+const addressSchema = z.object({
+  street: z.string().min(1, 'Street address is required'),
+  city: z.string().min(1, 'City is required'),
+  province: z.string().min(1, 'Province is required'),
+  postalCode: z.string()
+    .regex(/^\d{5}$/, 'Please enter a valid Italian postal code (5 digits)'),
+  country: z.string().min(1, 'Country is required'),
+  placeId: z.string().optional()
+})
+
+// Customer profile slider validation (0-100)
+const sliderValueSchema = z.number()
+  .min(0, 'Value must be between 0 and 100')
+  .max(100, 'Value must be between 0 and 100')
+
+// =============================================================================
+// STEP 1: WELCOME & BASIC INFO
+// =============================================================================
+export const step1Schema = z.object({
+  name: z.string()
+    .min(3, 'Name must be at least 3 characters')
+    .max(100, 'Name cannot exceed 100 characters')
+    .regex(/^[a-zA-ZÀ-ÿ\s'.-]+$/, 'Name can only contain letters, spaces, and common punctuation'),
+  email: emailSchema
+})
+
+// =============================================================================
+// STEP 2: EMAIL VERIFICATION
+// =============================================================================
+export const step2Schema = z.object({
+  emailVerified: z.boolean().refine(val => val === true, {
+    message: 'Email verification is required to continue'
+  })
+})
+
+export const verificationCodeSchema = z.object({
+  code: z.string()
+    .length(6, 'Verification code must be exactly 6 digits')
+    .regex(/^\d{6}$/, 'Verification code can only contain numbers')
+})
+
+// =============================================================================
+// STEP 3: BUSINESS BASICS
+// =============================================================================
+export const step3Schema = z.object({
+  businessName: z.string()
+    .min(2, 'Business name must be at least 2 characters')
+    .max(50, 'Business name cannot exceed 50 characters'),
+  businessEmail: emailSchema,
+  businessPhone: phoneSchema,
+  physicalAddress: addressSchema,
+  industry: z.string().min(1, 'Please select an industry'),
+  vatNumber: italianVatSchema
+})
+
+// =============================================================================
+// STEP 4: BRAND DEFINITION
+// =============================================================================
+export const step4Schema = z.object({
+  offer: z.string()
+    .min(20, 'Please describe your offer in at least 20 characters')
+    .max(250, 'Offer description cannot exceed 250 characters'),
+  competitors: z.array(urlSchema)
+    .min(1, 'Please provide at least 1 competitor website')
+    .max(3, 'Please provide no more than 3 competitor websites'),
+  uniqueness: z.object({
+    attribute: z.string().min(1, 'Please select what makes you unique'),
+    explanation: z.string()
+      .min(10, 'Please explain your uniqueness in at least 10 characters')
+      .max(150, 'Explanation cannot exceed 150 characters')
+  })
+})
+
+// =============================================================================
+// STEP 5: CUSTOMER PROFILE
+// =============================================================================
+export const step5Schema = z.object({
+  customerProfile: z.object({
+    budget: sliderValueSchema,
+    style: sliderValueSchema,
+    motivation: sliderValueSchema,
+    decisionMaking: sliderValueSchema,
+    loyalty: sliderValueSchema
+  })
+})
+
+// =============================================================================
+// STEP 6: CUSTOMER NEEDS
+// =============================================================================
+export const step6Schema = z.object({
+  problemSolved: z.string()
+    .min(20, 'Please describe the problem in at least 20 characters')
+    .max(100, 'Problem description cannot exceed 100 characters'),
+  customerDelight: z.string()
+    .min(10, 'Please describe customer delight in at least 10 characters')
+    .max(100, 'Customer delight description cannot exceed 100 characters')
+})
+
+// =============================================================================
+// STEP 7: VISUAL INSPIRATION
+// =============================================================================
+export const step7Schema = z.object({
+  websiteReferences: z.array(urlSchema)
+    .min(2, 'Please provide at least 2 website references')
+    .max(3, 'Please provide no more than 3 website references')
+})
+
+// =============================================================================
+// STEP 8: DESIGN STYLE SELECTION
+// =============================================================================
+export const step8Schema = z.object({
+  designStyle: z.enum([
+    'minimalist',
+    'corporate', 
+    'playful',
+    'bold',
+    'editorial',
+    'retro'
+  ], {
+    required_error: 'Please select a design style',
+    invalid_type_error: 'Please select a valid design style'
+  })
+})
+
+// =============================================================================
+// STEP 9: IMAGE STYLE SELECTION
+// =============================================================================
+export const step9Schema = z.object({
+  imageStyle: z.enum([
+    'photorealistic',
+    'flat-illustration',
+    'line-art',
+    'sketch',
+    'collage',
+    '3d'
+  ], {
+    required_error: 'Please select an image style',
+    invalid_type_error: 'Please select a valid image style'
+  })
+})
+
+// =============================================================================
+// STEP 10: COLOR PALETTE
+// =============================================================================
+export const step10Schema = z.object({
+  colorPalette: z.enum([
+    'palette-1',
+    'palette-2',
+    'palette-3',
+    'palette-4',
+    'palette-5',
+    'palette-6'
+  ], {
+    required_error: 'Please select a color palette',
+    invalid_type_error: 'Please select a valid color palette'
+  })
+})
+
+// =============================================================================
+// STEP 11: WEBSITE STRUCTURE
+// =============================================================================
+const websiteSectionSchema = z.enum([
+  'about-us',
+  'products-services',
+  'testimonials',
+  'gallery',
+  'events',
+  'contact',
+  'blog-news'
+])
+
+const primaryGoalSchema = z.enum([
+  'call-book',
+  'contact-form',
+  'visit-location',
+  'purchase',
+  'download',
+  'other'
+])
+
+export const step11Schema = z.object({
+  websiteSections: z.array(websiteSectionSchema)
+    .min(1, 'Please select at least one website section'),
+  primaryGoal: primaryGoalSchema,
+  offeringType: z.enum(['products', 'services', 'both']).optional(),
+  offerings: z.array(z.string().min(1, 'Offering cannot be empty'))
+    .max(6, 'Please provide no more than 6 offerings')
+    .optional()
+}).superRefine((data, ctx) => {
+  // Conditional validation: if products-services is selected, offeringType and offerings are required
+  if (data.websiteSections.includes('products-services')) {
+    if (!data.offeringType) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please select whether you offer products, services, or both',
+        path: ['offeringType']
+      })
+    }
+    
+    if (!data.offerings || data.offerings.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please list at least one offering',
+        path: ['offerings']
+      })
+    }
+  }
+})
+
+// =============================================================================
+// STEP 12: BUSINESS ASSETS
+// =============================================================================
+const uploadedFileSchema = z.object({
+  id: z.string(),
+  fileName: z.string(),
+  fileSize: z.number().max(10 * 1024 * 1024, 'Logo file size cannot exceed 10MB'),
+  mimeType: z.string().regex(
+    /^image\/(png|jpg|jpeg|svg\+xml)$/,
+    'Logo must be PNG, JPG, or SVG format'
+  ),
+  url: z.string().url(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  uploadedAt: z.string()
+})
+
+const businessPhotoSchema = uploadedFileSchema.extend({
+  fileSize: z.number().max(5 * 1024 * 1024, 'Photo file size cannot exceed 5MB'),
+  mimeType: z.string().regex(
+    /^image\/(png|jpg|jpeg)$/,
+    'Business photos must be PNG or JPG format'
+  )
+})
+
+export const step12Schema = z.object({
+  logoUpload: uploadedFileSchema.optional(),
+  businessPhotos: z.array(businessPhotoSchema)
+    .max(10, 'Please upload no more than 10 business photos')
+    .optional()
+}).superRefine((data, ctx) => {
+  // Calculate total size of business photos
+  if (data.businessPhotos && data.businessPhotos.length > 0) {
+    const totalSize = data.businessPhotos.reduce((sum, photo) => sum + photo.fileSize, 0)
+    const maxTotalSize = 50 * 1024 * 1024 // 50MB
+    
+    if (totalSize > maxTotalSize) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Total size of business photos cannot exceed 50MB',
+        path: ['businessPhotos']
+      })
+    }
+  }
+})
+
+// =============================================================================
+// STEP 13: COMPLETION
+// =============================================================================
+export const step13Schema = z.object({
+  completedAt: z.string().datetime().optional(),
+  totalTimeSeconds: z.number().min(0).optional()
+})
+
+// =============================================================================
+// COMPLETE FORM SCHEMA (for final validation)
+// =============================================================================
+export const completeFormSchema = z.object({
+  // Step 1
+  name: step1Schema.shape.name,
+  email: step1Schema.shape.email,
+  
+  // Step 2
+  emailVerified: step2Schema.shape.emailVerified,
+  
+  // Step 3
+  businessName: step3Schema.shape.businessName,
+  businessEmail: step3Schema.shape.businessEmail,
+  businessPhone: step3Schema.shape.businessPhone,
+  physicalAddress: step3Schema.shape.physicalAddress,
+  industry: step3Schema.shape.industry,
+  vatNumber: step3Schema.shape.vatNumber,
+  
+  // Step 4
+  offer: step4Schema.shape.offer,
+  competitors: step4Schema.shape.competitors,
+  uniqueness: step4Schema.shape.uniqueness,
+  
+  // Step 5
+  customerProfile: step5Schema.shape.customerProfile,
+  
+  // Step 6
+  problemSolved: step6Schema.shape.problemSolved,
+  customerDelight: step6Schema.shape.customerDelight,
+  
+  // Step 7
+  websiteReferences: step7Schema.shape.websiteReferences,
+  
+  // Step 8
+  designStyle: step8Schema.shape.designStyle,
+  
+  // Step 9
+  imageStyle: step9Schema.shape.imageStyle,
+  
+  // Step 10
+  colorPalette: step10Schema.shape.colorPalette,
+  
+  // Step 11
+  websiteSections: step11Schema.shape.websiteSections,
+  primaryGoal: step11Schema.shape.primaryGoal,
+  offeringType: step11Schema.shape.offeringType,
+  offerings: step11Schema.shape.offerings,
+  
+  // Step 12
+  logoUpload: step12Schema.shape.logoUpload,
+  businessPhotos: step12Schema.shape.businessPhotos,
+  
+  // Step 13
+  completedAt: step13Schema.shape.completedAt,
+  totalTimeSeconds: step13Schema.shape.totalTimeSeconds
+})
+
+// =============================================================================
+// UTILITY FUNCTIONS
+// =============================================================================
+
+// Get schema for a specific step
+export function getStepSchema(step: number) {
+  const schemas = {
+    1: step1Schema,
+    2: step2Schema,
+    3: step3Schema,
+    4: step4Schema,
+    5: step5Schema,
+    6: step6Schema,
+    7: step7Schema,
+    8: step8Schema,
+    9: step9Schema,
+    10: step10Schema,
+    11: step11Schema,
+    12: step12Schema,
+    13: step13Schema
+  }
+  
+  return schemas[step as keyof typeof schemas] || null
+}
+
+// Validate specific step data
+export function validateStepData(step: number, data: any) {
+  const schema = getStepSchema(step)
+  if (!schema) {
+    return { success: true, data, error: null }
+  }
+  
+  return schema.safeParse(data)
+}
+
+// Validate complete form before submission
+export function validateCompleteForm(data: any) {
+  return completeFormSchema.safeParse(data)
+}
+
+// Get field-specific error messages
+export function getFieldError(errors: z.ZodError, fieldPath: string): string | null {
+  const fieldError = errors.errors.find(err => 
+    err.path.join('.') === fieldPath
+  )
+  
+  return fieldError?.message || null
+}
+
+// =============================================================================
+// ITALIAN TRANSLATIONS FOR VALIDATION MESSAGES
+// =============================================================================
+
+export const validationMessages = {
+  en: {
+    required: 'This field is required',
+    email: 'Please enter a valid email address',
+    url: 'Please enter a valid URL',
+    phone: 'Please enter a valid phone number',
+    minLength: (min: number) => `Must be at least ${min} characters`,
+    maxLength: (max: number) => `Cannot exceed ${max} characters`,
+    minItems: (min: number) => `Please select at least ${min} item${min > 1 ? 's' : ''}`,
+    maxItems: (max: number) => `Please select no more than ${max} item${max > 1 ? 's' : ''}`,
+    fileSize: (max: string) => `File size cannot exceed ${max}`,
+    fileType: (types: string) => `File must be ${types} format`
+  },
+  it: {
+    required: 'Questo campo è obbligatorio',
+    email: 'Inserisci un indirizzo email valido',
+    url: 'Inserisci un URL valido',
+    phone: 'Inserisci un numero di telefono valido',
+    minLength: (min: number) => `Deve essere almeno di ${min} caratteri`,
+    maxLength: (max: number) => `Non può superare i ${max} caratteri`,
+    minItems: (min: number) => `Seleziona almeno ${min} elemento${min > 1 ? 'i' : ''}`,
+    maxItems: (max: number) => `Seleziona non più di ${max} elemento${max > 1 ? 'i' : ''}`,
+    fileSize: (max: string) => `La dimensione del file non può superare ${max}`,
+    fileType: (types: string) => `Il file deve essere in formato ${types}`
+  }
+}
+
+// =============================================================================
+// CUSTOM VALIDATION HELPERS
+// =============================================================================
+
+// Italian phone number validation
+export const italianPhoneValidator = z.string().refine(
+  (phone) => {
+    // Remove spaces and common separators
+    const cleaned = phone.replace(/[\s\-\(\)]/g, '')
+    // Italian mobile: +39 3XX XXXXXXX or landline: +39 0X XXXXXXXX
+    return /^(\+39)?[0-9]{9,11}$/.test(cleaned)
+  },
+  { message: 'Please enter a valid Italian phone number' }
+)
+
+// Website URL validation (more permissive for user input)
+export const websiteUrlValidator = z.string().refine(
+  (url) => {
+    try {
+      const parsed = new URL(url.startsWith('http') ? url : `https://${url}`)
+      return ['http:', 'https:'].includes(parsed.protocol)
+    } catch {
+      return false
+    }
+  },
+  { message: 'Please enter a valid website URL' }
+)
+
+// Business name validation (Italian business context)
+export const italianBusinessNameValidator = z.string().refine(
+  (name) => {
+    // Allow Italian characters and business suffixes
+    return /^[a-zA-ZÀ-ÿ0-9\s&'.-]+(\s+(s\.r\.l\.|S\.R\.L\.|s\.p\.a\.|S\.P\.A\.|s\.n\.c\.|S\.N\.C\.))?$/i.test(name)
+  },
+  { message: 'Please enter a valid Italian business name' }
+)
