@@ -24,7 +24,7 @@ This document provides the complete specification for White Boar's client onboar
 ## Technical Stack
 
 ### Core Technologies
-- **Framework**: Next.js 14+ (App Router)
+- **Framework**: Next.js 15+ (App Router)
 - **Language**: TypeScript 5+
 - **Styling**: Tailwind CSS 3.4+
 - **UI Components**: shadcn/ui
