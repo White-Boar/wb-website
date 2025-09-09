@@ -116,11 +116,26 @@ CREATE INDEX idx_sessions_activity ON onboarding_sessions(last_activity);
 CREATE INDEX idx_sessions_step ON onboarding_sessions(current_step);
 CREATE INDEX idx_sessions_verified ON onboarding_sessions(email_verified);
 
+-- Composite indexes for common query patterns
+CREATE INDEX idx_sessions_email_expires ON onboarding_sessions(email, expires_at);
+CREATE INDEX idx_sessions_email_verified ON onboarding_sessions(email, email_verified);
+CREATE INDEX idx_sessions_verified_step ON onboarding_sessions(email_verified, current_step);
+
+-- GIN index for JSONB form_data queries
+CREATE INDEX CONCURRENTLY idx_sessions_form_data_gin ON onboarding_sessions USING gin(form_data);
+
 -- Submissions indexes  
 CREATE INDEX idx_submissions_email ON onboarding_submissions(email);
 CREATE INDEX idx_submissions_created ON onboarding_submissions(created_at);
 CREATE INDEX idx_submissions_status ON onboarding_submissions(status);
 CREATE INDEX idx_submissions_business ON onboarding_submissions(business_name);
+
+-- Composite indexes for submissions
+CREATE INDEX idx_submissions_status_created ON onboarding_submissions(status, created_at);
+CREATE INDEX idx_submissions_email_created ON onboarding_submissions(email, created_at);
+
+-- GIN index for JSONB form_data in submissions
+CREATE INDEX CONCURRENTLY idx_submissions_form_data_gin ON onboarding_submissions USING gin(form_data);
 
 -- Analytics indexes
 CREATE INDEX idx_analytics_session ON onboarding_analytics(session_id);
@@ -129,10 +144,22 @@ CREATE INDEX idx_analytics_step ON onboarding_analytics(step_number);
 CREATE INDEX idx_analytics_created ON onboarding_analytics(created_at);
 CREATE INDEX idx_analytics_category ON onboarding_analytics(category);
 
+-- Composite indexes for analytics queries
+CREATE INDEX idx_analytics_session_created ON onboarding_analytics(session_id, created_at);
+CREATE INDEX idx_analytics_event_step ON onboarding_analytics(event_type, step_number);
+CREATE INDEX idx_analytics_category_created ON onboarding_analytics(category, created_at);
+
+-- GIN index for analytics metadata
+CREATE INDEX CONCURRENTLY idx_analytics_metadata_gin ON onboarding_analytics USING gin(metadata);
+
 -- Uploads indexes
 CREATE INDEX idx_uploads_session ON onboarding_uploads(session_id);
 CREATE INDEX idx_uploads_type ON onboarding_uploads(file_type);
 CREATE INDEX idx_uploads_created ON onboarding_uploads(created_at);
+
+-- Composite indexes for uploads
+CREATE INDEX idx_uploads_session_type ON onboarding_uploads(session_id, file_type);
+CREATE INDEX idx_uploads_type_created ON onboarding_uploads(file_type, created_at);
 
 -- =============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
@@ -144,13 +171,23 @@ ALTER TABLE onboarding_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE onboarding_analytics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE onboarding_uploads ENABLE ROW LEVEL SECURITY;
 
--- Sessions: Allow users to access their own sessions by email
-CREATE POLICY "Users can access their own sessions" ON onboarding_sessions
-  FOR ALL USING (email = auth.jwt() ->> 'email' OR auth.jwt() IS NULL);
+-- Sessions: Allow users to access their own sessions by email (verified sessions only)
+CREATE POLICY "Users can access their own verified sessions" ON onboarding_sessions
+  FOR ALL USING (
+    email = auth.jwt() ->> 'email' AND email_verified = TRUE
+  );
+
+-- Allow creation of new sessions for email verification (insert only, not verified yet)
+CREATE POLICY "Allow session creation for email verification" ON onboarding_sessions
+  FOR INSERT WITH CHECK (
+    email_verified = FALSE AND 
+    current_step <= 2 AND
+    verification_code IS NOT NULL
+  );
 
 -- Submissions: Read-only access for users, full access for service role
 CREATE POLICY "Users can read their own submissions" ON onboarding_submissions
-  FOR SELECT USING (email = auth.jwt() ->> 'email' OR auth.jwt() IS NULL);
+  FOR SELECT USING (email = auth.jwt() ->> 'email');
 
 CREATE POLICY "Service role full access to submissions" ON onboarding_submissions
   FOR ALL USING (auth.role() = 'service_role');
@@ -159,13 +196,13 @@ CREATE POLICY "Service role full access to submissions" ON onboarding_submission
 CREATE POLICY "Service role only analytics" ON onboarding_analytics
   FOR ALL USING (auth.role() = 'service_role');
 
--- Uploads: Users can access uploads for their sessions
+-- Uploads: Users can access uploads for their verified sessions only
 CREATE POLICY "Users can access their uploads" ON onboarding_uploads
   FOR ALL USING (
     session_id IN (
       SELECT id FROM onboarding_sessions 
-      WHERE email = auth.jwt() ->> 'email'
-    ) OR auth.jwt() IS NULL
+      WHERE email = auth.jwt() ->> 'email' AND email_verified = TRUE
+    )
   );
 
 -- =============================================================================
