@@ -15,7 +15,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
   const t = useTranslations('onboarding.steps.12')
   const { control, watch } = form
 
-  const businessLogo = watch('businessLogo')
+  const businessLogo = watch('logoUpload')
   const businessPhotos = watch('businessPhotos') || []
 
   return (
@@ -55,15 +55,15 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
             </div>
 
             <div className="space-y-4">
-              <Alert>
+              <Alert role="note" aria-labelledby="logo-guidelines">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-sm">
+                <AlertDescription className="text-sm" id="logo-guidelines">
                   {t('logo.guidelines')}
                 </AlertDescription>
               </Alert>
 
               <Controller
-                name="businessLogo"
+                name="logoUpload"
                 control={control}
                 render={({ field }) => (
                   <FileUpload
@@ -77,7 +77,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                     multiple={false}
                     onFilesChange={field.onChange}
                     value={field.value}
-                    error={errors.businessLogo?.message}
+                    error={errors.logoUpload?.message}
                     hint={t('logo.upload.hint')}
                     disabled={isLoading}
                   />
@@ -140,19 +140,19 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
             </div>
 
             <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
-                <h4 className="font-medium text-sm text-blue-700">{t('photos.benefits.title')}</h4>
-                <ul className="text-xs text-blue-600 space-y-1">
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
+                <h4 className="font-medium text-sm text-primary">{t('photos.benefits.title')}</h4>
+                <ul className="text-xs text-muted-foreground space-y-1">
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
                     {t('photos.benefits.trust')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
                     {t('photos.benefits.personal')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-blue-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
                     {t('photos.benefits.professional')}
                   </li>
                 </ul>
@@ -190,81 +190,81 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
       >
-        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+        <Card className="bg-accent/5 border-accent/20">
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-600" />
-              <h4 className="font-semibold text-green-700">{t('categories.title')}</h4>
+              <CheckCircle2 className="w-5 h-5 text-accent-foreground" />
+              <h4 className="font-semibold text-foreground">{t('categories.title')}</h4>
             </div>
             
             <div className="grid md:grid-cols-2 gap-6 text-sm">
               <div className="space-y-3">
-                <h5 className="font-medium text-green-700">{t('categories.exterior.title')}</h5>
-                <ul className="space-y-1 text-green-600">
+                <h5 className="font-medium text-foreground">{t('categories.exterior.title')}</h5>
+                <ul className="space-y-1 text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.exterior.storefront')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.exterior.signage')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.exterior.entrance')}
                   </li>
                 </ul>
               </div>
               
               <div className="space-y-3">
-                <h5 className="font-medium text-green-700">{t('categories.interior.title')}</h5>
-                <ul className="space-y-1 text-green-600">
+                <h5 className="font-medium text-foreground">{t('categories.interior.title')}</h5>
+                <ul className="space-y-1 text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.interior.workspace')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.interior.products')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.interior.atmosphere')}
                   </li>
                 </ul>
               </div>
 
               <div className="space-y-3">
-                <h5 className="font-medium text-green-700">{t('categories.team.title')}</h5>
-                <ul className="space-y-1 text-green-600">
+                <h5 className="font-medium text-foreground">{t('categories.team.title')}</h5>
+                <ul className="space-y-1 text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.team.owner')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.team.staff')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.team.action')}
                   </li>
                 </ul>
               </div>
 
               <div className="space-y-3">
-                <h5 className="font-medium text-green-700">{t('categories.services.title')}</h5>
-                <ul className="space-y-1 text-green-600">
+                <h5 className="font-medium text-foreground">{t('categories.services.title')}</h5>
+                <ul className="space-y-1 text-muted-foreground">
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.services.process')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.services.results')}
                   </li>
                   <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
+                    <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                     {t('categories.services.tools')}
                   </li>
                 </ul>
@@ -284,7 +284,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
           <Card className="bg-muted/30 border-dashed">
             <CardContent className="pt-6 space-y-4">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <CheckCircle2 className="w-4 h-4 text-accent-foreground" />
                 <h4 className="font-medium text-sm">{t('summary.title')}</h4>
               </div>
               
@@ -317,27 +317,27 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
         animate={{ opacity: 1 }}
         transition={{ delay: 1.0 }}
       >
-        <Card className="bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+        <Card className="bg-muted/20 border-muted">
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-purple-600" />
-              <h4 className="font-semibold text-purple-700">{t('quality.title')}</h4>
+              <ImageIcon className="w-5 h-5 text-muted-foreground" />
+              <h4 className="font-semibold text-foreground">{t('quality.title')}</h4>
             </div>
             
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div className="space-y-2">
-                <h5 className="font-medium text-purple-700">{t('quality.lighting.title')}</h5>
-                <p className="text-purple-600 text-xs">{t('quality.lighting.description')}</p>
+                <h5 className="font-medium text-foreground">{t('quality.lighting.title')}</h5>
+                <p className="text-muted-foreground text-xs">{t('quality.lighting.description')}</p>
               </div>
               
               <div className="space-y-2">
-                <h5 className="font-medium text-purple-700">{t('quality.composition.title')}</h5>
-                <p className="text-purple-600 text-xs">{t('quality.composition.description')}</p>
+                <h5 className="font-medium text-foreground">{t('quality.composition.title')}</h5>
+                <p className="text-muted-foreground text-xs">{t('quality.composition.description')}</p>
               </div>
               
               <div className="space-y-2">
-                <h5 className="font-medium text-purple-700">{t('quality.authenticity.title')}</h5>
-                <p className="text-purple-600 text-xs">{t('quality.authenticity.description')}</p>
+                <h5 className="font-medium text-foreground">{t('quality.authenticity.title')}</h5>
+                <p className="text-muted-foreground text-xs">{t('quality.authenticity.description')}</p>
               </div>
             </div>
           </CardContent>
