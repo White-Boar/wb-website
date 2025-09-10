@@ -77,6 +77,185 @@
     "meta": {
       "title": "Inizia - WhiteBoar",
       "description": "Inizia il tuo viaggio con WhiteBoar. Scegli tra soluzioni Veloci e Semplici o Personalizzate per le tue esigenze aziendali."
+    },
+    "steps": {
+      "12": {
+        "intro": {
+          "title": "Risorse Aziendali",
+          "description": "Carica il logo e le foto della tua attività per personalizzare il sito web e creare fiducia con i clienti."
+        },
+        "logo": {
+          "title": "Logo Aziendale",
+          "optional": "Facoltativo",
+          "guidelines": "Carica un logo di alta qualità in formato PNG, JPG o SVG. Dimensione massima del file: 2MB.",
+          "upload": {
+            "label": "Carica Logo",
+            "hint": "Trascina e rilascia il tuo logo qui o clicca per sfogliare i file"
+          },
+          "requirements": {
+            "title": "Requisiti del Logo",
+            "format": "Formato PNG, JPG o SVG",
+            "size": "Dimensione massima del file 2MB",
+            "resolution": "Larghezza minima 300px",
+            "background": "Sfondo trasparente preferito",
+            "colors": "Alto contrasto per la visibilità",
+            "quality": "Aspetto professionale"
+          }
+        },
+        "photos": {
+          "title": "Foto Aziendali",
+          "optional": "Facoltativo",
+          "benefits": {
+            "title": "Perché le foto aziendali sono importanti:",
+            "trust": "Costruiscono fiducia e credibilità",
+            "personal": "Creano una connessione personale",
+            "professional": "Mostrano professionalità"
+          },
+          "upload": {
+            "label": "Carica Foto",
+            "hint": "Carica fino a 8 foto, 5MB ciascuna. Mostra la tua attività, il team o i servizi."
+          }
+        },
+        "categories": {
+          "title": "Categorie di Foto",
+          "exterior": {
+            "title": "Esterno e Posizione",
+            "storefront": "Vetrina e esterno dell'edificio",
+            "signage": "Insegne e branding aziendale",
+            "entrance": "Ingresso e accessibilità"
+          },
+          "interior": {
+            "title": "Interno e Spazio di Lavoro",
+            "workspace": "Ambiente di lavoro e strutture",
+            "products": "Prodotti o aree di servizio",
+            "atmosphere": "Atmosfera e aree clienti"
+          },
+          "team": {
+            "title": "Team e Persone",
+            "owner": "Proprietario o manager dell'attività",
+            "staff": "Membri del team e dipendenti",
+            "action": "Persone in azione, che servono i clienti"
+          },
+          "services": {
+            "title": "Servizi e Processi",
+            "process": "Servizi in corso di esecuzione",
+            "results": "Esempi prima e dopo",
+            "tools": "Attrezzature e strumenti utilizzati"
+          }
+        },
+        "summary": {
+          "title": "Riepilogo Caricamenti",
+          "logo": "Logo",
+          "photos": "Foto",
+          "uploaded": "Caricato",
+          "none": "Nessuno caricato",
+          "photoCount": "{count} foto"
+        },
+        "quality": {
+          "title": "Consigli per la Qualità delle Foto",
+          "lighting": {
+            "title": "Buona Illuminazione",
+            "description": "La luce naturale o ambienti ben illuminati funzionano meglio"
+          },
+          "composition": {
+            "title": "Composizione Chiara",
+            "description": "Concentrati sul soggetto, evita sfondi disordinati"
+          },
+          "authenticity": {
+            "title": "Momenti Autentici",
+            "description": "Interazioni genuine e attività aziendali reali"
+          }
+        },
+        "tips": {
+          "title": "Ricorda:",
+          "quality": "Qualità prima della quantità",
+          "authentic": "Momenti autentici",
+          "variety": "Mostra varietà"
+        }
+      },
+      "13": {
+        "celebration": {
+          "title": "Congratulazioni!",
+          "description": "Hai completato con successo il processo di onboarding di WhiteBoar. Siamo entusiasti di dare vita alla tua visione.",
+          "completion": "Completamento",
+          "timeEstimate": "~15 minuti"
+        },
+        "summary": {
+          "title": "Riepilogo del Progetto",
+          "business": {
+            "title": "Informazioni Aziendali",
+            "name": "Nome dell'Attività",
+            "type": "Tipo di Attività",
+            "email": "Email di Contatto",
+            "phone": "Numero di Telefono"
+          },
+          "project": {
+            "title": "Dettagli del Progetto",
+            "goal": "Obiettivo Primario",
+            "style": "Stile di Design",
+            "colors": "Palette di Colori",
+            "sections": "Sezioni del Sito Web",
+            "sectionsCount": "sezioni"
+          },
+          "assets": {
+            "title": "Risorse e Contenuti",
+            "logo": "Logo",
+            "photos": "Foto Aziendali",
+            "offerings": "Servizi/Prodotti",
+            "photosUploaded": "foto caricate",
+            "offeringsAdded": "elementi aggiunti"
+          },
+          "notProvided": "Non fornito",
+          "uploaded": "Caricato",
+          "notUploaded": "Non caricato"
+        },
+        "nextSteps": {
+          "title": "Cosa Succede Ora",
+          "review": {
+            "title": "Revisione del Progetto",
+            "description": "Il nostro team esaminerà le tue esigenze e creerà un piano di progetto dettagliato",
+            "timeframe": "Entro 24 ore"
+          },
+          "preview": {
+            "title": "Anteprima del Design",
+            "description": "Creeremo i concetti di design iniziali e ti invieremo un link di anteprima",
+            "timeframe": "3-5 giorni lavorativi"
+          },
+          "revisions": {
+            "title": "Feedback e Revisioni",
+            "description": "Esamina l'anteprima e richiedi eventuali modifiche necessarie",
+            "timeframe": "1-2 giorni lavorativi"
+          },
+          "launch": {
+            "title": "Lancio del Sito Web",
+            "description": "Approvazione finale e il tuo sito web va online con hosting incluso",
+            "timeframe": "Stesso giorno"
+          }
+        },
+        "contact": {
+          "title": "Contattaci",
+          "support": {
+            "title": "Team di Supporto"
+          },
+          "availability": {
+            "title": "Disponibilità",
+            "description": "Dal lunedì al venerdì, dalle 9:00 alle 18:00 CET"
+          },
+          "response": {
+            "title": "Risposta Rapida Garantita",
+            "description": "Di solito rispondiamo entro 2 ore durante l'orario lavorativo"
+          }
+        },
+        "thankYou": {
+          "title": "Grazie per Aver Scelto WhiteBoar",
+          "message": "Ci impegniamo a fornire risultati eccezionali e ad aiutare la tua attività a prosperare online. Il tuo progetto è ora nelle mani di esperti.",
+          "team": "Il Team WhiteBoar"
+        },
+        "cta": {
+          "button": "Completa Onboarding",
+          "description": "Riceverai presto un'email di conferma con i prossimi passi"
+        }
+      }
     }
   }
 }
