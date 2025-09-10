@@ -83,7 +83,7 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
         className="text-center space-y-6"
       >
         <div className="relative">
-          <div className="w-20 h-20 mx-auto bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto bg-primary rounded-full flex items-center justify-center">
             <CheckCircle2 className="w-10 h-10 text-white" />
           </div>
           <motion.div
@@ -101,7 +101,7 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-2xl font-bold text-green-700"
+            className="text-2xl font-bold text-primary"
           >
             {t('celebration.title')}
           </motion.h2>
@@ -120,7 +120,7 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
             transition={{ delay: 0.4 }}
             className="flex items-center justify-center gap-2"
           >
-            <Badge variant="secondary" className="bg-green-100 text-green-700">
+            <Badge variant="secondary" className="bg-accent/10 text-accent-foreground">
               {t('celebration.completion')} {completionPercentage}%
             </Badge>
             <Badge variant="outline">
@@ -204,15 +204,15 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
               </h4>
               <div className="grid md:grid-cols-3 gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${businessLogo ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <div className={`w-2 h-2 rounded-full ${businessLogo ? 'bg-accent' : 'bg-muted'}`} />
                   <span>{t('summary.assets.logo')}: {businessLogo ? t('summary.uploaded') : t('summary.notUploaded')}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${businessPhotos.length > 0 ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <div className={`w-2 h-2 rounded-full ${businessPhotos.length > 0 ? 'bg-accent' : 'bg-muted'}`} />
                   <span>{t('summary.assets.photos')}: {businessPhotos.length} {t('summary.assets.photosUploaded')}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${offerings.length > 0 ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <div className={`w-2 h-2 rounded-full ${offerings.length > 0 ? 'bg-accent' : 'bg-muted'}`} />
                   <span>{t('summary.assets.offerings')}: {offerings.length} {t('summary.assets.offeringsAdded')}</span>
                 </div>
               </div>
@@ -274,16 +274,16 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.9 }}
       >
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+        <Card className="bg-primary/5 border-primary/20">
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2">
-              <Mail className="w-5 h-5 text-blue-600" />
-              <h4 className="font-semibold text-blue-700">{t('contact.title')}</h4>
+              <Mail className="w-5 h-5 text-primary" />
+              <h4 className="font-semibold text-primary">{t('contact.title')}</h4>
             </div>
             
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               <div className="space-y-2">
-                <h5 className="font-medium text-blue-700">{t('contact.support.title')}</h5>
+                <h5 className="font-medium text-primary">{t('contact.support.title')}</h5>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-blue-600">
                     <Mail className="w-3 h-3" />
@@ -297,16 +297,16 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
               </div>
               
               <div className="space-y-2">
-                <h5 className="font-medium text-blue-700">{t('contact.availability.title')}</h5>
-                <p className="text-blue-600 text-xs">{t('contact.availability.description')}</p>
+                <h5 className="font-medium text-primary">{t('contact.availability.title')}</h5>
+                <p className="text-muted-foreground text-xs">{t('contact.availability.description')}</p>
               </div>
             </div>
 
             <div className="bg-white/50 rounded-lg p-3 text-center">
-              <p className="text-sm text-blue-700 font-medium">
+              <p className="text-sm text-primary font-medium">
                 {t('contact.response.title')}
               </p>
-              <p className="text-xs text-blue-600">
+              <p className="text-xs text-muted-foreground">
                 {t('contact.response.description')}
               </p>
             </div>
@@ -321,12 +321,12 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
         transition={{ delay: 1.1 }}
         className="text-center space-y-4"
       >
-        <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-lg p-6 space-y-3">
-          <h4 className="font-semibold text-green-800">{t('thankYou.title')}</h4>
-          <p className="text-sm text-green-700 max-w-2xl mx-auto">
+        <div className="bg-accent/10 rounded-lg p-6 space-y-3">
+          <h4 className="font-semibold text-accent-foreground">{t('thankYou.title')}</h4>
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
             {t('thankYou.message')}
           </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-green-600">
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
             <Sparkles className="w-4 h-4" />
             <span>{t('thankYou.team')}</span>
             <ArrowRight className="w-4 h-4" />
@@ -343,8 +343,9 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
         >
           <Button 
             size="lg" 
-            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600"
+            className="bg-primary hover:bg-primary/90 min-h-[44px] px-8"
             disabled={isLoading}
+            aria-label={t('cta.button')}
           >
             {t('cta.button')}
             <ArrowRight className="w-4 h-4 ml-2" />
