@@ -1,18 +1,25 @@
 'use client'
 
+import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { CheckCircle2, Clock, Mail, Phone, Globe, Sparkles, ArrowRight } from 'lucide-react'
+import { CheckCircle2, Clock, Mail, Phone, Globe, Sparkles, ArrowRight, Loader2 } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { StepComponentProps } from './index'
+import { useOnboardingStore } from '@/stores/onboarding'
+import { submitOnboarding } from '@/services/onboarding'
+import { toast } from 'sonner'
 
 export function Step13Completion({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.13')
   const { watch } = form
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const { sessionId, clearSession } = useOnboardingStore()
 
   // Get summary data from form
   const formData = watch()
@@ -46,6 +53,30 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
 
   const totalRequiredFields = 8
   const completionPercentage = Math.round((completedFields / totalRequiredFields) * 100)
+
+  const handleSubmit = async () => {
+    if (!sessionId) {
+      toast.error('Session not found. Please try again.')
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      await submitOnboarding(sessionId, formData)
+      setSubmitted(true)
+      toast.success(t('submission.success'))
+      
+      // Clear the session after successful submission
+      setTimeout(() => {
+        clearSession()
+      }, 3000)
+    } catch (error) {
+      console.error('Submission failed:', error)
+      toast.error(t('submission.error'))
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   const getNextSteps = () => [
     { 
@@ -344,11 +375,26 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
           <Button 
             size="lg" 
             className="bg-primary hover:bg-primary/90 min-h-[44px] px-8"
-            disabled={isLoading}
+            disabled={isLoading || submitting || submitted}
             aria-label={t('cta.button')}
+            onClick={handleSubmit}
           >
-            {t('cta.button')}
-            <ArrowRight className="w-4 h-4 ml-2" />
+            {submitting ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                {t('submission.submitting')}
+              </>
+            ) : submitted ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                {t('submission.completed')}
+              </>
+            ) : (
+              <>
+                {t('cta.button')}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
           </Button>
           <p className="text-xs text-muted-foreground mt-2">
             {t('cta.description')}

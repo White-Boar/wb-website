@@ -5,6 +5,9 @@
 
 This document provides the complete specification for White Boar's client onboarding system, including detailed technical implementation guidelines, library choices, and architecture decisions. The system is designed to onboard Italian SMB clients for the "Fast & Simple" website package (€40/month), delivering a preview before payment collection.
 
+## Golden rule
+After making any UI changes, run playwrite mcp to inspect the website visually and make sure it looks as intended.
+
 ### Key Metrics & Goals
 - **Target Completion Rate**: >25% (industry average: 10-20%)
 - **Time to Complete**: <15 minutes

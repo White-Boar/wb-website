@@ -254,6 +254,12 @@
         "cta": {
           "button": "Completa Onboarding",
           "description": "Riceverai presto un'email di conferma con i prossimi passi"
+        },
+        "submission": {
+          "submitting": "Invio in corso...",
+          "completed": "Inviato con Successo!",
+          "success": "Il tuo onboarding è stato inviato con successo!",
+          "error": "Invio fallito. Riprova."
         }
       }
     }

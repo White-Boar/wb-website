@@ -254,6 +254,12 @@
         "cta": {
           "button": "Complete Onboarding",
           "description": "You'll receive a confirmation email with next steps shortly"
+        },
+        "submission": {
+          "submitting": "Submitting...",
+          "completed": "Submitted Successfully!",
+          "success": "Your onboarding has been submitted successfully!",
+          "error": "Failed to submit. Please try again."
         }
       }
     }
