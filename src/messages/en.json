@@ -77,6 +77,185 @@
     "meta": {
       "title": "Get Started - WhiteBoar",
       "description": "Begin your journey with WhiteBoar. Choose between Fast & Simple or Custom solutions for your business needs."
+    },
+    "steps": {
+      "12": {
+        "intro": {
+          "title": "Business Assets",
+          "description": "Upload your business logo and photos to personalize your website and build trust with customers."
+        },
+        "logo": {
+          "title": "Business Logo",
+          "optional": "Optional",
+          "guidelines": "Upload a high-quality logo in PNG, JPG, or SVG format. Maximum file size: 2MB.",
+          "upload": {
+            "label": "Upload Logo",
+            "hint": "Drag and drop your logo here or click to browse files"
+          },
+          "requirements": {
+            "title": "Logo Requirements",
+            "format": "PNG, JPG, or SVG format",
+            "size": "Maximum 2MB file size",
+            "resolution": "Minimum 300px width",
+            "background": "Transparent background preferred",
+            "colors": "High contrast for visibility",
+            "quality": "Professional appearance"
+          }
+        },
+        "photos": {
+          "title": "Business Photos",
+          "optional": "Optional",
+          "benefits": {
+            "title": "Why business photos matter:",
+            "trust": "Build trust and credibility",
+            "personal": "Create personal connection",
+            "professional": "Showcase professionalism"
+          },
+          "upload": {
+            "label": "Upload Photos",
+            "hint": "Upload up to 8 photos, 5MB each. Show your business, team, or services."
+          }
+        },
+        "categories": {
+          "title": "Photo Categories",
+          "exterior": {
+            "title": "Exterior & Location",
+            "storefront": "Storefront and building exterior",
+            "signage": "Business signage and branding",
+            "entrance": "Entrance and accessibility"
+          },
+          "interior": {
+            "title": "Interior & Workspace",
+            "workspace": "Working environment and facilities",
+            "products": "Products or service areas",
+            "atmosphere": "Ambiance and customer areas"
+          },
+          "team": {
+            "title": "Team & People",
+            "owner": "Business owner or manager",
+            "staff": "Team members and employees",
+            "action": "People in action, serving customers"
+          },
+          "services": {
+            "title": "Services & Process",
+            "process": "Services being performed",
+            "results": "Before and after examples",
+            "tools": "Equipment and tools used"
+          }
+        },
+        "summary": {
+          "title": "Upload Summary",
+          "logo": "Logo",
+          "photos": "Photos",
+          "uploaded": "Uploaded",
+          "none": "None uploaded",
+          "photoCount": "{count} photos"
+        },
+        "quality": {
+          "title": "Photo Quality Tips",
+          "lighting": {
+            "title": "Good Lighting",
+            "description": "Natural light or well-lit environments work best"
+          },
+          "composition": {
+            "title": "Clear Composition",
+            "description": "Focus on the subject, avoid cluttered backgrounds"
+          },
+          "authenticity": {
+            "title": "Authentic Moments",
+            "description": "Genuine interactions and real business activities"
+          }
+        },
+        "tips": {
+          "title": "Remember:",
+          "quality": "Quality over quantity",
+          "authentic": "Authentic moments",
+          "variety": "Show variety"
+        }
+      },
+      "13": {
+        "celebration": {
+          "title": "Congratulations!",
+          "description": "You've successfully completed the WhiteBoar onboarding process. We're excited to bring your vision to life.",
+          "completion": "Completion",
+          "timeEstimate": "~15 minutes"
+        },
+        "summary": {
+          "title": "Project Summary",
+          "business": {
+            "title": "Business Information",
+            "name": "Business Name",
+            "type": "Business Type",
+            "email": "Contact Email",
+            "phone": "Phone Number"
+          },
+          "project": {
+            "title": "Project Details",
+            "goal": "Primary Goal",
+            "style": "Design Style",
+            "colors": "Color Palette",
+            "sections": "Website Sections",
+            "sectionsCount": "sections"
+          },
+          "assets": {
+            "title": "Assets & Content",
+            "logo": "Logo",
+            "photos": "Business Photos",
+            "offerings": "Services/Products",
+            "photosUploaded": "photos uploaded",
+            "offeringsAdded": "items added"
+          },
+          "notProvided": "Not provided",
+          "uploaded": "Uploaded",
+          "notUploaded": "Not uploaded"
+        },
+        "nextSteps": {
+          "title": "What Happens Next",
+          "review": {
+            "title": "Project Review",
+            "description": "Our team will review your requirements and create a detailed project plan",
+            "timeframe": "Within 24 hours"
+          },
+          "preview": {
+            "title": "Design Preview",
+            "description": "We'll create initial design concepts and send you a preview link",
+            "timeframe": "3-5 business days"
+          },
+          "revisions": {
+            "title": "Feedback & Revisions",
+            "description": "Review the preview and request any changes needed",
+            "timeframe": "1-2 business days"
+          },
+          "launch": {
+            "title": "Website Launch",
+            "description": "Final approval and your website goes live with hosting included",
+            "timeframe": "Same day"
+          }
+        },
+        "contact": {
+          "title": "Get in Touch",
+          "support": {
+            "title": "Support Team"
+          },
+          "availability": {
+            "title": "Availability",
+            "description": "Monday to Friday, 9 AM to 6 PM CET"
+          },
+          "response": {
+            "title": "Quick Response Guaranteed",
+            "description": "We typically respond within 2 hours during business hours"
+          }
+        },
+        "thankYou": {
+          "title": "Thank You for Choosing WhiteBoar",
+          "message": "We're committed to delivering exceptional results and helping your business thrive online. Your project is now in expert hands.",
+          "team": "The WhiteBoar Team"
+        },
+        "cta": {
+          "button": "Complete Onboarding",
+          "description": "You'll receive a confirmation email with next steps shortly"
+        }
+      }
     }
   }
 }
