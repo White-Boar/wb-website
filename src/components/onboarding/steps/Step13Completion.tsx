@@ -121,9 +121,9 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.3 }}
-            className="absolute -top-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center"
+            className="absolute -top-1 -right-1 w-8 h-8 bg-accent rounded-full flex items-center justify-center"
           >
-            <Sparkles className="w-4 h-4 text-yellow-800" />
+            <Sparkles className="w-4 h-4 text-accent-foreground" />
           </motion.div>
         </div>
         
@@ -316,11 +316,11 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
               <div className="space-y-2">
                 <h5 className="font-medium text-primary">{t('contact.support.title')}</h5>
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-blue-600">
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <Mail className="w-3 h-3" />
                     <span>info@whiteboar.com</span>
                   </div>
-                  <div className="flex items-center gap-2 text-blue-600">
+                  <div className="flex items-center gap-2 text-muted-foreground">
                     <Phone className="w-3 h-3" />
                     <span>+39 02 1234 5678</span>
                   </div>
