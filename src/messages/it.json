@@ -78,6 +78,72 @@
       "title": "Inizia - WhiteBoar",
       "description": "Inizia il tuo viaggio con WhiteBoar. Scegli tra soluzioni Veloci e Semplici o Personalizzate per le tue esigenze aziendali."
     },
+    "welcome": {
+      "title": "Benvenuti in WhiteBoar",
+      "subtitle": "Creiamo il tuo sito web perfetto in soli 13 semplici passaggi. Il nostro processo basato su AI garantisce un risultato professionale su misura per la tua attività.",
+      "features": {
+        "fast": {
+          "title": "Veloce come un Fulmine",
+          "description": "Configurazione completata in minuti, sito web live in 2 giorni lavorativi."
+        },
+        "secure": {
+          "title": "Sicuro e Affidabile",
+          "description": "Crittografia SSL, hosting gestito e backup automatici inclusi."
+        },
+        "smart": {
+          "title": "Alimentato da AI",
+          "description": "Raccomandazioni intelligenti e ottimizzazioni automatiche per la tua attività."
+        }
+      },
+      "process": {
+        "title": "Come Funziona",
+        "steps": {
+          "1": {
+            "title": "Dettagli Aziendali",
+            "description": "Parlaci della tua attività e dei tuoi obiettivi."
+          },
+          "2": {
+            "title": "Preferenze di Design",
+            "description": "Scegli il tuo stile e le preferenze visive."
+          },
+          "3": {
+            "title": "Contenuti e Risorse",
+            "description": "Carica il tuo logo e i contenuti aziendali."
+          },
+          "4": {
+            "title": "Revisione e Lancio",
+            "description": "Revisione finale e il tuo sito web va online."
+          }
+        }
+      },
+      "requirements": {
+        "title": "Cosa Ti Servirà",
+        "business": {
+          "title": "Informazioni Aziendali",
+          "items": {
+            "name": "Nome e descrizione dell'attività",
+            "email": "Indirizzo email di contatto",
+            "address": "Indirizzo dell'attività (opzionale)",
+            "phone": "Numero di telefono (opzionale)"
+          }
+        },
+        "optional": {
+          "title": "Risorse Opzionali",
+          "items": {
+            "logo": "Logo aziendale (PNG, JPG, o SVG)",
+            "photos": "Foto dell'attività o immagini prodotto",
+            "competitors": "Esempi di siti web che ti piacciono",
+            "content": "Contenuti o testi esistenti"
+          }
+        }
+      },
+      "actions": {
+        "start": "Crea il Tuo Sito Web",
+        "continue": "Continua Da Dove Hai Lasciato",
+        "startOver": "Ricomincia"
+      },
+      "disclaimer": "Richiede circa 10-15 minuti. I tuoi progressi vengono salvati automaticamente."
+    },
     "steps": {
       "12": {
         "intro": {

@@ -21,9 +21,50 @@ export class OnboardingService {
   // ===========================================================================
   
   /**
-   * Create a new onboarding session
+   * Create a new empty onboarding session (for welcome page)
    */
   static async createSession(
+    locale: 'en' | 'it' = 'en'
+  ): Promise<OnboardingSession> {
+    try {
+      const sessionData = {
+        email: null,
+        current_step: 1,
+        form_data: {},
+        email_verified: false,
+        locale,
+        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+        verification_code: null,
+        verification_attempts: 0
+      }
+
+      const { data, error } = await supabase
+        .from('onboarding_sessions')
+        .insert(sessionData)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Failed to create session:', error)
+        throw new Error(`Failed to create session: ${error.message}`)
+      }
+
+      // Track session creation
+      await this.trackEvent(data.id, 'session_start', {
+        locale
+      })
+
+      return this.mapSessionFromDB(data)
+    } catch (error) {
+      console.error('Create session error:', error)
+      throw error instanceof Error ? error : new Error('Failed to create session')
+    }
+  }
+
+  /**
+   * Create a new onboarding session with email and name
+   */
+  static async createSessionWithEmail(
     email: string,
     name: string,
     locale: 'en' | 'it' = 'en'

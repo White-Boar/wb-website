@@ -309,6 +309,11 @@ export interface OnboardingStore {
   // Session recovery
   recoverSession: () => Promise<boolean>
   refreshSession: () => Promise<void>
+  
+  // Session helper functions for components
+  initializeSession: (locale?: 'en' | 'it') => Promise<OnboardingSession>
+  loadExistingSession: () => OnboardingSession | null
+  hasExistingSession: () => boolean
 }
 
 // =============================================================================
