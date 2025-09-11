@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles, Clock, Shield, CheckCircle } from 'lucide-react'
@@ -13,6 +13,8 @@ import { useOnboardingStore } from '@/stores/onboarding'
 export default function OnboardingWelcome() {
   const t = useTranslations('onboarding.welcome')
   const router = useRouter()
+  const params = useParams()
+  const locale = params.locale as 'en' | 'it'
   const { initializeSession, loadExistingSession, hasExistingSession } = useOnboardingStore()
 
   // Check for existing session on mount
@@ -26,7 +28,7 @@ export default function OnboardingWelcome() {
 
   const handleStart = async () => {
     try {
-      const session = await initializeSession()
+      const session = await initializeSession(locale)
       router.push(`/onboarding/step/${session.currentStep}`)
     } catch (error) {
       console.error('Failed to initialize onboarding session:', error)

@@ -4,21 +4,22 @@ import { notFound } from 'next/navigation'
 import { NextIntlClientProvider } from 'next-intl'
 
 import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from '@/components/ui/toaster'
+import { Toaster } from 'sonner'
 import '@/app/globals.css'
 
 interface OnboardingLayoutProps {
   children: React.ReactNode
-  params: {
+  params: Promise<{
     locale: string
-  }
+  }>
 }
 
 export async function generateMetadata({
-  params: { locale }
+  params
 }: {
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }): Promise<Metadata> {
+  const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'onboarding.meta' })
 
   return {
@@ -44,12 +45,13 @@ export async function generateMetadata({
 
 export default async function OnboardingLayout({
   children,
-  params: { locale }
+  params
 }: OnboardingLayoutProps) {
+  const { locale } = await params
   let messages
   
   try {
-    messages = (await import(`../../../../messages/${locale}.json`)).default
+    messages = (await import(`@/messages/${locale}.json`)).default
   } catch (error) {
     notFound()
   }

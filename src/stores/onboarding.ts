@@ -327,6 +327,57 @@ export const useOnboardingStore = create<OnboardingStore>()(
               isSessionExpired: false,
               sessionExpiresAt: null
             })
+          },
+
+          // Session Helper Functions for Page Components
+          initializeSession: async (locale: 'en' | 'it' = 'en') => {
+            set({ isLoading: true, error: null })
+            
+            try {
+              const { OnboardingService } = await import('@/services/onboarding')
+              const session = await OnboardingService.createSession(locale)
+              
+              set({
+                sessionId: session.id,
+                currentStep: session.currentStep,
+                formData: { ...initialFormData, ...session.formData },
+                sessionExpiresAt: session.expiresAt,
+                isSessionExpired: false,
+                lastSaved: new Date(session.createdAt),
+                isLoading: false,
+                isDirty: false,
+                completedSteps: []
+              })
+              
+              return session
+            } catch (error) {
+              console.error('Failed to initialize session:', error)
+              set({ 
+                error: error instanceof Error ? error.message : 'Failed to initialize session',
+                isLoading: false 
+              })
+              throw error
+            }
+          },
+
+          loadExistingSession: () => {
+            const state = get()
+            if (state.sessionId && !state.isSessionExpired) {
+              return {
+                id: state.sessionId,
+                currentStep: state.currentStep,
+                formData: state.formData,
+                completedSteps: state.completedSteps,
+                expiresAt: state.sessionExpiresAt,
+                lastSaved: state.lastSaved
+              }
+            }
+            return null
+          },
+
+          hasExistingSession: () => {
+            const state = get()
+            return Boolean(state.sessionId && !state.isSessionExpired)
           }
         }
       },
