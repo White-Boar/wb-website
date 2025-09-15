@@ -1,7 +1,6 @@
 import { track } from '@vercel/analytics'
-import { OnboardingService } from './onboarding'
-import { 
-  AnalyticsEventType, 
+import {
+  AnalyticsEventType,
   AnalyticsCategory,
   StepNumber,
   OnboardingFormData
@@ -12,7 +11,47 @@ import {
 // =============================================================================
 
 export class AnalyticsService {
-  
+
+  // ===========================================================================
+  // HELPER FUNCTIONS
+  // ===========================================================================
+
+  /**
+   * Track analytics event via API route (uses service role on server)
+   */
+  private static async trackEventViaAPI(
+    sessionId: string,
+    eventType: AnalyticsEventType,
+    metadata: Record<string, any> = {},
+    stepNumber?: number,
+    fieldName?: string,
+    category: string = 'user_action',
+    durationMs?: number
+  ): Promise<void> {
+    try {
+      // Don't wait for analytics calls to complete - fire and forget
+      fetch('/api/onboarding/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          eventType,
+          metadata,
+          stepNumber,
+          fieldName,
+          category,
+          durationMs
+        })
+      }).catch(error => {
+        // Silent fail for analytics - don't break user flow
+        console.warn('Analytics tracking failed:', error)
+      })
+    } catch (error) {
+      // Silent fail for analytics
+      console.warn('Analytics tracking failed:', error)
+    }
+  }
+
   // ===========================================================================
   // PERFORMANCE TRACKING
   // ===========================================================================
@@ -34,7 +73,7 @@ export class AnalyticsService {
 
     // Track in database for funnel analysis
     if (sessionId) {
-      OnboardingService.trackEvent(
+      this.trackEventViaAPI(
         sessionId,
         'step_view',
         {
@@ -70,7 +109,7 @@ export class AnalyticsService {
     })
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       isBackward ? 'navigation_back' : 'navigation_forward',
       {
@@ -112,7 +151,7 @@ export class AnalyticsService {
     })
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       'step_complete',
       metadata,
@@ -135,7 +174,7 @@ export class AnalyticsService {
   ): void {
     // Only track for significant interactions (not every keystroke)
     if (eventType === 'blur' && timeSpentMs && timeSpentMs > 1000) {
-      OnboardingService.trackEvent(
+      this.trackEventViaAPI(
         sessionId,
         'field_blur',
         {
@@ -168,7 +207,7 @@ export class AnalyticsService {
     })
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       'field_error',
       {
@@ -202,7 +241,7 @@ export class AnalyticsService {
     track('onboarding_abandoned', abandonmentData)
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       'session_abandon',
       abandonmentData,
@@ -239,7 +278,7 @@ export class AnalyticsService {
     })
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       eventMapping[eventType] || 'email_verification_sent',
       metadata,
@@ -276,7 +315,7 @@ export class AnalyticsService {
     })
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       eventMapping[eventType],
       { file_type: fileType, ...metadata },
@@ -316,7 +355,7 @@ export class AnalyticsService {
     track('onboarding_completed', completionData)
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       'form_submit',
       completionData,
@@ -372,7 +411,7 @@ export class AnalyticsService {
 
     // Track significant slow operations in database
     if (duration > 2000 || !success) {
-      OnboardingService.trackEvent(
+      this.trackEventViaAPI(
         sessionId,
         success ? 'auto_save' : 'form_error',
         performanceData,
@@ -403,7 +442,7 @@ export class AnalyticsService {
     track('onboarding_compatibility_issue', compatibilityData)
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       'form_error',
       compatibilityData,
@@ -437,7 +476,7 @@ export class AnalyticsService {
     track('onboarding_session_recovery', recoveryData)
 
     // Track in database
-    OnboardingService.trackEvent(
+    this.trackEventViaAPI(
       sessionId,
       'session_recovered',
       recoveryData,
@@ -471,7 +510,7 @@ export class AnalyticsService {
         ...autoSaveData
       })
 
-      OnboardingService.trackEvent(
+      this.trackEventViaAPI(
         sessionId,
         success ? 'auto_save' : 'form_error',
         autoSaveData,
@@ -591,7 +630,7 @@ export class AnalyticsService {
       // Process events in batches
       await Promise.all(
         events.map(event =>
-          OnboardingService.trackEvent(
+          this.trackEventViaAPI(
             event.sessionId,
             event.eventType,
             { ...event.metadata, queued_at: event.timestamp },

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { OnboardingService } from '@/services/onboarding'
+import { OnboardingServerService } from '@/services/onboarding-server'
 import { EmailService } from '@/services/resend'
 
 export async function POST(request: NextRequest) {

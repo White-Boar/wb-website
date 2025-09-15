@@ -5,18 +5,18 @@ import { OnboardingFormData, EmailVerificationResponse } from '@/types/onboardin
 // RESEND EMAIL SERVICE CONFIGURATION
 // =============================================================================
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = new Resend(process.env.RESEND_API_KEY || process.env.RESEND_KEY)
 
 // Email configuration from environment
-const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply.notifications@whiteboar.it'
+const FROM_EMAIL = process.env.FROM_EMAIL || (process.env.NODE_ENV === 'development' ? 'onboarding@resend.dev' : 'noreply.notifications@whiteboar.it')
 const FROM_NAME = process.env.FROM_NAME || 'WhiteBoar'
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@whiteboar.it'
 const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'support@whiteboar.it'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'
 
 // Validate Resend API key
-if (!process.env.RESEND_API_KEY) {
-  console.error('WARNING: RESEND_API_KEY environment variable is not set')
+if (!process.env.RESEND_API_KEY && !process.env.RESEND_KEY) {
+  console.error('WARNING: RESEND_API_KEY or RESEND_KEY environment variable is not set')
 }
 
 // =============================================================================
@@ -709,7 +709,7 @@ export async function sendCompletionNotifications(
  * Check if Resend service is properly configured
  */
 export function isEmailServiceConfigured(): boolean {
-  return !!process.env.RESEND_API_KEY && !!FROM_EMAIL
+  return !!(process.env.RESEND_API_KEY || process.env.RESEND_KEY) && !!FROM_EMAIL
 }
 
 export { EmailService }

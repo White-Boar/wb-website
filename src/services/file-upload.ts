@@ -1,6 +1,6 @@
 import imageCompression from 'browser-image-compression'
 import { supabase } from '@/lib/supabase'
-import { OnboardingService } from './onboarding'
+import { OnboardingClientService } from './onboarding-client'
 import AnalyticsService from './analytics'
 import { UploadedFile } from '@/types/onboarding'
 
@@ -246,17 +246,28 @@ export class FileUploadService {
         throw new Error('Failed to get public URL')
       }
 
-      // Record in database
-      const uploadedFile = await OnboardingService.recordFileUpload(
-        sessionId,
-        type,
-        processedFile.name,
-        processedFile.size,
-        processedFile.type,
-        urlData.publicUrl,
-        dimensions?.width,
-        dimensions?.height
-      )
+      // Record in database via API route
+      const recordResponse = await fetch('/api/onboarding/record-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          fileType: type,
+          fileUrl: urlData.publicUrl,
+          fileName: processedFile.name,
+          fileSize: processedFile.size,
+          mimeType: processedFile.type,
+          dimensions
+        })
+      })
+
+      const recordResult = await recordResponse.json()
+
+      if (!recordResponse.ok || !recordResult.success) {
+        throw new Error(recordResult.error || 'Failed to record file upload')
+      }
+
+      const uploadedFile = recordResult.data
 
       // Track successful upload
       const uploadTime = Date.now() - startTime
@@ -377,7 +388,7 @@ export class FileUploadService {
     type?: 'logo' | 'photo'
   ): Promise<UploadedFile[]> {
     try {
-      return await OnboardingService.getUploadedFiles(sessionId, type)
+      return await OnboardingClientService.getUploadedFiles(sessionId, type)
     } catch (error) {
       console.error('Failed to get session files:', error)
       throw error instanceof Error ? error : new Error('Failed to get session files')

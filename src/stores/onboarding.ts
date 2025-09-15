@@ -76,9 +76,9 @@ export const useOnboardingStore = create<OnboardingStore>()(
             set({ isLoading: true, error: null })
             
             // Import dynamically to avoid circular dependencies
-            const { OnboardingService } = await import('@/services/onboarding')
-            
-            await OnboardingService.saveProgress(
+            const { OnboardingClientService } = await import('@/services/onboarding-client')
+
+            await OnboardingClientService.saveProgress(
               state.sessionId,
               state.formData,
               state.currentStep
@@ -120,8 +120,8 @@ export const useOnboardingStore = create<OnboardingStore>()(
             set({ isLoading: true, error: null })
             
             try {
-              const { OnboardingService } = await import('@/services/onboarding')
-              const session = await OnboardingService.getSession(sessionId)
+              const { OnboardingClientService } = await import('@/services/onboarding-client')
+              const session = await OnboardingClientService.getSession(sessionId)
               
               if (!session) {
                 throw new Error('Session not found')
@@ -237,8 +237,8 @@ export const useOnboardingStore = create<OnboardingStore>()(
             if (!sessionId) return
 
             try {
-              const { OnboardingService } = await import('@/services/onboarding')
-              await OnboardingService.refreshSession(sessionId)
+              const { OnboardingClientService } = await import('@/services/onboarding-client')
+              await OnboardingClientService.refreshSession(sessionId)
 
               // Extend expiration time
               const newExpiresAt = new Date()
@@ -350,8 +350,8 @@ export const useOnboardingStore = create<OnboardingStore>()(
             set({ isLoading: true, error: null })
             
             try {
-              const { OnboardingService } = await import('@/services/onboarding')
-              const session = await OnboardingService.createSession(locale)
+              const { OnboardingClientService } = await import('@/services/onboarding-client')
+              const session = await OnboardingClientService.createSession(locale)
               
               set({
                 sessionId: session.id,

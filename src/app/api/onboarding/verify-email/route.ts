@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { OnboardingService } from '@/services/onboarding'
+import { OnboardingServerService } from '@/services/onboarding-server'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the code
-    const result = await OnboardingService.verifyEmail(sessionId, code)
+    const result = await OnboardingServerService.verifyEmail(sessionId, code)
 
     if (result.success) {
       return NextResponse.json({

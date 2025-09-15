@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { StepComponentProps } from './index'
 import { useOnboardingStore } from '@/stores/onboarding'
-import { submitOnboarding } from '@/services/onboarding'
+import { submitOnboarding } from '@/services/onboarding-client'
 import { toast } from 'sonner'
 
 export function Step13Completion({ form, errors, isLoading }: StepComponentProps) {
