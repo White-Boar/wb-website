@@ -181,7 +181,10 @@ export function EmailVerification({
         </div>
         <h2 className="text-xl font-semibold">{t('title')}</h2>
         <p className="text-muted-foreground">
-          {t('description', { email: <span className="font-medium text-foreground">{email}</span> })}
+          {t.rich('description', {
+            email: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+            emailValue: email
+          })}
         </p>
       </div>
 

@@ -1,11 +1,5 @@
 import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import { notFound } from 'next/navigation'
-import { NextIntlClientProvider } from 'next-intl'
-
-import { ThemeProvider } from '@/components/theme-provider'
-import { Toaster } from 'sonner'
-import '@/app/globals.css'
 
 interface OnboardingLayoutProps {
   children: React.ReactNode
@@ -47,44 +41,19 @@ export default async function OnboardingLayout({
   children,
   params
 }: OnboardingLayoutProps) {
-  const { locale } = await params
-  let messages
-  
-  try {
-    messages = (await import(`@/messages/${locale}.json`)).default
-  } catch (error) {
-    notFound()
-  }
-
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className="min-h-screen bg-background font-sans antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {/* Onboarding Shell */}
-            <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-              {/* Header */}
-              <OnboardingHeader />
-              
-              {/* Main Content */}
-              <main className="relative z-10">
-                {children}
-              </main>
-              
-              {/* Footer */}
-              <OnboardingFooter />
-            </div>
-            
-            <Toaster />
-          </ThemeProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      {/* Header */}
+      <OnboardingHeader />
+
+      {/* Main Content */}
+      <main className="relative z-10">
+        {children}
+      </main>
+
+      {/* Footer */}
+      <OnboardingFooter />
+    </div>
   )
 }
 

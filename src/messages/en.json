@@ -62,6 +62,14 @@
   "onboarding": {
     "title": "Get Started with WhiteBoar",
     "description": "Choose your path to a powerful online presence. We'll guide you through every step.",
+    "step": "Step",
+    "of": "of",
+    "next": "Next",
+    "progressLabel": "Step {step} of {total}",
+    "stepCompleted": "Step {step} completed",
+    "stepCurrent": "Current step {step}",
+    "stepUpcoming": "Upcoming step {step}",
+    "previous": "Previous",
     "step1": {
       "title": "Fast & Simple",
       "description": "Perfect for small businesses who need a professional online presence quickly. Get a custom one-page website with branding in just 2 business days.",
@@ -144,7 +152,239 @@
       },
       "disclaimer": "Takes approximately 10-15 minutes. Your progress is automatically saved."
     },
+    "saving": "Saving...",
+    "saved": "Saved",
+    "loading": "Loading...",
+    "complete": "Complete",
+    "sessionExpired": {
+      "title": "Session Expired",
+      "description": "Your session has expired for security reasons. You can recover your progress or start over.",
+      "recover": "Recover Session",
+      "startOver": "Start Over"
+    },
+    "emailVerification": {
+      "title": "Verify Your Email",
+      "description": "We've sent a 6-digit verification code to <email>{emailValue}</email>. Please enter it below to continue.",
+      "enterCode": "Enter verification code",
+      "verifying": "Verifying code...",
+      "codeComplete": "Code complete",
+      "codeSent": "Verification code sent successfully",
+      "verify": "Verify Code",
+      "didntReceive": "Didn't receive the code?",
+      "sending": "Sending...",
+      "resendIn": "Resend in {seconds}s",
+      "resendCode": "Resend Code",
+      "resendError": "Failed to resend code. Please try again.",
+      "clear": "Clear",
+      "changeEmail": "Change Email",
+      "checkSpam": "Check your spam/junk folder if you don't see the email.",
+      "pasteSupported": "You can paste the code from your clipboard.",
+      "digitLabel": "Verification code digit {position}"
+    },
     "steps": {
+      "validationError": "Please correct the errors above before proceeding.",
+      "nextStepError": "Failed to proceed to next step. Please try again.",
+      "complete": "Complete Onboarding",
+      "back": "Back to Welcome",
+      "1": {
+        "title": "Welcome",
+        "description": "Let's get started with your business information",
+        "welcome": "Welcome to WhiteBoar",
+        "subtitle": "Let's create your perfect website in just a few simple steps.",
+        "stats": {
+          "steps": "Simple Steps",
+          "minutes": "Minutes Total",
+          "price": "Per Month"
+        },
+        "contactInfo": {
+          "title": "Your Contact Information",
+          "required": "Required",
+          "firstName": {
+            "label": "First Name",
+            "placeholder": "Enter your first name",
+            "hint": "Your first name as you'd like it to appear"
+          },
+          "lastName": {
+            "label": "Last Name",
+            "placeholder": "Enter your last name",
+            "hint": "Your last name for professional communication"
+          },
+          "email": {
+            "label": "Email Address",
+            "placeholder": "Enter your email address",
+            "hint": "We'll use this to send you updates and the final website"
+          }
+        },
+        "nextSteps": {
+          "title": "What's Next",
+          "step1": "Business details and goals",
+          "step2": "Design preferences and style",
+          "step3": "Content and final review"
+        },
+        "privacy": {
+          "notice": "Your information is secure and will only be used to create your website.",
+          "policy": "Privacy Policy",
+          "terms": "Terms of Service"
+        }
+      },
+      "2": {
+        "title": "Email Verification",
+        "description": "Verify your email address to continue",
+        "invalidCode": "Invalid verification code. Please check and try again.",
+        "verificationFailed": "Email verification failed. Please try again."
+      },
+      "3": {
+        "title": "Business Details",
+        "description": "Tell us about your business",
+        "businessInfo": {
+          "title": "Business Information",
+          "required": "Required",
+          "name": {
+            "label": "Business Name",
+            "placeholder": "Enter your business name",
+            "hint": "The official name of your business"
+          },
+          "industry": {
+            "label": "Industry",
+            "placeholder": "Select your industry",
+            "hint": "What type of business do you operate?"
+          },
+          "vat": {
+            "label": "VAT Number",
+            "placeholder": "IT12345678901",
+            "hint": "Italian VAT number (optional)"
+          }
+        },
+        "contactInfo": {
+          "title": "Contact Information",
+          "required": "Required",
+          "phone": {
+            "label": "Business Phone",
+            "hint": "Your main business phone number"
+          },
+          "website": {
+            "label": "Current Website",
+            "placeholder": "https://your-website.com",
+            "hint": "Your current website URL (if you have one)"
+          }
+        },
+        "address": {
+          "title": "Business Address",
+          "required": "Required",
+          "street": {
+            "label": "Street Address",
+            "placeholder": "Enter your business address",
+            "hint": "Start typing your address for suggestions"
+          },
+          "city": {
+            "label": "City",
+            "placeholder": "Enter city"
+          },
+          "postalCode": {
+            "label": "Postal Code",
+            "placeholder": "12345"
+          },
+          "city": {
+            "label": "City",
+            "placeholder": "Enter city"
+          },
+          "postalCode": {
+            "label": "Postal Code",
+            "placeholder": "12345"
+          },
+          "region": {
+            "label": "Province/Region",
+            "placeholder": "Enter province or region"
+          },
+          "country": {
+            "label": "Country",
+            "placeholder": "Enter country"
+          }
+        },
+        "dataUsage": {
+          "notice": "This information will be used to create your business website and may appear publicly."
+        }
+      },
+      "4": {
+        "title": "Brand Definition",
+        "description": "Define your unique value proposition and competitive positioning",
+        "offering": {
+          "title": "What You Offer",
+          "required": "Required",
+          "description": {
+            "label": "Business Description",
+            "placeholder": "Describe what your business offers in one sentence that would appeal to a new customer",
+            "hint": "Keep it clear and compelling - think about what makes customers choose you"
+          }
+        },
+        "audience": {
+          "title": "Target Audience",
+          "optional": "Optional",
+          "description": {
+            "label": "Who are your ideal customers?",
+            "placeholder": "Describe your typical customers (age, interests, needs, etc.)",
+            "hint": "Understanding your audience helps us create content that resonates"
+          }
+        },
+        "uniqueness": {
+          "title": "What Makes You Unique",
+          "required": "Required",
+          "value": {
+            "label": "Your Unique Value",
+            "placeholder": "What sets you apart from competitors? What do you do better or differently?",
+            "hint": "Think about your strengths, special services, or unique approach"
+          }
+        },
+        "competitors": {
+          "title": "Competitor Analysis",
+          "optional": "Optional",
+          "description": "Help us understand your market by sharing competitor websites",
+          "urls": {
+            "label": "Competitor Websites",
+            "placeholder": "https://competitor-website.com",
+            "addButton": "Add Competitor",
+            "hint": "Share up to 5 competitor websites to help us differentiate your brand"
+          }
+        },
+        "keywords": {
+          "title": "Brand Keywords",
+          "description": "What words best describe your brand personality?",
+          "examples": {
+            "professional": "Professional, trustworthy, established",
+            "innovative": "Innovative, cutting-edge, modern",
+            "reliable": "Reliable, dependable, consistent",
+            "creative": "Creative, unique, artistic"
+          }
+        }
+      },
+      "5": {
+        "title": "Target Audience",
+        "description": "Who are your ideal customers?"
+      },
+      "6": {
+        "title": "Services & Products",
+        "description": "What do you offer?"
+      },
+      "7": {
+        "title": "Design Preferences",
+        "description": "Choose your visual style"
+      },
+      "8": {
+        "title": "Color Palette",
+        "description": "Select colors that represent your brand"
+      },
+      "9": {
+        "title": "Website Sections",
+        "description": "Which sections do you need?"
+      },
+      "10": {
+        "title": "Content & Copy",
+        "description": "Tell your story"
+      },
+      "11": {
+        "title": "Competitors & Inspiration",
+        "description": "Show us websites you like"
+      },
       "12": {
         "intro": {
           "title": "Business Assets",
@@ -328,6 +568,47 @@
           "error": "Failed to submit. Please try again."
         }
       }
+    }
+  },
+  "forms": {
+    "required": "This field is required",
+    "invalid": "Please enter a valid value",
+    "tooShort": "This field is too short",
+    "tooLong": "This field is too long",
+    "characterMinimum": "Must be at least {count} characters",
+    "characterMaximum": "Must be no more than {count} characters",
+    "dynamicList": {
+      "add": "Add Item",
+      "remove": "Remove",
+      "empty": "No items added",
+      "placeholder": "Enter item and press Enter",
+      "duplicate": "This item has already been added"
+    },
+    "email": {
+      "invalid": "Please enter a valid email address",
+      "checking": "Checking email...",
+      "valid": "Email is valid",
+      "taken": "This email is already in use"
+    },
+    "dropdown": {
+      "placeholder": "Select an option",
+      "search": "Search...",
+      "noResults": "No results found",
+      "loading": "Loading...",
+      "required": "This field is required"
+    },
+    "phone": {
+      "invalid": "Please enter a valid phone number",
+      "selectCountry": "Select country",
+      "searchCountries": "Search countries...",
+      "required": "This field is required"
+    },
+    "address": {
+      "searching": "Searching...",
+      "noResults": "No addresses found",
+      "selectFromList": "Please select an address from the list",
+      "googleMapsRequired": "Google Maps API is required for address autocomplete",
+      "required": "This field is required"
     }
   }
 }

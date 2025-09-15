@@ -15,8 +15,9 @@ export default function OnboardingStep() {
   const router = useRouter()
   const params = useParams()
   const t = useTranslations('onboarding.steps')
-  
+
   const stepNumber = parseInt(params.stepNumber as string)
+  const locale = params.locale as string
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>('')
 
@@ -27,8 +28,30 @@ export default function OnboardingStep() {
     nextStep,
     previousStep,
     validateStep,
-    isSessionExpired
+    isSessionExpired,
+    sessionId,
+    initializeSession,
+    hasExistingSession
   } = useOnboardingStore()
+
+  // Initialize session if none exists
+  useEffect(() => {
+    const initSession = async () => {
+      if (!hasExistingSession() && !sessionId) {
+        try {
+          setIsLoading(true)
+          await initializeSession(locale)
+        } catch (error) {
+          console.error('Failed to initialize session:', error)
+          setError('Failed to initialize session. Please try again.')
+        } finally {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    initSession()
+  }, [hasExistingSession, sessionId, initializeSession, locale])
 
   // Validate step number
   if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 13) {
@@ -45,9 +68,50 @@ export default function OnboardingStep() {
 
   // Get step schema and form setup
   const schema = getStepSchema(stepNumber)
+
+  // Validate schema exists
+  if (!schema) {
+    router.push('/onboarding')
+    return null
+  }
+
+  // Extract default values for current step from store
+  const getStepDefaultValues = (step: number) => {
+    switch (step) {
+      case 1:
+        return {
+          firstName: formData?.firstName ?? '',
+          lastName: formData?.lastName ?? '',
+          email: formData?.email ?? ''
+        }
+      case 2:
+        return {
+          emailVerified: formData?.emailVerified ?? false
+        }
+      case 3:
+        return {
+          businessName: formData?.businessName ?? '',
+          businessEmail: formData?.businessEmail ?? '',
+          businessPhone: formData?.businessPhone ?? '',
+          physicalAddress: formData?.physicalAddress ?? {
+            street: '',
+            city: '',
+            province: '',
+            postalCode: '',
+            country: '',
+            placeId: ''
+          },
+          industry: formData?.industry ?? '',
+          vatNumber: formData?.vatNumber ?? ''
+        }
+      default:
+        return {}
+    }
+  }
+
   const form = useForm<StepFormData>({
     resolver: zodResolver(schema),
-    defaultValues: formData[stepNumber] || {},
+    defaultValues: getStepDefaultValues(stepNumber),
     mode: 'onBlur'
   })
 
@@ -56,12 +120,12 @@ export default function OnboardingStep() {
   // Auto-save functionality
   useEffect(() => {
     const subscription = form.watch((data) => {
-      if (isDirty) {
-        updateFormData(stepNumber, data as StepFormData)
+      if (isDirty && data) {
+        updateFormData(data as StepFormData)
       }
     })
     return () => subscription.unsubscribe()
-  }, [form, stepNumber, updateFormData, isDirty])
+  }, [form, updateFormData, isDirty])
 
   // Handle next step
   const handleNext = async (data: StepFormData) => {
@@ -70,8 +134,8 @@ export default function OnboardingStep() {
 
     try {
       // Update form data
-      updateFormData(stepNumber, data)
-      
+      updateFormData(data)
+
       // Validate current step
       const isStepValid = await validateStep(stepNumber)
       if (!isStepValid) {
@@ -133,7 +197,7 @@ export default function OnboardingStep() {
     >
       <StepComponent
         form={form}
-        data={formData[stepNumber]}
+        data={getStepDefaultValues(stepNumber)}
         errors={errors}
         isLoading={isLoading}
         error={error}

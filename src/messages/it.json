@@ -144,7 +144,211 @@
       },
       "disclaimer": "Richiede circa 10-15 minuti. I tuoi progressi vengono salvati automaticamente."
     },
+    "step": "Passaggio",
+    "of": "di",
+    "next": "Avanti",
+    "previous": "Indietro",
+    "progressLabel": "Passaggio {step} di {total}",
+    "stepCompleted": "Passaggio {step} completato",
+    "stepCurrent": "Passaggio attuale {step}",
+    "stepUpcoming": "Prossimo passaggio {step}",
+    "saving": "Salvataggio...",
+    "saved": "Salvato",
+    "loading": "Caricamento...",
+    "complete": "Completa",
+    "sessionExpired": {
+      "title": "Sessione Scaduta",
+      "description": "La tua sessione è scaduta per motivi di sicurezza. Puoi recuperare i tuoi progressi o ricominciare.",
+      "recover": "Recupera Sessione",
+      "startOver": "Ricomincia"
+    },
+    "emailVerification": {
+      "title": "Verifica la Tua Email",
+      "description": "Abbiamo inviato un codice di verifica a 6 cifre a <email>{emailValue}</email>. Inseriscilo qui sotto per continuare.",
+      "enterCode": "Inserisci il codice di verifica",
+      "verifying": "Verifica del codice...",
+      "codeComplete": "Codice completo",
+      "codeSent": "Codice di verifica inviato con successo",
+      "verify": "Verifica Codice",
+      "didntReceive": "Non hai ricevuto il codice?",
+      "sending": "Invio...",
+      "resendIn": "Reinvia tra {seconds}s",
+      "resendCode": "Reinvia Codice",
+      "resendError": "Impossibile reinviare il codice. Riprova.",
+      "clear": "Cancella",
+      "changeEmail": "Cambia Email",
+      "checkSpam": "Controlla la cartella spam/posta indesiderata se non vedi l'email.",
+      "pasteSupported": "Puoi incollare il codice dagli appunti.",
+      "digitLabel": "Cifra del codice di verifica {position}"
+    },
     "steps": {
+      "validationError": "Correggi gli errori sopra prima di procedere.",
+      "nextStepError": "Impossibile procedere al passaggio successivo. Riprova.",
+      "complete": "Completa Onboarding",
+      "back": "Torna alla Benvenuto",
+      "1": {
+        "title": "Benvenuto",
+        "description": "Iniziamo con le informazioni della tua attività",
+        "welcome": "Benvenuto in WhiteBoar",
+        "subtitle": "Creiamo il tuo sito web perfetto in pochi semplici passaggi.",
+        "stats": {
+          "steps": "Passaggi Semplici",
+          "minutes": "Minuti Totali",
+          "price": "Al Mese"
+        },
+        "contactInfo": {
+          "title": "Le Tue Informazioni di Contatto",
+          "required": "Richiesto",
+          "firstName": {
+            "label": "Nome",
+            "placeholder": "Inserisci il tuo nome",
+            "hint": "Il tuo nome come vorresti che apparisse"
+          },
+          "lastName": {
+            "label": "Cognome",
+            "placeholder": "Inserisci il tuo cognome",
+            "hint": "Il tuo cognome per la comunicazione professionale"
+          },
+          "email": {
+            "label": "Indirizzo Email",
+            "placeholder": "Inserisci il tuo indirizzo email",
+            "hint": "Lo useremo per inviarti aggiornamenti e il sito web finale"
+          }
+        },
+        "nextSteps": {
+          "title": "Prossimi Passaggi",
+          "step1": "Dettagli e obiettivi dell'attività",
+          "step2": "Preferenze di design e stile",
+          "step3": "Contenuto e revisione finale"
+        },
+        "privacy": {
+          "notice": "Le tue informazioni sono sicure e verranno utilizzate solo per creare il tuo sito web.",
+          "policy": "Informativa sulla Privacy",
+          "terms": "Termini di Servizio"
+        }
+      },
+      "2": {
+        "title": "Verifica Email",
+        "description": "Verifica il tuo indirizzo email per continuare",
+        "invalidCode": "Codice di verifica non valido. Controlla e riprova.",
+        "verificationFailed": "Verifica email fallita. Riprova."
+      },
+      "3": {
+        "title": "Dettagli Attività",
+        "description": "Raccontaci della tua attività",
+        "businessInfo": {
+          "title": "Informazioni Attività",
+          "required": "Richiesto",
+          "name": {
+            "label": "Nome Attività",
+            "placeholder": "Inserisci il nome della tua attività",
+            "hint": "Il nome ufficiale della tua attività"
+          },
+          "industry": {
+            "label": "Settore",
+            "placeholder": "Seleziona il tuo settore",
+            "hint": "Che tipo di attività gestisci?"
+          },
+          "vat": {
+            "label": "Partita IVA",
+            "placeholder": "IT12345678901",
+            "hint": "Partita IVA italiana (facoltativo)"
+          }
+        },
+        "contactInfo": {
+          "title": "Informazioni di Contatto",
+          "required": "Richiesto",
+          "phone": {
+            "label": "Telefono Attività",
+            "hint": "Il numero di telefono principale della tua attività"
+          },
+          "website": {
+            "label": "Sito Web Attuale",
+            "placeholder": "https://il-tuo-sito.com",
+            "hint": "L'URL del tuo sito web attuale (se ne hai uno)"
+          }
+        },
+        "address": {
+          "title": "Indirizzo Attività",
+          "required": "Richiesto",
+          "street": {
+            "label": "Indirizzo",
+            "placeholder": "Inserisci l'indirizzo della tua attività",
+            "hint": "Inizia a digitare per suggerimenti di indirizzi"
+          },
+          "city": {
+            "label": "Città",
+            "placeholder": "Inserisci città"
+          },
+          "postalCode": {
+            "label": "Codice Postale",
+            "placeholder": "12345"
+          },
+          "region": {
+            "label": "Provincia/Regione",
+            "placeholder": "Inserisci provincia o regione"
+          },
+          "country": {
+            "label": "Paese",
+            "placeholder": "Inserisci paese"
+          }
+        },
+        "dataUsage": {
+          "notice": "Queste informazioni verranno utilizzate per creare il sito web della tua attività e potrebbero apparire pubblicamente."
+        }
+      },
+      "4": {
+        "title": "Definizione del Brand",
+        "description": "Definisci la tua proposta di valore unica e il posizionamento competitivo",
+        "offering": {
+          "title": "Cosa Offri",
+          "required": "Richiesto",
+          "description": {
+            "label": "Descrizione Attività",
+            "placeholder": "Descrivi cosa offre la tua attività in una frase che potrebbe attrarre un nuovo cliente",
+            "hint": "Mantienila chiara e convincente - pensa a cosa fa scegliere te ai clienti"
+          }
+        },
+        "audience": {
+          "title": "Pubblico Target",
+          "optional": "Facoltativo",
+          "description": {
+            "label": "Chi sono i tuoi clienti ideali?",
+            "placeholder": "Descrivi i tuoi clienti tipici (età, interessi, necessità, ecc.)",
+            "hint": "Capire il tuo pubblico ci aiuta a creare contenuti che risuonano"
+          }
+        },
+        "uniqueness": {
+          "title": "Cosa Ti Rende Unico",
+          "required": "Richiesto",
+          "value": {
+            "label": "Il Tuo Valore Unico",
+            "placeholder": "Cosa ti distingue dai concorrenti? Cosa fai meglio o diversamente?",
+            "hint": "Pensa ai tuoi punti di forza, servizi speciali o approccio unico"
+          }
+        },
+        "competitors": {
+          "title": "Analisi Concorrenti",
+          "optional": "Facoltativo",
+          "description": "Aiutaci a capire il tuo mercato condividendo i siti web dei concorrenti",
+          "urls": {
+            "label": "Siti Web Concorrenti",
+            "placeholder": "https://sito-concorrente.com",
+            "addButton": "Aggiungi Concorrente",
+            "hint": "Condividi fino a 5 siti web di concorrenti per aiutarci a differenziare il tuo brand"
+          }
+        },
+        "keywords": {
+          "title": "Parole Chiave del Brand",
+          "description": "Quali parole descrivono meglio la personalità del tuo brand?",
+          "examples": {
+            "professional": "Professionale, affidabile, consolidato",
+            "innovative": "Innovativo, all'avanguardia, moderno",
+            "reliable": "Affidabile, fidato, coerente",
+            "creative": "Creativo, unico, artistico"
+          }
+        }
+      },
       "12": {
         "intro": {
           "title": "Risorse Aziendali",
@@ -328,6 +532,47 @@
           "error": "Invio fallito. Riprova."
         }
       }
+    }
+  },
+  "forms": {
+    "required": "Questo campo è obbligatorio",
+    "invalid": "Inserisci un valore valido",
+    "tooShort": "Questo campo è troppo corto",
+    "tooLong": "Questo campo è troppo lungo",
+    "characterMinimum": "Deve essere di almeno {count} caratteri",
+    "characterMaximum": "Deve essere di massimo {count} caratteri",
+    "dynamicList": {
+      "add": "Aggiungi Elemento",
+      "remove": "Rimuovi",
+      "empty": "Nessun elemento aggiunto",
+      "placeholder": "Inserisci elemento e premi Invio",
+      "duplicate": "Questo elemento è già stato aggiunto"
+    },
+    "email": {
+      "invalid": "Inserisci un indirizzo email valido",
+      "checking": "Controllo email...",
+      "valid": "Email valida",
+      "taken": "Questa email è già in uso"
+    },
+    "dropdown": {
+      "placeholder": "Seleziona un'opzione",
+      "search": "Cerca...",
+      "noResults": "Nessun risultato trovato",
+      "loading": "Caricamento...",
+      "required": "Questo campo è obbligatorio"
+    },
+    "phone": {
+      "invalid": "Inserisci un numero di telefono valido",
+      "selectCountry": "Seleziona paese",
+      "searchCountries": "Cerca paesi...",
+      "required": "Questo campo è obbligatorio"
+    },
+    "address": {
+      "searching": "Ricerca...",
+      "noResults": "Nessun indirizzo trovato",
+      "selectFromList": "Seleziona un indirizzo dall'elenco",
+      "googleMapsRequired": "Google Maps API è richiesto per il completamento automatico degli indirizzi",
+      "required": "Questo campo è obbligatorio"
     }
   }
 }

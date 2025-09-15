@@ -9,10 +9,16 @@ export default async function RootLayout({
   params: Promise<{ locale?: string }>;
 }) {
   const { locale } = await params;
-  
+
   if (locale && !locales.includes(locale as typeof locales[number])) {
     notFound();
   }
 
-  return children;
+  return (
+    <html lang={locale || 'en'}>
+      <body>
+        {children}
+      </body>
+    </html>
+  );
 }

@@ -6,7 +6,8 @@
 
 export interface OnboardingFormData {
   // Step 1: Welcome & Basic Info
-  name: string
+  firstName: string
+  lastName: string
   email: string
   
   // Step 2: Email Verification (handled separately)
@@ -309,6 +310,7 @@ export interface OnboardingStore {
   // Session recovery
   recoverSession: () => Promise<boolean>
   refreshSession: () => Promise<void>
+  checkSessionExpired: () => void
   
   // Session helper functions for components
   initializeSession: (locale?: 'en' | 'it') => Promise<OnboardingSession>

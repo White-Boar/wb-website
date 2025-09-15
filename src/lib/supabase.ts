@@ -23,10 +23,10 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 
 // Server-side client with service role key (for API routes only)
 export const createServiceClient = () => {
-  const serviceKey = process.env.SUPABASE_SERVICE_KEY
-  
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
   if (!serviceKey) {
-    throw new Error('Missing environment variable: SUPABASE_SERVICE_KEY')
+    throw new Error('Missing environment variable: SUPABASE_SERVICE_ROLE_KEY')
   }
   
   return createClient(supabaseUrl, serviceKey, {
