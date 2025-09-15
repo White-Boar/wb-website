@@ -508,7 +508,7 @@ export function AddressAutocomplete({
       </div>
 
       {/* No Google Maps API Warning */}
-      {!window.google?.maps?.places && (
+      {typeof window !== 'undefined' && !window.google?.maps?.places && (
         <p className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 rounded px-2 py-1">
           {t('googleMapsRequired')}
         </p>

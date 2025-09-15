@@ -13,7 +13,8 @@ import {
 
 // Initial form data structure
 const initialFormData: Partial<OnboardingFormData> = {
-  name: '',
+  firstName: '',
+  lastName: '',
   email: '',
   emailVerified: false,
   businessName: '',
@@ -238,17 +239,32 @@ export const useOnboardingStore = create<OnboardingStore>()(
             try {
               const { OnboardingService } = await import('@/services/onboarding')
               await OnboardingService.refreshSession(sessionId)
-              
+
               // Extend expiration time
               const newExpiresAt = new Date()
               newExpiresAt.setDate(newExpiresAt.getDate() + 7)
-              
-              set({ 
+
+              set({
                 sessionExpiresAt: newExpiresAt.toISOString(),
-                isSessionExpired: false 
+                isSessionExpired: false
               })
             } catch (error) {
               console.error('Failed to refresh session:', error)
+            }
+          },
+
+          checkSessionExpired: () => {
+            const { sessionExpiresAt, sessionId } = get()
+
+            if (!sessionId || !sessionExpiresAt) {
+              return
+            }
+
+            const now = new Date()
+            const expiresAt = new Date(sessionExpiresAt)
+
+            if (now >= expiresAt) {
+              set({ isSessionExpired: true })
             }
           },
 
@@ -378,6 +394,69 @@ export const useOnboardingStore = create<OnboardingStore>()(
           hasExistingSession: () => {
             const state = get()
             return Boolean(state.sessionId && !state.isSessionExpired)
+          },
+
+          // Email Verification Methods
+          verifyEmail: async (email: string, code: string): Promise<boolean> => {
+            const { sessionId } = get()
+            if (!sessionId) {
+              throw new Error('No active session')
+            }
+
+            try {
+              const response = await fetch('/api/onboarding/verify-email', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ sessionId, code })
+              })
+
+              const result = await response.json()
+
+              if (result.success) {
+                set((state) => ({
+                  formData: { ...state.formData, emailVerified: true }
+                }))
+                return true
+              } else {
+                return false
+              }
+            } catch (error) {
+              console.error('Email verification failed:', error)
+              throw error
+            }
+          },
+
+          resendVerificationCode: async (email: string): Promise<void> => {
+            const { sessionId, formData } = get()
+            if (!sessionId) {
+              throw new Error('No active session')
+            }
+
+            try {
+              const response = await fetch('/api/onboarding/send-verification', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  sessionId,
+                  email,
+                  name: `${formData.firstName} ${formData.lastName}`.trim() || 'User',
+                  locale: 'en' // TODO: Get from context
+                })
+              })
+
+              const result = await response.json()
+
+              if (!result.success) {
+                throw new Error(result.error || 'Failed to send verification code')
+              }
+            } catch (error) {
+              console.error('Failed to resend verification code:', error)
+              throw error
+            }
           }
         }
       },
@@ -406,7 +485,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
 function extractStepData(formData: Partial<OnboardingFormData>, step: number): any {
   switch (step) {
     case 1:
-      return { name: formData.name, email: formData.email }
+      return { firstName: formData.firstName, lastName: formData.lastName, email: formData.email }
     case 2:
       return { emailVerified: formData.emailVerified }
     case 3:

@@ -42,10 +42,14 @@ const sliderValueSchema = z.number()
 // STEP 1: WELCOME & BASIC INFO
 // =============================================================================
 export const step1Schema = z.object({
-  name: z.string()
-    .min(3, 'Name must be at least 3 characters')
-    .max(100, 'Name cannot exceed 100 characters')
-    .regex(/^[a-zA-ZÀ-ÿ\s'.-]+$/, 'Name can only contain letters, spaces, and common punctuation'),
+  firstName: z.string()
+    .min(2, 'First name must be at least 2 characters')
+    .max(50, 'First name cannot exceed 50 characters')
+    .regex(/^[a-zA-ZÀ-ÿ\s'.-]+$/, 'First name can only contain letters, spaces, and common punctuation'),
+  lastName: z.string()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(50, 'Last name cannot exceed 50 characters')
+    .regex(/^[a-zA-ZÀ-ÿ\s'.-]+$/, 'Last name can only contain letters, spaces, and common punctuation'),
   email: emailSchema
 })
 
@@ -291,7 +295,8 @@ export const step13Schema = z.object({
 // =============================================================================
 export const completeFormSchema = z.object({
   // Step 1
-  name: step1Schema.shape.name,
+  firstName: step1Schema.shape.firstName,
+  lastName: step1Schema.shape.lastName,
   email: step1Schema.shape.email,
   
   // Step 2
@@ -343,6 +348,44 @@ export const completeFormSchema = z.object({
   completedAt: step13Schema.shape.completedAt,
   totalTimeSeconds: step13Schema.shape.totalTimeSeconds
 })
+
+// =============================================================================
+// TYPE DEFINITIONS
+// =============================================================================
+
+// Step form data types (inferred from schemas)
+export type Step1FormData = z.infer<typeof step1Schema>
+export type Step2FormData = z.infer<typeof step2Schema>
+export type Step3FormData = z.infer<typeof step3Schema>
+export type Step4FormData = z.infer<typeof step4Schema>
+export type Step5FormData = z.infer<typeof step5Schema>
+export type Step6FormData = z.infer<typeof step6Schema>
+export type Step7FormData = z.infer<typeof step7Schema>
+export type Step8FormData = z.infer<typeof step8Schema>
+export type Step9FormData = z.infer<typeof step9Schema>
+export type Step10FormData = z.infer<typeof step10Schema>
+export type Step11FormData = z.infer<typeof step11Schema>
+export type Step12FormData = z.infer<typeof step12Schema>
+export type Step13FormData = z.infer<typeof step13Schema>
+
+// Union type for all step data
+export type StepFormData =
+  | Step1FormData
+  | Step2FormData
+  | Step3FormData
+  | Step4FormData
+  | Step5FormData
+  | Step6FormData
+  | Step7FormData
+  | Step8FormData
+  | Step9FormData
+  | Step10FormData
+  | Step11FormData
+  | Step12FormData
+  | Step13FormData
+
+// Complete onboarding data type
+export type OnboardingFormData = z.infer<typeof completeFormSchema>
 
 // =============================================================================
 // UTILITY FUNCTIONS

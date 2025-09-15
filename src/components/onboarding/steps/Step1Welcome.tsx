@@ -194,7 +194,7 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
             </a>
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   )
 }

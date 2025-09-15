@@ -741,19 +741,30 @@ export async function continueOnboarding(sessionId: string): Promise<ApiResponse
   try {
     const session = await OnboardingService.getSession(sessionId)
     if (!session) {
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: { message: 'Session not found or expired', code: 'SESSION_NOT_FOUND' }
       }
     }
     return { success: true, data: session }
   } catch (error) {
-    return { 
-      success: false, 
+    return {
+      success: false,
       error: {
         message: error instanceof Error ? error.message : 'Failed to continue onboarding',
         code: 'CONTINUE_FAILED'
       }
     }
   }
+}
+
+/**
+ * Submit completed onboarding form (convenience function)
+ */
+export async function submitOnboarding(
+  sessionId: string,
+  formData: OnboardingFormData,
+  completionTimeSeconds?: number
+): Promise<OnboardingSubmission> {
+  return OnboardingService.submitOnboarding(sessionId, formData, completionTimeSeconds)
 }

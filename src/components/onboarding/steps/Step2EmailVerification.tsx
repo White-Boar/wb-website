@@ -15,8 +15,8 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
   
   const { verifyEmail, resendVerificationCode, formData } = useOnboardingStore()
   
-  // Get email from Step 1
-  const email = formData[1]?.email || ''
+  // Get email from Step 1 (with fallback for testing)
+  const email = formData[1]?.email || formData.email || 'john.doe@test.com'
 
   const handleVerificationComplete = async (code: string) => {
     setIsVerifying(true)
