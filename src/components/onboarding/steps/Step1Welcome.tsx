@@ -30,8 +30,8 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
         animate={{ opacity: 1, y: 0 }}
         className="text-center space-y-4"
       >
-        <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-          <Sparkles className="w-8 h-8 text-primary" />
+        <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center">
+          <Sparkles className="w-8 h-8 text-accent" />
         </div>
         
         <div className="space-y-2">
@@ -51,21 +51,21 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
       >
         <Card>
           <CardContent className="pt-4 text-center">
-            <div className="text-2xl font-bold text-primary">13</div>
+            <div className="text-2xl font-bold text-accent">13</div>
             <div className="text-xs text-muted-foreground">{t('stats.steps')}</div>
           </CardContent>
         </Card>
         
         <Card>
           <CardContent className="pt-4 text-center">
-            <div className="text-2xl font-bold text-primary">~12</div>
+            <div className="text-2xl font-bold text-accent">~12</div>
             <div className="text-xs text-muted-foreground">{t('stats.minutes')}</div>
           </CardContent>
         </Card>
         
         <Card>
           <CardContent className="pt-4 text-center">
-            <div className="text-2xl font-bold text-primary">€40</div>
+            <div className="text-2xl font-bold text-accent">€40</div>
             <div className="text-xs text-muted-foreground">{t('stats.price')}</div>
           </CardContent>
         </Card>
@@ -81,7 +81,7 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
         <Card>
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
-              <User className="w-5 h-5 text-primary" />
+              <User className="w-5 h-5 text-accent" />
               <h3 className="text-lg font-semibold">{t('contactInfo.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('contactInfo.required')}
@@ -161,15 +161,15 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
               
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex items-start gap-2">
-                  <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
+                  <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                   <span>{t('nextSteps.step1')}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
+                  <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                   <span>{t('nextSteps.step2')}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
+                  <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
                   <span>{t('nextSteps.step3')}</span>
                 </div>
               </div>

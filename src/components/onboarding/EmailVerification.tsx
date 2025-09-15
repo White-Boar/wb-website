@@ -176,8 +176,8 @@ export function EmailVerification({
     <div className={cn("space-y-6", className)}>
       {/* Header */}
       <div className="text-center space-y-2">
-        <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
-          <Mail className="w-8 h-8 text-primary" />
+        <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center">
+          <Mail className="w-8 h-8 text-accent" />
         </div>
         <h2 className="text-xl font-semibold">{t('title')}</h2>
         <p className="text-muted-foreground">
@@ -240,7 +240,7 @@ export function EmailVerification({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="flex items-center justify-center gap-2 text-sm text-primary"
+              className="flex items-center justify-center gap-2 text-sm text-accent"
             >
               <Loader2 className="w-4 h-4 animate-spin" />
               {t('verifying')}
