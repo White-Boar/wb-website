@@ -280,7 +280,7 @@ const FloatingLabelInput = forwardRef<HTMLInputElement, any>(
                 : "top-1/2 transform -translate-y-1/2 text-base text-muted-foreground",
               hasError && labelFloated && "text-destructive",
               hasSuccess && labelFloated && "text-green-600",
-              isFocused && "text-primary"
+              isFocused && "text-accent"
             )}
           >
             {label}
