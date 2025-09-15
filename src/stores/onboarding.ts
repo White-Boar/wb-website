@@ -396,6 +396,12 @@ export const useOnboardingStore = create<OnboardingStore>()(
             return Boolean(state.sessionId && !state.isSessionExpired)
           },
 
+          updateCurrentStep: (stepNumber: number) => {
+            set((state) => ({
+              currentStep: Math.max(state.currentStep, stepNumber)
+            }))
+          },
+
           // Email Verification Methods
           verifyEmail: async (email: string, code: string): Promise<boolean> => {
             const { sessionId } = get()
@@ -467,10 +473,12 @@ export const useOnboardingStore = create<OnboardingStore>()(
           sessionId: state.sessionId,
           currentStep: state.currentStep,
           completedSteps: state.completedSteps,
-          sessionExpiresAt: state.sessionExpiresAt
+          sessionExpiresAt: state.sessionExpiresAt,
+          formData: state.formData, // Persist form data to prevent loss on refresh
+          isSessionExpired: state.isSessionExpired
         }),
         // Version for breaking changes
-        version: 1,
+        version: 2,
       }
     ),
     {

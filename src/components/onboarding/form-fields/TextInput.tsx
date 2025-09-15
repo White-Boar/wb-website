@@ -1,7 +1,7 @@
 'use client'
 
 import { forwardRef, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useFormTranslation } from '@/hooks/useTranslationWithFallback'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
 
@@ -41,7 +41,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     type: propType = 'text',
     ...props
   }, ref) => {
-    const t = useTranslations('forms')
+    const { t } = useFormTranslation()
     const [showPassword, setShowPassword] = useState(false)
     const [isFocused, setIsFocused] = useState(false)
     
@@ -251,7 +251,7 @@ const FloatingLabelInput = forwardRef<HTMLInputElement, any>(
     setIsFocused,
     ...props
   }, ref) => {
-    const t = useTranslations('forms')
+    const { t } = useFormTranslation()
     const hasValue = props.value || props.defaultValue
     const hasError = !!error
     const hasSuccess = !!success && !hasError

@@ -1,7 +1,7 @@
 'use client'
 
 import { forwardRef, useState, useRef, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useFormTranslation } from '@/hooks/useTranslationWithFallback'
 import { motion } from 'framer-motion'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 
@@ -41,7 +41,7 @@ export const TextareaInput = forwardRef<HTMLTextAreaElement, TextareaInputProps>
     value,
     ...props
   }, ref) => {
-    const t = useTranslations('forms')
+    const { t } = useFormTranslation()
     const [characterCount, setCharacterCount] = useState(0)
     const [isFocused, setIsFocused] = useState(false)
     const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -105,17 +105,17 @@ export const TextareaInput = forwardRef<HTMLTextAreaElement, TextareaInputProps>
 
     const getCharacterCountMessage = () => {
       if (maxLength && characterCount > maxLength) {
-        return t('characterLimitExceeded', { 
-          excess: characterCount - maxLength 
+        return t('characterMaximum', {
+          count: maxLength
         })
       }
-      
+
       if (minLength && characterCount < minLength) {
-        return t('characterMinimum', { 
-          remaining: minLength - characterCount 
+        return t('characterMinimum', {
+          count: minLength
         })
       }
-      
+
       return null
     }
 
@@ -248,7 +248,10 @@ export const TextareaInput = forwardRef<HTMLTextAreaElement, TextareaInputProps>
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="text-sm text-muted-foreground"
+                className={cn(
+                  "text-sm",
+                  maxLength && characterCount > maxLength ? "text-destructive" : "text-muted-foreground"
+                )}
               >
                 {getCharacterCountMessage()}
               </motion.p>
@@ -316,7 +319,7 @@ const FloatingTextarea = forwardRef<HTMLTextAreaElement, any>(
     value,
     ...props
   }, ref) => {
-    const t = useTranslations('forms')
+    const { t } = useFormTranslation()
     const hasValue = value || props.defaultValue
     const labelFloated = isFocused || hasValue
 

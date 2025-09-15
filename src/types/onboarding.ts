@@ -316,6 +316,7 @@ export interface OnboardingStore {
   initializeSession: (locale?: 'en' | 'it') => Promise<OnboardingSession>
   loadExistingSession: () => OnboardingSession | null
   hasExistingSession: () => boolean
+  updateCurrentStep: (stepNumber: number) => void
 }
 
 // =============================================================================

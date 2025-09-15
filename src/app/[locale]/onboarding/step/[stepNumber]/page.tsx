@@ -34,10 +34,26 @@ export default function OnboardingStep() {
     hasExistingSession
   } = useOnboardingStore()
 
-  // Initialize session if none exists
+  // Initialize session if none exists or load existing session from URL
   useEffect(() => {
     const initSession = async () => {
-      if (!hasExistingSession() && !sessionId) {
+      // Check for session ID in URL params first
+      const urlSessionId = new URLSearchParams(window.location.search).get('session')
+
+      if (urlSessionId && urlSessionId !== sessionId) {
+        try {
+          setIsLoading(true)
+          // Load existing session from URL
+          const { initSession: loadExistingSession } = useOnboardingStore.getState()
+          await loadExistingSession(urlSessionId)
+        } catch (error) {
+          console.error('Failed to load session from URL:', error)
+          // If loading session fails, create a new one
+          await initializeSession(locale)
+        } finally {
+          setIsLoading(false)
+        }
+      } else if (!hasExistingSession() && !sessionId) {
         try {
           setIsLoading(true)
           await initializeSession(locale)
@@ -47,6 +63,14 @@ export default function OnboardingStep() {
         } finally {
           setIsLoading(false)
         }
+      }
+
+      // If we have a session but current step is behind the step number,
+      // update current step to allow access to this step
+      else if (sessionId && currentStep < stepNumber && stepNumber <= 13) {
+        // This handles cases where user bookmarked a step or has progressed beyond the stored current step
+        const { updateCurrentStep } = useOnboardingStore.getState()
+        updateCurrentStep(stepNumber)
       }
     }
 
@@ -59,12 +83,14 @@ export default function OnboardingStep() {
     return null
   }
 
-  // Redirect if not on current step (except for backward navigation)
+  // Redirect if trying to access a step too far ahead (only if session is loaded)
   useEffect(() => {
-    if (stepNumber > currentStep + 1) {
+    // Only redirect if we have a valid session and user is trying to skip ahead
+    if (sessionId && currentStep > 0 && stepNumber > currentStep + 1) {
+      console.log(`Redirecting from step ${stepNumber} to current step ${currentStep}`)
       router.push(`/onboarding/step/${currentStep}`)
     }
-  }, [stepNumber, currentStep, router])
+  }, [stepNumber, currentStep, router, sessionId])
 
   // Get step schema and form setup
   const schema = getStepSchema(stepNumber)

@@ -14,19 +14,26 @@
     "shadcn-ui": {
       "command": "npx",
       "args": [
-          "@jpisnice/shadcn-ui-mcp-server"
-        ]
+        "@jpisnice/shadcn-ui-mcp-server"
+      ]
     },
-      "supabase": {      
-        "command": "npx",      
-        "args": [        
-          "-y",        
-          "@supabase/mcp-server-supabase",                
-          "--project-ref=zgvoltfnxrdenjhbhgze"      
-        ],      
-        "env": {
-          "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_KEY}"
-        }     
-    }  
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase",
+        "--project-ref=zgvoltfnxrdenjhbhgze"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_KEY}"
+      }
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_PAT}"
+      }
+    }
   }
 }

@@ -75,6 +75,12 @@
     "web-vitals": "^4.2.4"
   },
   "pnpm": {
-    "ignore-scripts": false
+    "ignore-scripts": false,
+    "ignoredBuiltDependencies": [
+      "msw",
+      "sharp",
+      "supabase",
+      "unrs-resolver"
+    ]
   }
 }

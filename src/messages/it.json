@@ -541,6 +541,8 @@
     "tooLong": "Questo campo è troppo lungo",
     "characterMinimum": "Deve essere di almeno {count} caratteri",
     "characterMaximum": "Deve essere di massimo {count} caratteri",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password",
     "dynamicList": {
       "add": "Aggiungi Elemento",
       "remove": "Rimuovi",

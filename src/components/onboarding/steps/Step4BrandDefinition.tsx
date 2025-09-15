@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useOnboardingStepTranslation } from '@/hooks/useTranslationWithFallback'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { Target, Lightbulb, Link, Users } from 'lucide-react'
@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { StepComponentProps } from './index'
 
 export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentProps) {
-  const t = useTranslations('onboarding.steps.4')
+  const { t } = useOnboardingStepTranslation(4)
   const { control, setValue, watch } = form
 
   const competitorUrls = watch('competitorUrls') || []
