@@ -10,7 +10,14 @@
     "lint:css": "stylelint '**/*.css' --config context/design-system/stylelint.config.cjs",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:onboarding": "playwright test onboarding.spec.ts",
+    "test:e2e:onboarding:performance": "playwright test onboarding-performance.spec.ts",
+    "test:e2e:onboarding:accessibility": "playwright test onboarding-accessibility.spec.ts",
+    "test:e2e:onboarding:advanced": "playwright test onboarding-advanced.spec.ts",
+    "test:e2e:onboarding:all": "playwright test onboarding*.spec.ts",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
