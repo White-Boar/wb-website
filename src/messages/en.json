@@ -380,6 +380,8 @@
           "description": "Help us understand your ideal customers by adjusting these sliders to match their typical characteristics."
         },
         "profile": {
+          "title": "Customer Profile",
+          "required": "Required",
           "budget": {
             "left": "Budget-Conscious",
             "right": "Premium-Focused",
@@ -437,14 +439,14 @@
             "description": "How do they make purchasing decisions?",
             "examples": {
               "left": {
-                "fast": "Makes quick, intuitive decisions",
                 "impulse": "Responsive to immediate needs",
-                "simple": "Prefers simple, straightforward options"
+                "quick": "Makes quick, intuitive decisions",
+                "instinct": "Trusts gut feelings and first impressions"
               },
               "right": {
                 "research": "Extensively researches before buying",
-                "careful": "Carefully weighs pros and cons",
-                "thorough": "Seeks detailed information and reviews"
+                "compare": "Carefully compares options and features",
+                "deliberate": "Takes time to make thoughtful decisions"
               }
             }
           },
@@ -454,13 +456,13 @@
             "description": "How loyal are they to brands?",
             "examples": {
               "left": {
-                "flexible": "Switches based on price or convenience",
-                "pragmatic": "Chooses based on current best option",
-                "open": "Open to trying new brands"
+                "deals": "Switches based on price or deals",
+                "compare": "Always compares options before buying",
+                "switch": "Open to trying new brands and services"
               },
               "right": {
-                "committed": "Sticks with trusted brands",
                 "relationship": "Values long-term relationships",
+                "trust": "Sticks with trusted brands and providers",
                 "consistent": "Prefers consistency and reliability"
               }
             }
@@ -468,7 +470,19 @@
         },
         "insights": {
           "title": "Targeting Insights",
-          "description": "Based on your selections, we'll tailor your website's messaging and design to appeal to your ideal customers."
+          "description": "Based on your selections, we'll tailor your website's messaging and design to appeal to your ideal customers.",
+          "targeting": {
+            "title": "Website Messaging",
+            "messaging": "Content tone and language will match customer preferences",
+            "pricing": "Pricing presentation will align with budget expectations",
+            "features": "Feature highlights will emphasize what matters most"
+          },
+          "optimization": {
+            "title": "Design & Layout",
+            "layout": "Page layout will suit decision-making style",
+            "content": "Visual hierarchy will guide customer journey",
+            "calls": "Call-to-action placement will maximize conversions"
+          }
         },
         "tips": {
           "honest": "Be honest about your actual customers, not who you wish they were",
@@ -493,8 +507,73 @@
         "description": "Which sections do you need?"
       },
       "10": {
-        "title": "Content & Copy",
-        "description": "Tell your story"
+        "title": "Color Palette",
+        "description": "Choose colors that represent your brand perfectly",
+        "intro": {
+          "title": "Color Palette Selection",
+          "description": "Colors play a crucial role in how customers perceive your brand. Choose a palette that reflects your business personality and appeals to your target audience."
+        },
+        "selection": {
+          "title": "Choose Your Color Palette",
+          "required": "Required"
+        },
+        "psychology": {
+          "title": "Color Psychology",
+          "emotional": {
+            "title": "Emotional Impact",
+            "trust": "Blue builds trust and professionalism",
+            "energy": "Orange and red create energy and urgency",
+            "calm": "Green promotes calm and natural feelings",
+            "luxury": "Purple conveys luxury and sophistication"
+          },
+          "business": {
+            "title": "Business Benefits",
+            "conversion": "Right colors can increase conversion rates by up to 80%",
+            "branding": "Consistent colors improve brand recognition by 80%",
+            "accessibility": "Proper contrast ensures accessibility for all users",
+            "recognition": "Signature colors make your brand memorable"
+          }
+        },
+        "trends": {
+          "title": "Industry Color Trends",
+          "finance": {
+            "title": "Finance & Banking",
+            "description": "Blues, greens, and grays for trust and stability"
+          },
+          "health": {
+            "title": "Health & Wellness",
+            "description": "Greens, blues, and teals for healing and growth"
+          },
+          "food": {
+            "title": "Food & Restaurant",
+            "description": "Warm oranges, reds, and yellows to stimulate appetite"
+          },
+          "tech": {
+            "title": "Technology",
+            "description": "Purples, blues, and dark tones for innovation"
+          },
+          "fashion": {
+            "title": "Fashion & Beauty",
+            "description": "Bold pinks, blacks, and purples for style"
+          },
+          "education": {
+            "title": "Education",
+            "description": "Blues, greens, and oranges for learning and growth"
+          }
+        },
+        "accessibility": {
+          "title": "Accessibility & Standards",
+          "description": "We ensure all color combinations meet accessibility standards for optimal user experience.",
+          "contrast": "Minimum 4.5:1 contrast ratio for text readability",
+          "colorBlind": "Color schemes work for color-blind users",
+          "consistency": "Consistent color usage across all elements"
+        },
+        "tips": {
+          "title": "Choose colors that:",
+          "emotion": "Match your brand emotion",
+          "industry": "Fit your industry",
+          "accessible": "Are accessible to all"
+        }
       },
       "11": {
         "title": "Competitors & Inspiration",
@@ -726,6 +805,14 @@
       "noResults": "No addresses found",
       "selectFromList": "Please select an address from the list",
       "googleMapsRequired": "Google Maps API is required for address autocomplete",
+      "required": "This field is required"
+    },
+    "colorPalette": {
+      "required": "Please select a color palette",
+      "noSelection": "No palette selected"
+    },
+    "slider": {
+      "reset": "Reset to center",
       "required": "This field is required"
     }
   }

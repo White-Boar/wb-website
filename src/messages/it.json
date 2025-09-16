@@ -349,6 +349,193 @@
           }
         }
       },
+      "5": {
+        "title": "Pubblico Target",
+        "description": "Chi sono i tuoi clienti ideali?",
+        "intro": {
+          "title": "Profilazione Cliente",
+          "description": "Aiutaci a capire i tuoi clienti ideali regolando questi cursori per abbinare le loro caratteristiche tipiche."
+        },
+        "profile": {
+          "title": "Profilo Cliente",
+          "required": "Richiesto",
+          "budget": {
+            "left": "Attento al Budget",
+            "right": "Orientato al Premium",
+            "description": "Quanto sono sensibili al prezzo i tuoi clienti?",
+            "examples": {
+              "left": {
+                "price": "Cerca le migliori offerte e sconti",
+                "discount": "Confronta i prezzi tra i concorrenti",
+                "value": "Valuta l'accessibilità rispetto al lusso"
+              },
+              "right": {
+                "quality": "Disposto a pagare di più per la qualità",
+                "premium": "Valuta funzionalità e servizi premium",
+                "exclusive": "Cerca opzioni esclusive o di lusso"
+              }
+            }
+          },
+          "style": {
+            "left": "Tradizionale",
+            "right": "Moderno",
+            "description": "Quale estetica di design preferiscono?",
+            "examples": {
+              "left": {
+                "classic": "Preferisce design classici e senza tempo",
+                "proven": "Si fida di approcci consolidati e provati",
+                "conservative": "Scelte conservative, avverse al rischio"
+              },
+              "right": {
+                "innovative": "Attratto da soluzioni innovative",
+                "trendy": "Segue le ultime tendenze e tecnologie",
+                "cutting": "Primi adottanti di prodotti all'avanguardia"
+              }
+            }
+          },
+          "motivation": {
+            "left": "Pratico",
+            "right": "Aspirazionale",
+            "description": "Cosa guida le loro decisioni di acquisto?",
+            "examples": {
+              "left": {
+                "functional": "Si concentra sui benefici pratici",
+                "efficient": "Valuta efficienza e funzionalità",
+                "practical": "Prende decisioni basate sull'utilità"
+              },
+              "right": {
+                "memorable": "Cerca esperienze memorabili",
+                "emotional": "Guidato dalla connessione emotiva",
+                "inspiring": "Valuta ispirazione e aspirazione"
+              }
+            }
+          },
+          "decision": {
+            "left": "Decisore Rapido",
+            "right": "Ricercatore Attento",
+            "description": "Come prendono le decisioni di acquisto?",
+            "examples": {
+              "left": {
+                "impulse": "Risponde a necessità immediate",
+                "quick": "Prende decisioni rapide e intuitive",
+                "instinct": "Si fida dell'istinto e delle prime impressioni"
+              },
+              "right": {
+                "research": "Ricerca approfonditamente prima di acquistare",
+                "compare": "Confronta attentamente opzioni e caratteristiche",
+                "deliberate": "Si prende tempo per decisioni ponderate"
+              }
+            }
+          },
+          "loyalty": {
+            "left": "Cambia per il Prezzo",
+            "right": "Fedele al Brand",
+            "description": "Quanto sono fedeli ai brand?",
+            "examples": {
+              "left": {
+                "deals": "Cambia in base al prezzo o alle offerte",
+                "compare": "Confronta sempre le opzioni prima di acquistare",
+                "switch": "Aperto a provare nuovi brand e servizi"
+              },
+              "right": {
+                "relationship": "Valuta relazioni a lungo termine",
+                "trust": "Rimane fedele a brand e fornitori di fiducia",
+                "consistent": "Preferisce coerenza e affidabilità"
+              }
+            }
+          }
+        },
+        "insights": {
+          "title": "Approfondimenti di Targeting",
+          "description": "Basandoci sulle tue selezioni, adatteremo i messaggi e il design del tuo sito web per attrarre i tuoi clienti ideali.",
+          "targeting": {
+            "title": "Messaggi del Sito Web",
+            "messaging": "Il tono e il linguaggio dei contenuti si abbineranno alle preferenze dei clienti",
+            "pricing": "La presentazione dei prezzi si allineerà alle aspettative di budget",
+            "features": "Le funzionalità evidenziate enfatizzeranno ciò che conta di più"
+          },
+          "optimization": {
+            "title": "Design e Layout",
+            "layout": "Il layout della pagina si adatterà allo stile decisionale",
+            "content": "La gerarchia visiva guiderà il percorso del cliente",
+            "calls": "Il posizionamento delle call-to-action massimizzerà le conversioni"
+          }
+        },
+        "tips": {
+          "honest": "Sii onesto sui tuoi clienti reali, non su chi vorresti che fossero",
+          "typical": "Pensa ai tuoi clienti più tipici, non alle eccezioni",
+          "adjust": "Puoi regolare queste impostazioni più tardi mentre la tua attività evolve"
+        }
+      },
+      "10": {
+        "title": "Palette di Colori",
+        "description": "Scegli i colori che rappresentano perfettamente il tuo brand",
+        "intro": {
+          "title": "Selezione Palette di Colori",
+          "description": "I colori giocano un ruolo cruciale nella percezione del tuo brand da parte dei clienti. Scegli una palette che rifletta la personalità della tua attività e attragga il tuo pubblico target."
+        },
+        "selection": {
+          "title": "Scegli la Tua Palette di Colori",
+          "required": "Richiesto"
+        },
+        "psychology": {
+          "title": "Psicologia dei Colori",
+          "emotional": {
+            "title": "Impatto Emotivo",
+            "trust": "Il blu costruisce fiducia e professionalità",
+            "energy": "Arancione e rosso creano energia e urgenza",
+            "calm": "Il verde promuove sensazioni di calma e naturalezza",
+            "luxury": "Il viola trasmette lusso e sofisticazione"
+          },
+          "business": {
+            "title": "Benefici per l'Attività",
+            "conversion": "I colori giusti possono aumentare i tassi di conversione fino all'80%",
+            "branding": "Colori coerenti migliorano il riconoscimento del brand dell'80%",
+            "accessibility": "Il contrasto appropriato garantisce accessibilità per tutti gli utenti",
+            "recognition": "Colori distintivi rendono il tuo brand memorabile"
+          }
+        },
+        "trends": {
+          "title": "Tendenze Colori per Settore",
+          "finance": {
+            "title": "Finanza e Banking",
+            "description": "Blu, verdi e grigi per fiducia e stabilità"
+          },
+          "health": {
+            "title": "Salute e Benessere",
+            "description": "Verdi, blu e azzurri per guarigione e crescita"
+          },
+          "food": {
+            "title": "Cibo e Ristorazione",
+            "description": "Arancioni, rossi e gialli caldi per stimolare l'appetito"
+          },
+          "tech": {
+            "title": "Tecnologia",
+            "description": "Viola, blu e toni scuri per innovazione"
+          },
+          "fashion": {
+            "title": "Moda e Bellezza",
+            "description": "Rosa audaci, neri e viola per stile"
+          },
+          "education": {
+            "title": "Educazione",
+            "description": "Blu, verdi e arancioni per apprendimento e crescita"
+          }
+        },
+        "accessibility": {
+          "title": "Accessibilità e Standard",
+          "description": "Garantiamo che tutte le combinazioni di colori soddisfino gli standard di accessibilità per un'esperienza utente ottimale.",
+          "contrast": "Rapporto di contrasto minimo 4.5:1 per la leggibilità del testo",
+          "colorBlind": "Le combinazioni di colori funzionano per utenti daltonici",
+          "consistency": "Uso coerente dei colori in tutti gli elementi"
+        },
+        "tips": {
+          "title": "Scegli colori che:",
+          "emotion": "Corrispondano all'emozione del tuo brand",
+          "industry": "Si adattino al tuo settore",
+          "accessible": "Siano accessibili a tutti"
+        }
+      },
       "12": {
         "intro": {
           "title": "Risorse Aziendali",
@@ -574,6 +761,14 @@
       "noResults": "Nessun indirizzo trovato",
       "selectFromList": "Seleziona un indirizzo dall'elenco",
       "googleMapsRequired": "Google Maps API è richiesto per il completamento automatico degli indirizzi",
+      "required": "Questo campo è obbligatorio"
+    },
+    "colorPalette": {
+      "required": "Seleziona una palette di colori",
+      "noSelection": "Nessuna palette selezionata"
+    },
+    "slider": {
+      "reset": "Reimposta al centro",
       "required": "Questo campo è obbligatorio"
     }
   }
