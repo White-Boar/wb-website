@@ -30,18 +30,25 @@ export function ThemeProvider({
   ...props
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(defaultTheme)
+  const [mounted, setMounted] = useState(false)
+  const [initialThemeSet, setInitialThemeSet] = useState(false)
 
-  // Load theme from localStorage after hydration
   useEffect(() => {
-    const stored = localStorage?.getItem(storageKey) as Theme;
+    setMounted(true)
+    const stored = localStorage?.getItem(storageKey) as Theme
     if (stored && ['light', 'dark', 'system'].includes(stored)) {
-      setTheme(stored);
+      setTheme(stored)
     }
-  }, [storageKey]);
+    setInitialThemeSet(true)
+  }, [storageKey])
 
+  // Only apply theme changes when user actively changes theme (not during initial mount)
   useEffect(() => {
+    if (!mounted || !initialThemeSet) return
+
     const root = window.document.documentElement
 
+    // Remove existing theme classes
     root.classList.remove("light", "dark")
 
     if (theme === "system") {
@@ -55,7 +62,7 @@ export function ThemeProvider({
     }
 
     root.classList.add(theme)
-  }, [theme])
+  }, [theme, mounted, initialThemeSet])
 
   const value = {
     theme,

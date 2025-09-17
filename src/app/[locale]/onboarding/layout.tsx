@@ -1,5 +1,7 @@
 import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { ThemeProvider } from '@/components/theme-provider'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 interface OnboardingLayoutProps {
   children: React.ReactNode
@@ -42,18 +44,20 @@ export default async function OnboardingLayout({
   params
 }: OnboardingLayoutProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Header */}
-      <OnboardingHeader />
+    <ThemeProvider defaultTheme="system" storageKey="wb-ui-theme">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+        {/* Header */}
+        <OnboardingHeader />
 
-      {/* Main Content */}
-      <main className="relative z-10">
-        {children}
-      </main>
+        {/* Main Content */}
+        <main className="relative z-10">
+          {children}
+        </main>
 
-      {/* Footer */}
-      <OnboardingFooter />
-    </div>
+        {/* Footer */}
+        <OnboardingFooter />
+      </div>
+    </ThemeProvider>
   )
 }
 
@@ -77,6 +81,7 @@ function OnboardingHeader() {
         
         {/* Help/Support Link */}
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <a
             href="mailto:support@whiteboar.it"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
