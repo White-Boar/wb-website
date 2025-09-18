@@ -2,13 +2,13 @@
 
 import * as React from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { useTranslations } from "next-intl"
 import { X, Linkedin, Github, Menu, X as CloseIcon } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { LanguageSelector } from "@/components/LanguageSelector"
+import { WhiteBoarLogo } from "@/components/WhiteBoarLogo"
 import { slideFade } from "../../context/design-system/motion/variants"
 
 export function Navigation() {
@@ -40,11 +40,12 @@ export function Navigation() {
   }, [])
 
   return (
-    <motion.nav 
+    <motion.nav
       className="sticky top-0 z-50 w-full bg-white/70 dark:bg-black/70 backdrop-blur-md border-b border-gray-200/20 dark:border-gray-800/20"
       variants={variants.nav}
       initial="hidden"
       animate="show"
+      aria-label="Main navigation"
     >
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
@@ -52,11 +53,9 @@ export function Navigation() {
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-3 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2">
               <div className="h-20 w-20 flex items-center justify-center">
-                <Image 
-                  src="/images/logo.png" 
-                  alt="WhiteBoar Logo" 
-                  width={100} 
-                  height={100} 
+                <WhiteBoarLogo
+                  width={100}
+                  height={100}
                   className="text-accent dark:text-accent"
                 />
               </div>
