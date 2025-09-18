@@ -379,6 +379,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                       error={errors.physicalAddress?.country?.message}
                       required
                       searchable
+                      clearable={false} // Disable clear button since country is required
                       disabled={isLoading}
                       name="physicalAddress.country"
                     />
