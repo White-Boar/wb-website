@@ -218,18 +218,24 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
                     <Badge
                       key={selectedValues[index]}
                       variant="secondary"
-                      className="text-xs h-6"
+                      className="text-xs h-6 flex items-center gap-1"
                     >
                       {label}
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="h-4 w-4 p-0 ml-1 hover:bg-transparent"
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        className="inline-flex h-4 w-4 items-center justify-center hover:bg-accent/20 rounded cursor-pointer"
                         onClick={(e) => handleRemoveTag(selectedValues[index], e)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            handleRemoveTag(selectedValues[index], e as any)
+                          }
+                        }}
+                        aria-label={`Remove ${label}`}
                       >
                         <X className="h-3 w-3" />
-                      </Button>
+                      </span>
                     </Badge>
                   ))
                 ) : (
@@ -254,15 +260,21 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
                 
                 {/* Clear Button */}
                 {canClear && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-4 w-4 p-0 hover:bg-transparent"
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    className="inline-flex h-4 w-4 items-center justify-center hover:bg-accent/20 rounded cursor-pointer"
                     onClick={handleClear}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        handleClear(e as any)
+                      }
+                    }}
+                    aria-label="Clear selection"
                   >
                     <X className="h-3 w-3" />
-                  </Button>
+                  </span>
                 )}
                 
                 {/* Chevron */}
