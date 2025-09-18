@@ -3,10 +3,9 @@
 import { useOnboardingStepTranslation } from '@/hooks/useTranslationWithFallback'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { Target, Lightbulb, Link, Users } from 'lucide-react'
+import { Target, Link } from 'lucide-react'
 
 import { TextareaInput } from '@/components/onboarding/form-fields/TextareaInput'
-import { TextInput } from '@/components/onboarding/form-fields/TextInput'
 import { DynamicList } from '@/components/onboarding/DynamicList'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -34,7 +33,7 @@ export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Target className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('offering.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">Your offer</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('offering.required')}
               </Badge>
@@ -62,7 +61,7 @@ export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentP
         </Card>
       </motion.div>
 
-      {/* Target Audience */}
+      {/* Your competitors */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -71,99 +70,8 @@ export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentP
         <Card>
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('audience.title')}</h3>
-              <Badge variant="outline" className="ml-auto">
-                {t('audience.optional')}
-              </Badge>
-            </div>
-
-            <Controller
-              name="targetAudience"
-              control={control}
-              render={({ field }) => (
-                <TextareaInput
-                  {...field}
-                  label={t('audience.description.label')}
-                  placeholder={t('audience.description.placeholder')}
-                  hint={t('audience.description.hint')}
-                  error={errors.targetAudience?.message}
-                  disabled={isLoading}
-                  maxLength={300}
-                  showCharacterCount
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Unique Value Proposition */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <Card>
-          <CardContent className="pt-6 space-y-6">
-            <div className="flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('uniqueness.title')}</h3>
-              <Badge variant="secondary" className="ml-auto">
-                {t('uniqueness.required')}
-              </Badge>
-            </div>
-
-            <Controller
-              name="uniqueValue"
-              control={control}
-              render={({ field }) => (
-                <TextareaInput
-                  {...field}
-                  label={t('uniqueness.value.label')}
-                  placeholder={t('uniqueness.value.placeholder')}
-                  hint={t('uniqueness.value.hint')}
-                  error={errors.uniqueValue?.message}
-                  required
-                  disabled={isLoading}
-                  maxLength={200}
-                  minLength={20}
-                  showCharacterCount
-                />
-              )}
-            />
-
-            <Controller
-              name="businessGoals"
-              control={control}
-              render={({ field }) => (
-                <TextareaInput
-                  {...field}
-                  label={t('uniqueness.goals.label')}
-                  placeholder={t('uniqueness.goals.placeholder')}
-                  hint={t('uniqueness.goals.hint')}
-                  error={errors.businessGoals?.message}
-                  disabled={isLoading}
-                  maxLength={300}
-                  showCharacterCount
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Competitor Analysis */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-      >
-        <Card>
-          <CardContent className="pt-6 space-y-6">
-            <div className="flex items-center gap-2">
               <Link className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('competitors.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">Your competitors</h3>
               <Badge variant="outline" className="ml-auto">
                 {t('competitors.optional')}
               </Badge>
@@ -207,47 +115,6 @@ export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentP
                   disabled={isLoading}
                   maxLength={400}
                   showCharacterCount
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Brand Keywords */}
-      <motion.div
-        initial={{ opacity: 0, y: 60 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-      >
-        <Card className="bg-muted/30 border-dashed">
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-muted-foreground" />
-              <h4 className="font-medium text-sm text-foreground">{t('keywords.title')}</h4>
-            </div>
-            
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>{t('keywords.description')}</p>
-              <ul className="list-disc list-inside space-y-1 text-xs">
-                <li>{t('keywords.examples.professional')}</li>
-                <li>{t('keywords.examples.innovative')}</li>
-                <li>{t('keywords.examples.reliable')}</li>
-                <li>{t('keywords.examples.creative')}</li>
-              </ul>
-            </div>
-
-            <Controller
-              name="brandKeywords"
-              control={control}
-              render={({ field }) => (
-                <TextInput
-                  {...field}
-                  label={t('keywords.input.label')}
-                  placeholder={t('keywords.input.placeholder')}
-                  hint={t('keywords.input.hint')}
-                  error={errors.brandKeywords?.message}
-                  disabled={isLoading}
                 />
               )}
             />
