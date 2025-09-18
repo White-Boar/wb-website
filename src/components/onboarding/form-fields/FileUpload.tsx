@@ -35,7 +35,7 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     accept,
     multiple = false,
     maxFileSize = 10,
-    maxFiles = 5,
+    maxFiles = 30,
     value,
     onFilesChange,
     className,

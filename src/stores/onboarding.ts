@@ -137,10 +137,15 @@ export const useOnboardingStore = create<OnboardingStore>()(
                 isLoading: false,
                 isDirty: false,
                 completedSteps: Array.from(
-                  { length: session.currentStep - 1 }, 
+                  { length: session.currentStep - 1 },
                   (_, i) => i + 1
                 )
               })
+
+              // Track session start time if not already tracked
+              if (typeof window !== 'undefined' && !localStorage.getItem(`wb-onboarding-start-${session.id}`)) {
+                localStorage.setItem(`wb-onboarding-start-${session.id}`, Date.now().toString())
+              }
             } catch (error) {
               console.error('Failed to initialize session:', error)
               set({ 
@@ -327,9 +332,16 @@ export const useOnboardingStore = create<OnboardingStore>()(
             // Cancel any pending saves
             debouncedSaveProgress.cancel()
 
+            // Get current session ID before clearing to clean up start time
+            const currentSessionId = get().sessionId
+
             // First clear localStorage immediately
             if (typeof window !== 'undefined') {
               localStorage.removeItem('wb-onboarding-store')
+              // Also clean up session start time
+              if (currentSessionId) {
+                localStorage.removeItem(`wb-onboarding-start-${currentSessionId}`)
+              }
             }
 
             // Reset state to initial values
@@ -378,6 +390,11 @@ export const useOnboardingStore = create<OnboardingStore>()(
                 isDirty: false,
                 completedSteps: []
               })
+
+              // Track session start time for completion tracking
+              if (typeof window !== 'undefined') {
+                localStorage.setItem(`wb-onboarding-start-${session.id}`, Date.now().toString())
+              }
               
               return session
             } catch (error) {

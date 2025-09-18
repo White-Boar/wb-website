@@ -184,7 +184,9 @@
     "steps": {
       "validationError": "Correggi gli errori sopra prima di procedere.",
       "nextStepError": "Impossibile procedere al passaggio successivo. Riprova.",
+      "submissionError": "Impossibile inviare la tua registrazione. Riprova.",
       "complete": "Completa Onboarding",
+      "finish": "Termina",
       "back": "Torna alla Benvenuto",
       "1": {
         "title": "Benvenuto",
@@ -939,7 +941,7 @@
           },
           "upload": {
             "label": "Carica Foto",
-            "hint": "Carica fino a 8 foto, 5MB ciascuna. Mostra la tua attività, il team o i servizi."
+            "hint": "Carica fino a 30 foto, 10MB ciascuna. Mostra la tua attività, il team o i servizi."
           }
         },
         "categories": {
@@ -1088,6 +1090,29 @@
           "error": "Invio fallito. Riprova."
         }
       }
+    },
+    "thankYou": {
+      "title": "Perfetto! Abbiamo tutto quello che ci serve.",
+      "message": "Il nostro team analizzerà le tue informazioni e preparerà un'anteprima su misura per attirare i tuoi clienti ideali e differenziarti dai concorrenti.",
+      "timeline": {
+        "title": "Anteprima Pronta",
+        "description": "In 5 giorni lavorativi"
+      },
+      "notification": {
+        "title": "Notifica Email",
+        "description": "Riceverai un'email quando sarà pronta"
+      },
+      "payment": {
+        "title": "Pagamento",
+        "description": "Solo dopo aver approvato l'anteprima"
+      },
+      "nextSteps": {
+        "title": "Cosa succede dopo?",
+        "step1": "Il nostro team analizza le tue risposte e crea un'anteprima del sito web personalizzata",
+        "step2": "Riceverai un'email con il link dell'anteprima entro 5 giorni lavorativi",
+        "step3": "Rivedi l'anteprima e paga solo se sei completamente soddisfatto"
+      },
+      "backHome": "Torna alla Homepage"
     }
   },
   "forms": {

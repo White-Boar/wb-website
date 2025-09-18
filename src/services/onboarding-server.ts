@@ -102,8 +102,17 @@ export class OnboardingServerService {
         throw new Error('Session not found or expired')
       }
 
-      if (!session.email_verified) {
+      // Skip email verification in development for testing
+      if (!session.email_verified && process.env.NODE_ENV !== 'development') {
         throw new Error('Email must be verified before submission')
+      }
+
+      // Auto-verify email in development if not already verified
+      if (!session.email_verified && process.env.NODE_ENV === 'development') {
+        await serviceClient
+          .from('onboarding_sessions')
+          .update({ email_verified: true })
+          .eq('id', sessionId)
       }
 
       const submissionData = {

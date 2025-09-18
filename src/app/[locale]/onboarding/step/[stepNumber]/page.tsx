@@ -10,6 +10,7 @@ import { useOnboardingStore } from '@/stores/onboarding'
 import { StepTemplate } from '@/components/onboarding/StepTemplate'
 import { getStepComponent } from '@/components/onboarding/steps'
 import { getStepSchema, type StepFormData } from '@/schemas/onboarding'
+import { submitOnboarding } from '@/services/onboarding-client'
 
 export default function OnboardingStep() {
   const router = useRouter()
@@ -77,8 +78,8 @@ export default function OnboardingStep() {
     initSession()
   }, [hasExistingSession, sessionId, initializeSession, locale])
 
-  // Validate step number
-  if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 13) {
+  // Validate step number (Step 12 is now the final step)
+  if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 12) {
     router.push('/onboarding')
     return null
   }
@@ -230,12 +231,34 @@ export default function OnboardingStep() {
       }
 
       // Move to next step or complete
-      if (stepNumber < 13) {
+      if (stepNumber < 12) {
         await nextStep()
         router.push(`/${locale}/onboarding/step/${stepNumber + 1}`)
       } else {
-        // Complete onboarding
-        router.push(`/${locale}/onboarding/complete`)
+        // Complete onboarding - Step 12 is the final step
+        try {
+          // Calculate completion time if we have session start time
+          const startTime = sessionId ? localStorage.getItem(`wb-onboarding-start-${sessionId}`) : null
+          const completionTimeSeconds = startTime
+            ? Math.round((Date.now() - parseInt(startTime)) / 1000)
+            : undefined
+
+          // Submit all onboarding data to Supabase
+          const submission = await submitOnboarding(
+            sessionId!,
+            { ...formData, ...data } as any, // Merge current step data with all form data
+            completionTimeSeconds
+          )
+
+          console.log('Onboarding submitted successfully:', submission.id)
+
+          // Navigate to thank you page
+          router.push(`/${locale}/onboarding/thank-you`)
+        } catch (submitError) {
+          console.error('Failed to submit onboarding:', submitError)
+          setError(t('submissionError') || 'Failed to submit onboarding. Please try again.')
+          return
+        }
       }
     } catch (error) {
       console.error('Error proceeding to next step:', error)
@@ -275,10 +298,10 @@ export default function OnboardingStep() {
       description={t(`${stepNumber}.description`)}
       onNext={handleSubmit(handleNext)}
       onPrevious={handlePrevious}
-      canGoNext={isValid && !isLoading}
+      canGoNext={(stepNumber === 12 || isValid) && !isLoading}
       canGoPrevious={stepNumber > 1}
       isLoading={isLoading}
-      nextLabel={stepNumber === 13 ? t('complete') : undefined}
+      nextLabel={stepNumber === 12 ? t('finish') : undefined}
       previousLabel={stepNumber === 1 ? t('back') : undefined}
     >
       <StepComponent

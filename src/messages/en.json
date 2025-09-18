@@ -184,7 +184,9 @@
     "steps": {
       "validationError": "Please correct the errors above before proceeding.",
       "nextStepError": "Failed to proceed to next step. Please try again.",
+      "submissionError": "Failed to submit your onboarding. Please try again.",
       "complete": "Complete Onboarding",
+      "finish": "Finish",
       "back": "Back to Welcome",
       "1": {
         "title": "Welcome",
@@ -946,7 +948,7 @@
           },
           "upload": {
             "label": "Upload Photos",
-            "hint": "Upload up to 8 photos, 5MB each. Show your business, team, or services."
+            "hint": "Upload up to 30 photos, 10MB each. Show your business, team, or services."
           }
         },
         "categories": {
@@ -1095,6 +1097,29 @@
           "error": "Failed to submit. Please try again."
         }
       }
+    },
+    "thankYou": {
+      "title": "Perfect! We have everything we need.",
+      "message": "Our team will analyze your information and prepare a preview tailored to attract your ideal customers and differentiate you from competitors.",
+      "timeline": {
+        "title": "Preview Ready",
+        "description": "In 5 business days"
+      },
+      "notification": {
+        "title": "Email Notification",
+        "description": "You'll receive an email when it's ready"
+      },
+      "payment": {
+        "title": "Payment",
+        "description": "Only after you approve the preview"
+      },
+      "nextSteps": {
+        "title": "What happens next?",
+        "step1": "Our team analyzes your responses and creates a custom website preview",
+        "step2": "You'll receive an email with your preview link within 5 business days",
+        "step3": "Review the preview and only pay if you're completely satisfied"
+      },
+      "backHome": "Back to Homepage"
     }
   },
   "forms": {

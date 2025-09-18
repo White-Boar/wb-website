@@ -168,9 +168,9 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                       'image/png': ['.png'],
                       'image/jpeg': ['.jpg', '.jpeg']
                     }}
-                    maxSize={5 * 1024 * 1024} // 5MB per file
+                    maxSize={10 * 1024 * 1024} // 10MB per file
                     multiple={true}
-                    maxFiles={8}
+                    maxFiles={30}
                     onFilesChange={field.onChange}
                     value={field.value}
                     error={errors.businessPhotos?.message}

@@ -270,7 +270,7 @@ const uploadedFileSchema = z.object({
 })
 
 const businessPhotoSchema = uploadedFileSchema.extend({
-  fileSize: z.number().max(5 * 1024 * 1024, 'Photo file size cannot exceed 5MB'),
+  fileSize: z.number().max(10 * 1024 * 1024, 'Photo file size cannot exceed 10MB'),
   mimeType: z.string().regex(
     /^image\/(png|jpg|jpeg)$/,
     'Business photos must be PNG or JPG format'
@@ -285,11 +285,11 @@ const fileSchema = z.custom<File>((file) => {
 })
 
 export const step12Schema = z.object({
-  logoUpload: z.union([fileSchema, uploadedFileSchema]).optional(),
+  logoUpload: z.union([fileSchema, uploadedFileSchema]).optional().nullable(),
   businessPhotos: z.union([
-    z.array(fileSchema).max(10, 'Please upload no more than 10 business photos'),
-    z.array(businessPhotoSchema).max(10, 'Please upload no more than 10 business photos')
-  ]).optional()
+    z.array(fileSchema).max(30, 'Please upload no more than 30 business photos'),
+    z.array(businessPhotoSchema).max(30, 'Please upload no more than 30 business photos')
+  ]).optional().default([])
 }).superRefine((data, ctx) => {
   // Calculate total size of business photos
   if (data.businessPhotos && data.businessPhotos.length > 0) {
@@ -301,12 +301,12 @@ export const step12Schema = z.object({
       totalSize += photoSize || 0
     }
 
-    const maxTotalSize = 50 * 1024 * 1024 // 50MB
+    const maxTotalSize = 300 * 1024 * 1024 // 300MB (30 files × 10MB each)
 
     if (totalSize > maxTotalSize) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Total size of business photos cannot exceed 50MB',
+        message: 'Total size of business photos cannot exceed 300MB',
         path: ['businessPhotos']
       })
     }
