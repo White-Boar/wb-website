@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { Check, AlertCircle, CheckCircle2, Palette, Copy } from 'lucide-react'
+import { Check, AlertCircle, CheckCircle2, Palette } from 'lucide-react'
 
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { useToast } from '@/hooks/use-toast'
 import { cn } from '@/lib/utils'
 
 interface Color {
@@ -69,8 +68,7 @@ export function ColorPalette({
   onSelectionChange
 }: ColorPaletteProps) {
   const t = useTranslations('forms.colorPalette')
-  const { toast } = useToast()
-  
+
   const [selectedId, setSelectedId] = useState<string>(value || defaultValue || '')
 
   const hasError = !!error
@@ -90,22 +88,6 @@ export function ColorPalette({
     onSelectionChange?.(newSelected)
   }
 
-  // Copy color to clipboard
-  const copyColor = async (color: Color, event: React.MouseEvent) => {
-    event.stopPropagation()
-    
-    try {
-      await navigator.clipboard.writeText(color.hex)
-      toast({
-        description: t('colorCopied', { color: color.hex })
-      })
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        description: t('copyError')
-      })
-    }
-  }
 
   // Group options by category
   const groupedOptions = showCategories 
@@ -202,21 +184,12 @@ export function ColorPalette({
                         {/* Color Swatches */}
                         <div className="grid grid-cols-5 gap-1 rounded-md overflow-hidden">
                           {option.colors.map((color, colorIndex) => (
-                            <motion.button
+                            <div
                               key={color.hex}
-                              type="button"
-                              className="group/color relative aspect-square transition-transform hover:scale-110"
+                              className="aspect-square"
                               style={{ backgroundColor: color.hex }}
-                              onClick={(e) => copyColor(color, e)}
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.95 }}
                               title={`${color.name}: ${color.hex}`}
-                            >
-                              {/* Copy Indicator */}
-                              <div className="absolute inset-0 bg-black/0 group-hover/color:bg-black/20 flex items-center justify-center transition-all">
-                                <Copy className="w-2 h-2 text-white opacity-0 group-hover/color:opacity-100 transition-opacity" />
-                              </div>
-                            </motion.button>
+                            />
                           ))}
                         </div>
 

@@ -1140,14 +1140,30 @@
     },
     "colorPalette": {
       "required": "Please select a color palette",
-      "noSelection": "No palette selected"
+      "noSelection": "No palette selected",
+      "preview": "Preview",
+      "copyColor": "Copy color code",
+      "copied": "Copied!",
+      "uncategorized": "Uncategorized",
+      "all": "All",
+      "selectedPalette": "Selected Palette",
+      "colors": "Colors",
+      "usage": "Usage",
+      "noPalettes": "No color palettes available"
     },
     "slider": {
       "reset": "Reset to center",
       "required": "This field is required"
     },
     "imageGrid": {
-      "premium": "Premium"
+      "premium": "Premium",
+      "all": "All",
+      "uncategorized": "Uncategorized",
+      "required": "Required",
+      "selectedCount": "{count} of {max} selected",
+      "noOptions": "No options available",
+      "imageLoadError": "Failed to load image",
+      "preview": "Preview"
     }
   },
   "common": {

@@ -130,6 +130,55 @@ export default function OnboardingStep() {
           industry: formData?.industry ?? '',
           vatNumber: formData?.vatNumber ?? ''
         }
+      case 4:
+        return {
+          businessDescription: formData?.businessDescription || '',
+          competitorUrls: formData?.competitorUrls || [],
+          competitorAnalysis: formData?.competitorAnalysis || ''
+        }
+      case 5:
+        return {
+          customerProfile: formData?.customerProfile ? {
+            budget: formData.customerProfile.budget !== undefined ? formData.customerProfile.budget : 50,
+            style: formData.customerProfile.style !== undefined ? formData.customerProfile.style : 50,
+            motivation: formData.customerProfile.motivation !== undefined ? formData.customerProfile.motivation : 50,
+            decisionMaking: formData.customerProfile.decisionMaking !== undefined ? formData.customerProfile.decisionMaking : 50,
+            loyalty: formData.customerProfile.loyalty !== undefined ? formData.customerProfile.loyalty : 50
+          } : {
+            budget: 50,
+            style: 50,
+            motivation: 50,
+            decisionMaking: 50,
+            loyalty: 50
+          }
+        }
+      case 6:
+        return {
+          customerProblems: formData?.customerProblems || '',
+          customerDelight: formData?.customerDelight || ''
+        }
+      case 7:
+        return {
+          websiteReferences: formData?.websiteReferences || []
+        }
+      case 8:
+        return {
+          designStyle: formData?.designStyle || ''
+        }
+      case 9:
+        return {
+          imageStyle: formData?.imageStyle || ''
+        }
+      case 10:
+        return {
+          colorPalette: formData?.colorPalette || ''
+        }
+      case 11:
+        return {
+          websiteSections: formData?.websiteSections || [],
+          primaryGoal: formData?.primaryGoal || '',
+          offerings: formData?.offerings || []
+        }
       default:
         return {}
     }
@@ -138,10 +187,16 @@ export default function OnboardingStep() {
   const form = useForm<StepFormData>({
     resolver: zodResolver(schema),
     defaultValues: getStepDefaultValues(stepNumber),
-    mode: 'onBlur'
+    mode: 'onChange'
   })
 
   const { handleSubmit, formState: { errors, isValid, isDirty } } = form
+
+  // Reset form values when formData changes (e.g., loaded from localStorage)
+  useEffect(() => {
+    const currentValues = getStepDefaultValues(stepNumber)
+    form.reset(currentValues)
+  }, [formData, stepNumber, form])
 
   // Auto-save functionality
   useEffect(() => {

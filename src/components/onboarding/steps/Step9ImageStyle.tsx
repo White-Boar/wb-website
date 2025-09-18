@@ -13,57 +13,57 @@ import { StepComponentProps } from './index'
 // Image style options
 const imageStyleOptions = [
   {
-    id: 'photography-professional',
-    title: 'Professional Photography',
+    id: 'photorealistic',
+    title: 'Photorealistic',
     description: 'High-quality, professional photographs with clean composition',
-    imageUrl: '/images/image-styles/photography-professional.jpg',
-    category: 'Photography',
+    imageUrl: '/images/onboarding/image-photorealistic.png',
+    category: 'Photorealistic',
     tags: ['High-quality', 'Professional', 'Clean', 'Authentic'],
     premium: false
   },
   {
-    id: 'photography-lifestyle',
-    title: 'Lifestyle Photography',
-    description: 'Natural, candid moments that tell a story and connect emotionally',
-    imageUrl: '/images/image-styles/photography-lifestyle.jpg',
-    category: 'Photography',
-    tags: ['Natural', 'Candid', 'Emotional', 'Storytelling'],
-    premium: false
-  },
-  {
-    id: 'illustrations-modern',
-    title: 'Modern Illustrations',
-    description: 'Contemporary digital illustrations with clean vector graphics',
-    imageUrl: '/images/image-styles/illustrations-modern.jpg',
-    category: 'Illustrations',
+    id: 'flat-illustration',
+    title: 'Flat Illustration',
+    description: 'Modern flat design illustrations with clean vector graphics',
+    imageUrl: '/images/onboarding/image-flat-illustration.png',
+    category: 'Flat Illustration',
     tags: ['Vector', 'Clean', 'Contemporary', 'Scalable'],
     premium: false
   },
   {
-    id: 'illustrations-hand-drawn',
-    title: 'Hand-Drawn Style',
+    id: 'sketch',
+    title: 'Sketch Style',
     description: 'Artistic hand-drawn illustrations with personal, creative touch',
-    imageUrl: '/images/image-styles/illustrations-hand-drawn.jpg',
-    category: 'Illustrations',
+    imageUrl: '/images/onboarding/image-sketch.png',
+    category: 'Sketch Style',
     tags: ['Artistic', 'Personal', 'Creative', 'Unique'],
     premium: true
   },
   {
-    id: 'mixed-creative',
-    title: 'Mixed Creative',
-    description: 'Combination of photography and graphics for dynamic visual impact',
-    imageUrl: '/images/image-styles/mixed-creative.jpg',
-    category: 'Mixed',
-    tags: ['Dynamic', 'Versatile', 'Creative', 'Engaging'],
+    id: '3d',
+    title: '3D Rendered',
+    description: 'Modern 3D rendered graphics for dynamic visual impact',
+    imageUrl: '/images/onboarding/image-3d.png',
+    category: '3D Rendered',
+    tags: ['Dynamic', 'Modern', 'Dimensional', 'Engaging'],
     premium: false
   },
   {
-    id: 'minimalist-clean',
-    title: 'Minimalist Clean',
-    description: 'Simple, clean imagery with focus on essential elements only',
-    imageUrl: '/images/image-styles/minimalist-clean.jpg',
-    category: 'Minimalist',
+    id: 'line-art',
+    title: 'Line Art',
+    description: 'Simple, clean line art with focus on essential elements only',
+    imageUrl: '/images/onboarding/image-line-art.png',
+    category: 'Line Art',
     tags: ['Simple', 'Clean', 'Focused', 'Elegant'],
+    premium: false
+  },
+  {
+    id: 'collage',
+    title: 'Collage Style',
+    description: 'Creative combination of elements for unique visual storytelling',
+    imageUrl: '/images/onboarding/image-collage.png',
+    category: 'Collage Style',
+    tags: ['Creative', 'Versatile', 'Artistic', 'Storytelling'],
     premium: false
   }
 ]
@@ -119,11 +119,11 @@ export function Step9ImageStyle({ form, errors, isLoading }: StepComponentProps)
                   onSelectionChange={field.onChange}
                   error={errors.imageStyle?.message}
                   multiple={false}
-                  columns={3}
+                  columns={2}
                   aspectRatio="landscape"
                   showTitles
                   showDescriptions
-                  showCategories
+                  showCategories={false}
                   disabled={isLoading}
                 />
               )}

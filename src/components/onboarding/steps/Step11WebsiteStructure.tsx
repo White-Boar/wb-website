@@ -14,52 +14,42 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { StepComponentProps } from './index'
 
-// Website section options
+// Website section options (ordered alphabetically)
 const websiteSections = [
-  { id: 'hero', label: 'Hero Section', description: 'Main banner with key message', essential: true },
   { id: 'about', label: 'About Us', description: 'Company story and values', essential: true },
-  { id: 'services', label: 'Services/Products', description: 'What you offer', essential: true },
-  { id: 'portfolio', label: 'Portfolio/Gallery', description: 'Showcase your work', essential: false },
-  { id: 'testimonials', label: 'Testimonials', description: 'Customer reviews and feedback', essential: false },
-  { id: 'team', label: 'Our Team', description: 'Team members and expertise', essential: false },
-  { id: 'blog', label: 'Blog/News', description: 'Articles and updates', essential: false },
   { id: 'contact', label: 'Contact', description: 'Contact information and form', essential: true },
-  { id: 'faq', label: 'FAQ', description: 'Frequently asked questions', essential: false },
-  { id: 'pricing', label: 'Pricing', description: 'Service prices and packages', essential: false },
-  { id: 'location', label: 'Location/Map', description: 'Physical location and directions', essential: false }
+  { id: 'events', label: 'Events', description: 'Upcoming events and activities', essential: false },
+  { id: 'portfolio', label: 'Portfolio/Gallery', description: 'Showcase your work', essential: false },
+  { id: 'services', label: 'Services/Products', description: 'What you offer', essential: true },
+  { id: 'testimonials', label: 'Testimonials', description: 'Customer reviews and feedback', essential: false }
 ]
 
-// Primary goal options
+// Primary goal options (ordered alphabetically)
 const primaryGoalOptions = [
-  { 
-    value: 'lead-generation', 
-    label: 'Lead Generation', 
-    description: 'Generate inquiries and potential customers' 
+  {
+    value: 'other',
+    label: 'Other',
+    description: 'Custom business objective or mixed goals'
   },
-  { 
-    value: 'online-sales', 
-    label: 'Online Sales', 
-    description: 'Sell products or services directly' 
+  {
+    value: 'phone-call',
+    label: 'Phone call',
+    description: 'Encourage visitors to call your business'
   },
-  { 
-    value: 'brand-awareness', 
-    label: 'Brand Awareness', 
-    description: 'Build recognition and credibility' 
+  {
+    value: 'purchase',
+    label: 'Purchase product or service',
+    description: 'Drive direct sales and transactions'
   },
-  { 
-    value: 'information', 
-    label: 'Information Hub', 
-    description: 'Provide information and resources' 
+  {
+    value: 'contact-form',
+    label: 'Submit contact form',
+    description: 'Generate inquiries through contact forms'
   },
-  { 
-    value: 'booking', 
-    label: 'Appointment Booking', 
-    description: 'Schedule meetings or services' 
-  },
-  { 
-    value: 'portfolio', 
-    label: 'Portfolio Showcase', 
-    description: 'Display work and attract clients' 
+  {
+    value: 'visit-location',
+    label: 'Visit location',
+    description: 'Attract customers to your physical location'
   }
 ]
 
@@ -87,12 +77,11 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
 
   const getRecommendedSections = (goal: string) => {
     const recommendations: Record<string, string[]> = {
-      'lead-generation': ['hero', 'services', 'testimonials', 'contact', 'about'],
-      'online-sales': ['hero', 'services', 'portfolio', 'testimonials', 'pricing', 'contact'],
-      'brand-awareness': ['hero', 'about', 'team', 'portfolio', 'blog', 'contact'],
-      'information': ['hero', 'services', 'faq', 'blog', 'about', 'contact'],
-      'booking': ['hero', 'services', 'team', 'contact', 'location', 'about'],
-      'portfolio': ['hero', 'portfolio', 'about', 'services', 'testimonials', 'contact']
+      'phone-call': ['contact', 'services', 'about'],
+      'contact-form': ['contact', 'services', 'testimonials', 'about'],
+      'visit-location': ['contact', 'about', 'services', 'events'],
+      'purchase': ['services', 'portfolio', 'testimonials', 'contact'],
+      'other': ['about', 'services', 'contact']
     }
     return recommendations[goal] || []
   }
@@ -119,49 +108,11 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
         </div>
       </motion.div>
 
-      {/* Primary Goal */}
+      {/* Website Sections */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-      >
-        <Card>
-          <CardContent className="pt-6 space-y-6">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('goal.title')}</h3>
-              <Badge variant="secondary" className="ml-auto">
-                {t('goal.required')}
-              </Badge>
-            </div>
-
-            <Controller
-              name="primaryGoal"
-              control={control}
-              render={({ field }) => (
-                <DropdownInput
-                  label={t('goal.selection.label')}
-                  placeholder={t('goal.selection.placeholder')}
-                  hint={t('goal.selection.hint')}
-                  options={primaryGoalOptions}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  error={errors.primaryGoal?.message}
-                  required
-                  searchable
-                  disabled={isLoading}
-                />
-              )}
-            />
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Website Sections */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
       >
         <Card>
           <CardContent className="pt-6 space-y-6">
@@ -248,6 +199,44 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                 })}
               </div>
             </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Primary Goal */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <Card>
+          <CardContent className="pt-6 space-y-6">
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">{t('goal.title')}</h3>
+              <Badge variant="secondary" className="ml-auto">
+                {t('goal.required')}
+              </Badge>
+            </div>
+
+            <Controller
+              name="primaryGoal"
+              control={control}
+              render={({ field }) => (
+                <DropdownInput
+                  label={t('goal.selection.label')}
+                  placeholder={t('goal.selection.placeholder')}
+                  hint={t('goal.selection.hint')}
+                  options={primaryGoalOptions}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  error={errors.primaryGoal?.message}
+                  required
+                  searchable
+                  disabled={isLoading}
+                />
+              )}
+            />
           </CardContent>
         </Card>
       </motion.div>

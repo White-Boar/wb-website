@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
 interface ImageOption {
@@ -146,7 +146,7 @@ export function ImageGrid({
   // Get grid columns class
   const getGridColumns = () => {
     const colMap = {
-      2: 'grid-cols-2',
+      2: 'grid-cols-1 md:grid-cols-2',
       3: 'grid-cols-2 md:grid-cols-3',
       4: 'grid-cols-2 md:grid-cols-4',
       6: 'grid-cols-3 md:grid-cols-6'
@@ -322,15 +322,19 @@ export function ImageGrid({
                                     <Eye className="w-3 h-3" />
                                   </Button>
                                 </DialogTrigger>
-                                <DialogContent className="max-w-3xl">
+                                <DialogContent className="max-w-4xl max-h-[90vh]">
+                                  <DialogTitle className="sr-only">
+                                    {option.title} - {t('preview')}
+                                  </DialogTitle>
                                   <div className="space-y-4">
-                                    <div className={cn("relative rounded-lg overflow-hidden", getAspectRatio())}>
+                                    <div className="relative rounded-lg overflow-hidden">
                                       <Image
                                         src={option.imageUrl}
                                         alt={option.title}
-                                        fill
-                                        className="object-cover"
-                                        sizes="(max-width: 768px) 100vw, 70vw"
+                                        width={800}
+                                        height={600}
+                                        className="object-contain w-full h-auto max-h-[60vh]"
+                                        sizes="(max-width: 768px) 100vw, 80vw"
                                       />
                                     </div>
                                     <div className="space-y-2">

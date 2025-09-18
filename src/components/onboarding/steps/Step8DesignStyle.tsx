@@ -13,58 +13,58 @@ import { StepComponentProps } from './index'
 // Design style options with sample images
 const designStyleOptions = [
   {
-    id: 'modern-minimal',
-    title: 'Modern Minimal',
+    id: 'minimalist',
+    title: 'Minimalist',
     description: 'Clean lines, plenty of whitespace, sophisticated simplicity',
-    imageUrl: '/images/design-styles/modern-minimal.jpg',
-    category: 'Contemporary',
+    imageUrl: '/images/onboarding/website-minimalist.png',
+    category: 'Minimalist',
     tags: ['Clean', 'Simple', 'Professional', 'Spacious'],
     premium: false
   },
   {
-    id: 'classic-elegant',
-    title: 'Classic Elegant',
-    description: 'Timeless design with refined typography and balanced layout',
-    imageUrl: '/images/design-styles/classic-elegant.jpg',
-    category: 'Traditional',
-    tags: ['Timeless', 'Sophisticated', 'Balanced', 'Refined'],
-    premium: false
-  },
-  {
-    id: 'bold-creative',
-    title: 'Bold & Creative',
-    description: 'Dynamic layouts with vibrant colors and creative elements',
-    imageUrl: '/images/design-styles/bold-creative.jpg',
-    category: 'Creative',
-    tags: ['Dynamic', 'Vibrant', 'Artistic', 'Expressive'],
-    premium: false
-  },
-  {
-    id: 'corporate-professional',
-    title: 'Corporate Professional',
+    id: 'corporate',
+    title: 'Corporate',
     description: 'Business-focused design with trust-building elements',
-    imageUrl: '/images/design-styles/corporate-professional.jpg',
-    category: 'Business',
+    imageUrl: '/images/onboarding/website-corporate.png',
+    category: 'Corporate',
     tags: ['Professional', 'Trustworthy', 'Corporate', 'Structured'],
     premium: false
   },
   {
-    id: 'warm-friendly',
-    title: 'Warm & Friendly',
-    description: 'Approachable design with warm colors and inviting feel',
-    imageUrl: '/images/design-styles/warm-friendly.jpg',
-    category: 'Welcoming',
-    tags: ['Warm', 'Approachable', 'Inviting', 'Personal'],
+    id: 'bold',
+    title: 'Bold',
+    description: 'Dynamic layouts with vibrant colors and creative elements',
+    imageUrl: '/images/onboarding/website-bold.png',
+    category: 'Bold',
+    tags: ['Dynamic', 'Vibrant', 'Artistic', 'Expressive'],
     premium: false
   },
   {
-    id: 'luxury-premium',
-    title: 'Luxury Premium',
-    description: 'High-end design with premium materials and exclusive feel',
-    imageUrl: '/images/design-styles/luxury-premium.jpg',
-    category: 'Premium',
-    tags: ['Luxury', 'Premium', 'Exclusive', 'High-end'],
-    premium: true
+    id: 'playful',
+    title: 'Playful',
+    description: 'Fun and engaging design with playful elements',
+    imageUrl: '/images/onboarding/website-playful.png',
+    category: 'Playful',
+    tags: ['Fun', 'Engaging', 'Friendly', 'Creative'],
+    premium: false
+  },
+  {
+    id: 'editorial',
+    title: 'Editorial',
+    description: 'Magazine-style layout with rich typography and content focus',
+    imageUrl: '/images/onboarding/website-editorial.png',
+    category: 'Editorial',
+    tags: ['Editorial', 'Typography', 'Content', 'Reading'],
+    premium: false
+  },
+  {
+    id: 'retro',
+    title: 'Retro',
+    description: 'Vintage-inspired design with nostalgic elements',
+    imageUrl: '/images/onboarding/website-retro.png',
+    category: 'Retro',
+    tags: ['Retro', 'Nostalgic', 'Classic', 'Unique'],
+    premium: false
   }
 ]
 
@@ -119,11 +119,11 @@ export function Step8DesignStyle({ form, errors, isLoading }: StepComponentProps
                   onSelectionChange={field.onChange}
                   error={errors.designStyle?.message}
                   multiple={false}
-                  columns={3}
+                  columns={2}
                   aspectRatio="landscape"
                   showTitles
                   showDescriptions
-                  showCategories
+                  showCategories={false}
                   disabled={isLoading}
                 />
               )}

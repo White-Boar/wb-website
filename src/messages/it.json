@@ -1134,7 +1134,15 @@
     "colorPalette": {
       "required": "Seleziona una palette di colori",
       "noSelection": "Nessuna palette selezionata",
-      "preview": "Anteprima"
+      "preview": "Anteprima",
+      "copyColor": "Copia codice colore",
+      "copied": "Copiato!",
+      "uncategorized": "Non categorizzato",
+      "all": "Tutti",
+      "selectedPalette": "Palette Selezionata",
+      "colors": "Colori",
+      "usage": "Utilizzo",
+      "noPalettes": "Nessuna palette di colori disponibile"
     },
     "slider": {
       "reset": "Reimposta al centro",
@@ -1146,7 +1154,14 @@
       "summary": "Riepilogo"
     },
     "imageGrid": {
-      "premium": "Premium"
+      "premium": "Premium",
+      "all": "Tutti",
+      "uncategorized": "Non categorizzato",
+      "required": "Obbligatorio",
+      "selectedCount": "{count} di {max} selezionati",
+      "noOptions": "Nessuna opzione disponibile",
+      "imageLoadError": "Impossibile caricare l'immagine",
+      "preview": "Anteprima"
     }
   },
   "common": {

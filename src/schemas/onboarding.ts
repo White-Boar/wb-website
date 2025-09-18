@@ -13,6 +13,19 @@ const urlSchema = z.string()
   .url('Please enter a valid URL (including https://)')
   .min(1, 'URL is required')
 
+const optionalUrlSchema = z.string()
+  .refine((val) => {
+    if (!val || val.trim() === '') return true
+    try {
+      new URL(val)
+      return true
+    } catch {
+      return false
+    }
+  }, 'Please enter a valid URL (including https://)')
+  .optional()
+  .or(z.literal(''))
+
 const phoneSchema = z.string()
   .regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number')
   .min(1, 'Phone number is required')
@@ -94,18 +107,15 @@ export const step3Schema = z.object({
 // STEP 4: BRAND DEFINITION
 // =============================================================================
 export const step4Schema = z.object({
-  offer: z.string()
-    .min(20, 'Please describe your offer in at least 20 characters')
-    .max(250, 'Offer description cannot exceed 250 characters'),
-  competitors: z.array(urlSchema)
-    .min(1, 'Please provide at least 1 competitor website')
-    .max(3, 'Please provide no more than 3 competitor websites'),
-  uniqueness: z.object({
-    attribute: z.string().min(1, 'Please select what makes you unique'),
-    explanation: z.string()
-      .min(10, 'Please explain your uniqueness in at least 10 characters')
-      .max(150, 'Explanation cannot exceed 150 characters')
-  })
+  businessDescription: z.string()
+    .min(50, 'Please describe your offer in at least 50 characters')
+    .max(500, 'Offer description cannot exceed 500 characters'),
+  competitorUrls: z.array(z.string().url('Please enter a valid URL (including https://)'))
+    .max(3, 'Please provide no more than 3 competitor websites')
+    .optional(),
+  competitorAnalysis: z.string()
+    .max(400, 'Competitor analysis cannot exceed 400 characters')
+    .optional()
 })
 
 // =============================================================================
@@ -125,21 +135,21 @@ export const step5Schema = z.object({
 // STEP 6: CUSTOMER NEEDS
 // =============================================================================
 export const step6Schema = z.object({
-  problemSolved: z.string()
-    .min(20, 'Please describe the problem in at least 20 characters')
-    .max(100, 'Problem description cannot exceed 100 characters'),
+  customerProblems: z.string()
+    .min(30, 'Please describe customer problems in at least 30 characters')
+    .max(400, 'Customer problems description cannot exceed 400 characters'),
   customerDelight: z.string()
-    .min(10, 'Please describe customer delight in at least 10 characters')
-    .max(100, 'Customer delight description cannot exceed 100 characters')
+    .max(300, 'Customer delight description cannot exceed 300 characters')
+    .optional()
 })
 
 // =============================================================================
 // STEP 7: VISUAL INSPIRATION
 // =============================================================================
 export const step7Schema = z.object({
-  websiteReferences: z.array(urlSchema)
-    .min(2, 'Please provide at least 2 website references')
+  websiteReferences: z.array(z.string().url('Please enter a valid URL (including https://)'))
     .max(3, 'Please provide no more than 3 website references')
+    .default([])
 })
 
 // =============================================================================
@@ -181,12 +191,12 @@ export const step9Schema = z.object({
 // =============================================================================
 export const step10Schema = z.object({
   colorPalette: z.enum([
-    'palette-1',
-    'palette-2',
-    'palette-3',
-    'palette-4',
-    'palette-5',
-    'palette-6'
+    'professional-blue',
+    'warm-orange',
+    'nature-green',
+    'elegant-purple',
+    'classic-black',
+    'vibrant-pink'
   ], {
     required_error: 'Please select a color palette',
     invalid_type_error: 'Please select a valid color palette'
@@ -197,21 +207,19 @@ export const step10Schema = z.object({
 // STEP 11: WEBSITE STRUCTURE
 // =============================================================================
 const websiteSectionSchema = z.enum([
-  'about-us',
-  'products-services',
-  'testimonials',
-  'gallery',
-  'events',
+  'about',
   'contact',
-  'blog-news'
+  'events',
+  'portfolio',
+  'services',
+  'testimonials'
 ])
 
 const primaryGoalSchema = z.enum([
-  'call-book',
+  'phone-call',
   'contact-form',
   'visit-location',
   'purchase',
-  'download',
   'other'
 ])
 

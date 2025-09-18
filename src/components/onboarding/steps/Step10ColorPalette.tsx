@@ -16,7 +16,7 @@ const colorPaletteOptions = [
     id: 'professional-blue',
     name: 'Professional Blue',
     description: 'Trust-building blues with neutral grays for professional services',
-    category: 'Professional',
+    category: 'Professional Blue',
     colors: [
       { name: 'Primary Blue', hex: '#2563eb' },
       { name: 'Light Blue', hex: '#dbeafe' },
@@ -37,7 +37,7 @@ const colorPaletteOptions = [
     id: 'warm-orange',
     name: 'Warm Orange',
     description: 'Energetic oranges with warm yellows for creative and welcoming brands',
-    category: 'Energetic',
+    category: 'Warm Orange',
     colors: [
       { name: 'Primary Orange', hex: '#ea580c' },
       { name: 'Light Orange', hex: '#fed7aa' },
@@ -58,7 +58,7 @@ const colorPaletteOptions = [
     id: 'nature-green',
     name: 'Nature Green',
     description: 'Fresh greens with earth tones for sustainable and organic brands',
-    category: 'Natural',
+    category: 'Nature Green',
     colors: [
       { name: 'Primary Green', hex: '#059669' },
       { name: 'Light Green', hex: '#d1fae5' },
@@ -79,7 +79,7 @@ const colorPaletteOptions = [
     id: 'elegant-purple',
     name: 'Elegant Purple',
     description: 'Sophisticated purples with silver accents for luxury and creativity',
-    category: 'Luxury',
+    category: 'Elegant Purple',
     colors: [
       { name: 'Primary Purple', hex: '#7c3aed' },
       { name: 'Light Purple', hex: '#ede9fe' },
@@ -100,7 +100,7 @@ const colorPaletteOptions = [
     id: 'classic-black',
     name: 'Classic Black & White',
     description: 'Timeless black and white with subtle gray accents for elegance',
-    category: 'Classic',
+    category: 'Classic Black & White',
     colors: [
       { name: 'Deep Black', hex: '#111827' },
       { name: 'Charcoal', hex: '#374151' },
@@ -121,7 +121,7 @@ const colorPaletteOptions = [
     id: 'vibrant-pink',
     name: 'Vibrant Pink',
     description: 'Bold pinks with complementary purples for creative and bold brands',
-    category: 'Bold',
+    category: 'Vibrant Pink',
     colors: [
       { name: 'Primary Pink', hex: '#ec4899' },
       { name: 'Light Pink', hex: '#fce7f3' },
@@ -192,7 +192,7 @@ export function Step10ColorPalette({ form, errors, isLoading }: StepComponentPro
                   error={errors.colorPalette?.message}
                   showNames
                   showDescriptions
-                  showCategories
+                  showCategories={false}
                   showPreview
                   disabled={isLoading}
                 />
