@@ -57,18 +57,7 @@ test.describe('Complete Onboarding Flow', () => {
     await page.getByRole('textbox', { name: 'Verification code digit 5' }).fill('5');
     await page.getByRole('textbox', { name: 'Verification code digit 6' }).fill('6');
 
-    // Wait for auto-submission or verification to complete
-    await page.waitForTimeout(3000);
-
-    // Check if Verify Code button appeared and click it
-    const verifyButton = page.locator('button:has-text("Verify Code")');
-    if (await verifyButton.isVisible()) {
-      await verifyButton.click();
-      await page.waitForTimeout(2000); // Wait for verification to complete
-    }
-
-    // Now click Next button to proceed to step 3
-    await getOnboardingNextButton(page).click();
+    // Wait for auto-progression to step 3 (system automatically navigates after successful verification)
     await page.waitForURL(/\/onboarding\/step\/3/, { timeout: 10000 });
 
     // Step 3: Business Details
@@ -417,17 +406,8 @@ test.describe('Complete Onboarding Flow', () => {
     await page.getByRole('textbox', { name: 'Verification code digit 4' }).fill('4');
     await page.getByRole('textbox', { name: 'Verification code digit 5' }).fill('5');
     await page.getByRole('textbox', { name: 'Verification code digit 6' }).fill('6');
-    await page.waitForTimeout(3000);
 
-    // Check if Verify Code button appeared and click it
-    const verifyButton = page.locator('button:has-text("Verify Code")');
-    if (await verifyButton.isVisible()) {
-      await verifyButton.click();
-      await page.waitForTimeout(2000);
-    }
-
-    // Click Next button to proceed to step 3
-    await getOnboardingNextButton(page).click();
+    // Wait for auto-progression to step 3 (system automatically navigates after successful verification)
     await page.waitForURL(/\/onboarding\/step\/3/, { timeout: 10000 });
 
     // Fill step 3 partially (Business Details)
@@ -493,17 +473,8 @@ test.describe('Complete Onboarding Flow', () => {
     await page.getByRole('textbox', { name: 'Verification code digit 4' }).fill('4');
     await page.getByRole('textbox', { name: 'Verification code digit 5' }).fill('5');
     await page.getByRole('textbox', { name: 'Verification code digit 6' }).fill('6');
-    await page.waitForTimeout(3000);
 
-    // Check if Verify Code button appeared and click it
-    const verifyButton = page.locator('button:has-text("Verify Code")');
-    if (await verifyButton.isVisible()) {
-      await verifyButton.click();
-      await page.waitForTimeout(2000);
-    }
-
-    // Click Next button to proceed to step 3
-    await getOnboardingNextButton(page).click();
+    // Wait for auto-progression to step 3 (system automatically navigates after successful verification)
     await page.waitForURL(/\/onboarding\/step\/3/, { timeout: 10000 });
 
     // Fill step 3 (Business Details)

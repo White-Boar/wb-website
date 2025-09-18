@@ -32,6 +32,7 @@ test.describe('Onboarding Flow', () => {
   }
 
   // Helper function to complete email verification
+  // Updated to support automatic progression after verification
   async function completeEmailVerification(page: Page, code = 'DEV123') {
     // Wait for the OTP input to be visible
     await expect(page.locator('input[maxlength="6"]').first()).toBeVisible();
@@ -39,14 +40,9 @@ test.describe('Onboarding Flow', () => {
     // Enter verification code
     await page.fill('input[maxlength="6"]', code);
 
-    // Wait for auto-submit or click next if needed
-    await page.waitForTimeout(1000);
-
-    // Check if Next button is enabled and click it
-    const nextButton = getOnboardingNextButton(page);
-    if (await nextButton.isEnabled()) {
-      await nextButton.click();
-    }
+    // Wait for auto-progression to next step (system auto-navigates after successful verification)
+    await page.waitForURL(/\/step\/3/, { timeout: 5000 });
+    await page.waitForLoadState('networkidle');
   }
 
   test.beforeEach(async ({ page }) => {
@@ -169,19 +165,17 @@ test.describe('Onboarding Flow', () => {
       await expect(page.locator('text=test@example.com')).toBeVisible();
     });
 
-    test('accepts DEV123 bypass code', async ({ page }) => {
+    test('accepts DEV123 bypass code and auto-progresses', async ({ page }) => {
       await completeEmailVerification(page, 'DEV123');
 
-      // Should navigate to Step 3
-      await page.waitForTimeout(2000);
+      // Should automatically navigate to Step 3 (no additional wait needed)
       await verifyStepNavigation(page, 3);
     });
 
-    test('accepts 123456 bypass code', async ({ page }) => {
+    test('accepts 123456 bypass code and auto-progresses', async ({ page }) => {
       await completeEmailVerification(page, '123456');
 
-      // Should navigate to Step 3
-      await page.waitForTimeout(2000);
+      // Should automatically navigate to Step 3 (no additional wait needed)
       await verifyStepNavigation(page, 3);
     });
 

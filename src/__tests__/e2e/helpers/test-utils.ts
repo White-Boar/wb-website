@@ -42,19 +42,18 @@ export async function fillStep1Form(page: Page, userData: Partial<OnboardingUser
 
 /**
  * Complete email verification with bypass code
+ * Now supports automatic progression to next step
  */
 export async function completeEmailVerification(page: Page, code: string = BYPASS_CODES[0]) {
   const otpInput = page.locator('input[maxlength="6"]').first();
   await expect(otpInput).toBeVisible();
 
   await otpInput.fill(code);
-  await page.waitForTimeout(1000);
 
-  // Check if auto-submit worked, otherwise click next
-  const nextButton = getOnboardingNextButton(page);
-  if (await nextButton.isEnabled()) {
-    await nextButton.click();
-  }
+  // Wait for auto-progression to next step (implemented with 1s delay)
+  // The system should automatically navigate to step 3 after successful verification
+  await page.waitForURL(/\/step\/3/, { timeout: 5000 });
+  await page.waitForLoadState('networkidle');
 }
 
 /**
@@ -138,11 +137,12 @@ export async function completeBasicFlow(page: Page, userData: Partial<Onboarding
   await expect(step1NextButton).toBeEnabled();
   await step1NextButton.click();
 
-  // Step 2: Email Verification
+  // Step 2: Email Verification (with auto-progression)
   await expect(page).toHaveURL(/\/step\/2/);
   await completeEmailVerification(page);
+  // Note: completeEmailVerification now waits for auto-progression to step 3
 
-  // Step 3: Business Details
+  // Step 3: Business Details (automatically reached via auto-progression)
   await expect(page).toHaveURL(/\/step\/3/);
   await fillStep3BusinessDetails(page, userData);
 
