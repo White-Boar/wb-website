@@ -29,9 +29,79 @@ const industries = [
   { value: 'other', label: 'Other', description: 'Tell us more about your business' }
 ]
 
+// Countries list for dropdown (Italy first, then all European countries, then others)
+const countries = [
+  // Italy first (primary market)
+  { value: 'Italy', label: 'Italy', description: '🇮🇹 Italia' },
+
+  // European Union countries
+  { value: 'Austria', label: 'Austria', description: '🇦🇹 Österreich' },
+  { value: 'Belgium', label: 'Belgium', description: '🇧🇪 België' },
+  { value: 'Bulgaria', label: 'Bulgaria', description: '🇧🇬 България' },
+  { value: 'Croatia', label: 'Croatia', description: '🇭🇷 Hrvatska' },
+  { value: 'Cyprus', label: 'Cyprus', description: '🇨🇾 Κύπρος' },
+  { value: 'Czech Republic', label: 'Czech Republic', description: '🇨🇿 Česká republika' },
+  { value: 'Denmark', label: 'Denmark', description: '🇩🇰 Danmark' },
+  { value: 'Estonia', label: 'Estonia', description: '🇪🇪 Eesti' },
+  { value: 'Finland', label: 'Finland', description: '🇫🇮 Suomi' },
+  { value: 'France', label: 'France', description: '🇫🇷 France' },
+  { value: 'Germany', label: 'Germany', description: '🇩🇪 Deutschland' },
+  { value: 'Greece', label: 'Greece', description: '🇬🇷 Ελλάδα' },
+  { value: 'Hungary', label: 'Hungary', description: '🇭🇺 Magyarország' },
+  { value: 'Ireland', label: 'Ireland', description: '🇮🇪 Éire' },
+  { value: 'Latvia', label: 'Latvia', description: '🇱🇻 Latvija' },
+  { value: 'Lithuania', label: 'Lithuania', description: '🇱🇹 Lietuva' },
+  { value: 'Luxembourg', label: 'Luxembourg', description: '🇱🇺 Lëtzebuerg' },
+  { value: 'Malta', label: 'Malta', description: '🇲🇹 Malta' },
+  { value: 'Netherlands', label: 'Netherlands', description: '🇳🇱 Nederland' },
+  { value: 'Poland', label: 'Poland', description: '🇵🇱 Polska' },
+  { value: 'Portugal', label: 'Portugal', description: '🇵🇹 Portugal' },
+  { value: 'Romania', label: 'Romania', description: '🇷🇴 România' },
+  { value: 'Slovakia', label: 'Slovakia', description: '🇸🇰 Slovensko' },
+  { value: 'Slovenia', label: 'Slovenia', description: '🇸🇮 Slovenija' },
+  { value: 'Spain', label: 'Spain', description: '🇪🇸 España' },
+  { value: 'Sweden', label: 'Sweden', description: '🇸🇪 Sverige' },
+
+  // Other European countries (non-EU)
+  { value: 'Albania', label: 'Albania', description: '🇦🇱 Shqipëri' },
+  { value: 'Andorra', label: 'Andorra', description: '🇦🇩 Andorra' },
+  { value: 'Bosnia and Herzegovina', label: 'Bosnia and Herzegovina', description: '🇧🇦 BiH' },
+  { value: 'Iceland', label: 'Iceland', description: '🇮🇸 Ísland' },
+  { value: 'Kosovo', label: 'Kosovo', description: '🇽🇰 Kosovë' },
+  { value: 'Liechtenstein', label: 'Liechtenstein', description: '🇱🇮 Liechtenstein' },
+  { value: 'Macedonia', label: 'Macedonia', description: '🇲🇰 Македонија' },
+  { value: 'Moldova', label: 'Moldova', description: '🇲🇩 Moldova' },
+  { value: 'Monaco', label: 'Monaco', description: '🇲🇨 Monaco' },
+  { value: 'Montenegro', label: 'Montenegro', description: '🇲🇪 Crna Gora' },
+  { value: 'Norway', label: 'Norway', description: '🇳🇴 Norge' },
+  { value: 'San Marino', label: 'San Marino', description: '🇸🇲 San Marino' },
+  { value: 'Serbia', label: 'Serbia', description: '🇷🇸 Србија' },
+  { value: 'Switzerland', label: 'Switzerland', description: '🇨🇭 Schweiz' },
+  { value: 'Ukraine', label: 'Ukraine', description: '🇺🇦 Україна' },
+  { value: 'United Kingdom', label: 'United Kingdom', description: '🇬🇧 UK' },
+  { value: 'Vatican City', label: 'Vatican City', description: '🇻🇦 Vaticano' },
+
+  // Major non-European countries
+  { value: 'United States', label: 'United States', description: '🇺🇸 USA' },
+  { value: 'Canada', label: 'Canada', description: '🇨🇦 Canada' },
+  { value: 'Australia', label: 'Australia', description: '🇦🇺 Australia' },
+  { value: 'Japan', label: 'Japan', description: '🇯🇵 日本' },
+  { value: 'China', label: 'China', description: '🇨🇳 中国' },
+  { value: 'India', label: 'India', description: '🇮🇳 भारत' },
+  { value: 'Brazil', label: 'Brazil', description: '🇧🇷 Brasil' },
+  { value: 'Mexico', label: 'Mexico', description: '🇲🇽 México' },
+  { value: 'Argentina', label: 'Argentina', description: '🇦🇷 Argentina' },
+  { value: 'South Africa', label: 'South Africa', description: '🇿🇦 South Africa' },
+  { value: 'New Zealand', label: 'New Zealand', description: '🇳🇿 Aotearoa' },
+  { value: 'South Korea', label: 'South Korea', description: '🇰🇷 한국' },
+  { value: 'Turkey', label: 'Turkey', description: '🇹🇷 Türkiye' },
+  { value: 'Russia', label: 'Russia', description: '🇷🇺 Россия' },
+  { value: 'United Arab Emirates', label: 'United Arab Emirates', description: '🇦🇪 UAE' }
+]
+
 export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.3')
-  const { control, setValue, watch } = form
+  const { control, setValue, watch, trigger } = form
 
   const selectedIndustry = watch('industry')
 
@@ -294,16 +364,23 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                 <Controller
                   name="physicalAddress.country"
                   control={control}
+                  defaultValue="Italy"
                   render={({ field }) => (
-                    <TextInput
-                      {...field}
+                    <DropdownInput
                       label={t('address.country.label')}
                       placeholder={t('address.country.placeholder')}
+                      options={countries}
+                      value={field.value || "Italy"}
+                      onValueChange={(value) => {
+                        field.onChange(value)
+                        // Trigger form validation after setting the value
+                        trigger('physicalAddress.country')
+                      }}
                       error={errors.physicalAddress?.country?.message}
                       required
+                      searchable
                       disabled={isLoading}
-                      value="Italy" // Default for Italian market
-                      readOnly
+                      name="physicalAddress.country"
                     />
                   )}
                 />
