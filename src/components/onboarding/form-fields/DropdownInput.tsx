@@ -3,11 +3,10 @@
 import { forwardRef, useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { 
-  ChevronDown, 
-  Search, 
-  X, 
-  AlertCircle, 
+import {
+  ChevronDown,
+  X,
+  AlertCircle,
   CheckCircle2,
   Check
 } from 'lucide-react'
@@ -289,14 +288,12 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
           <PopoverContent className="w-full p-0" align="start">
             <Command>
               {searchable && (
-                <div className="flex items-center border-b px-3">
-                  <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                  <CommandInput
-                    placeholder={searchPlaceholder || t('search')}
-                    value={searchQuery}
-                    onValueChange={handleSearchChange}
-                  />
-                </div>
+                <CommandInput
+                  placeholder={searchPlaceholder || t('search')}
+                  value={searchQuery}
+                  onValueChange={handleSearchChange}
+                  className="h-9"
+                />
               )}
               
               <CommandEmpty>
