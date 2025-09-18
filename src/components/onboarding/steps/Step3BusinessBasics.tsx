@@ -56,7 +56,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Building2 className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('businessInfo.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('businessInfo.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('businessInfo.required')}
               </Badge>
@@ -97,6 +97,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                     required
                     searchable
                     disabled={isLoading}
+                    name="industry"
                   />
                 )}
               />
@@ -157,7 +158,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Phone className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('contactInfo.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('contactInfo.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('contactInfo.required')}
               </Badge>
@@ -166,14 +167,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
             <div className="space-y-6">
               {/* Phone Number */}
               <Controller
-                name="phone"
+                name="businessPhone"
                 control={control}
                 render={({ field }) => (
                   <PhoneInput
                     {...field}
                     label={t('contactInfo.phone.label')}
                     hint={t('contactInfo.phone.hint')}
-                    error={errors.phone?.message}
+                    error={errors.businessPhone?.message}
                     defaultCountry="IT"
                     required
                     disabled={isLoading}
@@ -183,18 +184,19 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
 
               {/* Website (optional) */}
               <Controller
-                name="website"
+                name="businessEmail"
                 control={control}
                 render={({ field }) => (
                   <TextInput
                     {...field}
-                    label={t('contactInfo.website.label')}
-                    placeholder={t('contactInfo.website.placeholder')}
-                    hint={t('contactInfo.website.hint')}
-                    error={errors.website?.message}
+                    label={t('contactInfo.email.label')}
+                    placeholder={t('contactInfo.email.placeholder')}
+                    hint={t('contactInfo.email.hint')}
+                    error={errors.businessEmail?.message}
                     disabled={isLoading}
                     leftIcon={<Globe className="w-4 h-4" />}
-                    type="url"
+                    type="email"
+                    required
                   />
                 )}
               />
@@ -213,7 +215,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('address.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('address.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('address.required')}
               </Badge>
@@ -222,20 +224,18 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
             <div className="space-y-6">
               {/* Address Autocomplete */}
               <Controller
-                name="address"
+                name="physicalAddress.street"
                 control={control}
                 render={({ field }) => (
-                  <AddressAutocomplete
+                  <TextInput
+                    {...field}
                     label={t('address.street.label')}
                     placeholder={t('address.street.placeholder')}
                     hint={t('address.street.hint')}
-                    value={field.value}
-                    onAddressSelect={handleAddressSelect}
-                    onAddressChange={field.onChange}
-                    error={errors.address?.message}
-                    country="IT"
+                    error={errors.physicalAddress?.street?.message}
                     required
                     disabled={isLoading}
+                    leftIcon={<MapPin className="w-4 h-4" />}
                   />
                 )}
               />
@@ -243,14 +243,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
               {/* Additional Address Fields (populated by autocomplete) */}
               <div className="grid md:grid-cols-2 gap-4">
                 <Controller
-                  name="city"
+                  name="physicalAddress.city"
                   control={control}
                   render={({ field }) => (
                     <TextInput
                       {...field}
                       label={t('address.city.label')}
                       placeholder={t('address.city.placeholder')}
-                      error={errors.city?.message}
+                      error={errors.physicalAddress?.city?.message}
                       required
                       disabled={isLoading}
                       leftIcon={<MapPin className="w-4 h-4" />}
@@ -259,14 +259,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                 />
 
                 <Controller
-                  name="postalCode"
+                  name="physicalAddress.postalCode"
                   control={control}
                   render={({ field }) => (
                     <TextInput
                       {...field}
                       label={t('address.postalCode.label')}
                       placeholder={t('address.postalCode.placeholder')}
-                      error={errors.postalCode?.message}
+                      error={errors.physicalAddress?.postalCode?.message}
                       required
                       disabled={isLoading}
                       leftIcon={<Hash className="w-4 h-4" />}
@@ -277,14 +277,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
 
               <div className="grid md:grid-cols-2 gap-4">
                 <Controller
-                  name="region"
+                  name="physicalAddress.province"
                   control={control}
                   render={({ field }) => (
                     <TextInput
                       {...field}
                       label={t('address.region.label')}
                       placeholder={t('address.region.placeholder')}
-                      error={errors.region?.message}
+                      error={errors.physicalAddress?.province?.message}
                       required
                       disabled={isLoading}
                     />
@@ -292,14 +292,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                 />
 
                 <Controller
-                  name="country"
+                  name="physicalAddress.country"
                   control={control}
                   render={({ field }) => (
                     <TextInput
                       {...field}
                       label={t('address.country.label')}
                       placeholder={t('address.country.placeholder')}
-                      error={errors.country?.message}
+                      error={errors.physicalAddress?.country?.message}
                       required
                       disabled={isLoading}
                       value="Italy" // Default for Italian market

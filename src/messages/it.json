@@ -258,6 +258,11 @@
         "contactInfo": {
           "title": "Informazioni di Contatto",
           "required": "Richiesto",
+          "email": {
+            "label": "Email Aziendale",
+            "placeholder": "azienda@compagnia.com",
+            "hint": "Il tuo indirizzo email aziendale principale"
+          },
           "phone": {
             "label": "Telefono Attività",
             "hint": "Il numero di telefono principale della tua attività"
@@ -325,6 +330,11 @@
             "label": "Il Tuo Valore Unico",
             "placeholder": "Cosa ti distingue dai concorrenti? Cosa fai meglio o diversamente?",
             "hint": "Pensa ai tuoi punti di forza, servizi speciali o approccio unico"
+          },
+          "goals": {
+            "label": "Obiettivi Aziendali",
+            "placeholder": "Quali sono i tuoi principali obiettivi aziendali per il prossimo anno?",
+            "hint": "Esempi: aumentare le vendite, espandere la portata del mercato, migliorare il servizio clienti"
           }
         },
         "competitors": {
@@ -336,11 +346,21 @@
             "placeholder": "https://sito-concorrente.com",
             "addButton": "Aggiungi Concorrente",
             "hint": "Condividi fino a 5 siti web di concorrenti per aiutarci a differenziare il tuo brand"
+          },
+          "analysis": {
+            "label": "Analisi Competitiva",
+            "placeholder": "Cosa ti piace/non ti piace dei tuoi concorrenti? Quali lacune vedi nel mercato?",
+            "hint": "Aiutaci a capire come posizionare la tua attività in modo unico"
           }
         },
         "keywords": {
           "title": "Parole Chiave del Brand",
           "description": "Quali parole descrivono meglio la personalità del tuo brand?",
+          "input": {
+            "label": "Parole Chiave del Brand",
+            "placeholder": "Inserisci parole chiave che descrivono il tuo brand (es. professionale, innovativo, affidabile)",
+            "hint": "Scegli 3-5 parole che meglio rappresentano la personalità e i valori del tuo brand"
+          },
           "examples": {
             "professional": "Professionale, affidabile, consolidato",
             "innovative": "Innovativo, all'avanguardia, moderno",
@@ -462,9 +482,290 @@
           }
         },
         "tips": {
+          "title": "Suggerimenti per risposte migliori:",
           "honest": "Sii onesto sui tuoi clienti reali, non su chi vorresti che fossero",
           "typical": "Pensa ai tuoi clienti più tipici, non alle eccezioni",
           "adjust": "Puoi regolare queste impostazioni più tardi mentre la tua attività evolve"
+        }
+      },
+      "6": {
+        "title": "Esigenze dei Clienti",
+        "description": "Comprendere cosa hanno davvero bisogno i tuoi clienti",
+        "intro": {
+          "title": "Comprendere le Sfide dei Clienti",
+          "description": "Aiutaci a capire i problemi che affrontano i tuoi clienti e come la tua attività li risolve. Questa comprensione plasmerà i messaggi e il posizionamento del tuo sito web."
+        },
+        "problems": {
+          "title": "Problemi e Punti Dolenti dei Clienti",
+          "required": "Richiesto",
+          "examples": {
+            "title": "Sfide comuni dei clienti:",
+            "visibility": "Difficile trovare fornitori di servizi affidabili online",
+            "credibility": "Difficoltà nel valutare credibilità e qualità dell'attività",
+            "competition": "Troppe opzioni, differenziazione poco chiara",
+            "communication": "Comunicazione scarsa o prezzi poco chiari"
+          },
+          "input": {
+            "label": "Quali sono i principali problemi che affrontano i tuoi clienti?",
+            "placeholder": "Descrivi le sfide specifiche che i tuoi clienti sperimentano prima di trovare la tua attività...",
+            "hint": "Concentrati sui problemi che risolvi - questo ci aiuta a creare messaggi convincenti per il sito web"
+          }
+        },
+        "solutions": {
+          "title": "Le Tue Soluzioni e Benefici",
+          "required": "Richiesto",
+          "examples": {
+            "title": "Come la tua attività risolve i problemi:",
+            "professional": "Il sito web professionale stabilisce credibilità istantanea",
+            "seo": "I contenuti ottimizzati SEO aiutano i clienti a trovarti facilmente",
+            "mobile": "Il design mobile-friendly serve i clienti ovunque",
+            "social": "Le prove sociali e testimonianze costruiscono fiducia"
+          },
+          "input": {
+            "label": "Come risolve questi problemi la tua attività?",
+            "placeholder": "Spiega i modi specifici in cui i tuoi prodotti o servizi affrontano le sfide dei clienti...",
+            "hint": "Sii specifico sui benefici e risultati che i clienti ottengono scegliendo te"
+          }
+        },
+        "delight": {
+          "title": "Momenti di Delizia del Cliente",
+          "optional": "Facoltativo",
+          "examples": {
+            "title": "Modi per superare le aspettative:",
+            "surprise": "Bonus inaspettati o valore aggiunto",
+            "personal": "Servizio personalizzato e attenzione ai dettagli",
+            "exceed": "Andare oltre il servizio standard",
+            "memorable": "Creare esperienze memorabili che i clienti condividono"
+          },
+          "input": {
+            "label": "Come superi le aspettative dei clienti?",
+            "placeholder": "Descrivi i tocchi speciali o il valore extra che fanno amare ai clienti lavorare con te...",
+            "hint": "Questi vantaggi unici diventeranno punti di vendita chiave sul tuo sito web"
+          }
+        },
+        "insights": {
+          "title": "Approfondimenti del Percorso Cliente",
+          "awareness": {
+            "title": "Fase di Consapevolezza",
+            "description": "Come i clienti scoprono di aver bisogno della tua soluzione"
+          },
+          "consideration": {
+            "title": "Fase di Considerazione",
+            "description": "Come i clienti valutano e confrontano le opzioni"
+          },
+          "decision": {
+            "title": "Fase di Decisione",
+            "description": "Cosa fa scegliere te ai clienti rispetto ai concorrenti"
+          }
+        },
+        "tips": {
+          "title": "Suggerimenti per risposte migliori:",
+          "specific": "Sii specifico e concreto",
+          "customer": "Pensa dalla prospettiva del cliente",
+          "emotional": "Includi benefici emotivi"
+        }
+      },
+      "7": {
+        "title": "Ispirazione Visiva",
+        "description": "Mostraci siti web e design che ammiri",
+        "intro": {
+          "title": "Ispirazione e Riferimenti di Design",
+          "description": "Condividi siti web che trovi visivamente accattivanti o funzionalmente impressionanti. Questo ci aiuta a capire le tue preferenze estetiche e la direzione del design."
+        },
+        "inspirations": {
+          "title": "Ispirazioni per Siti Web",
+          "optional": "Facoltativo",
+          "guidelines": {
+            "title": "Cosa cercare nei siti web di ispirazione:",
+            "layout": "Layout e struttura puliti e organizzati",
+            "colors": "Schemi di colori che ti piacciono",
+            "typography": "Stili di testo e leggibilità",
+            "navigation": "Navigazione e menu facili da usare",
+            "images": "Foto e grafiche di alta qualità",
+            "overall": "Sensazione generale e esperienza utente"
+          },
+          "urls": {
+            "label": "URL di Siti Web Ispiratori",
+            "placeholder": "https://esempio-sito-web.com",
+            "addButton": "Aggiungi Sito Web",
+            "hint": "Aggiungi fino a 10 siti web che ti ispirano. Includi concorrenti, attività simili o qualsiasi sito che trovi ben progettato."
+          }
+        },
+        "categories": {
+          "title": "Categorie Rapide",
+          "description": "Clicca per aggiungere siti web di esempio da diversi settori",
+          "restaurant": "Ristoranti e Cibo",
+          "retail": "Vendita al Dettaglio ed E-commerce",
+          "professional": "Servizi Professionali",
+          "creative": "Creativi e Portfolio"
+        },
+        "preferences": {
+          "title": "Preferenze Visive",
+          "optional": "Facoltativo",
+          "examples": {
+            "title": "Descrivi il tuo stile preferito:",
+            "clean": "Pulito e minimalista con molto spazio bianco",
+            "bold": "Audace e vibrante con forte impatto visivo",
+            "professional": "Aspetto professionale e affidabile",
+            "creative": "Creativo e unico con elementi artistici"
+          },
+          "input": {
+            "label": "Descrivi le tue preferenze visive",
+            "placeholder": "Raccontaci dell'aspetto e sensazione che vuoi per il tuo sito web - colori, stile di layout, atmosfera, ecc...",
+            "hint": "Questo ci aiuta a capire la tua direzione di design oltre ai siti web di ispirazione"
+          }
+        },
+        "analysis": {
+          "title": "Processo di Analisi del Design",
+          "layout": {
+            "title": "Analisi del Layout",
+            "description": "Analizzeremo i modelli di struttura e organizzazione"
+          },
+          "content": {
+            "title": "Strategia dei Contenuti",
+            "description": "Esamineremo come i contenuti sono presentati e organizzati"
+          },
+          "interaction": {
+            "title": "Esperienza Utente",
+            "description": "Studieremo i modelli di navigazione e interazione utente"
+          }
+        },
+        "tips": {
+          "title": "Suggerimenti per migliore ispirazione:",
+          "diverse": "Includi esempi diversi",
+          "specific": "Sii specifico su cosa ti piace",
+          "relevant": "Scegli siti rilevanti per il tuo settore"
+        }
+      },
+      "8": {
+        "title": "Stile di Design",
+        "description": "Scegli lo stile visivo che meglio rappresenta il tuo brand",
+        "intro": {
+          "title": "Scegli il Tuo Stile di Design",
+          "description": "Seleziona l'approccio di design che meglio riflette la personalità del tuo brand e piace al tuo pubblico target. Questo guiderà la direzione visiva generale del tuo sito web."
+        },
+        "selection": {
+          "title": "Selezione Stile di Design",
+          "required": "Richiesto"
+        },
+        "characteristics": {
+          "title": "Impatto dello Stile di Design",
+          "visual": {
+            "title": "Elementi Visivi",
+            "layout": "Struttura e organizzazione della pagina",
+            "typography": "Scelte di font e gerarchia del testo",
+            "spacing": "Spazio bianco e posizionamento degli elementi",
+            "elements": "Pulsanti, moduli e componenti interattivi"
+          },
+          "impact": {
+            "title": "Impatto Aziendale",
+            "perception": "Come i clienti percepiscono la tua professionalità",
+            "audience": "Attrazione per il tuo demografico target",
+            "conversion": "Influenza sulle azioni e decisioni degli utenti",
+            "branding": "Coerenza con l'identità del tuo brand"
+          }
+        },
+        "recommendations": {
+          "title": "Raccomandazioni di Stile per Settore",
+          "restaurant": {
+            "title": "Ristoranti e Cibo",
+            "style": "Caldo e Amichevole o Audace e Creativo"
+          },
+          "professional": {
+            "title": "Servizi Professionali",
+            "style": "Aziendale Professionale o Classico Elegante"
+          },
+          "creative": {
+            "title": "Industrie Creative",
+            "style": "Audace e Creativo o Moderno Minimale"
+          },
+          "retail": {
+            "title": "Vendita al Dettaglio ed E-commerce",
+            "style": "Moderno Minimale o Caldo e Amichevole"
+          },
+          "health": {
+            "title": "Salute e Benessere",
+            "style": "Classico Elegante o Caldo e Amichevole"
+          },
+          "luxury": {
+            "title": "Lusso e Premium",
+            "style": "Lusso Premium o Classico Elegante"
+          }
+        },
+        "tips": {
+          "title": "Scegli uno stile che:",
+          "authentic": "Si senta autentico per il tuo brand",
+          "audience": "Piaccia al tuo pubblico target",
+          "flexible": "Funzioni su diversi dispositivi"
+        }
+      },
+      "9": {
+        "title": "Stile delle Immagini",
+        "description": "Scegli lo stile visivo per le immagini del tuo sito web",
+        "intro": {
+          "title": "Scegli il Tuo Stile delle Immagini",
+          "description": "Seleziona il tipo di immagini che meglio rappresenta il tuo brand e si connette con il tuo pubblico. Questa scelta guiderà tutti i contenuti visivi attraverso il tuo sito web."
+        },
+        "selection": {
+          "title": "Selezione Stile delle Immagini",
+          "required": "Richiesto"
+        },
+        "impact": {
+          "title": "Impatto Visivo e Considerazioni",
+          "psychology": {
+            "title": "Impatto Psicologico",
+            "trust": "Le immagini professionali costruiscono credibilità e fiducia",
+            "emotion": "Le foto lifestyle creano connessioni emotive",
+            "attention": "I visual creativi catturano e mantengono l'attenzione",
+            "memory": "Le immagini uniche rendono il tuo brand memorabile"
+          },
+          "technical": {
+            "title": "Benefici Tecnici",
+            "loading": "Le immagini ottimizzate garantiscono tempi di caricamento veloci",
+            "scalability": "La grafica vettoriale si adatta perfettamente su tutti i dispositivi",
+            "responsive": "Le foto professionali funzionano su tutte le dimensioni dello schermo",
+            "accessibility": "Le immagini chiare migliorano l'accessibilità per tutti gli utenti"
+          }
+        },
+        "combinations": {
+          "title": "Combinazioni di Stile per Settore",
+          "business": {
+            "title": "Business e Professionale",
+            "professional": "Fotografia Professionale + Minimale Pulito",
+            "clean": "Composizione pulita per fiducia e credibilità",
+            "mixed": "Creativo Misto per presentazioni dinamiche"
+          },
+          "creative": {
+            "title": "Creativo e Artistico",
+            "handDrawn": "Stile Disegnato a Mano per personalità unica",
+            "lifestyle": "Fotografia Lifestyle per sensazione autentica",
+            "modern": "Illustrazioni Moderne per appeal contemporaneo"
+          },
+          "hospitality": {
+            "title": "Ospitalità e Cibo",
+            "lifestyle": "Fotografia Lifestyle per visual appetitosi",
+            "professional": "Fotografia Professionale per impressione di qualità",
+            "warm": "Toni caldi per creare atmosfera invitante"
+          },
+          "tech": {
+            "title": "Tecnologia e SaaS",
+            "modern": "Illustrazioni Moderne per innovazione",
+            "minimalist": "Minimale Pulito per focus e chiarezza",
+            "mixed": "Creativo Misto per presentazioni coinvolgenti"
+          }
+        },
+        "strategy": {
+          "title": "Integrazione Strategia dei Contenuti",
+          "description": "Il tuo stile di immagini scelto influenzerà come sorgentiamo, creiamo e ottimizziamo tutti i contenuti visivi per il tuo sito web.",
+          "consistency": "Linguaggio visivo coerente attraverso tutte le pagine",
+          "quality": "Immagini di alta qualità che riflettono i valori del tuo brand",
+          "relevance": "Immagini che supportano e migliorano il tuo messaggio"
+        },
+        "tips": {
+          "title": "Scegli immagini che:",
+          "brand": "Si allineano con la personalità del tuo brand",
+          "audience": "Risuonano con il tuo pubblico target",
+          "quality": "Mantengono standard di alta qualità"
         }
       },
       "10": {
@@ -534,6 +835,72 @@
           "emotion": "Corrispondano all'emozione del tuo brand",
           "industry": "Si adattino al tuo settore",
           "accessible": "Siano accessibili a tutti"
+        }
+      },
+      "11": {
+        "title": "Struttura del Sito Web",
+        "description": "Definisci lo scopo del tuo sito web e organizza efficacemente i suoi contenuti",
+        "intro": {
+          "title": "Pianifica la Struttura del Tuo Sito Web",
+          "description": "Definisci i tuoi obiettivi principali e scegli le sezioni che ti aiuteranno a raggiungerli. Un sito web ben strutturato guida i visitatori in modo fluido verso le tue azioni desiderate."
+        },
+        "goal": {
+          "title": "Obiettivo Primario del Sito Web",
+          "required": "Richiesto",
+          "selection": {
+            "label": "Qual è il tuo obiettivo principale per questo sito web?",
+            "placeholder": "Seleziona il tuo obiettivo primario",
+            "hint": "Questo influenzerà quali sezioni raccomandiamo e come strutturiamo i tuoi contenuti"
+          }
+        },
+        "sections": {
+          "title": "Sezioni del Sito Web",
+          "required": "Richiesto",
+          "essential": "Essenziale",
+          "recommended": {
+            "title": "Sezioni raccomandate per",
+            "badge": "Raccomandato"
+          }
+        },
+        "offerings": {
+          "title": "Prodotti e Servizi",
+          "optional": "Facoltativo",
+          "examples": {
+            "title": "Esempi di ciò che potresti offrire:",
+            "consulting": "Servizi di consulenza aziendale",
+            "design": "Web design e branding",
+            "development": "Sviluppo software",
+            "photography": "Fotografia professionale",
+            "marketing": "Servizi di marketing digitale",
+            "training": "Formazione e workshop"
+          },
+          "list": {
+            "label": "I Tuoi Prodotti/Servizi",
+            "placeholder": "Inserisci un prodotto o servizio",
+            "addButton": "Aggiungi Elemento",
+            "hint": "Elenca i tuoi principali prodotti o servizi - questo ci aiuta a creare contenuti mirati per ogni offerta"
+          }
+        },
+        "insights": {
+          "title": "Struttura ed Esperienza Utente",
+          "navigation": {
+            "title": "Design della Navigazione",
+            "clear": "Struttura di menu chiara e intuitiva",
+            "logical": "Gerarchia delle informazioni logica",
+            "mobile": "Modelli di navigazione mobile-friendly"
+          },
+          "conversion": {
+            "title": "Ottimizzazione delle Conversioni",
+            "cta": "Posizionamento strategico delle call-to-action",
+            "trust": "Segnali di fiducia e posizionamento delle prove sociali",
+            "contact": "Accesso facile alle informazioni di contatto"
+          }
+        },
+        "tips": {
+          "title": "Suggerimenti per la struttura:",
+          "essential": "Includi sezioni essenziali",
+          "goal": "Allinea con il tuo obiettivo principale",
+          "simple": "Mantieni la navigazione semplice"
         }
       },
       "12": {
@@ -752,6 +1119,7 @@
     },
     "phone": {
       "invalid": "Inserisci un numero di telefono valido",
+      "valid": "Numero di telefono valido",
       "selectCountry": "Seleziona paese",
       "searchCountries": "Cerca paesi...",
       "required": "Questo campo è obbligatorio"
@@ -765,11 +1133,41 @@
     },
     "colorPalette": {
       "required": "Seleziona una palette di colori",
-      "noSelection": "Nessuna palette selezionata"
+      "noSelection": "Nessuna palette selezionata",
+      "preview": "Anteprima"
     },
     "slider": {
       "reset": "Reimposta al centro",
-      "required": "Questo campo è obbligatorio"
+      "required": "Questo campo è obbligatorio",
+      "interpretation": {
+        "balanced": "Bilanciato"
+      },
+      "examples": "Esempi",
+      "summary": "Riepilogo"
+    },
+    "imageGrid": {
+      "premium": "Premium"
     }
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "saving": "Salvataggio...",
+    "saved": "Salvato",
+    "error": "Errore",
+    "success": "Successo",
+    "required": "Richiesto",
+    "optional": "Facoltativo",
+    "close": "Chiudi",
+    "cancel": "Annulla",
+    "confirm": "Conferma",
+    "continue": "Continua",
+    "back": "Indietro",
+    "next": "Avanti",
+    "submit": "Invia",
+    "save": "Salva",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "add": "Aggiungi",
+    "remove": "Rimuovi"
   }
 }

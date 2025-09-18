@@ -55,7 +55,7 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold">{t('intro.title')}</h2>
+          <h2 className="text-xl font-semibold text-foreground">{t('intro.title')}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
             {t('intro.description')}
           </p>
@@ -72,7 +72,7 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Link className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('inspirations.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('inspirations.title')}</h3>
               <Badge variant="outline" className="ml-auto">
                 {t('inspirations.optional')}
               </Badge>
@@ -150,7 +150,7 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-muted-foreground" />
-              <h4 className="font-medium text-sm">{t('categories.title')}</h4>
+              <h4 className="font-medium text-sm text-foreground">{t('categories.title')}</h4>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -196,7 +196,7 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Eye className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('preferences.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('preferences.title')}</h3>
               <Badge variant="outline" className="ml-auto">
                 {t('preferences.optional')}
               </Badge>

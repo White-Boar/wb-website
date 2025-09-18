@@ -258,6 +258,11 @@
         "contactInfo": {
           "title": "Contact Information",
           "required": "Required",
+          "email": {
+            "label": "Business Email",
+            "placeholder": "business@company.com",
+            "hint": "Your main business email address"
+          },
           "phone": {
             "label": "Business Phone",
             "hint": "Your main business phone number"
@@ -491,20 +496,284 @@
         }
       },
       "6": {
-        "title": "Services & Products",
-        "description": "What do you offer?"
+        "title": "Customer Needs",
+        "description": "Understanding what your customers really need",
+        "intro": {
+          "title": "Understanding Customer Challenges",
+          "description": "Help us understand what problems your customers face and how your business solves them. This insight will shape your website's messaging and positioning."
+        },
+        "problems": {
+          "title": "Customer Problems & Pain Points",
+          "required": "Required",
+          "examples": {
+            "title": "Common customer challenges:",
+            "visibility": "Hard to find reliable service providers online",
+            "credibility": "Difficulty assessing business credibility and quality",
+            "competition": "Too many options, unclear differentiation",
+            "communication": "Poor communication or unclear pricing"
+          },
+          "input": {
+            "label": "What main problems do your customers face?",
+            "placeholder": "Describe the specific challenges your customers experience before they find your business...",
+            "hint": "Focus on the problems you solve - this helps us craft compelling website messaging"
+          }
+        },
+        "solutions": {
+          "title": "Your Solutions & Benefits",
+          "required": "Required",
+          "examples": {
+            "title": "How your business solves problems:",
+            "professional": "Professional website establishes instant credibility",
+            "seo": "SEO-optimized content helps customers find you easily",
+            "mobile": "Mobile-friendly design serves customers anywhere",
+            "social": "Social proof and testimonials build trust"
+          },
+          "input": {
+            "label": "How does your business solve these problems?",
+            "placeholder": "Explain the specific ways your products or services address customer challenges...",
+            "hint": "Be specific about the benefits and outcomes customers get from choosing you"
+          }
+        },
+        "delight": {
+          "title": "Customer Delight Moments",
+          "optional": "Optional",
+          "examples": {
+            "title": "Ways to exceed expectations:",
+            "surprise": "Unexpected bonuses or added value",
+            "personal": "Personalized service and attention to detail",
+            "exceed": "Going above and beyond standard service",
+            "memorable": "Creating memorable experiences customers share"
+          },
+          "input": {
+            "label": "How do you exceed customer expectations?",
+            "placeholder": "Describe the special touches or extra value that make customers love working with you...",
+            "hint": "These unique advantages will become key selling points on your website"
+          }
+        },
+        "insights": {
+          "title": "Customer Journey Insights",
+          "awareness": {
+            "title": "Awareness Stage",
+            "description": "How customers discover they need your solution"
+          },
+          "consideration": {
+            "title": "Consideration Stage",
+            "description": "How customers evaluate and compare options"
+          },
+          "decision": {
+            "title": "Decision Stage",
+            "description": "What makes customers choose you over competitors"
+          }
+        },
+        "tips": {
+          "title": "Tips for better responses:",
+          "specific": "Be specific and concrete",
+          "customer": "Think from customer perspective",
+          "emotional": "Include emotional benefits"
+        }
       },
       "7": {
-        "title": "Design Preferences",
-        "description": "Choose your visual style"
+        "title": "Visual Inspiration",
+        "description": "Show us websites and designs you admire",
+        "intro": {
+          "title": "Design Inspiration & References",
+          "description": "Share websites you find visually appealing or functionally impressive. This helps us understand your aesthetic preferences and design direction."
+        },
+        "inspirations": {
+          "title": "Website Inspirations",
+          "optional": "Optional",
+          "guidelines": {
+            "title": "What to look for in inspiration websites:",
+            "layout": "Clean, organized layout and structure",
+            "colors": "Color schemes that appeal to you",
+            "typography": "Text styles and readability",
+            "navigation": "Easy-to-use navigation and menus",
+            "images": "High-quality photos and graphics",
+            "overall": "Overall feel and user experience"
+          },
+          "urls": {
+            "label": "Inspiration Website URLs",
+            "placeholder": "https://example-website.com",
+            "addButton": "Add Website",
+            "hint": "Add up to 10 websites that inspire you. Include competitors, similar businesses, or any sites you find well-designed."
+          }
+        },
+        "categories": {
+          "title": "Quick Categories",
+          "description": "Click to add sample websites from different industries",
+          "restaurant": "Restaurant & Food",
+          "retail": "Retail & E-commerce",
+          "professional": "Professional Services",
+          "creative": "Creative & Portfolio"
+        },
+        "preferences": {
+          "title": "Visual Preferences",
+          "optional": "Optional",
+          "examples": {
+            "title": "Describe your preferred style:",
+            "clean": "Clean and minimalist with lots of white space",
+            "bold": "Bold and vibrant with strong visual impact",
+            "professional": "Professional and trustworthy appearance",
+            "creative": "Creative and unique with artistic elements"
+          },
+          "input": {
+            "label": "Describe your visual preferences",
+            "placeholder": "Tell us about the look and feel you want for your website - colors, layout style, mood, etc...",
+            "hint": "This helps us understand your design direction beyond just inspiration websites"
+          }
+        },
+        "analysis": {
+          "title": "Design Analysis Process",
+          "layout": {
+            "title": "Layout Analysis",
+            "description": "We'll analyze structure and organization patterns"
+          },
+          "content": {
+            "title": "Content Strategy",
+            "description": "We'll examine how content is presented and organized"
+          },
+          "interaction": {
+            "title": "User Experience",
+            "description": "We'll study navigation and user interaction patterns"
+          }
+        },
+        "tips": {
+          "title": "Tips for better inspiration:",
+          "diverse": "Include diverse examples",
+          "specific": "Be specific about what you like",
+          "relevant": "Choose sites relevant to your industry"
+        }
       },
       "8": {
-        "title": "Color Palette",
-        "description": "Select colors that represent your brand"
+        "title": "Design Style",
+        "description": "Choose the visual style that best represents your brand",
+        "intro": {
+          "title": "Choose Your Design Style",
+          "description": "Select the design approach that best reflects your brand personality and appeals to your target audience. This will guide the overall visual direction of your website."
+        },
+        "selection": {
+          "title": "Design Style Selection",
+          "required": "Required"
+        },
+        "characteristics": {
+          "title": "Design Style Impact",
+          "visual": {
+            "title": "Visual Elements",
+            "layout": "Page structure and organization",
+            "typography": "Font choices and text hierarchy",
+            "spacing": "White space and element positioning",
+            "elements": "Buttons, forms, and interactive components"
+          },
+          "impact": {
+            "title": "Business Impact",
+            "perception": "How customers perceive your professionalism",
+            "audience": "Appeal to your target demographic",
+            "conversion": "Influence on user actions and decisions",
+            "branding": "Consistency with your brand identity"
+          }
+        },
+        "recommendations": {
+          "title": "Industry Style Recommendations",
+          "restaurant": {
+            "title": "Restaurant & Food",
+            "style": "Warm & Friendly or Bold & Creative"
+          },
+          "professional": {
+            "title": "Professional Services",
+            "style": "Corporate Professional or Classic Elegant"
+          },
+          "creative": {
+            "title": "Creative Industries",
+            "style": "Bold & Creative or Modern Minimal"
+          },
+          "retail": {
+            "title": "Retail & E-commerce",
+            "style": "Modern Minimal or Warm & Friendly"
+          },
+          "health": {
+            "title": "Health & Wellness",
+            "style": "Classic Elegant or Warm & Friendly"
+          },
+          "luxury": {
+            "title": "Luxury & Premium",
+            "style": "Luxury Premium or Classic Elegant"
+          }
+        },
+        "tips": {
+          "title": "Choose a style that:",
+          "authentic": "Feels authentic to your brand",
+          "audience": "Appeals to your target audience",
+          "flexible": "Works across different devices"
+        }
       },
       "9": {
-        "title": "Website Sections",
-        "description": "Which sections do you need?"
+        "title": "Image Style",
+        "description": "Choose the visual style for your website's imagery",
+        "intro": {
+          "title": "Choose Your Image Style",
+          "description": "Select the type of imagery that best represents your brand and connects with your audience. This choice will guide all visual content throughout your website."
+        },
+        "selection": {
+          "title": "Image Style Selection",
+          "required": "Required"
+        },
+        "impact": {
+          "title": "Visual Impact & Considerations",
+          "psychology": {
+            "title": "Psychological Impact",
+            "trust": "Professional images build credibility and trust",
+            "emotion": "Lifestyle photos create emotional connections",
+            "attention": "Creative visuals capture and hold attention",
+            "memory": "Unique imagery makes your brand memorable"
+          },
+          "technical": {
+            "title": "Technical Benefits",
+            "loading": "Optimized images ensure fast loading times",
+            "scalability": "Vector graphics scale perfectly on all devices",
+            "responsive": "Professional photos work across all screen sizes",
+            "accessibility": "Clear imagery improves accessibility for all users"
+          }
+        },
+        "combinations": {
+          "title": "Industry Style Combinations",
+          "business": {
+            "title": "Business & Professional",
+            "professional": "Professional Photography + Clean Minimalist",
+            "clean": "Clean composition for trust and credibility",
+            "mixed": "Mixed Creative for dynamic presentations"
+          },
+          "creative": {
+            "title": "Creative & Artistic",
+            "handDrawn": "Hand-Drawn Style for unique personality",
+            "lifestyle": "Lifestyle Photography for authentic feel",
+            "modern": "Modern Illustrations for contemporary appeal"
+          },
+          "hospitality": {
+            "title": "Hospitality & Food",
+            "lifestyle": "Lifestyle Photography for appetizing visuals",
+            "professional": "Professional Photography for quality impression",
+            "warm": "Warm tones to create inviting atmosphere"
+          },
+          "tech": {
+            "title": "Technology & SaaS",
+            "modern": "Modern Illustrations for innovation",
+            "minimalist": "Minimalist Clean for focus and clarity",
+            "mixed": "Mixed Creative for engaging presentations"
+          }
+        },
+        "strategy": {
+          "title": "Content Strategy Integration",
+          "description": "Your chosen image style will influence how we source, create, and optimize all visual content for your website.",
+          "consistency": "Consistent visual language across all pages",
+          "quality": "High-quality imagery that reflects your brand values",
+          "relevance": "Images that support and enhance your message"
+        },
+        "tips": {
+          "title": "Choose images that:",
+          "brand": "Align with your brand personality",
+          "audience": "Resonate with your target audience",
+          "quality": "Maintain high quality standards"
+        }
       },
       "10": {
         "title": "Color Palette",
@@ -576,8 +845,70 @@
         }
       },
       "11": {
-        "title": "Competitors & Inspiration",
-        "description": "Show us websites you like"
+        "title": "Website Structure",
+        "description": "Define your website's purpose and organize its content effectively",
+        "intro": {
+          "title": "Plan Your Website Structure",
+          "description": "Define your primary goals and choose the sections that will help you achieve them. A well-structured website guides visitors smoothly toward your desired actions."
+        },
+        "goal": {
+          "title": "Primary Website Goal",
+          "required": "Required",
+          "selection": {
+            "label": "What is your main goal for this website?",
+            "placeholder": "Select your primary objective",
+            "hint": "This will influence which sections we recommend and how we structure your content"
+          }
+        },
+        "sections": {
+          "title": "Website Sections",
+          "required": "Required",
+          "essential": "Essential",
+          "recommended": {
+            "title": "Recommended sections for",
+            "badge": "Recommended"
+          }
+        },
+        "offerings": {
+          "title": "Products & Services",
+          "optional": "Optional",
+          "examples": {
+            "title": "Examples of what you might offer:",
+            "consulting": "Business consulting services",
+            "design": "Web design and branding",
+            "development": "Software development",
+            "photography": "Professional photography",
+            "marketing": "Digital marketing services",
+            "training": "Training and workshops"
+          },
+          "list": {
+            "label": "Your Products/Services",
+            "placeholder": "Enter a product or service",
+            "addButton": "Add Item",
+            "hint": "List your main products or services - this helps us create targeted content for each offering"
+          }
+        },
+        "insights": {
+          "title": "Structure & User Experience",
+          "navigation": {
+            "title": "Navigation Design",
+            "clear": "Clear, intuitive menu structure",
+            "logical": "Logical information hierarchy",
+            "mobile": "Mobile-friendly navigation patterns"
+          },
+          "conversion": {
+            "title": "Conversion Optimization",
+            "cta": "Strategic call-to-action placement",
+            "trust": "Trust signals and social proof positioning",
+            "contact": "Easy access to contact information"
+          }
+        },
+        "tips": {
+          "title": "Structure tips:",
+          "essential": "Include essential sections",
+          "goal": "Align with your main goal",
+          "simple": "Keep navigation simple"
+        }
       },
       "12": {
         "intro": {
@@ -814,6 +1145,30 @@
     "slider": {
       "reset": "Reset to center",
       "required": "This field is required"
+    },
+    "imageGrid": {
+      "premium": "Premium"
     }
+  },
+  "common": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "error": "Error",
+    "success": "Success",
+    "required": "Required",
+    "optional": "Optional",
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "continue": "Continue",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add",
+    "remove": "Remove"
   }
 }

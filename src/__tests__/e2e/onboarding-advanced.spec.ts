@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { getOnboardingNextButton } from './helpers/test-utils';
 
 test.describe('Onboarding Advanced Features', () => {
   // Helper to complete initial steps quickly
@@ -15,55 +16,61 @@ test.describe('Onboarding Advanced Features', () => {
     await page.fill('input[name="lastName"]', userData.lastName);
     await page.fill('input[name="email"]', userData.email);
 
-    await page.getByRole('button', { name: /next|continue/i }).click();
+    // Wait for validation and ensure button is enabled
+    await page.locator('input[name="email"]').blur();
+    await page.waitForTimeout(500);
+    await expect(getOnboardingNextButton(page)).toBeEnabled({ timeout: 5000 });
+
+    await getOnboardingNextButton(page).click();
     await page.waitForURL('**/step/2');
 
-    // Step 2 - Email verification
-    await page.fill('input[maxlength="6"]', 'DEV123');
+    // Step 2 - Email verification (6 individual textboxes)
+    await page.fill('input[aria-label*="digit 1"]', '1');
+    await page.fill('input[aria-label*="digit 2"]', '2');
+    await page.fill('input[aria-label*="digit 3"]', '3');
+    await page.fill('input[aria-label*="digit 4"]', '4');
+    await page.fill('input[aria-label*="digit 5"]', '5');
+    await page.fill('input[aria-label*="digit 6"]', '6');
     await page.waitForTimeout(1000);
 
-    const nextButton = page.getByRole('button', { name: /next|continue/i });
+    const nextButton = getOnboardingNextButton(page);
     if (await nextButton.isEnabled()) {
       await nextButton.click();
       await page.waitForURL('**/step/3');
     }
 
-    // Step 3 - Business details
-    await page.fill('input[name="businessName"]', 'Advanced Test Company');
-    await page.fill('input[name="businessEmail"]', 'business@advanced-test.com');
-    await page.fill('input[name="businessPhone"]', '+39 123 456 7890');
+    // Step 3 - Business details (fill ALL required fields)
+    await page.getByRole('textbox', { name: /Business Name/i }).fill('Advanced Test Company');
 
+    // Select industry from dropdown
+    await page.getByRole('combobox', { name: /Industry/i }).click();
+    await page.getByRole('option', { name: /Technology & IT/i }).click();
+
+    // Fill contact information
+    await page.getByRole('textbox', { name: /Business Phone/i }).fill('123456789');
+    await page.getByRole('textbox', { name: /Business Email/i }).fill('business@advanced-test.com');
+
+    // Fill complete address (all required fields)
+    await page.getByRole('textbox', { name: /Street Address/i }).fill('Via Roma 123');
+    await page.getByRole('textbox', { name: /City/i }).fill('Milan');
+    await page.getByRole('textbox', { name: /Postal Code/i }).fill('20100');
+    await page.getByRole('textbox', { name: /Province/i }).fill('MI');
+    // Country is pre-filled with Italy
+
+    // Wait for validation and ensure button is enabled
+    await page.getByRole('textbox', { name: /Province/i }).blur();
     await page.waitForTimeout(1000);
-    const step3NextButton = page.getByRole('button', { name: /next|continue/i });
-    if (await step3NextButton.isEnabled()) {
-      await step3NextButton.click();
-    }
+    const step3NextButton = getOnboardingNextButton(page);
+    await expect(step3NextButton).toBeEnabled({ timeout: 5000 });
+    await step3NextButton.click();
   }
 
   test.describe('Step 5: Customer Profiling Sliders', () => {
     test.beforeEach(async ({ page }) => {
-      await completeInitialSteps(page);
-
-      // Navigate to Step 5 (may need to complete Step 4 first)
-      try {
-        await page.goto('/onboarding/step/5');
-        await page.waitForLoadState('networkidle');
-      } catch {
-        // If direct access fails, complete Step 4 first
-        await page.goto('/onboarding/step/4');
-        await page.waitForLoadState('networkidle');
-
-        const businessDesc = page.locator('textarea[name="businessDescription"], textarea[name="offer"]').first();
-        if (await businessDesc.isVisible()) {
-          await businessDesc.fill('We provide advanced technology solutions for modern businesses.');
-        }
-
-        const nextButton = page.getByRole('button', { name: /next|continue/i });
-        if (await nextButton.isEnabled()) {
-          await nextButton.click();
-          await page.waitForURL('**/step/5');
-        }
-      }
+      // Test the sophisticated Step 5 directly (it exists and works independently)
+      await page.goto('/onboarding/step/5');
+      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(2000); // Allow time for sophisticated sliders to render
     });
 
     test('displays customer profiling sliders correctly', async ({ page }) => {
@@ -71,10 +78,10 @@ test.describe('Onboarding Advanced Features', () => {
       const sliders = page.locator('input[type="range"], [role="slider"]');
 
       if (await sliders.count() > 0) {
-        await expect(sliders).toHaveCount.atLeast(3); // Should have multiple profiling sliders
+        expect(await sliders.count()).toBeGreaterThanOrEqual(3); // Should have multiple profiling sliders
 
         // Check slider labels and categories
-        await expect(page.locator('text*="Budget", text*="Style", text*="Traditional", text*="Modern"')).toBeVisible();
+        await expect(page.locator('text=Budget').or(page.locator('text=Style')).or(page.locator('text=Traditional')).or(page.locator('text=Modern'))).toBeVisible();
 
         console.log(`Found ${await sliders.count()} customer profiling sliders`);
       } else {
@@ -141,10 +148,10 @@ test.describe('Onboarding Advanced Features', () => {
       const colorOptions = page.locator('[class*="palette"], [class*="color"], button[data-palette], [role="option"]');
 
       if (await colorOptions.count() > 0) {
-        await expect(colorOptions).toHaveCount.atLeast(3); // Should have multiple palette options
+        expect(await colorOptions.count()).toBeGreaterThanOrEqual(3); // Should have multiple palette options
 
         // Check for color psychology descriptions
-        await expect(page.locator('text*="Professional", text*="Warm", text*="Nature", text*="Elegant"')).toBeVisible();
+        await expect(page.locator('text=Professional').or(page.locator('text=Warm')).or(page.locator('text=Nature')).or(page.locator('text=Elegant'))).toBeVisible();
 
         console.log(`Found ${await colorOptions.count()} color palette options`);
       } else {
@@ -176,7 +183,7 @@ test.describe('Onboarding Advanced Features', () => {
 
     test('color accessibility information is provided', async ({ page }) => {
       // Look for accessibility or psychology information
-      const accessibilityInfo = page.locator('text*="accessibility", text*="contrast", text*="readable"');
+      const accessibilityInfo = page.locator('text=accessibility').or(page.locator('text=contrast')).or(page.locator('text=readable'));
 
       if (await accessibilityInfo.count() > 0) {
         await expect(accessibilityInfo.first()).toBeVisible();
@@ -193,13 +200,13 @@ test.describe('Onboarding Advanced Features', () => {
 
     test('displays completion summary correctly', async ({ page }) => {
       // Check for completion elements
-      await expect(page.locator('text*="Complete", text*="Summary", text*="Congratulations", text*="Finish"')).toBeVisible();
+      await expect(page.locator('text=Complete').or(page.locator('text=Summary')).or(page.locator('text=Congratulations')).or(page.locator('text=Finish'))).toBeVisible();
 
       // Check for project timeline information
-      await expect(page.locator('text*="timeline", text*="days", text*="delivery", text*="project"')).toBeVisible();
+      await expect(page.locator('text=timeline').or(page.locator('text=days')).or(page.locator('text=delivery')).or(page.locator('text=project'))).toBeVisible();
 
       // Check for contact or next steps information
-      await expect(page.locator('text*="contact", text*="next", text*="email", text*="start"')).toBeVisible();
+      await expect(page.locator('text=contact').or(page.locator('text=next')).or(page.locator('text=email')).or(page.locator('text=start'))).toBeVisible();
     });
 
     test('final submission works', async ({ page }) => {
@@ -215,7 +222,7 @@ test.describe('Onboarding Advanced Features', () => {
         await page.waitForTimeout(2000);
 
         // Check for success indication
-        const successIndicators = page.locator('text*="success", text*="submitted", text*="received", text*="thank"');
+        const successIndicators = page.locator('text=success').or(page.locator('text=submitted')).or(page.locator('text=received')).or(page.locator('text=thank'));
         await expect(successIndicators.first()).toBeVisible();
       }
     });
@@ -228,7 +235,7 @@ test.describe('Onboarding Advanced Features', () => {
         await expect(summaryElements.first()).toBeVisible();
 
         // Should show business name, email, or other collected info
-        const businessInfo = page.locator('text*="business", text*="company", text*="@"');
+        const businessInfo = page.locator('text=business').or(page.locator('text=company')).or(page.locator('text=@'));
         await expect(businessInfo.first()).toBeVisible();
       }
     });
@@ -309,7 +316,7 @@ test.describe('Onboarding Advanced Features', () => {
       await page.waitForLoadState('networkidle');
 
       // Check for Italian content
-      const italianContent = page.locator('text*="Nome", text*="Cognome", text*="Email", text*="Avanti", text*="Continua"');
+      const italianContent = page.locator('text=Nome').or(page.locator('text=Cognome')).or(page.locator('text=Email')).or(page.locator('text=Avanti')).or(page.locator('text=Continua'));
 
       if (await italianContent.count() > 0) {
         await expect(italianContent.first()).toBeVisible();
@@ -366,7 +373,7 @@ test.describe('Onboarding Advanced Features', () => {
         await expect(fileInputs.first()).toBeVisible();
 
         // Check for upload areas or drag-drop zones
-        const uploadAreas = page.locator('[class*="upload"], [class*="drop"], text*="drag", text*="upload"');
+        const uploadAreas = page.locator('[class*="upload"], [class*="drop"]').or(page.locator('text=drag')).or(page.locator('text=upload'));
         if (await uploadAreas.count() > 0) {
           await expect(uploadAreas.first()).toBeVisible();
         }
@@ -425,7 +432,7 @@ test.describe('Onboarding Advanced Features', () => {
         await page.waitForTimeout(300);
 
         // Should show character count or validation message
-        const charCount = page.locator('text*="character", text*="/", text*="min"');
+        const charCount = page.locator('text=character').or(page.locator('text=/')).or(page.locator('text=min'));
         if (await charCount.count() > 0) {
           await expect(charCount.first()).toBeVisible();
         }
@@ -446,7 +453,7 @@ test.describe('Onboarding Advanced Features', () => {
       await page.waitForLoadState('networkidle');
 
       // Look for progress indicator
-      const progressIndicator = page.locator('[class*="progress"], [role="progressbar"], text*="%"');
+      const progressIndicator = page.locator('[class*="progress"], [role="progressbar"]').or(page.locator('text=%'));
 
       if (await progressIndicator.count() > 0) {
         const initialProgress = await progressIndicator.first().textContent();
@@ -476,7 +483,7 @@ test.describe('Onboarding Advanced Features', () => {
       await page.waitForLoadState('networkidle');
 
       // Look for step indicators (numbered steps, breadcrumbs, etc.)
-      const stepIndicators = page.locator('[class*="step"], [class*="breadcrumb"], text*="Step 3", text*="3 of"');
+      const stepIndicators = page.locator('[class*="step"], [class*="breadcrumb"]').or(page.locator('text=Step 3')).or(page.locator('text=3 of'));
 
       if (await stepIndicators.count() > 0) {
         await expect(stepIndicators.first()).toBeVisible();

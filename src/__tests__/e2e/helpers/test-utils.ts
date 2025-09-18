@@ -34,8 +34,10 @@ export async function fillStep1Form(page: Page, userData: Partial<OnboardingUser
   await page.fill('input[name="lastName"]', data.lastName);
   await page.fill('input[name="email"]', data.email);
 
-  // Wait for validation
-  await page.waitForTimeout(500);
+  // Wait for validation to complete and next button to be enabled
+  await waitForValidation(page);
+  const nextButton = getOnboardingNextButton(page);
+  await expect(nextButton).toBeEnabled({ timeout: 5000 });
 }
 
 /**
@@ -49,7 +51,7 @@ export async function completeEmailVerification(page: Page, code: string = BYPAS
   await page.waitForTimeout(1000);
 
   // Check if auto-submit worked, otherwise click next
-  const nextButton = page.getByRole('button', { name: /next|continue/i });
+  const nextButton = getOnboardingNextButton(page);
   if (await nextButton.isEnabled()) {
     await nextButton.click();
   }
@@ -76,17 +78,52 @@ export async function fillStep3BusinessDetails(page: Page, businessData: Partial
 }
 
 /**
- * Navigate to a specific step with proper verification
+ * Start onboarding from welcome screen (natural user flow)
  */
-export async function navigateToStep(page: Page, stepNumber: number) {
-  await page.goto(`/onboarding/step/${stepNumber}`);
+export async function startOnboardingFromWelcome(page: Page) {
+  // Go to welcome page
+  await page.goto('/onboarding');
   await page.waitForLoadState('networkidle');
 
+  // Check if we're already on a step page, if so, go back to welcome
+  if (page.url().includes('/step/')) {
+    await page.goto('/onboarding');
+    await page.waitForLoadState('networkidle');
+  }
+
+  // Click "Start Your Website" button
+  const startButton = page.getByRole('button', { name: /Start Your Website/i });
+  await expect(startButton).toBeVisible();
+  await startButton.click();
+
+  // Wait for navigation to step 1
+  await page.waitForURL(/\/onboarding\/step\/1/);
+  await page.waitForLoadState('networkidle');
+
+  // Verify we're on step 1
+  await expect(page).toHaveURL(/\/step\/1/);
+}
+
+/**
+ * Navigate to a specific step with proper verification
+ * Note: This should only be used for testing specific steps in isolation
+ */
+export async function navigateToStep(page: Page, stepNumber: number) {
+  // First ensure we have a session by starting from welcome
+  if (stepNumber === 1) {
+    await startOnboardingFromWelcome(page);
+  } else {
+    // For other steps, we need to have completed prior steps
+    // This direct navigation may not work without proper session state
+    await page.goto(`/onboarding/step/${stepNumber}`);
+    await page.waitForLoadState('networkidle');
+  }
+
   // Verify we're on the correct step
-  await expect(page).toHaveURL(`/onboarding/step/${stepNumber}`);
+  await expect(page).toHaveURL(new RegExp(`/step/${stepNumber}`));
 
   // Wait for step content to be visible
-  await expect(page.locator('.step-content, [data-testid*="step"], main, form').first()).toBeVisible();
+  await expect(page.locator('main').first()).toBeVisible();
 }
 
 /**
@@ -97,7 +134,7 @@ export async function completeBasicFlow(page: Page, userData: Partial<Onboarding
   await navigateToStep(page, 1);
   await fillStep1Form(page, userData);
 
-  const step1NextButton = page.getByRole('button', { name: /next|continue/i });
+  const step1NextButton = getOnboardingNextButton(page);
   await expect(step1NextButton).toBeEnabled();
   await step1NextButton.click();
 
@@ -109,7 +146,7 @@ export async function completeBasicFlow(page: Page, userData: Partial<Onboarding
   await expect(page).toHaveURL(/\/step\/3/);
   await fillStep3BusinessDetails(page, userData);
 
-  const step3NextButton = page.getByRole('button', { name: /next|continue/i });
+  const step3NextButton = getOnboardingNextButton(page);
   if (await step3NextButton.isEnabled()) {
     await step3NextButton.click();
   }
@@ -139,10 +176,18 @@ export async function getCurrentStepNumber(page: Page): Promise<number> {
 }
 
 /**
+ * Get the onboarding next/continue button (excludes Next.js Dev Tools button)
+ */
+export function getOnboardingNextButton(page: Page) {
+  return page.getByRole('button', { name: /next|continue|submit|finish/i })
+    .and(page.locator(':not([data-nextjs-dev-tools-button])'));
+}
+
+/**
  * Check if next button is enabled
  */
 export async function isNextButtonEnabled(page: Page): Promise<boolean> {
-  const nextButton = page.getByRole('button', { name: /next|continue|submit|finish/i });
+  const nextButton = getOnboardingNextButton(page);
 
   if (await nextButton.isVisible()) {
     return await nextButton.isEnabled();
@@ -301,4 +346,48 @@ export async function measureFormInteractionTime(page: Page, interactions: () =>
   const startTime = Date.now();
   await interactions();
   return Date.now() - startTime;
+}
+
+/**
+ * Restart onboarding using the UI restart button
+ * This clears all session state and returns to step 1
+ */
+export async function restartOnboarding(page: Page) {
+  // Find and click the restart button
+  const restartButton = page.getByTestId('restart-onboarding');
+  await expect(restartButton).toBeVisible();
+  await restartButton.click();
+
+  // Handle the confirmation dialog
+  const confirmButton = page.getByTestId('confirm-restart');
+  await expect(confirmButton).toBeVisible();
+  await confirmButton.click();
+
+  // Wait for navigation to step 1
+  await page.waitForURL(/\/onboarding\/step\/1/);
+  await page.waitForLoadState('networkidle');
+
+  // Verify we're on step 1 with clean state
+  await expect(page).toHaveURL(/\/step\/1/);
+  await expect(page.locator('main').first()).toBeVisible();
+}
+
+/**
+ * Ensure fresh onboarding state for tests
+ * This should be called at the beginning of each test to guarantee clean state
+ */
+export async function ensureFreshOnboardingState(page: Page) {
+  // Navigate to onboarding if not already there
+  if (!page.url().includes('/onboarding')) {
+    await page.goto('/onboarding');
+    await page.waitForLoadState('networkidle');
+  }
+
+  // If we're already on a step, restart the flow
+  if (page.url().includes('/step/')) {
+    await restartOnboarding(page);
+  } else {
+    // If we're on the welcome page, we already have fresh state
+    await page.waitForLoadState('networkidle');
+  }
 }

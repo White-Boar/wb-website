@@ -1,8 +1,8 @@
-import defaultTheme from "tailwindcss/defaultTheme.js";
-import plugin from "tailwindcss/plugin.js";
+const defaultTheme = require("tailwindcss/defaultTheme");
+const plugin = require("tailwindcss/plugin");
 
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
   content: [
     "./src/app/**/*.{tsx,ts,jsx,js}",
     "./src/components/**/*.{tsx,ts,jsx,js}",
@@ -26,6 +26,36 @@ export default {
           500: "rgb(var(--wb-gray-500) / <alpha-value>)",
           700: "rgb(var(--wb-gray-700) / <alpha-value>)",
           900: "rgb(var(--wb-gray-900) / <alpha-value>)",
+        },
+        // shadcn/ui theme colors that map to WhiteBoar design system
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
       },
       spacing: {

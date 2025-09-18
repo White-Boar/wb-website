@@ -1,4 +1,17 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import {
+  fillStep1Form,
+  completeEmailVerification,
+  fillStep3BusinessDetails,
+  startOnboardingFromWelcome,
+  navigateToStep,
+  getCurrentStepNumber,
+  getOnboardingNextButton,
+  waitForValidation,
+  ensureFreshOnboardingState,
+  BYPASS_CODES,
+  DEFAULT_USER_DATA
+} from './helpers/test-utils';
 
 test.describe('Onboarding Flow', () => {
   // Helper function to fill Step 1 form
@@ -30,25 +43,34 @@ test.describe('Onboarding Flow', () => {
     await page.waitForTimeout(1000);
 
     // Check if Next button is enabled and click it
-    const nextButton = page.getByRole('button', { name: /next|continue/i });
+    const nextButton = getOnboardingNextButton(page);
     if (await nextButton.isEnabled()) {
       await nextButton.click();
     }
   }
 
   test.beforeEach(async ({ page }) => {
-    // Start from the beginning of onboarding
-    await page.goto('/onboarding/step/1');
+    // Ensure fresh onboarding state using the restart functionality
+    await ensureFreshOnboardingState(page);
 
-    // Wait for page to load and hydrate
+    // Start onboarding flow naturally from welcome page
+    const startButton = page.getByRole('button', { name: /Start Your Website/i });
+    await expect(startButton).toBeVisible();
+    await startButton.click();
+
+    // Wait for navigation to step 1
+    await page.waitForURL(/\/onboarding\/step\/1/);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000); // Allow for React hydration
   });
 
   test.describe('Step 1: Welcome & Basic Info', () => {
     test('loads correctly with proper UI elements', async ({ page }) => {
+      // Should already be on step 1 from beforeEach
+      await expect(page).toHaveURL(/\/onboarding\/step\/1/);
+
       // Check page loads correctly
-      await expect(page.locator('h1, h2')).toContainText(['Welcome', 'Let\'s get started']);
+      await expect(page.locator('h1, h2')).toContainText(['Welcome', 'Welcome to WhiteBoar']);
 
       // Check form fields are present
       await expect(page.locator('input[name="firstName"]')).toBeVisible();
@@ -56,28 +78,40 @@ test.describe('Onboarding Flow', () => {
       await expect(page.locator('input[name="email"]')).toBeVisible();
 
       // Check Next button is initially disabled
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
       await expect(nextButton).toBeDisabled();
     });
 
     test('validates required fields', async ({ page }) => {
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      // First clear existing data from beforeEach and trigger validation
+      await page.fill('input[name="firstName"]', '');
+      await page.locator('input[name="firstName"]').blur();
+      await page.fill('input[name="lastName"]', '');
+      await page.locator('input[name="lastName"]').blur();
+      await page.fill('input[name="email"]', '');
+      await page.locator('input[name="email"]').blur();
 
-      // Try to submit empty form
-      await nextButton.click();
+      const nextButton = getOnboardingNextButton(page);
+
+      // Check that button is disabled with empty form
       await expect(nextButton).toBeDisabled();
 
       // Fill only first name
       await page.fill('input[name="firstName"]', 'Test');
+      await page.locator('input[name="firstName"]').blur();
+      await page.waitForTimeout(300);
       await expect(nextButton).toBeDisabled();
 
       // Fill first and last name
       await page.fill('input[name="lastName"]', 'User');
+      await page.locator('input[name="lastName"]').blur();
+      await page.waitForTimeout(300);
       await expect(nextButton).toBeDisabled();
 
       // Fill all required fields
       await page.fill('input[name="email"]', 'test@example.com');
-      await page.waitForTimeout(500); // Allow for validation
+      await page.locator('input[name="email"]').blur();
+      await page.waitForTimeout(1000); // Allow for validation
       await expect(nextButton).toBeEnabled();
     });
 
@@ -92,21 +126,21 @@ test.describe('Onboarding Flow', () => {
         await page.fill('input[name="email"]', email);
         await page.waitForTimeout(300);
 
-        const nextButton = page.getByRole('button', { name: /next|continue/i });
+        const nextButton = getOnboardingNextButton(page);
         await expect(nextButton).toBeDisabled();
       }
 
       // Test valid email
       await page.fill('input[name="email"]', 'test@example.com');
       await page.waitForTimeout(500);
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
       await expect(nextButton).toBeEnabled();
     });
 
     test('successfully submits and navigates to Step 2', async ({ page }) => {
       await fillStep1Form(page);
 
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
       await expect(nextButton).toBeEnabled();
 
       await nextButton.click();
@@ -120,7 +154,7 @@ test.describe('Onboarding Flow', () => {
     test.beforeEach(async ({ page }) => {
       // Complete Step 1 first
       await fillStep1Form(page);
-      await page.getByRole('button', { name: /next|continue/i }).click();
+      await getOnboardingNextButton(page).click();
       await verifyStepNavigation(page, 2);
     });
 
@@ -158,7 +192,7 @@ test.describe('Onboarding Flow', () => {
       await otpInput.fill('123');
       await page.waitForTimeout(500);
 
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
       await expect(nextButton).toBeDisabled();
 
       // Test full length code
@@ -172,7 +206,7 @@ test.describe('Onboarding Flow', () => {
     test.beforeEach(async ({ page }) => {
       // Complete Steps 1-2
       await fillStep1Form(page);
-      await page.getByRole('button', { name: /next|continue/i }).click();
+      await getOnboardingNextButton(page).click();
       await verifyStepNavigation(page, 2);
       await completeEmailVerification(page);
       await verifyStepNavigation(page, 3);
@@ -189,7 +223,7 @@ test.describe('Onboarding Flow', () => {
     });
 
     test('validates business name requirement', async ({ page }) => {
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
 
       // Try without business name
       await page.fill('input[name="businessEmail"]', 'business@example.com');
@@ -208,7 +242,7 @@ test.describe('Onboarding Flow', () => {
       await page.fill('input[name="businessEmail"]', 'invalid-email');
       await page.waitForTimeout(300);
 
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
       await expect(nextButton).toBeDisabled();
 
       // Test valid business email
@@ -230,7 +264,7 @@ test.describe('Onboarding Flow', () => {
       }
 
       // Submit form
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
       await page.waitForTimeout(1000);
 
       if (await nextButton.isEnabled()) {
@@ -244,14 +278,14 @@ test.describe('Onboarding Flow', () => {
     test.beforeEach(async ({ page }) => {
       // Complete Steps 1-3
       await fillStep1Form(page);
-      await page.getByRole('button', { name: /next|continue/i }).click();
+      await getOnboardingNextButton(page).click();
       await completeEmailVerification(page);
 
       // Fill Step 3
       await page.fill('input[name="businessName"]', 'Test Business');
       await page.fill('input[name="businessEmail"]', 'business@test.com');
 
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
       await page.waitForTimeout(1000);
       if (await nextButton.isEnabled()) {
         await nextButton.click();
@@ -313,7 +347,7 @@ test.describe('Onboarding Flow', () => {
         email: 'integration@test.com'
       });
 
-      await page.getByRole('button', { name: /next|continue/i }).click();
+      await getOnboardingNextButton(page).click();
       await verifyStepNavigation(page, 2);
 
       // Step 2: Email Verification
@@ -326,7 +360,7 @@ test.describe('Onboarding Flow', () => {
       await page.fill('input[name="businessPhone"]', '+39 123 456 7890');
 
       await page.waitForTimeout(1000);
-      const step3NextButton = page.getByRole('button', { name: /next|continue/i });
+      const step3NextButton = getOnboardingNextButton(page);
       if (await step3NextButton.isEnabled()) {
         await step3NextButton.click();
         await verifyStepNavigation(page, 4);
@@ -341,8 +375,15 @@ test.describe('Onboarding Flow', () => {
 
     test('maintains session persistence across page refreshes', async ({ page }) => {
       // Complete Step 1
-      await fillStep1Form(page);
-      await page.getByRole('button', { name: /next|continue/i }).click();
+      await page.fill('input[name="firstName"]', 'Test');
+      await page.fill('input[name="lastName"]', 'User');
+      await page.fill('input[name="email"]', 'test@example.com');
+      await page.locator('input[name="email"]').blur();
+      await waitForValidation(page);
+
+      const nextButton = getOnboardingNextButton(page);
+      await expect(nextButton).toBeEnabled();
+      await nextButton.click();
       await verifyStepNavigation(page, 2);
 
       // Refresh page
@@ -366,7 +407,8 @@ test.describe('Onboarding Flow', () => {
     test('handles navigation between completed steps', async ({ page }) => {
       // Complete Steps 1-2
       await fillStep1Form(page);
-      await page.getByRole('button', { name: /next|continue/i }).click();
+      const nextButton = getOnboardingNextButton(page);
+      await nextButton.click();
       await completeEmailVerification(page);
 
       // Try to navigate back to Step 1 directly
@@ -385,7 +427,7 @@ test.describe('Onboarding Flow', () => {
       // Simulate network failure
       await page.route('**/api/onboarding/**', route => route.abort());
 
-      const nextButton = page.getByRole('button', { name: /next|continue/i });
+      const nextButton = getOnboardingNextButton(page);
       if (await nextButton.isEnabled()) {
         await nextButton.click();
 
@@ -436,7 +478,7 @@ test.describe('Onboarding Flow', () => {
         await fillStep1Form(page);
 
         // Check button accessibility on mobile
-        const nextButton = page.getByRole('button', { name: /next|continue/i });
+        const nextButton = getOnboardingNextButton(page);
         await expect(nextButton).toBeVisible();
 
         // Test form submission on mobile
@@ -460,7 +502,7 @@ test.describe('Onboarding Flow', () => {
         await page.fill('input[name="email"]', 'mobile@test.com');
 
         // Test button tap
-        const nextButton = page.getByRole('button', { name: /next|continue/i });
+        const nextButton = getOnboardingNextButton(page);
         if (await nextButton.isEnabled()) {
           await page.tap('button:has-text("Next"), button:has-text("Continue")');
         }
@@ -495,7 +537,7 @@ test.describe('Onboarding Flow', () => {
       await expect(page.locator('label[for*="firstName"], input[aria-label*="first"], input[aria-labelledby]').first()).toBeVisible();
 
       // Check for required field indicators
-      await expect(page.locator('input[required], input[aria-required="true"]')).toHaveCount.atLeast(1);
+      expect(await page.locator('input[required], input[aria-required="true"]').count()).toBeGreaterThanOrEqual(1);
 
       // Check for error announcements
       const firstNameInput = page.locator('input[name="firstName"]');

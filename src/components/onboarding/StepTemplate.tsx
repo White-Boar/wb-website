@@ -114,7 +114,7 @@ export function StepTemplate({
           animate={{ opacity: 1, scale: 1 }}
           className="bg-background border rounded-lg shadow-lg p-6 max-w-md w-full"
         >
-          <h2 className="text-lg font-semibold mb-2">{t('sessionExpired.title')}</h2>
+          <h2 className="text-lg font-semibold mb-2 text-foreground">{t('sessionExpired.title')}</h2>
           <p className="text-muted-foreground mb-4">{t('sessionExpired.description')}</p>
           <div className="flex gap-3">
             <Button
@@ -176,8 +176,8 @@ export function StepTemplate({
         >
           {/* Step Header */}
           <div className="text-center mb-8">
-            <motion.h1 
-              className="text-3xl md:text-4xl font-bold mb-4"
+            <motion.h1
+              className="text-3xl md:text-4xl font-bold mb-4 text-foreground"
               initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
@@ -233,16 +233,17 @@ export function StepTemplate({
               {Array.from({ length: 13 }, (_, i) => (
                 <div
                   key={i}
+                  role="img"
                   className={cn(
                     "w-2 h-2 rounded-full transition-colors",
-                    i < stepNumber 
-                      ? "bg-primary" 
-                      : i === stepNumber - 1 
-                        ? "bg-primary/60" 
+                    i < stepNumber
+                      ? "bg-primary"
+                      : i === stepNumber - 1
+                        ? "bg-primary/60"
                         : "bg-muted-foreground/20"
                   )}
                   aria-label={
-                    i < stepNumber 
+                    i < stepNumber
                       ? t('stepCompleted', { step: i + 1 })
                       : i === stepNumber - 1
                         ? t('stepCurrent', { step: i + 1 })

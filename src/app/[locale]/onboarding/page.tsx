@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
@@ -15,12 +15,17 @@ export default function OnboardingWelcome() {
   const router = useRouter()
   const params = useParams()
   const locale = params.locale as 'en' | 'it'
-  const { initializeSession, loadExistingSession, hasExistingSession } = useOnboardingStore()
+  const { initializeSession, loadExistingSession } = useOnboardingStore()
+  const [mounted, setMounted] = useState(false)
 
-  // Check for existing session on mount
+  // Handle hydration and session check
   useEffect(() => {
+    setMounted(true)
+
+    // Check for existing session after mount
     const existingSession = loadExistingSession()
-    if (existingSession) {
+    // Only redirect if there's a valid session with an ID (not just default state)
+    if (existingSession && existingSession.id && existingSession.currentStep && existingSession.currentStep > 1) {
       // Redirect to appropriate step
       router.push(`/onboarding/step/${existingSession.currentStep}`)
     }
@@ -29,7 +34,8 @@ export default function OnboardingWelcome() {
   const handleStart = async () => {
     try {
       const session = await initializeSession(locale)
-      router.push(`/onboarding/step/${session.currentStep}`)
+      const step = session.currentStep && session.currentStep >= 1 ? session.currentStep : 1
+      router.push(`/onboarding/step/${step}`)
     } catch (error) {
       console.error('Failed to initialize onboarding session:', error)
     }
@@ -37,8 +43,10 @@ export default function OnboardingWelcome() {
 
   const handleContinue = () => {
     const session = loadExistingSession()
-    if (session) {
+    if (session && session.currentStep && session.currentStep >= 1) {
       router.push(`/onboarding/step/${session.currentStep}`)
+    } else {
+      router.push(`/onboarding/step/1`)
     }
   }
 
@@ -79,8 +87,8 @@ export default function OnboardingWelcome() {
         >
           <Card className="text-center">
             <CardContent className="pt-6">
-              <div className="w-12 h-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                <Clock className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
+                <Clock className="w-6 h-6 text-accent" />
               </div>
               <h3 className="font-semibold mb-2">{t('features.fast.title')}</h3>
               <p className="text-sm text-muted-foreground">
@@ -91,8 +99,8 @@ export default function OnboardingWelcome() {
 
           <Card className="text-center">
             <CardContent className="pt-6">
-              <div className="w-12 h-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                <Shield className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
+                <Shield className="w-6 h-6 text-accent" />
               </div>
               <h3 className="font-semibold mb-2">{t('features.secure.title')}</h3>
               <p className="text-sm text-muted-foreground">
@@ -103,8 +111,8 @@ export default function OnboardingWelcome() {
 
           <Card className="text-center">
             <CardContent className="pt-6">
-              <div className="w-12 h-12 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-4">
-                <Sparkles className="w-6 h-6 text-primary" />
+              <div className="w-12 h-12 mx-auto bg-accent/10 rounded-full flex items-center justify-center mb-4">
+                <Sparkles className="w-6 h-6 text-accent" />
               </div>
               <h3 className="font-semibold mb-2">{t('features.smart.title')}</h3>
               <p className="text-sm text-muted-foreground">
@@ -121,7 +129,7 @@ export default function OnboardingWelcome() {
           transition={{ duration: 0.6, delay: 0.4 }}
           className="space-y-6"
         >
-          <h2 className="text-2xl font-semibold">{t('process.title')}</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">{t('process.title')}</h2>
           
           <div className="grid md:grid-cols-4 gap-4 text-left">
             {[1, 2, 3, 4].map((step) => (
@@ -130,7 +138,7 @@ export default function OnboardingWelcome() {
                   {step}
                 </div>
                 <div>
-                  <h4 className="font-medium text-sm">
+                  <h4 className="font-medium text-sm text-gray-900 dark:text-white">
                     {t(`process.steps.${step}.title`)}
                   </h4>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -149,10 +157,10 @@ export default function OnboardingWelcome() {
           transition={{ duration: 0.6, delay: 0.6 }}
           className="bg-muted/50 rounded-lg p-6 text-left"
         >
-          <h3 className="font-semibold mb-4 text-center">{t('requirements.title')}</h3>
+          <h3 className="font-semibold mb-4 text-center text-foreground">{t('requirements.title')}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">{t('requirements.business.title')}</h4>
+              <h4 className="font-medium text-sm text-foreground">{t('requirements.business.title')}</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 {['name', 'email', 'address', 'phone'].map((item) => (
                   <li key={item} className="flex items-center gap-2">
@@ -164,7 +172,7 @@ export default function OnboardingWelcome() {
             </div>
             
             <div className="space-y-2">
-              <h4 className="font-medium text-sm">{t('requirements.optional.title')}</h4>
+              <h4 className="font-medium text-sm text-foreground">{t('requirements.optional.title')}</h4>
               <ul className="space-y-1 text-sm text-muted-foreground">
                 {['logo', 'photos', 'competitors', 'content'].map((item) => (
                   <li key={item} className="flex items-center gap-2">
@@ -185,34 +193,15 @@ export default function OnboardingWelcome() {
           className="space-y-6 pt-4"
         >
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            {hasExistingSession() ? (
-              <>
-                <Button
-                  size="lg"
-                  onClick={handleContinue}
-                  className="gap-2 px-8"
-                >
-                  {t('actions.continue')}
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={handleStart}
-                >
-                  {t('actions.startOver')}
-                </Button>
-              </>
-            ) : (
-              <Button
-                size="lg"
-                onClick={handleStart}
-                className="gap-2 px-8"
-              >
-                {t('actions.start')}
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            )}
+            <Button
+              size="lg"
+              onClick={handleStart}
+              className="gap-2 px-8"
+              disabled={!mounted}
+            >
+              {t('actions.start')}
+              <ArrowRight className="w-4 h-4" />
+            </Button>
           </div>
           
           <p className="text-xs text-muted-foreground">

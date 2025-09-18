@@ -2,7 +2,7 @@ import '@/app/globals.css';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { locales } from '@/lib/i18n';
+import { routing } from '@/i18n/routing';
 
 export default async function LocaleLayout({
   children,
@@ -13,14 +13,14 @@ export default async function LocaleLayout({
 }) {
   const { locale } = await params;
   
-  if (!locales.includes(locale as typeof locales[number])) {
+  if (!routing.locales.includes(locale as 'en' | 'it')) {
     notFound();
   }
 
-  const messages = await getMessages();
+  const messages = await getMessages({ locale });
 
   return (
-    <NextIntlClientProvider messages={messages}>
+    <NextIntlClientProvider messages={messages} locale={locale}>
       {children}
     </NextIntlClientProvider>
   );

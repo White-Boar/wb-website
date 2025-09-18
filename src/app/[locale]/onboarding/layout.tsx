@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { ThemeProvider } from '@/components/theme-provider'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { OnboardingHeader } from './components/OnboardingHeader'
 
 interface OnboardingLayoutProps {
   children: React.ReactNode
@@ -61,38 +61,6 @@ export default async function OnboardingLayout({
   )
 }
 
-// Onboarding Header Component
-function OnboardingHeader() {
-  return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-      <div className="container flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
-            WB
-          </div>
-          <div>
-            <span className="font-bold text-lg">WhiteBoar</span>
-            <span className="text-muted-foreground ml-2 text-sm hidden sm:inline">
-              Fast & Simple Onboarding
-            </span>
-          </div>
-        </div>
-        
-        {/* Help/Support Link */}
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <a
-            href="mailto:support@whiteboar.it"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Need help?
-          </a>
-        </div>
-      </div>
-    </header>
-  )
-}
 
 // Onboarding Footer Component
 function OnboardingFooter() {
@@ -102,20 +70,6 @@ function OnboardingFooter() {
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-4">
             <span>© 2025 WhiteBoar</span>
-            <a 
-              href="/privacy" 
-              className="hover:text-foreground transition-colors"
-              target="_blank"
-            >
-              Privacy Policy
-            </a>
-            <a 
-              href="/terms" 
-              className="hover:text-foreground transition-colors"
-              target="_blank"
-            >
-              Terms of Service
-            </a>
           </div>
           
           <div className="flex items-center gap-2">

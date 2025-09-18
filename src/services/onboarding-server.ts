@@ -245,7 +245,7 @@ export class OnboardingServerService {
 
     try {
       // Development bypass for testing
-      if (process.env.NODE_ENV === 'development' && code === 'DEV123') {
+      if (process.env.NODE_ENV === 'development' && (code === 'DEV123' || code === '123456')) {
         const { error } = await serviceClient
           .from('onboarding_sessions')
           .update({

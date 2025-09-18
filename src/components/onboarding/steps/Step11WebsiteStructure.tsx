@@ -112,7 +112,7 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold">{t('intro.title')}</h2>
+          <h2 className="text-xl font-semibold text-foreground">{t('intro.title')}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
             {t('intro.description')}
           </p>
@@ -129,7 +129,7 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Target className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('goal.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('goal.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('goal.required')}
               </Badge>
@@ -167,7 +167,7 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('sections.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('sections.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('sections.required')}
               </Badge>
@@ -262,7 +262,7 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('offerings.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('offerings.title')}</h3>
               <Badge variant="outline" className="ml-auto">
                 {t('offerings.optional')}
               </Badge>

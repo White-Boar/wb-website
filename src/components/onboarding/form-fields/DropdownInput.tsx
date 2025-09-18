@@ -56,6 +56,7 @@ interface DropdownInputProps {
   maxSelections?: number
   variant?: 'default' | 'floating'
   className?: string
+  name?: string
   onValueChange?: (value: string | string[]) => void
   onSearch?: (search: string) => void
 }
@@ -80,6 +81,7 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
     maxSelections,
     variant = 'default',
     className,
+    name,
     onValueChange,
     onSearch,
   }, ref) => {
@@ -368,6 +370,15 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
             </p>
           )}
         </div>
+
+        {/* Hidden input for React Hook Form */}
+        {name && (
+          <input
+            type="hidden"
+            name={name}
+            value={multiple ? selectedValues.join(',') : selectedValues[0] || ''}
+          />
+        )}
       </div>
     )
   }

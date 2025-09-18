@@ -88,6 +88,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Accessibility validation with axe-core
 - Located in `__tests__/e2e/`
 
+#### Playwright Best Practices
+- **CRITICAL**: Always clear localStorage when using Playwright to avoid test inconsistencies
+- Tests use fresh browser contexts with `storageState: undefined` in playwright.config.ts
+- Use `ensureFreshOnboardingState(page)` helper to ensure clean test state
+- The onboarding flow uses localStorage persistence which can cause auto-navigation to previous steps
+- Always use the restart button functionality to reset state between test runs
+
 ## Important Files
 
 - `app/[locale]/page.tsx:25` - Main homepage component assembly

@@ -71,11 +71,11 @@ export function PortfolioCarousel() {
   }
 
   return (
-    <section id="portfolio" className="py-24 bg-white dark:bg-gray-950">
+    <section id="portfolio" className="py-24 bg-background">
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <motion.h2 
-            className="font-heading text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4"
+            className="font-heading text-3xl sm:text-4xl font-bold text-foreground mb-4"
             variants={variants.title}
             initial="hidden"
             whileInView="show"

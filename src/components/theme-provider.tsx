@@ -31,44 +31,48 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(defaultTheme)
   const [mounted, setMounted] = useState(false)
-  const [initialThemeSet, setInitialThemeSet] = useState(false)
 
+  // Initialize theme on mount
   useEffect(() => {
     setMounted(true)
     const stored = localStorage?.getItem(storageKey) as Theme
     if (stored && ['light', 'dark', 'system'].includes(stored)) {
       setTheme(stored)
     }
-    setInitialThemeSet(true)
   }, [storageKey])
 
-  // Only apply theme changes when user actively changes theme (not during initial mount)
+  // Apply theme changes to DOM
   useEffect(() => {
-    if (!mounted || !initialThemeSet) return
+    if (!mounted) return
 
     const root = window.document.documentElement
-
-    // Remove existing theme classes
-    root.classList.remove("light", "dark")
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light"
-
-      root.classList.add(systemTheme)
-      return
+    const applyTheme = (themeToApply: 'light' | 'dark') => {
+      root.classList.remove("light", "dark")
+      root.classList.add(themeToApply)
     }
 
-    root.classList.add(theme)
-  }, [theme, mounted, initialThemeSet])
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+      applyTheme(systemTheme)
+
+      // Listen for system theme changes
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+      const handleChange = (e: MediaQueryListEvent) => {
+        applyTheme(e.matches ? "dark" : "light")
+      }
+
+      mediaQuery.addEventListener('change', handleChange)
+      return () => mediaQuery.removeEventListener('change', handleChange)
+    } else {
+      applyTheme(theme)
+    }
+  }, [theme, mounted])
 
   const value = {
     theme,
-    setTheme: (theme: Theme) => {
-      localStorage?.setItem(storageKey, theme)
-      setTheme(theme)
+    setTheme: (newTheme: Theme) => {
+      localStorage?.setItem(storageKey, newTheme)
+      setTheme(newTheme)
     },
   }
 

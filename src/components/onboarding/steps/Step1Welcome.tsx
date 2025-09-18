@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { User, Mail, Sparkles } from 'lucide-react'
+import { User, Sparkles } from 'lucide-react'
 
 import { TextInput } from '@/components/onboarding/form-fields/TextInput'
 import { EmailInput } from '@/components/onboarding/form-fields/EmailInput'
@@ -35,7 +35,7 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold">{t('welcome')}</h2>
+          <h2 className="text-2xl font-semibold text-foreground">{t('welcome')}</h2>
           <p className="text-muted-foreground max-w-md mx-auto">
             {t('subtitle')}
           </p>
@@ -82,7 +82,7 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <User className="w-5 h-5 text-accent" />
-              <h3 className="text-lg font-semibold">{t('contactInfo.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('contactInfo.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('contactInfo.required')}
               </Badge>
@@ -146,37 +146,6 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
           </CardContent>
         </Card>
 
-        {/* What Happens Next */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <Card className="bg-muted/50 border-dashed">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-2 mb-3">
-                <Mail className="w-4 h-4 text-muted-foreground" />
-                <h4 className="font-medium text-sm">{t('nextSteps.title')}</h4>
-              </div>
-              
-              <div className="space-y-2 text-sm text-muted-foreground">
-                <div className="flex items-start gap-2">
-                  <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
-                  <span>{t('nextSteps.step1')}</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
-                  <span>{t('nextSteps.step2')}</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-1 h-1 rounded-full bg-accent mt-2 flex-shrink-0" />
-                  <span>{t('nextSteps.step3')}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
         {/* Privacy Notice */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -185,14 +154,6 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
           className="text-center text-xs text-muted-foreground"
         >
           <p>{t('privacy.notice')}</p>
-          <div className="flex justify-center gap-4 mt-2">
-            <a href="/privacy" target="_blank" className="hover:text-foreground transition-colors">
-              {t('privacy.policy')}
-            </a>
-            <a href="/terms" target="_blank" className="hover:text-foreground transition-colors">
-              {t('privacy.terms')}
-            </a>
-          </div>
         </motion.div>
       </motion.div>
     </div>

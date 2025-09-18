@@ -40,7 +40,7 @@ export function Footer() {
             <h3 className="font-heading font-semibold text-gray-900 dark:text-white">
               {t('quickLinks')}
             </h3>
-            <nav className="flex flex-col space-y-3">
+            <nav className="flex flex-col space-y-3" aria-label="Footer navigation">
               <button
                 onClick={() => scrollToSection('pricing')}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
@@ -104,7 +104,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
-          <p className="text-center text-gray-500 dark:text-gray-400 text-sm">
+          <p className="text-center text-gray-600 dark:text-gray-300 text-sm">
             {t('copyright')}
           </p>
         </div>

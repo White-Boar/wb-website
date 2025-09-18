@@ -77,7 +77,15 @@ export const step3Schema = z.object({
     .max(50, 'Business name cannot exceed 50 characters'),
   businessEmail: emailSchema,
   businessPhone: phoneSchema,
-  physicalAddress: addressSchema,
+  physicalAddress: z.object({
+    street: z.string().min(1, 'Street address is required'),
+    city: z.string().min(1, 'City is required'),
+    province: z.string().min(1, 'Province is required'),
+    postalCode: z.string()
+      .regex(/^\d{5}$/, 'Please enter a valid Italian postal code (5 digits)'),
+    country: z.string().min(1, 'Country is required'),
+    placeId: z.string().optional()
+  }),
   industry: z.string().min(1, 'Please select an industry'),
   vatNumber: italianVatSchema
 })

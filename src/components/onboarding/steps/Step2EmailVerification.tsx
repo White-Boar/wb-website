@@ -28,6 +28,8 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
         // Update form data to mark email as verified
         form.setValue('emailVerified', true)
         form.setValue('verificationCode', code)
+        // Trigger validation to enable Next button
+        await form.trigger('emailVerified')
       } else {
         setVerificationError(t('invalidCode'))
       }

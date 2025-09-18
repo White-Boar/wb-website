@@ -119,13 +119,13 @@ export default function OnboardingStep() {
           businessName: formData?.businessName ?? '',
           businessEmail: formData?.businessEmail ?? '',
           businessPhone: formData?.businessPhone ?? '',
-          physicalAddress: formData?.physicalAddress ?? {
-            street: '',
-            city: '',
-            province: '',
-            postalCode: '',
-            country: '',
-            placeId: ''
+          physicalAddress: {
+            street: formData?.physicalAddress?.street ?? '',
+            city: formData?.physicalAddress?.city ?? '',
+            province: formData?.physicalAddress?.province ?? '',
+            postalCode: formData?.physicalAddress?.postalCode ?? '',
+            country: formData?.physicalAddress?.country ?? 'Italy',
+            placeId: formData?.physicalAddress?.placeId ?? ''
           },
           industry: formData?.industry ?? '',
           vatNumber: formData?.vatNumber ?? ''
@@ -172,10 +172,10 @@ export default function OnboardingStep() {
       // Move to next step or complete
       if (stepNumber < 13) {
         await nextStep()
-        router.push(`/onboarding/step/${stepNumber + 1}`)
+        router.push(`/${locale}/onboarding/step/${stepNumber + 1}`)
       } else {
         // Complete onboarding
-        router.push('/onboarding/complete')
+        router.push(`/${locale}/onboarding/complete`)
       }
     } catch (error) {
       console.error('Error proceeding to next step:', error)
@@ -188,15 +188,15 @@ export default function OnboardingStep() {
   // Handle previous step
   const handlePrevious = () => {
     if (stepNumber > 1) {
-      router.push(`/onboarding/step/${stepNumber - 1}`)
+      router.push(`/${locale}/onboarding/step/${stepNumber - 1}`)
     } else {
-      router.push('/onboarding')
+      router.push(`/${locale}/onboarding`)
     }
   }
 
   // Session expired redirect
   if (isSessionExpired) {
-    router.push('/onboarding')
+    router.push(`/${locale}/onboarding`)
     return null
   }
 

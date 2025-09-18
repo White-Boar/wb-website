@@ -31,7 +31,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold">{t('intro.title')}</h2>
+          <h2 className="text-xl font-semibold text-foreground">{t('intro.title')}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
             {t('intro.description')}
           </p>
@@ -48,7 +48,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('logo.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('logo.title')}</h3>
               <Badge variant="outline" className="ml-auto">
                 {t('logo.optional')}
               </Badge>
@@ -133,7 +133,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('photos.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('photos.title')}</h3>
               <Badge variant="outline" className="ml-auto">
                 {t('photos.optional')}
               </Badge>
@@ -285,7 +285,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
             <CardContent className="pt-6 space-y-4">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-accent-foreground" />
-                <h4 className="font-medium text-sm">{t('summary.title')}</h4>
+                <h4 className="font-medium text-sm text-foreground">{t('summary.title')}</h4>
               </div>
               
               <div className="grid md:grid-cols-2 gap-4 text-sm">

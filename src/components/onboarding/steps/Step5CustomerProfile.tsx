@@ -143,7 +143,7 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold">{t('intro.title')}</h2>
+          <h2 className="text-xl font-semibold text-foreground">{t('intro.title')}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
             {t('intro.description')}
           </p>
@@ -160,7 +160,7 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-6">
               <Users className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('profile.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('profile.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('profile.required')}
               </Badge>
@@ -199,7 +199,7 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2">
               <Brain className="w-5 h-5 text-primary" />
-              <h4 className="font-semibold">{t('insights.title')}</h4>
+              <h4 className="font-semibold text-foreground">{t('insights.title')}</h4>
             </div>
             
             <div className="grid md:grid-cols-2 gap-4 text-sm">

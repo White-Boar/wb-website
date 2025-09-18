@@ -6,6 +6,27 @@ import {
   UploadedFile
 } from '@/types/onboarding'
 
+// Transform database response to client interface
+function transformSessionFromDB(dbSession: any): OnboardingSession {
+  return {
+    id: dbSession.id,
+    email: dbSession.email,
+    currentStep: dbSession.current_step,
+    formData: dbSession.form_data || {},
+    lastActivity: dbSession.last_activity || dbSession.updated_at,
+    expiresAt: dbSession.expires_at,
+    createdAt: dbSession.created_at,
+    updatedAt: dbSession.updated_at,
+    emailVerified: dbSession.email_verified,
+    verificationCode: dbSession.verification_code,
+    verificationAttempts: dbSession.verification_attempts,
+    verificationLockedUntil: dbSession.verification_locked_until,
+    ipAddress: dbSession.ip_address,
+    userAgent: dbSession.user_agent,
+    locale: dbSession.locale
+  }
+}
+
 /**
  * Client-side onboarding service - uses anon key with RLS
  * NO analytics tracking or admin operations (those need service role)
@@ -20,9 +41,14 @@ export class OnboardingClientService {
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + 7) // 7 days from now
 
+    // Generate a unique temporary email as placeholder (required by schema)
+    const sessionId = crypto.randomUUID()
+    const tempEmail = `temp-${sessionId}@whiteboar.onboarding`
+
     const { data, error } = await supabase
       .from('onboarding_sessions')
       .insert({
+        email: tempEmail,
         current_step: 1,
         form_data: {},
         expires_at: expiresAt.toISOString(),
@@ -38,7 +64,7 @@ export class OnboardingClientService {
     }
 
     // NOTE: Analytics tracking moved to API route
-    return data
+    return transformSessionFromDB(data)
   }
 
   /**
@@ -78,7 +104,7 @@ export class OnboardingClientService {
     }
 
     // NOTE: Analytics tracking moved to API route
-    return data
+    return transformSessionFromDB(data)
   }
 
   /**
@@ -106,7 +132,7 @@ export class OnboardingClientService {
       return null
     }
 
-    return data
+    return transformSessionFromDB(data)
   }
 
   /**
@@ -134,7 +160,7 @@ export class OnboardingClientService {
     }
 
     // NOTE: Analytics tracking moved to API route
-    return data
+    return transformSessionFromDB(data)
   }
 
   /**

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { CheckCircle2, Clock, Mail, Phone, Globe, Sparkles, ArrowRight, Loader2 } from 'lucide-react'
+import { CheckCircle2, Mail, Phone, Globe, Sparkles, ArrowRight, Loader2 } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -78,32 +78,6 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
     }
   }
 
-  const getNextSteps = () => [
-    { 
-      step: 1, 
-      title: t('nextSteps.review.title'),
-      description: t('nextSteps.review.description'),
-      timeframe: t('nextSteps.review.timeframe')
-    },
-    { 
-      step: 2, 
-      title: t('nextSteps.preview.title'),
-      description: t('nextSteps.preview.description'),
-      timeframe: t('nextSteps.preview.timeframe')
-    },
-    { 
-      step: 3, 
-      title: t('nextSteps.revisions.title'),
-      description: t('nextSteps.revisions.description'),
-      timeframe: t('nextSteps.revisions.timeframe')
-    },
-    { 
-      step: 4, 
-      title: t('nextSteps.launch.title'),
-      description: t('nextSteps.launch.description'),
-      timeframe: t('nextSteps.launch.timeframe')
-    }
-  ]
 
   return (
     <div className="space-y-8">
@@ -247,53 +221,6 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
                   <span>{t('summary.assets.offerings')}: {offerings.length} {t('summary.assets.offeringsAdded')}</span>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Next Steps Timeline */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-primary" />
-              {t('nextSteps.title')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {getNextSteps().map((step, index) => (
-                <motion.div
-                  key={step.step}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.8 + (index * 0.1) }}
-                  className="flex gap-4"
-                >
-                  <div className="flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                      {step.step}
-                    </div>
-                    {index < getNextSteps().length - 1 && (
-                      <div className="w-0.5 h-12 bg-muted mt-2" />
-                    )}
-                  </div>
-                  <div className="flex-1 pb-6">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-medium text-sm">{step.title}</h4>
-                      <Badge variant="outline" className="text-xs">
-                        {step.timeframe}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{step.description}</p>
-                  </div>
-                </motion.div>
-              ))}
             </div>
           </CardContent>
         </Card>

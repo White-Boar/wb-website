@@ -132,7 +132,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
               
               set({
                 sessionId: session.id,
-                currentStep: session.currentStep,
+                currentStep: session.currentStep && session.currentStep >= 1 ? session.currentStep : 1,
                 formData: { ...initialFormData, ...session.formData },
                 sessionExpiresAt: session.expiresAt,
                 isSessionExpired: isExpired,
@@ -329,7 +329,13 @@ export const useOnboardingStore = create<OnboardingStore>()(
           clearSession: () => {
             // Cancel any pending saves
             debouncedSaveProgress.cancel()
-            
+
+            // First clear localStorage immediately
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('wb-onboarding-store')
+            }
+
+            // Reset state to initial values
             set({
               sessionId: null,
               currentStep: 1,
@@ -343,6 +349,17 @@ export const useOnboardingStore = create<OnboardingStore>()(
               isSessionExpired: false,
               sessionExpiresAt: null
             })
+
+            // Clear localStorage again after state update to ensure it's really gone
+            // Use multiple timeouts to handle any async persist operations
+            if (typeof window !== 'undefined') {
+              setTimeout(() => {
+                localStorage.removeItem('wb-onboarding-store')
+              }, 0)
+              setTimeout(() => {
+                localStorage.removeItem('wb-onboarding-store')
+              }, 100)
+            }
           },
 
           // Session Helper Functions for Page Components
@@ -355,7 +372,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
               
               set({
                 sessionId: session.id,
-                currentStep: session.currentStep,
+                currentStep: session.currentStep && session.currentStep >= 1 ? session.currentStep : 1,
                 formData: { ...initialFormData, ...session.formData },
                 sessionExpiresAt: session.expiresAt,
                 isSessionExpired: false,

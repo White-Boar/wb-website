@@ -157,7 +157,7 @@ export function Step10ColorPalette({ form, errors, isLoading }: StepComponentPro
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-xl font-semibold">{t('intro.title')}</h2>
+          <h2 className="text-xl font-semibold text-foreground">{t('intro.title')}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
             {t('intro.description')}
           </p>
@@ -174,7 +174,7 @@ export function Step10ColorPalette({ form, errors, isLoading }: StepComponentPro
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Palette className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">{t('selection.title')}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{t('selection.title')}</h3>
               <Badge variant="secondary" className="ml-auto">
                 {t('selection.required')}
               </Badge>
@@ -274,7 +274,7 @@ export function Step10ColorPalette({ form, errors, isLoading }: StepComponentPro
           <CardContent className="pt-6 space-y-4">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-muted-foreground" />
-              <h4 className="font-medium text-sm">{t('trends.title')}</h4>
+              <h4 className="font-medium text-sm text-foreground">{t('trends.title')}</h4>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
