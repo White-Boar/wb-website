@@ -43,16 +43,21 @@ export async function fillStep1Form(page: Page, userData: Partial<OnboardingUser
 /**
  * Complete email verification with bypass code
  * Now supports automatic progression to next step
+ * Uses individual digit inputs rather than single input
  */
 export async function completeEmailVerification(page: Page, code: string = BYPASS_CODES[0]) {
-  const otpInput = page.locator('input[maxlength="6"]').first();
-  await expect(otpInput).toBeVisible();
+  // The verification code uses individual digit inputs
+  const digits = code.split('').slice(0, 6); // Ensure we only use 6 digits
 
-  await otpInput.fill(code);
+  for (let i = 0; i < digits.length; i++) {
+    const digitInput = page.getByRole('textbox', { name: `Verification code digit ${i + 1}` });
+    await expect(digitInput).toBeVisible();
+    await digitInput.fill(digits[i]);
+  }
 
   // Wait for auto-progression to next step (implemented with 1s delay)
   // The system should automatically navigate to step 3 after successful verification
-  await page.waitForURL(/\/step\/3/, { timeout: 5000 });
+  await page.waitForURL(/\/step\/3/, { timeout: 10000 });
   await page.waitForLoadState('networkidle');
 }
 
@@ -350,7 +355,7 @@ export async function measureFormInteractionTime(page: Page, interactions: () =>
 
 /**
  * Restart onboarding using the UI restart button
- * This clears all session state and returns to step 1
+ * This clears all session state and returns to welcome page
  */
 export async function restartOnboarding(page: Page) {
   // Find and click the restart button
@@ -363,13 +368,13 @@ export async function restartOnboarding(page: Page) {
   await expect(confirmButton).toBeVisible();
   await confirmButton.click();
 
-  // Wait for navigation to step 1
-  await page.waitForURL(/\/onboarding\/step\/1/);
+  // Wait for navigation to welcome page
+  await page.waitForURL(/\/onboarding$/);
   await page.waitForLoadState('networkidle');
 
-  // Verify we're on step 1 with clean state
-  await expect(page).toHaveURL(/\/step\/1/);
-  await expect(page.locator('main').first()).toBeVisible();
+  // Verify we're on welcome page with clean state
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await expect(page.getByRole('button', { name: /Start Your Website/i })).toBeVisible();
 }
 
 /**

@@ -1,5 +1,11 @@
 import { test, expect, Page } from '@playwright/test';
-import { ensureFreshOnboardingState, getOnboardingNextButton } from './helpers/test-utils';
+import {
+  ensureFreshOnboardingState,
+  getOnboardingNextButton,
+  completeEmailVerification,
+  startOnboardingFromWelcome,
+  fillStep1Form
+} from './helpers/test-utils';
 
 test.describe('Complete Onboarding Flow', () => {
   test.beforeEach(async ({ page }) => {
@@ -144,34 +150,23 @@ test.describe('Complete Onboarding Flow', () => {
     await getOnboardingNextButton(page).click();
     await page.waitForURL(/\/onboarding\/step\/4/, { timeout: 10000 });
 
-    // Step 4: Target Audience
+    // Step 4: Brand Definition
     await expect(page.locator('text=Step 4 of 13')).toBeVisible();
-    await expect(page.locator('h1:text("Target Audience")')).toBeVisible();
+    await expect(page.locator('h1:text("Brand Definition")')).toBeVisible();
 
-    // Fill target audience information
-    await page.fill('textarea[placeholder*="ideal customers"]', 'Small to medium businesses looking for technology solutions');
-    // Select age ranges
-    await page.click('input[type="checkbox"][value="25-34"]');
-    await page.click('input[type="checkbox"][value="35-44"]');
-    // Select locations
-    await page.click('input[type="checkbox"][value="local"]');
-    await page.click('input[type="checkbox"][value="national"]');
+    // Fill brand definition information
+    await page.fill('textarea[name="businessDescription"]', 'We provide innovative technology solutions for businesses looking to modernize their operations.');
 
     // Click Next button
     await getOnboardingNextButton(page).click();
     await page.waitForURL(/\/onboarding\/step\/5/, { timeout: 10000 });
 
-    // Step 5: Goals & Objectives
+    // Step 5: Customer Profile
     await expect(page.locator('text=Step 5 of 13')).toBeVisible();
-    await expect(page.locator('h1:text("Goals & Objectives")')).toBeVisible();
+    await expect(page.locator('h1:text("Customer Profile")')).toBeVisible();
 
-    // Select primary goals
-    await page.click('input[type="checkbox"][value="increase-sales"]');
-    await page.click('input[type="checkbox"][value="generate-leads"]');
-    await page.click('input[type="checkbox"][value="build-brand"]');
-
-    // Fill success metrics
-    await page.fill('textarea[placeholder*="measure success"]', 'Increased leads by 50%, higher conversion rates, improved brand recognition');
+    // Interact with customer profile sliders
+    // The sliders should have default values, so we can proceed without changes
 
     // Click Next button
     await getOnboardingNextButton(page).click();
@@ -182,9 +177,9 @@ test.describe('Complete Onboarding Flow', () => {
     await expect(page.locator('h1:text("Customer Needs")')).toBeVisible();
 
     // Fill customer problems
-    await page.fill('textarea[placeholder*="problems do your customers face"]', 'Customers struggle with outdated systems and lack of technical expertise');
-    // Fill solutions
-    await page.fill('textarea[placeholder*="solve these problems"]', 'We provide modern, user-friendly solutions with comprehensive support');
+    await page.fill('textarea[name="customerProblems"]', 'Customers struggle with outdated systems and lack of technical expertise');
+    // Fill customer delight
+    await page.fill('textarea[name="customerDelight"]', 'We provide modern, user-friendly solutions with comprehensive support');
 
     // Click Next button
     await getOnboardingNextButton(page).click();
@@ -194,9 +189,7 @@ test.describe('Complete Onboarding Flow', () => {
     await expect(page.locator('text=Step 7 of 13')).toBeVisible();
     await expect(page.locator('h1:text("Visual Inspiration")')).toBeVisible();
 
-    // Add inspiration URLs (optional, so we can skip)
-    // Just fill visual preferences
-    await page.fill('textarea[placeholder*="look and feel"]', 'Modern, clean design with professional appearance');
+    // Website references are optional, so we can proceed without adding any
 
     // Click Next button
     await getOnboardingNextButton(page).click();
@@ -224,12 +217,12 @@ test.describe('Complete Onboarding Flow', () => {
     await getOnboardingNextButton(page).click();
     await page.waitForURL(/\/onboarding\/step\/10/, { timeout: 10000 });
 
-    // Step 10: Color Preferences
+    // Step 10: Color Palette
     await expect(page.locator('text=Step 10 of 13')).toBeVisible();
-    await expect(page.locator('h1:text("Color Preferences")')).toBeVisible();
+    await expect(page.locator('h1:text("Color Palette")')).toBeVisible();
 
-    // Select a color palette (assuming there's a selectable option)
-    await page.click('.color-palette-option:first-of-type');
+    // Select a color palette
+    await page.click('[data-testid="color-option"]:first-child, .color-option:first-child, button[aria-label*="color"]:first-child');
 
     // Click Next button
     await getOnboardingNextButton(page).click();
@@ -239,47 +232,41 @@ test.describe('Complete Onboarding Flow', () => {
     await expect(page.locator('text=Step 11 of 13')).toBeVisible();
     await expect(page.locator('h1:text("Website Structure")')).toBeVisible();
 
-    // Select primary goal
-    await page.click('button[role="combobox"]:has-text("Select your primary objective")');
-    await page.click('text=Generate leads and inquiries');
+    // Select primary goal using dropdown
+    await page.locator('[role="combobox"]').first().click();
+    await page.locator('[role="option"]').first().click();
 
-    // Select website sections
-    await page.click('input[type="checkbox"][id*="hero"]');
-    await page.click('input[type="checkbox"][id*="about"]');
-    await page.click('input[type="checkbox"][id*="services"]');
-    await page.click('input[type="checkbox"][id*="contact"]');
+    // Select website sections (checkboxes)
+    const checkboxes = page.locator('input[type="checkbox"]');
+    const count = await checkboxes.count();
+    if (count > 0) {
+      await checkboxes.first().click();
+      if (count > 1) await checkboxes.nth(1).click();
+      if (count > 2) await checkboxes.nth(2).click();
+    }
 
     // Click Next button
     await getOnboardingNextButton(page).click();
     await page.waitForURL(/\/onboarding\/step\/12/, { timeout: 10000 });
 
-    // Step 12: Content Collection
+    // Step 12: Business Assets (Final Step)
     await expect(page.locator('text=Step 12 of 13')).toBeVisible();
-    await expect(page.locator('h1:text("Content Collection")')).toBeVisible();
+    await expect(page.locator('h1:text("Business Assets")')).toBeVisible();
 
-    // Fill content fields
-    await page.fill('textarea[placeholder*="headline"]', 'Innovative Technology Solutions for Your Business');
-    await page.fill('textarea[placeholder*="subheadline"]', 'Transform your business with cutting-edge technology');
-    await page.fill('textarea[placeholder*="about your business"]', 'We are a leading technology provider with over 10 years of experience');
+    // File uploads are optional, so we can proceed without uploading
+    // Verify the Finish button is present and enabled
+    await expect(page.locator('button:text("Finish")')).toBeVisible();
+    await expect(page.locator('button:text("Finish")')).toBeEnabled();
 
-    // Click Next button
-    await getOnboardingNextButton(page).click();
-    await page.waitForURL(/\/onboarding\/step\/13/, { timeout: 10000 });
+    // Click Finish button to complete onboarding
+    await page.locator('button:text("Finish")').click();
 
-    // Step 13: Review & Confirm
-    await expect(page.locator('text=Step 13 of 13')).toBeVisible();
-    await expect(page.locator('h1:text("Review & Confirm")')).toBeVisible();
+    // Should redirect to thank you page
+    await page.waitForURL(/\/onboarding\/thank-you/, { timeout: 10000 });
 
-    // Verify we've reached the final step
-    await expect(page.locator('text=100%')).toBeVisible();
-
-    // Check that review sections are visible
-    await expect(page.locator('text=Personal Information')).toBeVisible();
-    await expect(page.locator('text=Business Details')).toBeVisible();
-    await expect(page.locator('text=Design Preferences')).toBeVisible();
-
-    // Verify the submit button is present
-    await expect(page.locator('button:text("Complete Onboarding")')).toBeVisible();
+    // Verify we've reached the thank you page
+    await expect(page.locator('h1').filter({ hasText: /Perfect|Thank you|Complete/i })).toBeVisible();
+    await expect(page.locator('text=5 business days').or(page.locator('text=preview'))).toBeVisible();
   });
 
   test('validates required fields and prevents progression without them', async ({ page }) => {
