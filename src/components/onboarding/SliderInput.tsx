@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { AlertCircle, CheckCircle2, RotateCcw } from 'lucide-react'
+import { AlertCircle, CheckCircle2 } from 'lucide-react'
 
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
@@ -34,7 +34,6 @@ interface SliderInputProps {
   required?: boolean
   showLabels?: boolean
   showExamples?: boolean
-  showReset?: boolean
   className?: string
   onValuesChange?: (values: Record<string, number>) => void
   onSliderChange?: (key: string, value: number) => void
@@ -51,7 +50,6 @@ export function SliderInput({
   required = false,
   showLabels = true,
   showExamples = false,
-  showReset = true,
   className,
   onValuesChange,
   onSliderChange
@@ -98,32 +96,7 @@ export function SliderInput({
     onSliderChange?.(key, value)
   }
 
-  // Reset all sliders to default
-  const handleReset = () => {
-    const resetValues: Record<string, number> = {}
-    
-    options.forEach(option => {
-      resetValues[option.key] = defaultValues[option.key] ?? option.value ?? 50
-    })
-    
-    setInternalValues(resetValues)
-    onValuesChange?.(resetValues)
-  }
 
-  // Get value interpretation
-  const getValueInterpretation = (value: number, option: SliderOption): string => {
-    if (value <= 20) {
-      return t('interpretation.veryLow', { label: option.leftLabel })
-    } else if (value <= 40) {
-      return t('interpretation.low', { label: option.leftLabel })
-    } else if (value <= 60) {
-      return t('interpretation.balanced')
-    } else if (value <= 80) {
-      return t('interpretation.high', { label: option.rightLabel })
-    } else {
-      return t('interpretation.veryHigh', { label: option.rightLabel })
-    }
-  }
 
   // Get color based on value
   const getSliderColor = (value: number): string => {
@@ -153,28 +126,12 @@ export function SliderInput({
           )}
         </Label>
 
-        {/* Reset Button */}
-        {showReset && (
-          <div className="flex justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleReset}
-              className="gap-2 text-xs"
-            >
-              <RotateCcw className="w-3 h-3" />
-              {t('reset')}
-            </Button>
-          </div>
-        )}
       </div>
 
       {/* Sliders */}
       <div className="space-y-6">
         {options.map((option, index) => {
           const value = internalValues[option.key] ?? 50
-          const interpretation = getValueInterpretation(value, option)
           
           return (
             <motion.div
@@ -228,12 +185,6 @@ export function SliderInput({
                   />
                 </div>
 
-                {/* Value Interpretation */}
-                <div className="text-center">
-                  <p className="text-sm font-medium text-primary">
-                    {interpretation}
-                  </p>
-                </div>
 
                 {/* Examples */}
                 {showExamples && option.examples && (
@@ -245,7 +196,7 @@ export function SliderInput({
                   >
                     <div>
                       <h5 className="text-xs font-medium text-muted-foreground mb-1">
-                        {option.leftLabel} {t('examples')}:
+                        {option.leftLabel} examples:
                       </h5>
                       <ul className="text-xs text-muted-foreground space-y-0.5">
                         {option.examples.left.map((example, i) => (
@@ -259,7 +210,7 @@ export function SliderInput({
                     
                     <div>
                       <h5 className="text-xs font-medium text-muted-foreground mb-1">
-                        {option.rightLabel} {t('examples')}:
+                        {option.rightLabel} examples:
                       </h5>
                       <ul className="text-xs text-muted-foreground space-y-0.5">
                         {option.examples.right.map((example, i) => (
@@ -280,22 +231,19 @@ export function SliderInput({
 
       {/* Summary */}
       <Card className="p-4 bg-muted/50">
-        <h4 className="font-medium text-sm mb-3">{t('summary')}</h4>
+        <h4 className="font-medium text-sm mb-3">Summary</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {options.map(option => {
             const value = internalValues[option.key] ?? 50
             const isLeftLeaning = value < 50
             const strength = Math.abs(value - 50) * 2 // Convert to 0-100 scale
-            
+
             return (
               <div key={option.key} className="flex items-center justify-between text-xs">
                 <span className="font-medium">
                   {option.key.charAt(0).toUpperCase() + option.key.slice(1)}:
                 </span>
-                <span className={cn(
-                  "font-mono",
-                  strength > 30 && (isLeftLeaning ? "text-orange-600" : "text-blue-600")
-                )}>
+                <span className="font-mono">
                   {isLeftLeaning ? option.leftLabel : option.rightLabel} ({strength.toFixed(0)}%)
                 </span>
               </div>

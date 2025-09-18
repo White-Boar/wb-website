@@ -30,12 +30,9 @@ const initialFormData: Partial<OnboardingFormData> = {
   },
   industry: '',
   vatNumber: '',
-  offer: '',
-  competitors: [],
-  uniqueness: {
-    attribute: '',
-    explanation: ''
-  },
+  businessDescription: '',
+  competitorUrls: [],
+  competitorAnalysis: '',
   customerProfile: {
     budget: 50,
     style: 50,
@@ -43,7 +40,7 @@ const initialFormData: Partial<OnboardingFormData> = {
     decisionMaking: 50,
     loyalty: 50
   },
-  problemSolved: '',
+  customerProblems: '',
   customerDelight: '',
   websiteReferences: [],
   designStyle: undefined,
@@ -524,15 +521,15 @@ function extractStepData(formData: Partial<OnboardingFormData>, step: number): a
       }
     case 4:
       return {
-        offer: formData.offer,
-        competitors: formData.competitors,
-        uniqueness: formData.uniqueness
+        businessDescription: formData.businessDescription,
+        competitorUrls: formData.competitorUrls,
+        competitorAnalysis: formData.competitorAnalysis
       }
     case 5:
       return { customerProfile: formData.customerProfile }
     case 6:
       return {
-        problemSolved: formData.problemSolved,
+        customerProblems: formData.customerProblems,
         customerDelight: formData.customerDelight
       }
     case 7:

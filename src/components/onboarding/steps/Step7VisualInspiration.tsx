@@ -3,44 +3,19 @@
 import { useTranslations } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { Eye, Link, Sparkles, Globe } from 'lucide-react'
+import { Eye, Link } from 'lucide-react'
 
 import { DynamicList } from '@/components/onboarding/DynamicList'
 import { TextareaInput } from '@/components/onboarding/form-fields/TextareaInput'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { StepComponentProps } from './index'
 
 export function Step7VisualInspiration({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.7')
   const { control, setValue, watch } = form
 
-  const inspirationUrls = watch('inspirationUrls') || []
 
-  const handleInspirationsChange = (items: any[]) => {
-    const urls = items.map(item => item.value)
-    setValue('inspirationUrls', urls)
-  }
-
-  // Sample inspiration categories for quick access
-  const inspirationCategories = [
-    { name: t('categories.restaurant'), urls: ['https://restaurant-example.com', 'https://food-example.com'] },
-    { name: t('categories.retail'), urls: ['https://shop-example.com', 'https://boutique-example.com'] },
-    { name: t('categories.professional'), urls: ['https://lawyer-example.com', 'https://consultant-example.com'] },
-    { name: t('categories.creative'), urls: ['https://agency-example.com', 'https://portfolio-example.com'] }
-  ]
-
-  const addSampleUrl = (url: string) => {
-    const currentUrls = inspirationUrls.map((item: any) => 
-      typeof item === 'string' ? item : item.value
-    )
-    
-    if (!currentUrls.includes(url)) {
-      const newUrls = [...currentUrls, url]
-      setValue('inspirationUrls', newUrls)
-    }
-  }
 
   return (
     <div className="space-y-8">
@@ -115,129 +90,32 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
               </div>
 
               {/* URL Collection */}
-              <DynamicList
-                label={t('inspirations.urls.label')}
-                items={inspirationUrls.map((url: string, index: number) => ({
-                  id: `inspiration-${index}`,
-                  value: url,
-                  order: index
-                }))}
-                placeholder={t('inspirations.urls.placeholder')}
-                addButtonText={t('inspirations.urls.addButton')}
-                hint={t('inspirations.urls.hint')}
-                error={errors.inspirationUrls?.message}
-                maxItems={10}
-                minItems={0}
-                itemPrefix="🌐"
-                showCounter
-                allowReorder
-                allowEdit
-                disabled={isLoading}
-                onItemsChange={handleInspirationsChange}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Quick Categories */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <Card className="bg-muted/50 border-dashed">
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-muted-foreground" />
-              <h4 className="font-medium text-sm text-foreground">{t('categories.title')}</h4>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {inspirationCategories.map((category, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 * index }}
-                  className="text-center space-y-2"
-                >
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs"
-                    onClick={() => {
-                      category.urls.forEach(url => addSampleUrl(url))
-                    }}
-                    disabled={isLoading}
-                  >
-                    <Globe className="w-3 h-3 mr-1" />
-                    {category.name}
-                  </Button>
-                </motion.div>
-              ))}
-            </div>
-            
-            <p className="text-xs text-muted-foreground text-center">
-              {t('categories.description')}
-            </p>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Visual Preferences */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-      >
-        <Card>
-          <CardContent className="pt-6 space-y-6">
-            <div className="flex items-center gap-2">
-              <Eye className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('preferences.title')}</h3>
-              <Badge variant="outline" className="ml-auto">
-                {t('preferences.optional')}
-              </Badge>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 space-y-2">
-                <h4 className="font-medium text-sm text-purple-700">{t('preferences.examples.title')}</h4>
-                <ul className="text-xs text-purple-600 space-y-1">
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-purple-600 mt-2 flex-shrink-0" />
-                    {t('preferences.examples.clean')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-purple-600 mt-2 flex-shrink-0" />
-                    {t('preferences.examples.bold')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-purple-600 mt-2 flex-shrink-0" />
-                    {t('preferences.examples.professional')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-purple-600 mt-2 flex-shrink-0" />
-                    {t('preferences.examples.creative')}
-                  </li>
-                </ul>
-              </div>
-
               <Controller
-                name="visualPreferences"
+                name="websiteReferences"
                 control={control}
                 render={({ field }) => (
-                  <TextareaInput
-                    {...field}
-                    label={t('preferences.input.label')}
-                    placeholder={t('preferences.input.placeholder')}
-                    hint={t('preferences.input.hint')}
-                    error={errors.visualPreferences?.message}
+                  <DynamicList
+                    label={t('inspirations.urls.label')}
+                    items={(field.value || []).map((url: string, index: number) => ({
+                      id: `inspiration-${index}`,
+                      value: url,
+                      order: index
+                    }))}
+                    placeholder={t('inspirations.urls.placeholder')}
+                    addButtonText={t('inspirations.urls.addButton')}
+                    hint="Add up to 3 websites that inspire you. Include competitors, similar businesses, or any sites you find well-designed."
+                    error={errors.websiteReferences?.message}
+                    maxItems={3}
+                    minItems={0}
+                    itemPrefix="🌐"
+                    showCounter={false}
+                    allowReorder
+                    allowEdit
                     disabled={isLoading}
-                    maxLength={300}
-                    showCharacterCount
+                    onItemsChange={(items) => {
+                      const urls = items.map(item => item.value)
+                      field.onChange(urls)
+                    }}
                   />
                 )}
               />
@@ -246,11 +124,13 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
         </Card>
       </motion.div>
 
+
+
       {/* Design Analysis Insight */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
+        transition={{ delay: 0.4 }}
       >
         <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
           <CardContent className="pt-6 space-y-4">
@@ -283,7 +163,7 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.0 }}
+        transition={{ delay: 0.6 }}
         className="text-center text-xs text-muted-foreground space-y-2"
       >
         <p>{t('tips.title')}</p>

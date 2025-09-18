@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { HelpCircle, Lightbulb, Heart, Target } from 'lucide-react'
+import { HelpCircle, Heart, Target } from 'lucide-react'
 
 import { TextareaInput } from '@/components/onboarding/form-fields/TextareaInput'
 import { Card, CardContent } from '@/components/ui/card'
@@ -96,73 +96,12 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
         </Card>
       </motion.div>
 
-      {/* Solutions & Benefits */}
+
+      {/* Customer Delight */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-      >
-        <Card>
-          <CardContent className="pt-6 space-y-6">
-            <div className="flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('solutions.title')}</h3>
-              <Badge variant="secondary" className="ml-auto">
-                {t('solutions.required')}
-              </Badge>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 space-y-2">
-                <h4 className="font-medium text-sm text-green-700">{t('solutions.examples.title')}</h4>
-                <ul className="text-xs text-green-600 space-y-1">
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
-                    {t('solutions.examples.professional')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
-                    {t('solutions.examples.seo')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
-                    {t('solutions.examples.mobile')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-green-600 mt-2 flex-shrink-0" />
-                    {t('solutions.examples.social')}
-                  </li>
-                </ul>
-              </div>
-
-              <Controller
-                name="solutionsBenefits"
-                control={control}
-                render={({ field }) => (
-                  <TextareaInput
-                    {...field}
-                    label={t('solutions.input.label')}
-                    placeholder={t('solutions.input.placeholder')}
-                    hint={t('solutions.input.hint')}
-                    error={errors.solutionsBenefits?.message}
-                    required
-                    disabled={isLoading}
-                    maxLength={400}
-                    minLength={30}
-                    showCharacterCount
-                  />
-                )}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Customer Delight */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
       >
         <Card>
           <CardContent className="pt-6 space-y-6">
@@ -222,7 +161,7 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
+        transition={{ delay: 0.6 }}
       >
         <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
           <CardContent className="pt-6 space-y-4">
@@ -255,7 +194,7 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.0 }}
+        transition={{ delay: 0.8 }}
         className="text-center text-xs text-muted-foreground space-y-2"
       >
         <p>{t('tips.title')}</p>

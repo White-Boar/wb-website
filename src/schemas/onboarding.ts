@@ -277,17 +277,32 @@ const businessPhotoSchema = uploadedFileSchema.extend({
   )
 })
 
+// File schema for form validation (accepts browser File objects)
+const fileSchema = z.custom<File>((file) => {
+  return file instanceof File
+}, {
+  message: 'Expected a File object'
+})
+
 export const step12Schema = z.object({
-  logoUpload: uploadedFileSchema.optional(),
-  businessPhotos: z.array(businessPhotoSchema)
-    .max(10, 'Please upload no more than 10 business photos')
-    .optional()
+  logoUpload: z.union([fileSchema, uploadedFileSchema]).optional(),
+  businessPhotos: z.union([
+    z.array(fileSchema).max(10, 'Please upload no more than 10 business photos'),
+    z.array(businessPhotoSchema).max(10, 'Please upload no more than 10 business photos')
+  ]).optional()
 }).superRefine((data, ctx) => {
   // Calculate total size of business photos
   if (data.businessPhotos && data.businessPhotos.length > 0) {
-    const totalSize = data.businessPhotos.reduce((sum, photo) => sum + photo.fileSize, 0)
+    let totalSize = 0
+
+    for (const photo of data.businessPhotos) {
+      // Handle both File objects (size property) and uploaded file objects (fileSize property)
+      const photoSize = photo instanceof File ? photo.size : (photo as any).fileSize
+      totalSize += photoSize || 0
+    }
+
     const maxTotalSize = 50 * 1024 * 1024 // 50MB
-    
+
     if (totalSize > maxTotalSize) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

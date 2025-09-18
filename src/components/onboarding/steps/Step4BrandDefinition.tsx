@@ -15,12 +15,6 @@ export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentP
   const { t } = useOnboardingStepTranslation(4)
   const { control, setValue, watch } = form
 
-  const competitorUrls = watch('competitorUrls') || []
-
-  const handleCompetitorUrlsChange = (items: any[]) => {
-    const urls = items.map(item => item.value)
-    setValue('competitorUrls', urls)
-  }
 
   return (
     <div className="space-y-8">
@@ -82,23 +76,32 @@ export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentP
                 {t('competitors.description')}
               </p>
 
-              <DynamicList
-                label={t('competitors.urls.label')}
-                items={competitorUrls.map((url: string, index: number) => ({
-                  id: `competitor-${index}`,
-                  value: url,
-                  order: index
-                }))}
-                placeholder={t('competitors.urls.placeholder')}
-                addButtonText={t('competitors.urls.addButton')}
-                hint={t('competitors.urls.hint')}
-                error={errors.competitorUrls?.message}
-                maxItems={5}
-                minItems={0}
-                itemPrefix="🌐"
-                showCounter
-                disabled={isLoading}
-                onItemsChange={handleCompetitorUrlsChange}
+              <Controller
+                name="competitorUrls"
+                control={control}
+                render={({ field }) => (
+                  <DynamicList
+                    label={t('competitors.urls.label')}
+                    items={(field.value || []).map((url: string, index: number) => ({
+                      id: `competitor-${index}`,
+                      value: url,
+                      order: index
+                    }))}
+                    placeholder="https://competitor-website.com"
+                    addButtonText={t('competitors.urls.addButton')}
+                    hint="Add up to 3 competitor websites to help us understand your market"
+                    error={errors.competitorUrls?.message}
+                    maxItems={3}
+                    minItems={0}
+                    itemPrefix="🌐"
+                    showCounter={false}
+                    disabled={isLoading}
+                    onItemsChange={(items) => {
+                      const urls = items.map(item => item.value)
+                      field.onChange(urls)
+                    }}
+                  />
+                )}
               />
             </div>
 

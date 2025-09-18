@@ -500,7 +500,7 @@ export class EmailService {
               
               <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
                 <strong>Business Offer:</strong><br>
-                ${formData.offer}
+                ${formData.businessDescription}
               </div>
               
               <p><strong>Next Steps:</strong></p>
@@ -551,7 +551,7 @@ export class EmailService {
     formData: OnboardingFormData,
     submissionId: string
   ): string {
-    return `New Onboarding Submission\n\nBusiness: ${formData.businessName}\nEmail: ${formData.businessEmail}\nPhone: ${formData.businessPhone}\nIndustry: ${formData.industry}\nLocation: ${formData.physicalAddress.city}, ${formData.physicalAddress.province}\n\nOffer: ${formData.offer}\n\nView full submission: ${APP_URL}/admin/submissions/${submissionId}\n\nSubmission ID: ${submissionId}`
+    return `New Onboarding Submission\n\nBusiness: ${formData.businessName}\nEmail: ${formData.businessEmail}\nPhone: ${formData.businessPhone}\nIndustry: ${formData.industry}\nLocation: ${formData.physicalAddress.city}, ${formData.physicalAddress.province}\n\nOffer: ${formData.businessDescription}\n\nView full submission: ${APP_URL}/admin/submissions/${submissionId}\n\nSubmission ID: ${submissionId}`
   }
 
   private static generatePreviewEmailHTML(

@@ -911,6 +911,8 @@
         }
       },
       "12": {
+        "title": "Business Assets",
+        "description": "Upload your business logo and photos to personalize your website",
         "intro": {
           "title": "Business Assets",
           "description": "Upload your business logo and photos to personalize your website and build trust with customers."
@@ -1164,6 +1166,11 @@
       "noOptions": "No options available",
       "imageLoadError": "Failed to load image",
       "preview": "Preview"
+    },
+    "fileUpload": {
+      "dragAndDrop": "Drag and drop files here, or click to select",
+      "maxSize": "Max {maxSize}MB per file, {maxFiles} files max",
+      "selectFiles": "Select Files"
     }
   },
   "common": {

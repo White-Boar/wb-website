@@ -904,6 +904,8 @@
         }
       },
       "12": {
+        "title": "Risorse Aziendali",
+        "description": "Carica il logo e le foto della tua attività per personalizzare il sito web",
         "intro": {
           "title": "Risorse Aziendali",
           "description": "Carica il logo e le foto della tua attività per personalizzare il sito web e creare fiducia con i clienti."
@@ -1162,6 +1164,11 @@
       "noOptions": "Nessuna opzione disponibile",
       "imageLoadError": "Impossibile caricare l'immagine",
       "preview": "Anteprima"
+    },
+    "fileUpload": {
+      "dragAndDrop": "Trascina e rilascia i file qui, o clicca per selezionare",
+      "maxSize": "Max {maxSize}MB per file, max {maxFiles} file",
+      "selectFiles": "Seleziona File"
     }
   },
   "common": {

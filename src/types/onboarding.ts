@@ -29,12 +29,9 @@ export interface OnboardingFormData {
   vatNumber?: string
   
   // Step 4: Brand Definition
-  offer: string
-  competitors: string[] // URLs to competitor websites (1-3)
-  uniqueness: {
-    attribute: string // Dropdown selection
-    explanation: string // Text completion
-  }
+  businessDescription: string
+  competitorUrls?: string[] // URLs to competitor websites (max 3)
+  competitorAnalysis?: string
   
   // Step 5: Customer Profile (5 sliders, 0-100 scale)
   customerProfile: {
@@ -46,7 +43,7 @@ export interface OnboardingFormData {
   }
   
   // Step 6: Customer Needs
-  problemSolved: string
+  customerProblems: string
   customerDelight: string
   
   // Step 7: Visual Inspiration
@@ -359,12 +356,12 @@ export interface StepConfig {
 
 // Helper type for form data at specific steps
 export type FormDataAtStep<T extends StepNumber> = 
-  T extends 1 ? Pick<OnboardingFormData, 'name' | 'email'> :
+  T extends 1 ? Pick<OnboardingFormData, 'firstName' | 'lastName' | 'email'> :
   T extends 2 ? Pick<OnboardingFormData, 'emailVerified'> :
   T extends 3 ? Pick<OnboardingFormData, 'businessName' | 'businessEmail' | 'businessPhone' | 'physicalAddress' | 'industry' | 'vatNumber'> :
-  T extends 4 ? Pick<OnboardingFormData, 'offer' | 'competitors' | 'uniqueness'> :
+  T extends 4 ? Pick<OnboardingFormData, 'businessDescription' | 'competitorUrls' | 'competitorAnalysis'> :
   T extends 5 ? Pick<OnboardingFormData, 'customerProfile'> :
-  T extends 6 ? Pick<OnboardingFormData, 'problemSolved' | 'customerDelight'> :
+  T extends 6 ? Pick<OnboardingFormData, 'customerProblems' | 'customerDelight'> :
   T extends 7 ? Pick<OnboardingFormData, 'websiteReferences'> :
   T extends 8 ? Pick<OnboardingFormData, 'designStyle'> :
   T extends 9 ? Pick<OnboardingFormData, 'imageStyle'> :

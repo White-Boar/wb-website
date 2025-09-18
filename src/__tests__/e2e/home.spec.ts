@@ -20,11 +20,11 @@ test.describe('WhiteBoar Homepage', () => {
 
   test('navigation works correctly', async ({ page }) => {
     // Test navigation to pricing section
-    await page.getByText('Prices').click();
+    await page.getByText('Packages').click();
     await expect(page.locator('#pricing')).toBeInViewport();
-    
+
     // Test navigation to portfolio section
-    await page.getByText('Our work').click();
+    await page.getByText('Clients').click();
     await expect(page.locator('#portfolio')).toBeInViewport();
   });
 

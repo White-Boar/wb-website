@@ -181,7 +181,6 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
                   error={errors.customerProfile?.message}
                   showLabels
                   showExamples
-                  showReset
                 />
               )}
             />
@@ -243,22 +242,6 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
         </Card>
       </motion.div>
 
-      {/* Tips for Better Results */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
-        className="text-center text-xs text-muted-foreground space-y-2"
-      >
-        <p>{t('tips.title')}</p>
-        <div className="flex justify-center gap-4">
-          <span>{t('tips.honest')}</span>
-          <span>•</span>
-          <span>{t('tips.typical')}</span>
-          <span>•</span>
-          <span>{t('tips.adjust')}</span>
-        </div>
-      </motion.div>
     </div>
   )
 }

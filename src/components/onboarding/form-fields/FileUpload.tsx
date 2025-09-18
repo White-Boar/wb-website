@@ -15,11 +15,12 @@ interface FileUploadProps {
   hint?: string
   success?: string
   required?: boolean
-  accept?: string
+  accept?: string | Record<string, string[]>
   multiple?: boolean
   maxFileSize?: number // in MB
   maxFiles?: number
-  onFilesChange?: (files: File[]) => void
+  value?: File | File[] | null
+  onFilesChange?: (files: File[] | File | null) => void
   className?: string
   disabled?: boolean
 }
@@ -35,14 +36,24 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
     multiple = false,
     maxFileSize = 10,
     maxFiles = 5,
+    value,
     onFilesChange,
     className,
-    disabled = false,
-    ...props
+    disabled = false
   }, ref) => {
     const t = useTranslations('forms')
-    const [files, setFiles] = useState<File[]>([])
+    const [files, setFiles] = useState<File[]>(() => {
+      if (!value) return []
+      if (Array.isArray(value)) return value
+      return [value]
+    })
     const [isDragOver, setIsDragOver] = useState(false)
+
+    // Convert accept object to string for input element
+    const acceptString = typeof accept === 'string' ? accept :
+      Object.entries(accept || {}).map(([mime, extensions]) =>
+        `${mime},${extensions.join(',')}`
+      ).join(',')
 
     const handleFileSelect = useCallback((selectedFiles: FileList | null) => {
       if (!selectedFiles) return
@@ -76,14 +87,26 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
 
       const newFiles = multiple ? [...files, ...validFiles] : validFiles
       setFiles(newFiles)
-      onFilesChange?.(newFiles)
+
+      // For single file upload, return the file itself, not an array
+      if (multiple) {
+        onFilesChange?.(newFiles)
+      } else {
+        onFilesChange?.(newFiles[0] || null)
+      }
     }, [files, maxFileSize, maxFiles, multiple, onFilesChange])
 
     const removeFile = useCallback((index: number) => {
       const newFiles = files.filter((_, i) => i !== index)
       setFiles(newFiles)
-      onFilesChange?.(newFiles)
-    }, [files, onFilesChange])
+
+      // For single file upload, return the file itself or null, not an array
+      if (multiple) {
+        onFilesChange?.(newFiles)
+      } else {
+        onFilesChange?.(newFiles[0] || null)
+      }
+    }, [files, multiple, onFilesChange])
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
       e.preventDefault()
@@ -130,12 +153,11 @@ export const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
           <input
             ref={ref}
             type="file"
-            accept={accept}
+            accept={acceptString}
             multiple={multiple}
             onChange={(e) => handleFileSelect(e.target.files)}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             disabled={disabled}
-            {...props}
           />
 
           <div className="text-center">

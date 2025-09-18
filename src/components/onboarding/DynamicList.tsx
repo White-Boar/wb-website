@@ -431,7 +431,7 @@ export function DynamicList({
       )}
 
       {/* Max Items Warning */}
-      {!canAddMore && (
+      {!canAddMore && showCounter && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
           <p className="text-sm text-yellow-800">
             {t('maxItems', { max: maxItems })}

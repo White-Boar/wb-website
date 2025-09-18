@@ -179,6 +179,11 @@ export default function OnboardingStep() {
           primaryGoal: formData?.primaryGoal || '',
           offerings: formData?.offerings || []
         }
+      case 12:
+        return {
+          logoUpload: formData?.logoUpload || null,
+          businessPhotos: formData?.businessPhotos || []
+        }
       default:
         return {}
     }
