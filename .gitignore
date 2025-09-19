@@ -58,6 +58,9 @@ logs
 /tmp/
 temp/
 
+# Playwright MCP screenshots
+.playwright-mcp/
+
 # Editor directories and files
 .vscode/settings.json
 !.vscode/extensions.json
