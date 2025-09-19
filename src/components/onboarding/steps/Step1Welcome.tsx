@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { User, Sparkles } from 'lucide-react'
+import { User } from 'lucide-react'
 
 import { TextInput } from '@/components/onboarding/form-fields/TextInput'
 import { EmailInput } from '@/components/onboarding/form-fields/EmailInput'
@@ -24,53 +24,6 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Message */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center space-y-4"
-      >
-        <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center">
-          <Sparkles className="w-8 h-8 text-accent" />
-        </div>
-        
-        <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-foreground">{t('welcome')}</h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            {t('subtitle')}
-          </p>
-        </div>
-      </motion.div>
-
-      {/* Quick Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-3 gap-4"
-      >
-        <Card>
-          <CardContent className="pt-4 text-center">
-            <div className="text-2xl font-bold text-accent">13</div>
-            <div className="text-xs text-muted-foreground">{t('stats.steps')}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-4 text-center">
-            <div className="text-2xl font-bold text-accent">~12</div>
-            <div className="text-xs text-muted-foreground">{t('stats.minutes')}</div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-4 text-center">
-            <div className="text-2xl font-bold text-accent">€40</div>
-            <div className="text-xs text-muted-foreground">{t('stats.price')}</div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
       {/* Contact Information Form */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
