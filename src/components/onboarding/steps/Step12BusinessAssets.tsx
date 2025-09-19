@@ -5,7 +5,7 @@ import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { Upload, Image as ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react'
 
-import { FileUpload } from '@/components/onboarding/form-fields/FileUpload'
+import { FileUploadWithProgress, FileUploadProgress } from '@/components/onboarding/FileUploadWithProgress'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -66,19 +66,24 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                 name="logoUpload"
                 control={control}
                 render={({ field }) => (
-                  <FileUpload
+                  <FileUploadWithProgress
                     label={t('logo.upload.label')}
-                    accept={{
-                      'image/png': ['.png'],
-                      'image/jpeg': ['.jpg', '.jpeg'],
-                      'image/svg+xml': ['.svg']
+                    description={t('logo.upload.hint')}
+                    accept={['image/png', 'image/jpeg', 'image/svg+xml']}
+                    maxFiles={1}
+                    maxFileSize={2 * 1024 * 1024} // 2MB
+                    onFilesChange={(files: FileUploadProgress[]) => {
+                      // Convert to the expected format
+                      const completedFile = files.find(f => f.status === 'completed')
+                      field.onChange(completedFile ? {
+                        id: completedFile.id,
+                        fileName: completedFile.file.name,
+                        fileSize: completedFile.file.size,
+                        mimeType: completedFile.file.type,
+                        url: completedFile.url!,
+                        uploadedAt: new Date().toISOString()
+                      } : null)
                     }}
-                    maxSize={2 * 1024 * 1024} // 2MB
-                    multiple={false}
-                    onFilesChange={field.onChange}
-                    value={field.value}
-                    error={errors.logoUpload?.message}
-                    hint={t('logo.upload.hint')}
                     disabled={isLoading}
                   />
                 )}
@@ -162,19 +167,26 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                 name="businessPhotos"
                 control={control}
                 render={({ field }) => (
-                  <FileUpload
+                  <FileUploadWithProgress
                     label={t('photos.upload.label')}
-                    accept={{
-                      'image/png': ['.png'],
-                      'image/jpeg': ['.jpg', '.jpeg']
-                    }}
-                    maxSize={10 * 1024 * 1024} // 10MB per file
-                    multiple={true}
+                    description={t('photos.upload.hint')}
+                    accept={['image/png', 'image/jpeg']}
                     maxFiles={30}
-                    onFilesChange={field.onChange}
-                    value={field.value}
-                    error={errors.businessPhotos?.message}
-                    hint={t('photos.upload.hint')}
+                    maxFileSize={10 * 1024 * 1024} // 10MB per file
+                    onFilesChange={(files: FileUploadProgress[]) => {
+                      // Convert completed files to expected format
+                      const completedFiles = files
+                        .filter(f => f.status === 'completed')
+                        .map(f => ({
+                          id: f.id,
+                          fileName: f.file.name,
+                          fileSize: f.file.size,
+                          mimeType: f.file.type,
+                          url: f.url!,
+                          uploadedAt: new Date().toISOString()
+                        }))
+                      field.onChange(completedFiles)
+                    }}
                     disabled={isLoading}
                   />
                 )}

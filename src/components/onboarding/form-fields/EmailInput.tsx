@@ -154,7 +154,7 @@ export const EmailInput = forwardRef<HTMLInputElement, EmailInputProps>(
 
     // Determine which error/success message to show
     const displayError = error || internalError
-    const displaySuccess = success || (!displayError && internalSuccess)
+    const displaySuccess = success || (!displayError && internalSuccess) || undefined
 
     // Determine right icon
     const getRightIcon = () => {

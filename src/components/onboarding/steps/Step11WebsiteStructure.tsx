@@ -63,11 +63,11 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
 
   const handleSectionChange = (sectionId: string, checked: boolean) => {
     const current = selectedSections || []
-    const updated = checked 
+    const updated = checked
       ? [...current, sectionId]
       : current.filter((id: string) => id !== sectionId)
-    
-    setValue('websiteSections', updated)
+
+    setValue('websiteSections', updated as any)
   }
 
   const handleOfferingsChange = (items: any[]) => {
@@ -145,8 +145,8 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
             <div className="space-y-4">
               <div className="grid gap-3">
                 {websiteSections.map((section) => {
-                  const isSelected = selectedSections.includes(section.id)
-                  const isRecommended = recommendedSections.includes(section.id)
+                  const isSelected = selectedSections.includes(section.id as any)
+                  const isRecommended = recommendedSections.includes(section.id as any)
                   const isEssential = section.essential
 
                   return (
@@ -230,7 +230,7 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                   options={primaryGoalOptions}
                   value={field.value}
                   onValueChange={field.onChange}
-                  error={errors.primaryGoal?.message}
+                  error={(errors as any).primaryGoal?.message}
                   required
                   searchable
                   disabled={isLoading}
@@ -284,14 +284,13 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                 placeholder={t('offerings.list.placeholder')}
                 addButtonText={t('offerings.list.addButton')}
                 hint={t('offerings.list.hint')}
-                error={errors.offerings?.message}
+                error={(errors as any).offerings?.message}
                 maxItems={15}
                 minItems={0}
                 itemPrefix="🛍️"
                 showCounter
                 allowReorder
                 allowEdit
-                disabled={isLoading}
                 onItemsChange={handleOfferingsChange}
               />
             </div>

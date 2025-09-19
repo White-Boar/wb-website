@@ -1,4 +1,5 @@
 import { supabase, typedSupabase } from '@/lib/supabase'
+import { retry, circuitBreakers } from '@/lib/retry'
 import {
   OnboardingSession,
   OnboardingSubmission,
@@ -38,33 +39,43 @@ export class OnboardingClientService {
   static async createSession(
     locale: 'en' | 'it' = 'en'
   ): Promise<OnboardingSession> {
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 7) // 7 days from now
+    const result = await circuitBreakers.sessionService.execute(async () => {
+      return await retry.critical(async () => {
+        const expiresAt = new Date()
+        expiresAt.setDate(expiresAt.getDate() + 7) // 7 days from now
 
-    // Generate a unique temporary email as placeholder (required by schema)
-    const sessionId = crypto.randomUUID()
-    const tempEmail = `temp-${sessionId}@whiteboar.onboarding`
+        // Generate a unique temporary email as placeholder (required by schema)
+        const sessionId = crypto.randomUUID()
+        const tempEmail = `temp-${sessionId}@whiteboar.onboarding`
 
-    const { data, error } = await supabase
-      .from('onboarding_sessions')
-      .insert({
-        email: tempEmail,
-        current_step: 1,
-        form_data: {},
-        expires_at: expiresAt.toISOString(),
-        locale,
-        email_verified: false,
-        verification_attempts: 0
+        const { data, error } = await supabase
+          .from('onboarding_sessions')
+          .insert({
+            email: tempEmail,
+            current_step: 1,
+            form_data: {},
+            expires_at: expiresAt.toISOString(),
+            locale,
+            email_verified: false,
+            verification_attempts: 0
+          })
+          .select()
+          .single()
+
+        if (error || !data) {
+          throw new Error(`Failed to create session: ${error?.message || 'Unknown error'}`)
+        }
+
+        // NOTE: Analytics tracking moved to API route
+        return transformSessionFromDB(data)
       })
-      .select()
-      .single()
+    })
 
-    if (error || !data) {
-      throw new Error(`Failed to create session: ${error?.message || 'Unknown error'}`)
+    if (!result.success) {
+      throw result.error || new Error('Failed to create session after multiple attempts')
     }
 
-    // NOTE: Analytics tracking moved to API route
-    return transformSessionFromDB(data)
+    return result.data!
   }
 
   /**
@@ -325,30 +336,35 @@ export async function submitOnboarding(
   formData: OnboardingFormData,
   completionTimeSeconds?: number
 ): Promise<OnboardingSubmission> {
-  try {
-    const response = await fetch('/api/onboarding/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sessionId,
-        formData,
-        completionTimeSeconds
+  const result = await circuitBreakers.submissionService.execute(async () => {
+    return await retry.critical(async () => {
+      const response = await fetch('/api/onboarding/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          formData,
+          completionTimeSeconds
+        })
       })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit onboarding')
+      }
+
+      if (!result.success || !result.data) {
+        throw new Error('Invalid response from submission API')
+      }
+
+      return result.data
     })
+  })
 
-    const result = await response.json()
-
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to submit onboarding')
-    }
-
-    if (!result.success || !result.data) {
-      throw new Error('Invalid response from submission API')
-    }
-
-    return result.data
-  } catch (error) {
-    console.error('Submit onboarding error:', error)
-    throw error
+  if (!result.success) {
+    throw result.error || new Error('Failed to submit onboarding after multiple attempts')
   }
+
+  return result.data!
 }

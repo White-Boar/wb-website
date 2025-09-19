@@ -19,12 +19,12 @@ test.describe('WhiteBoar Homepage', () => {
   });
 
   test('navigation works correctly', async ({ page }) => {
-    // Test navigation to pricing section
-    await page.getByText('Packages').click();
+    // Test navigation to pricing section using navigation menu
+    await page.getByLabel('Main navigation').getByRole('button', { name: 'Packages' }).click();
     await expect(page.locator('#pricing')).toBeInViewport();
 
-    // Test navigation to portfolio section
-    await page.getByText('Clients').click();
+    // Test navigation to portfolio section using navigation menu
+    await page.getByLabel('Main navigation').getByRole('button', { name: 'Clients' }).click();
     await expect(page.locator('#portfolio')).toBeInViewport();
   });
 
@@ -32,11 +32,12 @@ test.describe('WhiteBoar Homepage', () => {
     // Check initial language (English)
     await expect(page.getByText('Brand. Build. Boom.')).toBeVisible();
     
-    // Click language selector
-    await page.getByLabel('Select language').click();
-    
-    // Switch to Italian
-    await page.getByText('Italian').click();
+    // Click language selector using screen reader text
+    const languageSelector = page.getByRole('button').filter({ has: page.locator('span:has-text("Select language")') });
+    await languageSelector.click();
+
+    // Switch to Italian from the dropdown
+    await page.getByRole('button').filter({ hasText: /italian/i }).click();
     
     // Check URL changes to /it
     await expect(page).toHaveURL('/it');
@@ -49,18 +50,19 @@ test.describe('WhiteBoar Homepage', () => {
     // Check initial theme (should be light or system)
     const html = page.locator('html');
     
-    // Click theme toggle
-    await page.getByLabel('Toggle theme').click();
-    
-    // Click Dark theme
-    await page.getByText('Dark').click();
+    // Click theme toggle using screen reader text
+    const themeToggle = page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') });
+    await themeToggle.click();
+
+    // Click Dark theme option from dropdown
+    await page.getByRole('menuitem').filter({ hasText: /dark/i }).click();
     
     // Check that dark class is applied
     await expect(html).toHaveClass(/dark/);
     
     // Switch back to light
-    await page.getByLabel('Toggle theme').click();
-    await page.getByText('Light').click();
+    await themeToggle.click();
+    await page.getByRole('menuitem').filter({ hasText: /light/i }).click();
     
     // Check that dark class is removed
     await expect(html).not.toHaveClass(/dark/);
@@ -68,13 +70,13 @@ test.describe('WhiteBoar Homepage', () => {
 
   test('pricing plan selection works', async ({ page }) => {
     // Scroll to pricing section
-    await page.getByText('Prices').click();
+    await page.getByRole('heading', { name: 'Packages' }).click();
     
     // Click on Fast & Simple plan
     await page.getByText('Start with Fast & Simple').click();
     
-    // Check that it navigates to checkout with correct plan
-    await expect(page).toHaveURL('/checkout?plan=fast');
+    // Check that it navigates to onboarding
+    await expect(page).toHaveURL(/\/(en\/)?onboarding/);
   });
 
   test('social links are working', async ({ page }) => {
@@ -115,22 +117,31 @@ test.describe('WhiteBoar Homepage', () => {
     }
   });
 
-  test('portfolio carousel works', async ({ page }) => {
+  test('portfolio carousel works', async ({ page, isMobile }) => {
     // Scroll to portfolio
-    await page.getByText('Our work').click();
-    
+    await page.getByRole('heading', { name: 'Clients' }).click();
+
     // Check that carousel is visible
-    await expect(page.getByRole('region').last()).toBeVisible();
-    
-    // Check navigation buttons are present
-    await expect(page.getByLabel('Previous slide')).toBeVisible();
-    await expect(page.getByLabel('Next slide')).toBeVisible();
-    
-    // Test next button click
-    await page.getByLabel('Next slide').click();
-    
-    // Wait for carousel to move
-    await page.waitForTimeout(500);
+    await expect(page.locator('[role="region"][aria-roledescription="carousel"]')).toBeVisible();
+
+    // Check that portfolio items are visible
+    await expect(page.locator('[role="group"][aria-roledescription="slide"]').first()).toBeVisible();
+
+    // Navigation buttons are only visible on desktop (hidden sm:flex)
+    if (!isMobile) {
+      // Look for buttons containing screen reader text for navigation
+      const prevButton = page.locator('button').filter({ has: page.locator('span:has-text("Previous slide")') });
+      const nextButton = page.locator('button').filter({ has: page.locator('span:has-text("Next slide")') });
+
+      await expect(prevButton).toBeVisible();
+      await expect(nextButton).toBeVisible();
+
+      // Test next button click
+      await nextButton.click();
+
+      // Wait for carousel to move
+      await page.waitForTimeout(500);
+    }
   });
 
   test('mobile responsiveness', async ({ page, isMobile }) => {

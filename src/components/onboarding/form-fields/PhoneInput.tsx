@@ -140,8 +140,9 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
         
         // Revalidate existing number with new country
         if (phoneNumber) {
-          const isValid = validatePhone(phoneNumber, newCountryData)
-          const fullNumber = `${newCountryData.dialCode}${phoneNumber.replace(/\D/g, '')}`
+          const phoneStr = String(phoneNumber)
+          const isValid = validatePhone(phoneStr, newCountryData)
+          const fullNumber = `${newCountryData.dialCode}${phoneStr.replace(/\D/g, '')}`
           onValidationChange?.(isValid, fullNumber)
         }
       }

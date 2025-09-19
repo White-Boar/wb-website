@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Page } from '@playwright/test';
 import {
   fillStep1Form,
   completeEmailVerification,
@@ -14,34 +14,11 @@ import {
 } from './helpers/test-utils';
 
 test.describe('Onboarding Flow', () => {
-  // Helper function to fill Step 1 form
-  async function fillStep1Form(page: Page, data = {
-    firstName: 'Test',
-    lastName: 'User',
-    email: 'test@example.com'
-  }) {
-    await page.fill('input[name="firstName"]', data.firstName);
-    await page.fill('input[name="lastName"]', data.lastName);
-    await page.fill('input[name="email"]', data.email);
-  }
-
   // Helper function to verify step navigation
   async function verifyStepNavigation(page: Page, stepNumber: number) {
-    await expect(page).toHaveURL(`/onboarding/step/${stepNumber}`);
-    await expect(page.locator(`[data-testid="step-${stepNumber}"]`).or(page.locator('.step-content'))).toBeVisible();
-  }
-
-  // Helper function to complete email verification
-  // Updated to support automatic progression after verification
-  async function completeEmailVerification(page: Page, code = 'DEV123') {
-    // Wait for the OTP input to be visible
-    await expect(page.locator('input[maxlength="6"]').first()).toBeVisible();
-
-    // Enter verification code
-    await page.fill('input[maxlength="6"]', code);
-
-    // Wait for auto-progression to next step (system auto-navigates after successful verification)
-    await page.waitForURL(/\/step\/3/, { timeout: 5000 });
+    await expect(page).toHaveURL(new RegExp(`/(en/)?onboarding/step/${stepNumber}$`));
+    // Look for the step content card which contains all step content
+    await expect(page.locator('.bg-card.border.rounded-xl').first()).toBeVisible();
     await page.waitForLoadState('networkidle');
   }
 
@@ -55,7 +32,7 @@ test.describe('Onboarding Flow', () => {
     await startButton.click();
 
     // Wait for navigation to step 1
-    await page.waitForURL(/\/onboarding\/step\/1/);
+    await page.waitForURL(/\/(en\/)?onboarding\/step\/1/);
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000); // Allow for React hydration
   });
@@ -155,11 +132,12 @@ test.describe('Onboarding Flow', () => {
     });
 
     test('displays email verification UI correctly', async ({ page }) => {
-      // Check email verification content
-      await expect(page.locator('text=Email Verification').or(page.locator('text=Verify'))).toBeVisible();
+      // Check email verification heading (be specific to avoid route announcer)
+      await expect(page.getByRole('heading', { name: 'Email Verification' })).toBeVisible();
 
-      // Check OTP input is present
-      await expect(page.locator('input[maxlength="6"]')).toBeVisible();
+      // Check individual OTP digit inputs are present (6 digits)
+      await expect(page.getByRole('textbox', { name: 'Verification code digit 1' })).toBeVisible();
+      await expect(page.getByRole('textbox', { name: 'Verification code digit 6' })).toBeVisible();
 
       // Check email is displayed (from Step 1)
       await expect(page.locator('text=test@example.com')).toBeVisible();

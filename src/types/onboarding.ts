@@ -342,7 +342,7 @@ export interface FormFieldProps {
 // UTILITY TYPES
 // =============================================================================
 
-export type StepNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13
+export type StepNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 
 export interface StepConfig {
   number: StepNumber
@@ -368,14 +368,13 @@ export type FormDataAtStep<T extends StepNumber> =
   T extends 10 ? Pick<OnboardingFormData, 'colorPalette'> :
   T extends 11 ? Pick<OnboardingFormData, 'websiteSections' | 'primaryGoal' | 'offeringType' | 'offerings'> :
   T extends 12 ? Pick<OnboardingFormData, 'logoUpload' | 'businessPhotos'> :
-  T extends 13 ? Pick<OnboardingFormData, 'completedAt' | 'totalTimeSeconds'> :
   never
 
 // =============================================================================
 // CONSTANTS
 // =============================================================================
 
-export const TOTAL_STEPS = 13 as const
+export const TOTAL_STEPS = 12 as const
 export const VERIFICATION_CODE_LENGTH = 6 as const
 export const MAX_VERIFICATION_ATTEMPTS = 5 as const
 export const VERIFICATION_LOCKOUT_MINUTES = 15 as const

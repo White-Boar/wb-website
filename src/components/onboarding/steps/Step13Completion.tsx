@@ -22,7 +22,7 @@ export function Step13Completion({ form, errors, isLoading }: StepComponentProps
   const { sessionId, clearSession } = useOnboardingStore()
 
   // Get summary data from form
-  const formData = watch()
+  const formData = watch() as any
   const {
     businessName,
     businessType,

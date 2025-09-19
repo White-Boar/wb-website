@@ -99,7 +99,7 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
                     label={t('contactInfo.firstName.label')}
                     placeholder={t('contactInfo.firstName.placeholder')}
                     hint={t('contactInfo.firstName.hint')}
-                    error={errors.firstName?.message}
+                    error={(errors as any).firstName?.message}
                     required
                     disabled={isLoading}
                     leftIcon={<User className="w-4 h-4" />}
@@ -117,7 +117,7 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
                     label={t('contactInfo.lastName.label')}
                     placeholder={t('contactInfo.lastName.placeholder')}
                     hint={t('contactInfo.lastName.hint')}
-                    error={errors.lastName?.message}
+                    error={(errors as any).lastName?.message}
                     required
                     disabled={isLoading}
                     leftIcon={<User className="w-4 h-4" />}
@@ -136,7 +136,7 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
                   label={t('contactInfo.email.label')}
                   placeholder={t('contactInfo.email.placeholder')}
                   hint={t('contactInfo.email.hint')}
-                  error={errors.email?.message}
+                  error={(errors as any).email?.message}
                   required
                   disabled={isLoading}
                   onValidationChange={handleEmailValidation}

@@ -73,7 +73,7 @@ export function FileUpload({
 }: FileUploadProps) {
   const t = useTranslations('forms.fileUpload')
   const { toast } = useToast()
-  const { uploadFile, isUploading } = useFileUpload()
+  const { uploadFile } = useFileUpload('file-upload')
   
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([])
   const [dragActive, setDragActive] = useState(false)
@@ -188,9 +188,9 @@ export function FileUpload({
         )
       )
 
-      const result = await uploadFile(
+      const result = await (uploadFile as any)(
         fileObj.file,
-        (progress) => {
+        (progress: any) => {
           // Update progress
           setUploadedFiles(prev => 
             prev.map(f => 
@@ -208,7 +208,7 @@ export function FileUpload({
           f.id === fileObj.id 
             ? { 
                 ...f, 
-                status: 'completed',
+                status: 'completed' as const,
                 url: result.url,
                 compressed: result.compressed,
                 compressedSize: result.compressedSize,
@@ -266,7 +266,7 @@ export function FileUpload({
     accept,
     maxFiles: multiple ? maxFiles : 1,
     multiple,
-    disabled: !canUploadMore || isUploading,
+    disabled: !canUploadMore,
     onDragEnter: () => setDragActive(true),
     onDragLeave: () => setDragActive(false)
   })
@@ -325,7 +325,7 @@ export function FileUpload({
             isDragActive && "border-primary bg-primary/10",
             hasError && "border-destructive",
             hasSuccess && "border-green-500",
-            (!canUploadMore || isUploading) && "opacity-50 cursor-not-allowed"
+            !canUploadMore && "opacity-50 cursor-not-allowed"
           )}
         >
           <input 

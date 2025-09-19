@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate verification code
-    const verificationCode = await OnboardingService.generateVerificationCode(sessionId, email)
+    const verificationCode = await OnboardingServerService.generateVerificationCode(sessionId, email)
 
     // Send email via Resend
     const emailResult = await EmailService.sendVerificationEmail(

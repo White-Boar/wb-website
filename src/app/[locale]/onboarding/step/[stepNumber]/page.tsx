@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
@@ -11,6 +11,8 @@ import { StepTemplate } from '@/components/onboarding/StepTemplate'
 import { getStepComponent } from '@/components/onboarding/steps'
 import { getStepSchema, type StepFormData } from '@/schemas/onboarding'
 import { submitOnboarding } from '@/services/onboarding-client'
+import { getNextStep, getPreviousStep, calculateProgress } from '@/lib/step-navigation'
+import { OnboardingFormData, StepNumber } from '@/types/onboarding'
 
 export default function OnboardingStep() {
   const router = useRouter()
@@ -27,7 +29,6 @@ export default function OnboardingStep() {
     formData,
     updateFormData,
     nextStep,
-    previousStep,
     validateStep,
     isSessionExpired,
     sessionId,
@@ -50,14 +51,14 @@ export default function OnboardingStep() {
         } catch (error) {
           console.error('Failed to load session from URL:', error)
           // If loading session fails, create a new one
-          await initializeSession(locale)
+          await initializeSession(locale as 'en' | 'it')
         } finally {
           setIsLoading(false)
         }
       } else if (!hasExistingSession() && !sessionId) {
         try {
           setIsLoading(true)
-          await initializeSession(locale)
+          await initializeSession(locale as 'en' | 'it')
         } catch (error) {
           console.error('Failed to initialize session:', error)
           setError('Failed to initialize session. Please try again.')
@@ -76,13 +77,7 @@ export default function OnboardingStep() {
     }
 
     initSession()
-  }, [hasExistingSession, sessionId, initializeSession, locale])
-
-  // Validate step number (Step 12 is now the final step)
-  if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 12) {
-    router.push('/onboarding')
-    return null
-  }
+  }, [hasExistingSession, sessionId, initializeSession, locale, currentStep, stepNumber])
 
   // Redirect if trying to access a step too far ahead (only if session is loaded)
   useEffect(() => {
@@ -93,17 +88,11 @@ export default function OnboardingStep() {
     }
   }, [stepNumber, currentStep, router, sessionId])
 
-  // Get step schema and form setup
+  // Get step schema and form setup - must be called before any early returns
   const schema = getStepSchema(stepNumber)
 
-  // Validate schema exists
-  if (!schema) {
-    router.push('/onboarding')
-    return null
-  }
-
   // Extract default values for current step from store
-  const getStepDefaultValues = (step: number) => {
+  const getStepDefaultValues = useCallback((step: number) => {
     switch (step) {
       case 1:
         return {
@@ -188,10 +177,10 @@ export default function OnboardingStep() {
       default:
         return {}
     }
-  }
+  }, [formData])
 
-  const form = useForm<StepFormData>({
-    resolver: zodResolver(schema),
+  const form = useForm<any>({
+    resolver: schema ? zodResolver(schema) : undefined,
     defaultValues: getStepDefaultValues(stepNumber),
     mode: 'onChange'
   })
@@ -202,17 +191,29 @@ export default function OnboardingStep() {
   useEffect(() => {
     const currentValues = getStepDefaultValues(stepNumber)
     form.reset(currentValues)
-  }, [formData, stepNumber, form])
+  }, [formData, stepNumber, form, getStepDefaultValues])
 
   // Auto-save functionality
   useEffect(() => {
     const subscription = form.watch((data) => {
       if (isDirty && data) {
-        updateFormData(data as StepFormData)
+        updateFormData(data as any)
       }
     })
     return () => subscription.unsubscribe()
   }, [form, updateFormData, isDirty])
+
+  // Validate step number (Step 12 is now the final step)
+  if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 12) {
+    router.push('/onboarding')
+    return null
+  }
+
+  // Validate schema exists
+  if (!schema) {
+    router.push('/onboarding')
+    return null
+  }
 
   // Handle next step
   const handleNext = async (data: StepFormData) => {
@@ -221,7 +222,7 @@ export default function OnboardingStep() {
 
     try {
       // Update form data
-      updateFormData(data)
+      updateFormData(data as any)
 
       // Validate current step
       const isStepValid = await validateStep(stepNumber)
@@ -230,10 +231,12 @@ export default function OnboardingStep() {
         return
       }
 
-      // Move to next step or complete
-      if (stepNumber < 12) {
+      // Move to next step or complete using smart navigation
+      const nextStepNumber = getNextStep(stepNumber as StepNumber, { ...formData, ...data } as any)
+
+      if (nextStepNumber && nextStepNumber <= 12) {
         await nextStep()
-        router.push(`/${locale}/onboarding/step/${stepNumber + 1}`)
+        router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
       } else {
         // Complete onboarding - Step 12 is the final step
         try {
@@ -246,7 +249,7 @@ export default function OnboardingStep() {
           // Submit all onboarding data to Supabase
           const submission = await submitOnboarding(
             sessionId!,
-            { ...formData, ...data } as any, // Merge current step data with all form data
+            { ...formData, ...data } as OnboardingFormData, // Merge current step data with all form data
             completionTimeSeconds
           )
 
@@ -268,10 +271,12 @@ export default function OnboardingStep() {
     }
   }
 
-  // Handle previous step
+  // Handle previous step using smart navigation
   const handlePrevious = () => {
-    if (stepNumber > 1) {
-      router.push(`/${locale}/onboarding/step/${stepNumber - 1}`)
+    const prevStepNumber = getPreviousStep(stepNumber as StepNumber, formData)
+
+    if (prevStepNumber && prevStepNumber >= 1) {
+      router.push(`/${locale}/onboarding/step/${prevStepNumber}`)
     } else {
       router.push(`/${locale}/onboarding`)
     }
@@ -291,6 +296,9 @@ export default function OnboardingStep() {
     return null
   }
 
+  // Calculate smart progress
+  const progressPercentage = calculateProgress(stepNumber as StepNumber, formData)
+
   return (
     <StepTemplate
       stepNumber={stepNumber}
@@ -306,7 +314,7 @@ export default function OnboardingStep() {
     >
       <StepComponent
         form={form}
-        data={getStepDefaultValues(stepNumber)}
+        data={getStepDefaultValues(stepNumber) as any}
         errors={errors}
         isLoading={isLoading}
         error={error}

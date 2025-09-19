@@ -125,13 +125,13 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
       if (multiple) {
         if (selectedValues.includes(optionValue)) {
           // Remove from selection
-          newValues = selectedValues.filter(v => v !== optionValue)
+          newValues = selectedValues.filter(v => v !== optionValue && v !== undefined) as string[]
         } else {
           // Add to selection (check max limit)
           if (maxSelections && selectedValues.length >= maxSelections) {
             return // Don't add if at max limit
           }
-          newValues = [...selectedValues, optionValue]
+          newValues = [...selectedValues.filter(v => v !== undefined) as string[], optionValue]
         }
       } else {
         newValues = [optionValue]
@@ -150,7 +150,7 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
     const handleRemoveTag = (valueToRemove: string, e: React.MouseEvent) => {
       e.stopPropagation()
       if (multiple) {
-        const newValues = selectedValues.filter(v => v !== valueToRemove)
+        const newValues = selectedValues.filter(v => v !== valueToRemove && v !== undefined) as string[]
         onValueChange?.(newValues)
       }
     }
@@ -224,11 +224,11 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
                         role="button"
                         tabIndex={0}
                         className="inline-flex h-4 w-4 items-center justify-center hover:bg-accent/20 rounded cursor-pointer"
-                        onClick={(e) => handleRemoveTag(selectedValues[index], e)}
+                        onClick={(e) => handleRemoveTag(selectedValues[index] || '', e)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault()
-                            handleRemoveTag(selectedValues[index], e as any)
+                            handleRemoveTag(selectedValues[index] || '', e as any)
                           }
                         }}
                         aria-label={`Remove ${label}`}

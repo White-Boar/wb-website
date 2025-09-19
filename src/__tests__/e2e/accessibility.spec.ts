@@ -102,9 +102,11 @@ test.describe('Accessibility Tests', () => {
       const ariaLabelledBy = await button.getAttribute('aria-labelledby');
       
       // Button should have accessible name via text, aria-label, or aria-labelledby
-      const hasAccessibleName = (textContent && textContent.trim() !== '') || 
-                               ariaLabel || 
-                               ariaLabelledBy;
+      const hasAccessibleName = Boolean(
+        (textContent && textContent.trim() !== '') ||
+        ariaLabel ||
+        ariaLabelledBy
+      );
       expect(hasAccessibleName).toBe(true);
     }
     

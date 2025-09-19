@@ -52,13 +52,13 @@ describe('PricingTable', () => {
     expect(customButton).toBeInTheDocument()
   })
 
-  it('navigates to checkout when plan is selected', () => {
+  it('navigates to onboarding when plan is selected', () => {
     render(<PricingTable />)
-    
+
     const fastButton = screen.getByText('Start with Fast & Simple')
     fireEvent.click(fastButton)
-    
-    expect(window.location.href).toBe('/checkout?plan=fast')
+
+    expect(window.location.href).toBe('/onboarding?plan=fast')
   })
 
   it('shows popular badge on fast plan', () => {
@@ -76,13 +76,13 @@ describe('PricingTable', () => {
 
   it('displays add-ons popover when plan is selected', () => {
     render(<PricingTable />)
-    
+
     const fastButton = screen.getByText('Start with Fast & Simple')
     fireEvent.click(fastButton)
-    
+
     // After clicking, the add-ons button should appear
     // Note: This tests the component logic, actual popover opening requires user interaction
-    expect(window.location.href).toBe('/checkout?plan=fast')
+    expect(window.location.href).toBe('/onboarding?plan=fast')
   })
 
   it('has accessible structure', () => {

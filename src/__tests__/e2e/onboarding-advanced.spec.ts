@@ -464,7 +464,7 @@ test.describe('Onboarding Advanced Features', () => {
         await page.fill('input[name="lastName"]', 'Test');
         await page.fill('input[name="email"]', 'progress@test.com');
 
-        const nextButton = page.getByRole('button', { name: /next|continue/i });
+        const nextButton = page.getByRole('button', { name: /next|continue/i }).and(page.locator(':not([data-nextjs-dev-tools-button])'));
         if (await nextButton.isEnabled()) {
           await nextButton.click();
           await page.waitForURL('**/step/2');

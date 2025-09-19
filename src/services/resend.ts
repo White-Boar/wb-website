@@ -712,4 +712,4 @@ export function isEmailServiceConfigured(): boolean {
   return !!(process.env.RESEND_API_KEY || process.env.RESEND_KEY) && !!FROM_EMAIL
 }
 
-export { EmailService }
+// EmailService is already exported as a class above

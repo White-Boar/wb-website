@@ -74,8 +74,8 @@ export function AddressAutocomplete({
   
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
-  const autocompleteService = useRef<google.maps.places.AutocompleteService | null>(null)
-  const placesService = useRef<google.maps.places.PlacesService | null>(null)
+  const autocompleteService = useRef<any>(null)
+  const placesService = useRef<any>(null)
   
   const inputId = `address-${Math.random().toString(36).substr(2, 9)}`
   const hasError = !!(error || localError)
@@ -84,23 +84,23 @@ export function AddressAutocomplete({
   // Initialize Google Places API
   useEffect(() => {
     const initializeGooglePlaces = () => {
-      if (window.google?.maps?.places) {
-        autocompleteService.current = new google.maps.places.AutocompleteService()
+      if ((window as any).google?.maps?.places) {
+        autocompleteService.current = new (window as any).google.maps.places.AutocompleteService()
         
         // Create a hidden div for PlacesService
         const mapDiv = document.createElement('div')
-        const map = new google.maps.Map(mapDiv)
-        placesService.current = new google.maps.places.PlacesService(map)
+        const map = new (window as any).google.maps.Map(mapDiv)
+        placesService.current = new (window as any).google.maps.places.PlacesService(map)
       }
     }
 
     // Check if Google Maps API is already loaded
-    if (window.google?.maps?.places) {
+    if ((window as any).google?.maps?.places) {
       initializeGooglePlaces()
     } else {
       // Wait for Google Maps API to load
       const checkGoogleMaps = setInterval(() => {
-        if (window.google?.maps?.places) {
+        if ((window as any).google?.maps?.places) {
           initializeGooglePlaces()
           clearInterval(checkGoogleMaps)
         }
@@ -135,7 +135,7 @@ export function AddressAutocomplete({
     setLocalError('')
 
     try {
-      const request: google.maps.places.AutocompletionRequest = {
+      const request: any = {
         input: searchQuery,
         componentRestrictions: { country: country.toLowerCase() },
         types: ['address']
@@ -143,14 +143,14 @@ export function AddressAutocomplete({
 
       autocompleteService.current.getPlacePredictions(
         request,
-        (predictions, status) => {
+        (predictions: any, status: any) => {
           setIsLoading(false)
           
-          if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+          if (status === 'OK' && predictions) {
             setSuggestions(predictions)
             setIsOpen(true)
             setSelectedIndex(-1)
-          } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {
+          } else if (status === 'ZERO_RESULTS') {
             setSuggestions([])
             setIsOpen(false)
           } else {
@@ -182,8 +182,8 @@ export function AddressAutocomplete({
         ]
       }
 
-      placesService.current!.getDetails(request, (place, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+      placesService.current!.getDetails(request, (place: any, status: any) => {
+        if (status === 'OK' && place) {
           const addressDetails = parseAddressComponents(place)
           resolve(addressDetails)
         } else {
@@ -194,7 +194,7 @@ export function AddressAutocomplete({
   }
 
   // Parse address components from Google Places result
-  const parseAddressComponents = (place: google.maps.places.PlaceResult): AddressDetails => {
+  const parseAddressComponents = (place: any): AddressDetails => {
     const components = place.address_components || []
     const details: Partial<AddressDetails> = {
       formatted_address: place.formatted_address || '',
@@ -203,7 +203,7 @@ export function AddressAutocomplete({
       lng: place.geometry?.location?.lng()
     }
 
-    components.forEach((component) => {
+    components.forEach((component: any) => {
       const types = component.types
       
       if (types.includes('street_number')) {
@@ -508,7 +508,7 @@ export function AddressAutocomplete({
       </div>
 
       {/* No Google Maps API Warning */}
-      {typeof window !== 'undefined' && !window.google?.maps?.places && (
+      {typeof window !== 'undefined' && !(window as any).google?.maps?.places && (
         <p className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 rounded px-2 py-1">
           {t('googleMapsRequired')}
         </p>

@@ -18,11 +18,11 @@ describe('Hero', () => {
     expect(mainHeading).toHaveClass('font-heading')
   })
 
-  it('has CTA link to checkout', () => {
+  it('has CTA link to onboarding', () => {
     render(<Hero />)
-    
+
     const ctaLink = screen.getByRole('link', { name: 'Start now!' })
-    expect(ctaLink).toHaveAttribute('href', '/checkout')
+    expect(ctaLink).toHaveAttribute('href', '/onboarding')
   })
 
   it('has background image', () => {

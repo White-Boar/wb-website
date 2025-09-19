@@ -57,7 +57,7 @@ export async function completeEmailVerification(page: Page, code: string = BYPAS
 
   // Wait for auto-progression to next step (implemented with 1s delay)
   // The system should automatically navigate to step 3 after successful verification
-  await page.waitForURL(/\/step\/3/, { timeout: 10000 });
+  await page.waitForURL(/\/(en\/)?onboarding\/step\/3/, { timeout: 10000 });
   await page.waitForLoadState('networkidle');
 }
 
@@ -101,11 +101,11 @@ export async function startOnboardingFromWelcome(page: Page) {
   await startButton.click();
 
   // Wait for navigation to step 1
-  await page.waitForURL(/\/onboarding\/step\/1/);
+  await page.waitForURL(/\/(en\/)?onboarding\/step\/1/);
   await page.waitForLoadState('networkidle');
 
   // Verify we're on step 1
-  await expect(page).toHaveURL(/\/step\/1/);
+  await expect(page).toHaveURL(/\/(en\/)?onboarding\/step\/1/);
 }
 
 /**
@@ -124,7 +124,7 @@ export async function navigateToStep(page: Page, stepNumber: number) {
   }
 
   // Verify we're on the correct step
-  await expect(page).toHaveURL(new RegExp(`/step/${stepNumber}`));
+  await expect(page).toHaveURL(new RegExp(`/(en/)?onboarding/step/${stepNumber}`));
 
   // Wait for step content to be visible
   await expect(page.locator('main').first()).toBeVisible();
@@ -143,12 +143,12 @@ export async function completeBasicFlow(page: Page, userData: Partial<Onboarding
   await step1NextButton.click();
 
   // Step 2: Email Verification (with auto-progression)
-  await expect(page).toHaveURL(/\/step\/2/);
+  await expect(page).toHaveURL(/\/(en\/)?onboarding\/step\/2/);
   await completeEmailVerification(page);
   // Note: completeEmailVerification now waits for auto-progression to step 3
 
   // Step 3: Business Details (automatically reached via auto-progression)
-  await expect(page).toHaveURL(/\/step\/3/);
+  await expect(page).toHaveURL(/\/(en\/)?onboarding\/step\/3/);
   await fillStep3BusinessDetails(page, userData);
 
   const step3NextButton = getOnboardingNextButton(page);

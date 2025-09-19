@@ -311,7 +311,7 @@ export function DynamicList({
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
               draggable={allowReorder}
-              onDragStart={(e) => handleDragStart(e, item.id)}
+              onDragStart={(e) => handleDragStart(e as any, item.id)}
               onDragOver={handleDragOver}
               onDrop={(e) => handleDrop(e, item.id)}
               onDragEnd={handleDragEnd}

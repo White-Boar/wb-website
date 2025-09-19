@@ -63,7 +63,6 @@ export const useOnboardingStore = create<OnboardingStore>()(
     persist(
       (set, get) => {
         // Create debounced save function with access to store state
-        let debouncedSaveProgress: ReturnType<typeof createDebouncedSave>
         
         const saveProgressToServer = async () => {
           const state = get()
@@ -96,7 +95,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
         }
 
         // Initialize debounced save
-        debouncedSaveProgress = createDebouncedSave(saveProgressToServer)
+        const debouncedSaveProgress = createDebouncedSave(saveProgressToServer)
 
         return {
           // Initial State

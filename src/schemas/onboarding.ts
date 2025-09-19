@@ -342,15 +342,15 @@ export const completeFormSchema = z.object({
   vatNumber: step3Schema.shape.vatNumber,
   
   // Step 4
-  offer: step4Schema.shape.offer,
-  competitors: step4Schema.shape.competitors,
-  uniqueness: step4Schema.shape.uniqueness,
+  businessDescription: step4Schema.shape.businessDescription,
+  competitorUrls: step4Schema.shape.competitorUrls,
+  competitorAnalysis: step4Schema.shape.competitorAnalysis,
   
   // Step 5
   customerProfile: step5Schema.shape.customerProfile,
   
   // Step 6
-  problemSolved: step6Schema.shape.problemSolved,
+  customerProblems: step6Schema.shape.customerProblems,
   customerDelight: step6Schema.shape.customerDelight,
   
   // Step 7
@@ -375,9 +375,6 @@ export const completeFormSchema = z.object({
   logoUpload: step12Schema.shape.logoUpload,
   businessPhotos: step12Schema.shape.businessPhotos,
   
-  // Step 13
-  completedAt: step13Schema.shape.completedAt,
-  totalTimeSeconds: step13Schema.shape.totalTimeSeconds
 })
 
 // =============================================================================
@@ -436,8 +433,7 @@ export function getStepSchema(step: number) {
     9: step9Schema,
     10: step10Schema,
     11: step11Schema,
-    12: step12Schema,
-    13: step13Schema
+    12: step12Schema
   }
   
   return schemas[step as keyof typeof schemas] || null

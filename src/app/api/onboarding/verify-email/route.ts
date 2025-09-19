@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the code
-    const result = await OnboardingServerService.verifyEmail(sessionId, code)
+    const result = await OnboardingServerService.verifyEmail(sessionId, code) as any
 
     if (result.success) {
       return NextResponse.json({

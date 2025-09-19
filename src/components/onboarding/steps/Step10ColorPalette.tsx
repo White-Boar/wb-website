@@ -189,12 +189,11 @@ export function Step10ColorPalette({ form, errors, isLoading }: StepComponentPro
                   options={colorPaletteOptions}
                   value={field.value}
                   onSelectionChange={field.onChange}
-                  error={errors.colorPalette?.message}
+                  error={(errors as any).colorPalette?.message}
                   showNames
                   showDescriptions
                   showCategories={false}
                   showPreview
-                  disabled={isLoading}
                 />
               )}
             />
