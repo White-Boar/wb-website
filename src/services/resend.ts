@@ -8,10 +8,10 @@ import { OnboardingFormData, EmailVerificationResponse } from '@/types/onboardin
 const resend = new Resend(process.env.RESEND_API_KEY || process.env.RESEND_KEY)
 
 // Email configuration from environment
-const FROM_EMAIL = process.env.FROM_EMAIL || (process.env.NODE_ENV === 'development' ? 'onboarding@resend.dev' : 'noreply.notifications@whiteboar.it')
+const FROM_EMAIL = process.env.NOTIFICATION_FROM_EMAIL || (process.env.NODE_ENV === 'development' ? 'onboarding@resend.dev' : 'noreply@notifications.whiteboar.it')
 const FROM_NAME = process.env.FROM_NAME || 'WhiteBoar'
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@whiteboar.it'
-const SUPPORT_EMAIL = process.env.SUPPORT_EMAIL || 'support@whiteboar.it'
+const ADMIN_EMAIL = process.env.NOTIFICATION_ADMIN_EMAIL || 'admin@whiteboar.it'
+const SUPPORT_EMAIL = process.env.NOTIFICATION_SUPPORT_EMAIL || 'info@whiteboar.it'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'
 
 // Validate Resend API key
