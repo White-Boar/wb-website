@@ -114,7 +114,7 @@ export default function OnboardingStep() {
             city: formData?.physicalAddress?.city ?? '',
             province: formData?.physicalAddress?.province ?? '',
             postalCode: formData?.physicalAddress?.postalCode ?? '',
-            country: formData?.physicalAddress?.country ?? 'Italy',
+            country: formData?.physicalAddress?.country || 'Italy',
             placeId: formData?.physicalAddress?.placeId ?? ''
           },
           industry: formData?.industry ?? '',
@@ -221,6 +221,42 @@ export default function OnboardingStep() {
     setError('')
 
     try {
+      // First, trigger validation for all fields in the current form
+      const isFormValid = await form.trigger()
+
+      if (!isFormValid) {
+        // Get all field errors and show first error message
+        const errors = form.formState.errors
+        let errorMessage = t('validationError') || 'Please fix the errors below'
+
+        // Helper function to extract error message from nested errors
+        const getErrorMessage = (errorObj: any): string | null => {
+          if (typeof errorObj === 'string') return errorObj
+          if (errorObj?.message) return errorObj.message
+          if (typeof errorObj === 'object') {
+            for (const key in errorObj) {
+              const nestedError = getErrorMessage(errorObj[key])
+              if (nestedError) return nestedError
+            }
+          }
+          return null
+        }
+
+        // Find the first error message
+        for (const key in errors) {
+          const error = errors[key as keyof typeof errors]
+          const message = getErrorMessage(error)
+          if (message) {
+            errorMessage = message
+            break
+          }
+        }
+
+        setError(errorMessage)
+        setIsLoading(false)
+        return
+      }
+
       // Update form data
       updateFormData(data as any)
 
@@ -229,6 +265,74 @@ export default function OnboardingStep() {
       if (!isStepValid) {
         setError(t('validationError'))
         return
+      }
+
+      // For Step 12 (final step), validate all previous steps using schemas
+      if (stepNumber === 12) {
+        const allFormData = { ...formData, ...data } as OnboardingFormData
+        const failedSteps: { step: number; title: string; errors: string[] }[] = []
+
+        // Validate each step systematically using their schemas
+        const stepValidations = [
+          { step: 1, title: 'Personal Information', requiredFields: ['firstName', 'lastName', 'email'] },
+          { step: 2, title: 'Email Verification', requiredFields: ['emailVerified'] },
+          {
+            step: 3,
+            title: 'Business Details',
+            requiredFields: [
+              'businessName', 'businessEmail', 'businessPhone', 'industry',
+              'physicalAddress.street', 'physicalAddress.city', 'physicalAddress.postalCode',
+              'physicalAddress.province', 'physicalAddress.country'
+            ]
+          },
+          { step: 4, title: 'Brand Definition', requiredFields: ['businessDescription'] },
+          { step: 5, title: 'Customer Profile', requiredFields: ['customerProfile'] },
+          { step: 6, title: 'Customer Needs', requiredFields: ['customerProblems', 'customerDelight'] },
+          { step: 7, title: 'Visual Inspiration', requiredFields: ['websiteReferences'] },
+          { step: 8, title: 'Design Style', requiredFields: ['designStyle'] },
+          { step: 9, title: 'Image Style', requiredFields: ['imageStyle'] },
+          { step: 10, title: 'Color Palette', requiredFields: ['colorPalette'] },
+          { step: 11, title: 'Website Structure', requiredFields: ['websiteSections', 'primaryGoal', 'offerings'] }
+        ]
+
+        // Check each step
+        for (const validation of stepValidations) {
+          const stepErrors: string[] = []
+
+          for (const field of validation.requiredFields) {
+            const fieldValue = field.includes('.')
+              ? field.split('.').reduce((obj, key) => obj?.[key], allFormData as any)
+              : (allFormData as any)[field]
+
+            if (fieldValue === undefined || fieldValue === null || fieldValue === '' ||
+                (Array.isArray(fieldValue) && fieldValue.length === 0) ||
+                (field === 'emailVerified' && !fieldValue) ||
+                (field === 'businessDescription' && fieldValue.length < 50)) {
+              stepErrors.push(field)
+            }
+          }
+
+          if (stepErrors.length > 0) {
+            failedSteps.push({
+              step: validation.step,
+              title: validation.title,
+              errors: stepErrors
+            })
+          }
+        }
+
+        if (failedSteps.length > 0) {
+          const firstFailedStep = failedSteps[0]
+          const errorMsg = `Please complete missing information in Step ${firstFailedStep.step} (${firstFailedStep.title}) before finishing.`
+          setError(errorMsg)
+
+          // Redirect to the first step with missing data
+          setTimeout(() => {
+            router.push(`/${locale}/onboarding/step/${firstFailedStep.step}`)
+          }, 2000) // Give user time to read the error message
+
+          return
+        }
       }
 
       // Move to next step or complete using smart navigation
@@ -309,6 +413,7 @@ export default function OnboardingStep() {
       canGoNext={(stepNumber === 12 || isValid) && !isLoading}
       canGoPrevious={stepNumber > 1}
       isLoading={isLoading}
+      error={error}
       nextLabel={stepNumber === 12 ? t('finish') : undefined}
       previousLabel={stepNumber === 1 ? t('back') : undefined}
     >

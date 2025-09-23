@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Upload, X, CheckCircle, AlertCircle, FileImage, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -42,6 +42,23 @@ export function FileUploadWithProgress({
   const [uploadQueue, setUploadQueue] = useState<FileUploadProgress[]>(existingFiles)
   const [isDragActive, setIsDragActive] = useState(false)
   const abortControllersRef = useRef<Map<string, AbortController>>(new Map())
+  const isInitialRender = useRef(true)
+
+  // Use effect to notify parent of file changes after state updates
+  useEffect(() => {
+    // Skip initial render to avoid calling onFilesChange unnecessarily
+    if (isInitialRender.current) {
+      isInitialRender.current = false
+      return
+    }
+
+    // Use setTimeout to defer the call to the next tick
+    const timeoutId = setTimeout(() => {
+      onFilesChange(uploadQueue)
+    }, 0)
+
+    return () => clearTimeout(timeoutId)
+  }, [uploadQueue])
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes'
@@ -161,7 +178,6 @@ export function FileUploadWithProgress({
     // Update queue with new files
     const updatedQueue = [...uploadQueue, ...newFileProgresses]
     setUploadQueue(updatedQueue)
-    onFilesChange(updatedQueue)
 
     // Start uploads in parallel with concurrency limit
     const concurrencyLimit = 3
@@ -175,25 +191,21 @@ export function FileUploadWithProgress({
           try {
             const updatedFileProgress = await uploadFile(fileProgress)
 
-            setUploadQueue(current => {
-              const updated = current.map(item =>
+            setUploadQueue(current =>
+              current.map(item =>
                 item.id === fileProgress.id ? updatedFileProgress : item
               )
-              onFilesChange(updated)
-              return updated
-            })
+            )
           } catch (error) {
             console.error('Upload error:', error)
 
-            setUploadQueue(current => {
-              const updated = current.map(item =>
+            setUploadQueue(current =>
+              current.map(item =>
                 item.id === fileProgress.id
                   ? { ...item, status: 'error' as const, error: 'Upload failed' }
                   : item
               )
-              onFilesChange(updated)
-              return updated
-            })
+            )
           }
         })
       ).then(() => {}) // Convert to void promise
@@ -212,9 +224,7 @@ export function FileUploadWithProgress({
       controller.abort()
     }
 
-    const updated = uploadQueue.filter(item => item.id !== id)
-    setUploadQueue(updated)
-    onFilesChange(updated)
+    setUploadQueue(current => current.filter(item => item.id !== id))
   }
 
   const retryFile = async (id: string) => {
@@ -223,20 +233,16 @@ export function FileUploadWithProgress({
 
     const updatedFile = { ...fileToRetry, status: 'uploading' as const, progress: 0, error: undefined }
 
-    setUploadQueue(current => {
-      const updated = current.map(item => item.id === id ? updatedFile : item)
-      onFilesChange(updated)
-      return updated
-    })
+    setUploadQueue(current =>
+      current.map(item => item.id === id ? updatedFile : item)
+    )
 
     try {
       const result = await uploadFile(updatedFile)
 
-      setUploadQueue(current => {
-        const updated = current.map(item => item.id === id ? result : item)
-        onFilesChange(updated)
-        return updated
-      })
+      setUploadQueue(current =>
+        current.map(item => item.id === id ? result : item)
+      )
     } catch (error) {
       console.error('Retry failed:', error)
     }

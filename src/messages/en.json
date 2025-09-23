@@ -289,7 +289,7 @@
           },
           "postalCode": {
             "label": "Postal Code",
-            "placeholder": "12345"
+            "placeholder": "58000"
           },
           "city": {
             "label": "City",
@@ -297,7 +297,7 @@
           },
           "postalCode": {
             "label": "Postal Code",
-            "placeholder": "12345"
+            "placeholder": "58000"
           },
           "region": {
             "label": "Province/Region",

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useReducedMotion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Save, CheckCircle2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Save, CheckCircle2, AlertCircle } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -24,6 +24,7 @@ interface StepTemplateProps {
   canGoNext?: boolean
   canGoPrevious?: boolean
   isLoading?: boolean
+  error?: string
   className?: string
 }
 
@@ -39,6 +40,7 @@ export function StepTemplate({
   canGoNext = true,
   canGoPrevious = true,
   isLoading = false,
+  error,
   className
 }: StepTemplateProps) {
   const t = useTranslations('onboarding')
@@ -206,6 +208,20 @@ export function StepTemplate({
           >
             {children}
           </motion.div>
+
+          {/* Error Message */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -10 }}
+              className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-center gap-3 mt-6"
+              role="alert"
+            >
+              <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0" />
+              <p className="text-sm text-destructive font-medium">{error}</p>
+            </motion.div>
+          )}
 
           {/* Navigation */}
           <motion.div

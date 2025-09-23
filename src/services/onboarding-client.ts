@@ -39,8 +39,8 @@ export class OnboardingClientService {
   static async createSession(
     locale: 'en' | 'it' = 'en'
   ): Promise<OnboardingSession> {
-    const result = await circuitBreakers.sessionService.execute(async () => {
-      return await retry.critical(async () => {
+    return await circuitBreakers.sessionService.execute(async () => {
+      const result = await retry.critical(async () => {
         const expiresAt = new Date()
         expiresAt.setDate(expiresAt.getDate() + 7) // 7 days from now
 
@@ -69,13 +69,13 @@ export class OnboardingClientService {
         // NOTE: Analytics tracking moved to API route
         return transformSessionFromDB(data)
       })
+
+      if (!result.success) {
+        throw result.error || new Error('Failed to create session after multiple attempts')
+      }
+
+      return result.data!
     })
-
-    if (!result.success) {
-      throw result.error || new Error('Failed to create session after multiple attempts')
-    }
-
-    return result.data!
   }
 
   /**
@@ -336,8 +336,8 @@ export async function submitOnboarding(
   formData: OnboardingFormData,
   completionTimeSeconds?: number
 ): Promise<OnboardingSubmission> {
-  const result = await circuitBreakers.submissionService.execute(async () => {
-    return await retry.critical(async () => {
+  return await circuitBreakers.submissionService.execute(async () => {
+    const result = await retry.critical(async () => {
       const response = await fetch('/api/onboarding/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -348,23 +348,23 @@ export async function submitOnboarding(
         })
       })
 
-      const result = await response.json()
+      const apiResult = await response.json()
 
       if (!response.ok) {
-        throw new Error(result.error || 'Failed to submit onboarding')
+        throw new Error(apiResult.error || 'Failed to submit onboarding')
       }
 
-      if (!result.success || !result.data) {
+      if (!apiResult.success || !apiResult.data) {
         throw new Error('Invalid response from submission API')
       }
 
-      return result.data
+      return apiResult.data
     })
+
+    if (!result.success) {
+      throw result.error || new Error('Failed to submit onboarding after multiple attempts')
+    }
+
+    return result.data!
   })
-
-  if (!result.success) {
-    throw result.error || new Error('Failed to submit onboarding after multiple attempts')
-  }
-
-  return result.data!
 }

@@ -162,7 +162,10 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                     hint={t('businessInfo.industry.hint')}
                     options={industries}
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      field.onChange(value)
+                      trigger('industry')
+                    }}
                     error={errors.industry?.message}
                     required
                     searchable
@@ -364,19 +367,18 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                 <Controller
                   name="physicalAddress.country"
                   control={control}
-                  defaultValue="Italy"
                   render={({ field }) => (
                     <DropdownInput
                       label={t('address.country.label')}
                       placeholder={t('address.country.placeholder')}
                       options={countries}
-                      value={field.value || "Italy"}
+                      value={field.value}
                       onValueChange={(value) => {
                         field.onChange(value)
                         // Trigger form validation after setting the value
                         trigger('physicalAddress.country')
                       }}
-                      error={errors.physicalAddress?.country?.message}
+                      error={(errors as any)?.physicalAddress?.country?.message}
                       required
                       searchable
                       clearable={false} // Disable clear button since country is required

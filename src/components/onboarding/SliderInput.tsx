@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
@@ -76,6 +76,10 @@ export function SliderInput({
   const hasError = !!error
   const hasSuccess = !!success && !hasError
 
+  // Use ref to track if this is the initial render
+  const isInitialRender = useRef(true)
+  const timeoutRef = useRef<NodeJS.Timeout>()
+
   // Update internal values when external values change
   useEffect(() => {
     if (values) {
@@ -84,17 +88,47 @@ export function SliderInput({
   }, [values])
 
   // Handle slider change
-  const handleSliderChange = (key: string, newValue: number[]) => {
+  const handleSliderChange = useCallback((key: string, newValue: number[]) => {
     const value = newValue[0]
-    
-    setInternalValues(prev => {
-      const updated = { ...prev, [key]: value }
-      onValuesChange?.(updated)
-      return updated
-    })
-    
+
+    setInternalValues(prev => ({ ...prev, [key]: value }))
     onSliderChange?.(key, value)
-  }
+  }, [onSliderChange])
+
+  // Notify parent of value changes after state updates (debounced)
+  useEffect(() => {
+    // Skip the initial render to avoid infinite loops
+    if (isInitialRender.current) {
+      isInitialRender.current = false
+      return
+    }
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    // Debounce the onValuesChange call
+    timeoutRef.current = setTimeout(() => {
+      onValuesChange?.(internalValues)
+    }, 100)
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [internalValues])
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [])
 
 
 
