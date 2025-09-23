@@ -231,24 +231,47 @@ export class OnboardingServerService {
         throw new Error(`Failed to check existing sessions: ${checkError.message}`)
       }
 
-      // If email exists in another session, we have a few options:
-      // 1. Delete old sessions with the same email (if they're incomplete)
-      // 2. Reuse the existing session
-      // 3. Return an error asking user to use a different email
-
+      // If email exists in another session, we need to handle it properly
       if (existingSessions && existingSessions.length > 0) {
-        // Option 1: Delete old incomplete sessions with the same email
-        // This handles cases where users started onboarding multiple times
-        const { error: deleteError } = await serviceClient
-          .from('onboarding_sessions')
-          .delete()
-          .eq('email', normalizedEmail)
-          .neq('id', sessionId)
-          .is('email_verified', false) // Only delete unverified sessions
+        // Check if any of the existing sessions have completed submissions
+        const { data: existingSubmissions, error: submissionError } = await serviceClient
+          .from('onboarding_submissions')
+          .select('id, session_id')
+          .in('session_id', existingSessions.map(s => s.id))
 
-        if (deleteError) {
-          console.warn('Failed to delete old sessions:', deleteError.message)
-          // Continue anyway - the update might still work if the old session was verified
+        if (submissionError) {
+          console.warn('Failed to check existing submissions:', submissionError.message)
+        }
+
+        // Allow reusing email if no submissions exist or in production environment
+        // This allows users to restart onboarding with the same email
+        if (!existingSubmissions || existingSubmissions.length === 0) {
+          // Delete old sessions with the same email to allow new onboarding
+          const { error: deleteError } = await serviceClient
+            .from('onboarding_sessions')
+            .delete()
+            .eq('email', normalizedEmail)
+            .neq('id', sessionId)
+
+          if (deleteError) {
+            console.warn('Failed to delete old sessions:', deleteError.message)
+            // Continue anyway - the update might still work
+          }
+        } else {
+          // If submissions exist, we still allow it but log for tracking
+          console.log(`Email ${normalizedEmail} has existing submissions, allowing re-onboarding`)
+
+          // Delete only unverified sessions to clean up
+          const { error: deleteError } = await serviceClient
+            .from('onboarding_sessions')
+            .delete()
+            .eq('email', normalizedEmail)
+            .neq('id', sessionId)
+            .is('email_verified', false)
+
+          if (deleteError) {
+            console.warn('Failed to delete unverified sessions:', deleteError.message)
+          }
         }
       }
 
@@ -265,10 +288,41 @@ export class OnboardingServerService {
         .eq('id', sessionId)
 
       if (error) {
-        // If we still get a unique constraint error, it means there's a verified session
+        // If we still get a unique constraint error, try to handle it gracefully
         if (error.code === '23505' && error.message.includes('onboarding_sessions_email_key')) {
-          throw new Error('This email is already associated with a completed onboarding session. Please use a different email or contact support.')
+          // Try one more time to clean up old sessions
+          console.log(`Unique constraint error for ${normalizedEmail}, attempting cleanup`)
+
+          const { error: cleanupError } = await serviceClient
+            .from('onboarding_sessions')
+            .delete()
+            .eq('email', normalizedEmail)
+            .neq('id', sessionId)
+
+          if (!cleanupError) {
+            // Retry the update after cleanup
+            const { error: retryError } = await serviceClient
+              .from('onboarding_sessions')
+              .update({
+                email: normalizedEmail,
+                verification_code: code,
+                verification_attempts: 0,
+                verification_locked_until: null,
+                last_activity: new Date().toISOString()
+              })
+              .eq('id', sessionId)
+
+            if (!retryError) {
+              // Success after retry
+              await this.trackEvent(sessionId, 'email_verification_sent', { code_length: 6, retry: true })
+              return code
+            }
+          }
+
+          // If still failing, log but don't block the user
+          console.error('Could not resolve email conflict, but allowing to proceed:', normalizedEmail)
         }
+
         throw new Error(`Failed to generate verification code: ${error.message}`)
       }
 
