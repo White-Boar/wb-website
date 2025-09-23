@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { motion, AnimatePresence } from 'framer-motion'
-import { MapPin, Search, Loader2, AlertCircle, CheckCircle2, X } from 'lucide-react'
+import { MapPin, Loader2, AlertCircle, CheckCircle2, X } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -121,10 +121,10 @@ export function AddressAutocomplete({
         searchPlaces(searchQuery)
       }, 300)
     }
-  }, [])
+  }, [searchPlaces])
 
   // Search for place suggestions
-  const searchPlaces = async (searchQuery: string) => {
+  const searchPlaces = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim() || !autocompleteService.current) {
       setSuggestions([])
       setIsOpen(false)
@@ -166,7 +166,7 @@ export function AddressAutocomplete({
       setSuggestions([])
       setIsOpen(false)
     }
-  }
+  }, [])
 
   // Get place details
   const getPlaceDetails = async (placeId: string): Promise<AddressDetails | null> => {

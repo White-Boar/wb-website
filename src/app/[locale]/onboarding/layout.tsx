@@ -40,8 +40,7 @@ export async function generateMetadata({
 }
 
 export default async function OnboardingLayout({
-  children,
-  params
+  children
 }: OnboardingLayoutProps) {
   return (
     <ThemeProvider defaultTheme="system" storageKey="wb-ui-theme">

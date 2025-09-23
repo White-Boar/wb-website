@@ -41,15 +41,6 @@ export default function OnboardingWelcome() {
     }
   }
 
-  const handleContinue = () => {
-    const session = loadExistingSession()
-    if (session && session.currentStep && session.currentStep >= 1) {
-      router.push(`/onboarding/step/${session.currentStep}`)
-    } else {
-      router.push(`/onboarding/step/1`)
-    }
-  }
-
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="text-center space-y-8">
