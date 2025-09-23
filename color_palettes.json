@@ -1,0 +1,1007 @@
+[
+  {
+    "palette_name_en": "Fiery Ocean",
+    "palette_name_it": "Oceano Ardente",
+    "hex_colours": [
+      "780000",
+      "C1121F",
+      "FDF0D5",
+      "003049",
+      "669BBC"
+    ],
+    "main_colors_en": [
+      "Red",
+      "Cream",
+      "Navy",
+      "Sky blue"
+    ],
+    "main_colors_it": [
+      "Rosso",
+      "Crema",
+      "Blu navy",
+      "Azzurro"
+    ],
+    "description_en": "Bold reds with deep blues for a dramatic, high-impact brand presence.",
+    "description_it": "Rossi intensi con blu profondi per una presenza drammatica e d’impatto."
+  },
+  {
+    "palette_name_en": "Olive Garden Feast",
+    "palette_name_it": "Banchetto dell’Orto d’Olive",
+    "hex_colours": [
+      "606C38",
+      "283618",
+      "FEFAE0",
+      "DDA15E",
+      "BC6C25"
+    ],
+    "main_colors_en": [
+      "Olive green",
+      "Dark green",
+      "Beige",
+      "Golden brown"
+    ],
+    "main_colors_it": [
+      "Verde oliva",
+      "Verde scuro",
+      "Beige",
+      "Marrone dorato"
+    ],
+    "description_en": "Rustic greens and warm browns that evoke natural, organic authenticity.",
+    "description_it": "Verdi rustici e marroni caldi che evocano autenticità naturale e biologica."
+  },
+  {
+    "palette_name_en": "Refreshing Summer Fun",
+    "palette_name_it": "Divertimento Estivo Rinfrescante",
+    "hex_colours": [
+      "8ECAE6",
+      "219EBC",
+      "023047",
+      "FFB703",
+      "FB8500"
+    ],
+    "main_colors_en": [
+      "Aqua",
+      "Teal",
+      "Navy",
+      "Yellow",
+      "Orange"
+    ],
+    "main_colors_it": [
+      "Acqua",
+      "Verde acqua",
+      "Blu navy",
+      "Giallo",
+      "Arancione"
+    ],
+    "description_en": "Bright aqua and citrus tones for playful, energetic appeal.",
+    "description_it": "Toni acquatici e agrumati vivaci per un fascino giocoso ed energico."
+  },
+  {
+    "palette_name_en": "Pastel Dreamland Adventure",
+    "palette_name_it": "Avventura nel Paese dei Sogni Pastello",
+    "hex_colours": [
+      "CDB4DB",
+      "FFC8DD",
+      "FFAFCC",
+      "BDE0FE",
+      "A2D2FF"
+    ],
+    "main_colors_en": [
+      "Lavender",
+      "Pink",
+      "Baby blue"
+    ],
+    "main_colors_it": [
+      "Lilla",
+      "Rosa",
+      "Azzurro pastello"
+    ],
+    "description_en": "Soft pastel rainbow for whimsical, dreamy aesthetics.",
+    "description_it": "Arcobaleno pastello tenue per un’estetica fiabesca e sognante."
+  },
+  {
+    "palette_name_en": "Golden Summer Fields",
+    "palette_name_it": "Campi Estivi Dorati",
+    "hex_colours": [
+      "CCD5AE",
+      "E9EDC9",
+      "FEFAE0",
+      "FAEDCD",
+      "D4A373"
+    ],
+    "main_colors_en": [
+      "Sage",
+      "Cream",
+      "Golden beige"
+    ],
+    "main_colors_it": [
+      "Salvia",
+      "Crema",
+      "Beige dorato"
+    ],
+    "description_en": "Gentle golden hues with creamy neutrals for calm, sunny warmth.",
+    "description_it": "Toni dorati delicati con neutri cremosi per un calore solare e rilassante."
+  },
+  {
+    "palette_name_en": "Palette 6",
+    "palette_name_it": "Tavolozza 6",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 6.",
+    "description_it": "Descrizione segnaposto per la tavolozza 6."
+  },
+  {
+    "palette_name_en": "Palette 7",
+    "palette_name_it": "Tavolozza 7",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 7.",
+    "description_it": "Descrizione segnaposto per la tavolozza 7."
+  },
+  {
+    "palette_name_en": "Palette 8",
+    "palette_name_it": "Tavolozza 8",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 8.",
+    "description_it": "Descrizione segnaposto per la tavolozza 8."
+  },
+  {
+    "palette_name_en": "Palette 9",
+    "palette_name_it": "Tavolozza 9",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 9.",
+    "description_it": "Descrizione segnaposto per la tavolozza 9."
+  },
+  {
+    "palette_name_en": "Palette 10",
+    "palette_name_it": "Tavolozza 10",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 10.",
+    "description_it": "Descrizione segnaposto per la tavolozza 10."
+  },
+  {
+    "palette_name_en": "Palette 11",
+    "palette_name_it": "Tavolozza 11",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 11.",
+    "description_it": "Descrizione segnaposto per la tavolozza 11."
+  },
+  {
+    "palette_name_en": "Palette 12",
+    "palette_name_it": "Tavolozza 12",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 12.",
+    "description_it": "Descrizione segnaposto per la tavolozza 12."
+  },
+  {
+    "palette_name_en": "Palette 13",
+    "palette_name_it": "Tavolozza 13",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 13.",
+    "description_it": "Descrizione segnaposto per la tavolozza 13."
+  },
+  {
+    "palette_name_en": "Palette 14",
+    "palette_name_it": "Tavolozza 14",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 14.",
+    "description_it": "Descrizione segnaposto per la tavolozza 14."
+  },
+  {
+    "palette_name_en": "Palette 15",
+    "palette_name_it": "Tavolozza 15",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 15.",
+    "description_it": "Descrizione segnaposto per la tavolozza 15."
+  },
+  {
+    "palette_name_en": "Palette 16",
+    "palette_name_it": "Tavolozza 16",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 16.",
+    "description_it": "Descrizione segnaposto per la tavolozza 16."
+  },
+  {
+    "palette_name_en": "Palette 17",
+    "palette_name_it": "Tavolozza 17",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 17.",
+    "description_it": "Descrizione segnaposto per la tavolozza 17."
+  },
+  {
+    "palette_name_en": "Palette 18",
+    "palette_name_it": "Tavolozza 18",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 18.",
+    "description_it": "Descrizione segnaposto per la tavolozza 18."
+  },
+  {
+    "palette_name_en": "Palette 19",
+    "palette_name_it": "Tavolozza 19",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 19.",
+    "description_it": "Descrizione segnaposto per la tavolozza 19."
+  },
+  {
+    "palette_name_en": "Palette 20",
+    "palette_name_it": "Tavolozza 20",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 20.",
+    "description_it": "Descrizione segnaposto per la tavolozza 20."
+  },
+  {
+    "palette_name_en": "Palette 21",
+    "palette_name_it": "Tavolozza 21",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 21.",
+    "description_it": "Descrizione segnaposto per la tavolozza 21."
+  },
+  {
+    "palette_name_en": "Palette 22",
+    "palette_name_it": "Tavolozza 22",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 22.",
+    "description_it": "Descrizione segnaposto per la tavolozza 22."
+  },
+  {
+    "palette_name_en": "Palette 23",
+    "palette_name_it": "Tavolozza 23",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 23.",
+    "description_it": "Descrizione segnaposto per la tavolozza 23."
+  },
+  {
+    "palette_name_en": "Palette 24",
+    "palette_name_it": "Tavolozza 24",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 24.",
+    "description_it": "Descrizione segnaposto per la tavolozza 24."
+  },
+  {
+    "palette_name_en": "Palette 25",
+    "palette_name_it": "Tavolozza 25",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 25.",
+    "description_it": "Descrizione segnaposto per la tavolozza 25."
+  },
+  {
+    "palette_name_en": "Palette 26",
+    "palette_name_it": "Tavolozza 26",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 26.",
+    "description_it": "Descrizione segnaposto per la tavolozza 26."
+  },
+  {
+    "palette_name_en": "Palette 27",
+    "palette_name_it": "Tavolozza 27",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 27.",
+    "description_it": "Descrizione segnaposto per la tavolozza 27."
+  },
+  {
+    "palette_name_en": "Palette 28",
+    "palette_name_it": "Tavolozza 28",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 28.",
+    "description_it": "Descrizione segnaposto per la tavolozza 28."
+  },
+  {
+    "palette_name_en": "Palette 29",
+    "palette_name_it": "Tavolozza 29",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 29.",
+    "description_it": "Descrizione segnaposto per la tavolozza 29."
+  },
+  {
+    "palette_name_en": "Palette 30",
+    "palette_name_it": "Tavolozza 30",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 30.",
+    "description_it": "Descrizione segnaposto per la tavolozza 30."
+  },
+  {
+    "palette_name_en": "Palette 31",
+    "palette_name_it": "Tavolozza 31",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 31.",
+    "description_it": "Descrizione segnaposto per la tavolozza 31."
+  },
+  {
+    "palette_name_en": "Palette 32",
+    "palette_name_it": "Tavolozza 32",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 32.",
+    "description_it": "Descrizione segnaposto per la tavolozza 32."
+  },
+  {
+    "palette_name_en": "Palette 33",
+    "palette_name_it": "Tavolozza 33",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 33.",
+    "description_it": "Descrizione segnaposto per la tavolozza 33."
+  },
+  {
+    "palette_name_en": "Palette 34",
+    "palette_name_it": "Tavolozza 34",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 34.",
+    "description_it": "Descrizione segnaposto per la tavolozza 34."
+  },
+  {
+    "palette_name_en": "Palette 35",
+    "palette_name_it": "Tavolozza 35",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 35.",
+    "description_it": "Descrizione segnaposto per la tavolozza 35."
+  },
+  {
+    "palette_name_en": "Palette 36",
+    "palette_name_it": "Tavolozza 36",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 36.",
+    "description_it": "Descrizione segnaposto per la tavolozza 36."
+  },
+  {
+    "palette_name_en": "Palette 37",
+    "palette_name_it": "Tavolozza 37",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 37.",
+    "description_it": "Descrizione segnaposto per la tavolozza 37."
+  },
+  {
+    "palette_name_en": "Palette 38",
+    "palette_name_it": "Tavolozza 38",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 38.",
+    "description_it": "Descrizione segnaposto per la tavolozza 38."
+  },
+  {
+    "palette_name_en": "Palette 39",
+    "palette_name_it": "Tavolozza 39",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 39.",
+    "description_it": "Descrizione segnaposto per la tavolozza 39."
+  },
+  {
+    "palette_name_en": "Palette 40",
+    "palette_name_it": "Tavolozza 40",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 40.",
+    "description_it": "Descrizione segnaposto per la tavolozza 40."
+  },
+  {
+    "palette_name_en": "Palette 41",
+    "palette_name_it": "Tavolozza 41",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 41.",
+    "description_it": "Descrizione segnaposto per la tavolozza 41."
+  },
+  {
+    "palette_name_en": "Palette 42",
+    "palette_name_it": "Tavolozza 42",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 42.",
+    "description_it": "Descrizione segnaposto per la tavolozza 42."
+  },
+  {
+    "palette_name_en": "Palette 43",
+    "palette_name_it": "Tavolozza 43",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 43.",
+    "description_it": "Descrizione segnaposto per la tavolozza 43."
+  },
+  {
+    "palette_name_en": "Palette 44",
+    "palette_name_it": "Tavolozza 44",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 44.",
+    "description_it": "Descrizione segnaposto per la tavolozza 44."
+  },
+  {
+    "palette_name_en": "Palette 45",
+    "palette_name_it": "Tavolozza 45",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 45.",
+    "description_it": "Descrizione segnaposto per la tavolozza 45."
+  },
+  {
+    "palette_name_en": "Palette 46",
+    "palette_name_it": "Tavolozza 46",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 46.",
+    "description_it": "Descrizione segnaposto per la tavolozza 46."
+  },
+  {
+    "palette_name_en": "Palette 47",
+    "palette_name_it": "Tavolozza 47",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 47.",
+    "description_it": "Descrizione segnaposto per la tavolozza 47."
+  },
+  {
+    "palette_name_en": "Palette 48",
+    "palette_name_it": "Tavolozza 48",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 48.",
+    "description_it": "Descrizione segnaposto per la tavolozza 48."
+  },
+  {
+    "palette_name_en": "Palette 49",
+    "palette_name_it": "Tavolozza 49",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 49.",
+    "description_it": "Descrizione segnaposto per la tavolozza 49."
+  },
+  {
+    "palette_name_en": "Palette 50",
+    "palette_name_it": "Tavolozza 50",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 50.",
+    "description_it": "Descrizione segnaposto per la tavolozza 50."
+  },
+  {
+    "palette_name_en": "Palette 51",
+    "palette_name_it": "Tavolozza 51",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 51.",
+    "description_it": "Descrizione segnaposto per la tavolozza 51."
+  },
+  {
+    "palette_name_en": "Palette 52",
+    "palette_name_it": "Tavolozza 52",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 52.",
+    "description_it": "Descrizione segnaposto per la tavolozza 52."
+  },
+  {
+    "palette_name_en": "Palette 53",
+    "palette_name_it": "Tavolozza 53",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 53.",
+    "description_it": "Descrizione segnaposto per la tavolozza 53."
+  },
+  {
+    "palette_name_en": "Palette 54",
+    "palette_name_it": "Tavolozza 54",
+    "hex_colours": [
+      "#FFFFFF",
+      "#000000"
+    ],
+    "main_colors_en": [
+      "White",
+      "Black"
+    ],
+    "main_colors_it": [
+      "Bianco",
+      "Nero"
+    ],
+    "description_en": "Placeholder description for palette 54.",
+    "description_it": "Descrizione segnaposto per la tavolozza 54."
+  }
+]
