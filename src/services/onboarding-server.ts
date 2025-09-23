@@ -218,11 +218,45 @@ export class OnboardingServerService {
       const code = Math.floor(100000 + Math.random() * 900000).toString()
       const expiresAt = new Date()
       expiresAt.setMinutes(expiresAt.getMinutes() + 15) // 15 minutes
+      const normalizedEmail = email.toLowerCase().trim()
 
+      // First, check if this email already exists in another session
+      const { data: existingSessions, error: checkError } = await serviceClient
+        .from('onboarding_sessions')
+        .select('id, email')
+        .eq('email', normalizedEmail)
+        .neq('id', sessionId)
+
+      if (checkError) {
+        throw new Error(`Failed to check existing sessions: ${checkError.message}`)
+      }
+
+      // If email exists in another session, we have a few options:
+      // 1. Delete old sessions with the same email (if they're incomplete)
+      // 2. Reuse the existing session
+      // 3. Return an error asking user to use a different email
+
+      if (existingSessions && existingSessions.length > 0) {
+        // Option 1: Delete old incomplete sessions with the same email
+        // This handles cases where users started onboarding multiple times
+        const { error: deleteError } = await serviceClient
+          .from('onboarding_sessions')
+          .delete()
+          .eq('email', normalizedEmail)
+          .neq('id', sessionId)
+          .is('email_verified', false) // Only delete unverified sessions
+
+        if (deleteError) {
+          console.warn('Failed to delete old sessions:', deleteError.message)
+          // Continue anyway - the update might still work if the old session was verified
+        }
+      }
+
+      // Now attempt to update the current session
       const { error } = await serviceClient
         .from('onboarding_sessions')
         .update({
-          email: email.toLowerCase().trim(),
+          email: normalizedEmail,
           verification_code: code,
           verification_attempts: 0,
           verification_locked_until: null,
@@ -231,6 +265,10 @@ export class OnboardingServerService {
         .eq('id', sessionId)
 
       if (error) {
+        // If we still get a unique constraint error, it means there's a verified session
+        if (error.code === '23505' && error.message.includes('onboarding_sessions_email_key')) {
+          throw new Error('This email is already associated with a completed onboarding session. Please use a different email or contact support.')
+        }
         throw new Error(`Failed to generate verification code: ${error.message}`)
       }
 

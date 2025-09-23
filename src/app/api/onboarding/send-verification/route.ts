@@ -41,6 +41,24 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Send verification API error:', error)
+
+    // Handle specific error cases with user-friendly messages
+    if (error instanceof Error) {
+      if (error.message.includes('already associated with a completed onboarding')) {
+        return NextResponse.json(
+          { error: error.message },
+          { status: 409 } // Conflict
+        )
+      }
+
+      if (error.message.includes('Failed to generate verification code')) {
+        return NextResponse.json(
+          { error: 'Unable to send verification code. Please try again or use a different email address.' },
+          { status: 400 }
+        )
+      }
+    }
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
