@@ -71,8 +71,8 @@ function OnboardingFooter() {
           <div className="flex items-center gap-4">
             <span>© 2025 WhiteBoar</span>
           </div>
-          
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-2 sm:ml-auto">
             <span>Secure & SSL Protected</span>
             <div className="w-2 h-2 rounded-full bg-green-500"></div>
           </div>
