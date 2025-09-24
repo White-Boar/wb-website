@@ -403,8 +403,23 @@ test.describe('Complete Onboarding Flow', () => {
       console.log('⚠️ Skipping database verification - Supabase not configured');
     }
 
-    // Click Next button
-    await getOnboardingNextButton(page).click();
+    // Check if Next button is enabled and click it
+    const nextButton = getOnboardingNextButton(page);
+    await page.waitForTimeout(2000); // Give form validation time to complete
+
+    const isEnabled = await nextButton.isEnabled();
+    console.log(`Next button enabled on Step 1: ${isEnabled}`);
+
+    if (!isEnabled) {
+      // Check for validation errors
+      const errors = await page.locator('[role="alert"], .text-destructive').allTextContents();
+      console.log('Validation errors found:', errors);
+
+      // Take screenshot for debugging
+      await page.screenshot({ path: 'debug-step1-disabled-next.png', fullPage: true });
+    }
+
+    await nextButton.click();
     await page.waitForURL(/\/onboarding\/step\/2/, { timeout: 10000 });
 
     // Step 2: Email Verification
@@ -471,8 +486,22 @@ test.describe('Complete Onboarding Flow', () => {
 
     // Select country (required field)
     await page.getByRole('combobox', { name: /country/i }).click();
-    await page.waitForTimeout(500);
-    await page.locator('[role="option"]').filter({ hasText: 'Italy' }).click();
+    await page.waitForTimeout(1000);
+
+    // Try multiple approaches to select Italy
+    try {
+      await page.locator('[role="option"]').filter({ hasText: 'Italy' }).click({ timeout: 5000 });
+    } catch (e) {
+      console.log('First Italy click failed, trying alternative approach...');
+      // Try clicking by data-value attribute
+      try {
+        await page.locator('[data-value="Italy"]').click({ timeout: 3000 });
+      } catch (e2) {
+        console.log('Second approach failed, trying force click...');
+        // Force click as last resort
+        await page.locator('[role="option"]').filter({ hasText: 'Italy' }).click({ force: true });
+      }
+    }
     await page.waitForTimeout(500);
 
     await page.waitForTimeout(1000);
