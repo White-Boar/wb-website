@@ -125,3 +125,23 @@ GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 5. Accessibility testing with axe-core
 
 The project is production-ready when it meets all requirements specified in `./context`.
+
+## Critical Instructions for AI Agents
+
+### ALWAYS Follow User Instructions Precisely
+- **NEVER deviate** from explicit user requests without asking for permission
+- **ALWAYS ask for confirmation** before changing scope or approach
+- **BREAK DOWN** complex requests and confirm each part before proceeding
+- **FOCUS ONLY** on the specific task requested - ignore distracting background processes
+- **SEQUENTIAL EXECUTION** - when asked to validate "ALL steps", go through each step 1→2→3→4... systematically, never skip or jump around
+
+### Phase-Based Work Instructions
+- When user specifies "Phase 1 only" or specific phases, **STOP** after completing that phase
+- **DO NOT** automatically proceed to subsequent phases without explicit user approval
+- **DO NOT** run additional tests or processes beyond what was specifically requested
+
+### Manual Testing with Playwright MCP
+- When asked to test "end-to-end" or "all steps", use Playwright MCP to go through EVERY step sequentially
+- **NEVER jump** from step 3 to step 7 - validate steps 4, 5, 6 in between
+- **COMPLETE THE FULL FLOW** from start to finish when requested
+- Document each step's validation results clearly

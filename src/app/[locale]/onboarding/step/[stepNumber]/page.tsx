@@ -288,7 +288,7 @@ export default function OnboardingStep() {
           { step: 4, title: 'Brand Definition', requiredFields: ['businessDescription'] },
           { step: 5, title: 'Customer Profile', requiredFields: ['customerProfile'] },
           { step: 6, title: 'Customer Needs', requiredFields: ['customerProblems', 'customerDelight'] },
-          { step: 7, title: 'Visual Inspiration', requiredFields: ['websiteReferences'] },
+          { step: 7, title: 'Visual Inspiration', requiredFields: [] },
           { step: 8, title: 'Design Style', requiredFields: ['designStyle'] },
           { step: 9, title: 'Image Style', requiredFields: ['imageStyle'] },
           { step: 10, title: 'Color Palette', requiredFields: ['colorPalette'] },

@@ -711,3 +711,47 @@ POST /api/onboarding/record-upload // ✅ File uploads
 **Launch Decision**: The system can be **deployed to production immediately** with complete 13-step functionality. All steps are working and tested - only translation keys need completion for user-facing text.
 
 **Confidence Level**: **98%** - Complete functionality validated, only content translation remaining.
+
+---
+
+## 🚨 **CRITICAL AI AGENT INSTRUCTION UPDATES**
+
+### **User Interaction Protocol - MANDATORY FOR ALL AI AGENTS**
+- **LISTEN CAREFULLY** to user instructions and follow them exactly
+- **NEVER deviate** from explicit user requests without asking for permission
+- **ASK FOR CONFIRMATION** before changing scope or approach
+- **BREAK DOWN** complex requests and confirm each part before proceeding
+- **FOCUS ONLY** on the specific task requested - ignore distracting background processes
+- **SEQUENTIAL EXECUTION** - when asked to validate "ALL steps", go through each step 1→2→3→4... systematically, never skip or jump around
+
+### **Phase-Based Work Instructions - STRICT COMPLIANCE REQUIRED**
+- When user specifies "Phase 1 only" or specific phases, **STOP** after completing that phase
+- **DO NOT** automatically proceed to subsequent phases without explicit user approval
+- **DO NOT** run additional tests or processes beyond what was specifically requested
+- **DO NOT** get distracted by background bash processes or test outputs
+
+### **Manual Testing with Playwright MCP - SYSTEMATIC APPROACH REQUIRED**
+- When asked to test "end-to-end" or "all steps", use Playwright MCP to go through EVERY step sequentially
+- **NEVER jump** from step 3 to step 7 - validate steps 4, 5, 6 in between
+- **COMPLETE THE FULL FLOW** from start to finish when requested
+- Document each step's validation results clearly
+- **FOLLOW THE CHECKLIST** in this document systematically
+
+### **Common AI Agent Mistakes to Avoid**
+1. **Jumping steps during validation** - e.g., going from Step 3 to Step 7 instead of 3→4→5→6→7
+2. **Auto-proceeding to next phases** without user approval
+3. **Getting distracted by background processes** when user gives specific focused task
+4. **Running additional tests** beyond what was specifically requested
+5. **Ignoring explicit user corrections** and repeating same mistakes
+
+### **Step 7 Validation Bug - RESOLVED** ✅
+- **Issue**: Step 7 websiteReferences marked as required in validation but optional in UI
+- **Fix Applied**: Removed `websiteReferences` from required fields array in validation logic
+- **File**: `/src/app/[locale]/onboarding/step/[stepNumber]/page.tsx:291`
+- **Status**: ✅ **COMPLETED** - Step 7 is now truly optional
+
+### **Next Testing Phase - SYSTEMATIC VALIDATION REQUIRED**
+- **Requirement**: Manual validation of ALL 13 steps using Playwright MCP
+- **Method**: Navigate step-by-step from 1→2→3→4→5→6→7→8→9→10→11→12→13
+- **Goal**: Reach thank you screen successfully without redirect loops
+- **Critical Test**: Verify Step 7 allows progression without websiteReferences
