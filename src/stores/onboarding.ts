@@ -20,14 +20,13 @@ const initialFormData: Partial<OnboardingFormData> = {
   businessName: '',
   businessEmail: '',
   businessPhone: '',
-  physicalAddress: {
-    street: '',
-    city: '',
-    province: '',
-    postalCode: '',
-    country: '',
-    placeId: undefined
-  },
+  // Flattened address fields (matching current implementation)
+  businessStreet: '',
+  businessCity: '',
+  businessProvince: '',
+  businessPostalCode: '',
+  businessCountry: '',
+  businessPlaceId: undefined,
   industry: '',
   vatNumber: '',
   businessDescription: '',
@@ -294,10 +293,10 @@ export const useOnboardingStore = create<OnboardingStore>()(
                 return { isValid: true, errors: [] }
               } else {
                 // Convert Zod errors to our format
-                const errors: ValidationError[] = result.error.errors.map(err => ({
-                  field: err.path.join('.'),
-                  message: err.message,
-                  code: err.code
+                const errors: ValidationError[] = (result.error?.errors || []).map(err => ({
+                  field: err.path?.join('.') || '',
+                  message: err.message || 'Validation error',
+                  code: err.code || 'validation_error'
                 }))
                 
                 get().setStepErrors(step, errors)
@@ -509,6 +508,26 @@ export const useOnboardingStore = create<OnboardingStore>()(
         }),
         // Version for breaking changes
         version: 2,
+        // Migration function to handle breaking changes
+        migrate: (persistedState: any, version: number) => {
+          if (version < 2) {
+            // Migrate from nested physicalAddress to flattened fields
+            if (persistedState?.formData?.physicalAddress) {
+              const { physicalAddress, ...restFormData } = persistedState.formData
+              persistedState.formData = {
+                ...restFormData,
+                businessStreet: physicalAddress.street || '',
+                businessCity: physicalAddress.city || '',
+                businessProvince: physicalAddress.province || '',
+                businessPostalCode: physicalAddress.postalCode || '',
+                businessCountry: physicalAddress.country || '',
+                businessPlaceId: physicalAddress.placeId || undefined,
+              }
+              delete persistedState.formData.physicalAddress
+            }
+          }
+          return persistedState
+        },
       }
     ),
     {

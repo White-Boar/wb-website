@@ -319,6 +319,7 @@ export default function OnboardingStep() {
                 (Array.isArray(fieldValue) && fieldValue.length === 0) ||
                 (field === 'emailVerified' && !fieldValue) ||
                 (field === 'businessDescription' && fieldValue.length < 50)) {
+              console.log(`Missing field: ${field}, value:`, fieldValue)
               stepErrors.push(field)
             }
           }
@@ -334,6 +335,8 @@ export default function OnboardingStep() {
 
         if (failedSteps.length > 0) {
           const firstFailedStep = failedSteps[0]
+          console.log('Final validation failed. Missing fields:', failedSteps)
+          console.log('Current form data:', allFormData)
           const errorMsg = `Please complete missing information in Step ${firstFailedStep.step} (${firstFailedStep.title}) before finishing.`
           setError(errorMsg)
 

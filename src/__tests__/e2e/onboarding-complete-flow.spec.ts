@@ -354,7 +354,8 @@ test.describe('Complete Onboarding Flow', () => {
       businessDescription: 'We provide innovative technology solutions for businesses looking to modernize their operations.',
       customerProblems: 'Customers struggle with outdated systems and lack of technical expertise',
       customerDelight: 'We provide modern, user-friendly solutions with comprehensive support',
-      websiteReferences: ['https://example.com', 'https://google.com', 'https://apple.com']
+      websiteReferences: ['https://example.com', 'https://google.com', 'https://apple.com'],
+      offerings: ['Web Development Services', 'Digital Marketing Solutions', 'IT Consulting']
     };
 
     const firstNameField = page.locator('input[name="firstName"]');
@@ -752,6 +753,32 @@ test.describe('Complete Onboarding Flow', () => {
                 await checkboxes.nth(2).click();
                 await page.waitForTimeout(200);
               }
+            }
+
+            // Fill offerings field
+            try {
+              console.log('Attempting to fill offerings...');
+              const offeringsInput = page.locator('input[placeholder*="Enter a product"]').first();
+              const addButton = page.locator('button').filter({ hasText: /add.*item/i });
+
+              if (await offeringsInput.isVisible({ timeout: 2000 })) {
+                for (const offering of testData.offerings) {
+                  await offeringsInput.fill(offering);
+                  await page.waitForTimeout(300);
+
+                  if (await addButton.isEnabled({ timeout: 1000 })) {
+                    await addButton.click();
+                    await page.waitForTimeout(300);
+                    console.log(`✓ Added offering: ${offering}`);
+                  } else {
+                    console.log(`Add button not enabled for: ${offering}`);
+                  }
+                }
+              } else {
+                console.log('Offerings input not visible, may not be required');
+              }
+            } catch (offeringsError) {
+              console.log('Error filling offerings:', offeringsError);
             }
           } catch (e) {
             console.log('Error in step 11:', e);
