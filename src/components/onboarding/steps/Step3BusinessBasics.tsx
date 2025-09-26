@@ -107,11 +107,11 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
 
   const handleAddressSelect = (address: any) => {
     if (address) {
-      setValue('address', address.formatted_address)
-      setValue('city', address.locality || '')
-      setValue('postalCode', address.postal_code || '')
-      setValue('region', address.administrative_area_level_1 || '')
-      setValue('country', address.country || '')
+      setValue('businessStreet', address.formatted_address)
+      setValue('businessCity', address.locality || '')
+      setValue('businessPostalCode', address.postal_code || '')
+      setValue('businessProvince', address.administrative_area_level_1 || '')
+      setValue('businessCountry', address.country || '')
     }
   }
 
@@ -297,7 +297,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
             <div className="space-y-6">
               {/* Address Autocomplete */}
               <Controller
-                name="physicalAddress.street"
+                name="businessStreet"
                 control={control}
                 render={({ field }) => (
                   <TextInput
@@ -305,7 +305,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                     label={t('address.street.label')}
                     placeholder={t('address.street.placeholder')}
                     hint={t('address.street.hint')}
-                    error={errors.physicalAddress?.street?.message}
+                    error={errors.businessStreet?.message}
                     required
                     disabled={isLoading}
                     leftIcon={<MapPin className="w-4 h-4" />}
@@ -316,14 +316,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
               {/* Additional Address Fields (populated by autocomplete) */}
               <div className="grid md:grid-cols-2 gap-4">
                 <Controller
-                  name="physicalAddress.city"
+                  name="businessCity"
                   control={control}
                   render={({ field }) => (
                     <TextInput
                       {...field}
                       label={t('address.city.label')}
                       placeholder={t('address.city.placeholder')}
-                      error={errors.physicalAddress?.city?.message}
+                      error={errors.businessCity?.message}
                       required
                       disabled={isLoading}
                       leftIcon={<MapPin className="w-4 h-4" />}
@@ -332,14 +332,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                 />
 
                 <Controller
-                  name="physicalAddress.postalCode"
+                  name="businessPostalCode"
                   control={control}
                   render={({ field }) => (
                     <TextInput
                       {...field}
                       label={t('address.postalCode.label')}
                       placeholder={t('address.postalCode.placeholder')}
-                      error={errors.physicalAddress?.postalCode?.message}
+                      error={errors.businessPostalCode?.message}
                       required
                       disabled={isLoading}
                       leftIcon={<Hash className="w-4 h-4" />}
@@ -350,14 +350,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
 
               <div className="grid md:grid-cols-2 gap-4">
                 <Controller
-                  name="physicalAddress.province"
+                  name="businessProvince"
                   control={control}
                   render={({ field }) => (
                     <TextInput
                       {...field}
                       label={t('address.region.label')}
                       placeholder={t('address.region.placeholder')}
-                      error={errors.physicalAddress?.province?.message}
+                      error={errors.businessProvince?.message}
                       required
                       disabled={isLoading}
                     />
@@ -365,7 +365,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                 />
 
                 <Controller
-                  name="physicalAddress.country"
+                  name="businessCountry"
                   control={control}
                   render={({ field }) => (
                     <DropdownInput
@@ -376,14 +376,14 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                       onValueChange={(value) => {
                         field.onChange(value)
                         // Trigger form validation after setting the value
-                        trigger('physicalAddress.country')
+                        trigger('businessCountry')
                       }}
-                      error={(errors as any)?.physicalAddress?.country?.message}
+                      error={errors.businessCountry?.message}
                       required
                       searchable
                       clearable={false} // Disable clear button since country is required
                       disabled={isLoading}
-                      name="physicalAddress.country"
+                      name="businessCountry"
                     />
                   )}
                 />

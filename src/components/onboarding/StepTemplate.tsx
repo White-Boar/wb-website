@@ -82,7 +82,7 @@ export function StepTemplate({
   }
 
   // Progress calculation
-  const progressPercentage = (stepNumber / 13) * 100
+  const progressPercentage = (stepNumber / 12) * 100
 
   // Auto-save indicator
   const renderAutoSaveIndicator = () => {
@@ -146,7 +146,7 @@ export function StepTemplate({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-muted-foreground">
-                {t('step')} {stepNumber} {t('of')} 13
+                {t('step')} {stepNumber} {t('of')} 12
               </span>
               {renderAutoSaveIndicator()}
             </div>
@@ -157,7 +157,7 @@ export function StepTemplate({
           <Progress 
             value={progressPercentage} 
             className="h-2"
-            aria-label={t('progressLabel', { step: stepNumber, total: 13 })}
+            aria-label={t('progressLabel', { step: stepNumber, total: 12 })}
           />
         </div>
       </div>
@@ -246,7 +246,7 @@ export function StepTemplate({
 
             {/* Step Indicators */}
             <div className="hidden md:flex items-center gap-2">
-              {Array.from({ length: 13 }, (_, i) => (
+              {Array.from({ length: 12 }, (_, i) => (
                 <div
                   key={i}
                   role="img"
@@ -284,8 +284,8 @@ export function StepTemplate({
                   </>
                 ) : (
                   <>
-                    {nextLabel || (stepNumber === 13 ? t('complete') : t('next'))}
-                    {stepNumber < 13 && <ArrowRight className="h-4 w-4" />}
+                    {nextLabel || (stepNumber === 12 ? t('complete') : t('next'))}
+                    {stepNumber < 12 && <ArrowRight className="h-4 w-4" />}
                   </>
                 )}
               </Button>
@@ -300,7 +300,7 @@ export function StepTemplate({
 // Mobile-specific progress component
 export function MobileProgressBar({ 
   currentStep, 
-  totalSteps = 13 
+  totalSteps = 12 
 }: { 
   currentStep: number
   totalSteps?: number 

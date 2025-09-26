@@ -88,7 +88,7 @@
     },
     "welcome": {
       "title": "Welcome to WhiteBoar",
-      "subtitle": "Let's create your perfect website in just 13 simple steps. Our AI-driven process ensures a professional result tailored to your business.",
+      "subtitle": "Let's create your perfect website in just 12 simple steps. Our AI-driven process ensures a professional result tailored to your business.",
       "features": {
         "fast": {
           "title": "Lightning Fast",
@@ -1006,95 +1006,6 @@
           "quality": "Quality over quantity",
           "authentic": "Authentic moments",
           "variety": "Show variety"
-        }
-      },
-      "13": {
-        "celebration": {
-          "title": "Congratulations!",
-          "description": "You've successfully completed the WhiteBoar onboarding process. We're excited to bring your vision to life.",
-          "completion": "Completion",
-          "timeEstimate": "~15 minutes"
-        },
-        "summary": {
-          "title": "Project Summary",
-          "business": {
-            "title": "Business Information",
-            "name": "Business Name",
-            "type": "Business Type",
-            "email": "Contact Email",
-            "phone": "Phone Number"
-          },
-          "project": {
-            "title": "Project Details",
-            "goal": "Primary Goal",
-            "style": "Design Style",
-            "colors": "Color Palette",
-            "sections": "Website Sections",
-            "sectionsCount": "sections"
-          },
-          "assets": {
-            "title": "Assets & Content",
-            "logo": "Logo",
-            "photos": "Business Photos",
-            "offerings": "Services/Products",
-            "photosUploaded": "photos uploaded",
-            "offeringsAdded": "items added"
-          },
-          "notProvided": "Not provided",
-          "uploaded": "Uploaded",
-          "notUploaded": "Not uploaded"
-        },
-        "nextSteps": {
-          "title": "What Happens Next",
-          "review": {
-            "title": "Project Review",
-            "description": "Our team will review your requirements and create a detailed project plan",
-            "timeframe": "Within 24 hours"
-          },
-          "preview": {
-            "title": "Design Preview",
-            "description": "We'll create initial design concepts and send you a preview link",
-            "timeframe": "3-5 business days"
-          },
-          "revisions": {
-            "title": "Feedback & Revisions",
-            "description": "Review the preview and request any changes needed",
-            "timeframe": "1-2 business days"
-          },
-          "launch": {
-            "title": "Website Launch",
-            "description": "Final approval and your website goes live with hosting included",
-            "timeframe": "Same day"
-          }
-        },
-        "contact": {
-          "title": "Get in Touch",
-          "support": {
-            "title": "Support Team"
-          },
-          "availability": {
-            "title": "Availability",
-            "description": "Monday to Friday, 9 AM to 6 PM CET"
-          },
-          "response": {
-            "title": "Quick Response Guaranteed",
-            "description": "We typically respond within 2 hours during business hours"
-          }
-        },
-        "thankYou": {
-          "title": "Thank You for Choosing WhiteBoar",
-          "message": "We're committed to delivering exceptional results and helping your business thrive online. Your project is now in expert hands.",
-          "team": "The WhiteBoar Team"
-        },
-        "cta": {
-          "button": "Complete Onboarding",
-          "description": "You'll receive a confirmation email with next steps shortly"
-        },
-        "submission": {
-          "submitting": "Submitting...",
-          "completed": "Submitted Successfully!",
-          "success": "Your onboarding has been submitted successfully!",
-          "error": "Failed to submit. Please try again."
         }
       }
     },

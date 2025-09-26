@@ -140,7 +140,7 @@ export class AnalyticsService {
   ): void {
     const metadata = {
       time_spent_seconds: timeSpentSeconds,
-      completion_rate_so_far: (stepNumber / 13) * 100,
+      completion_rate_so_far: (stepNumber / 12) * 100,
       data_completeness: formData ? this.calculateDataCompleteness(formData, stepNumber) : 0
     }
 
@@ -233,7 +233,7 @@ export class AnalyticsService {
     const abandonmentData = {
       abandonment_step: stepNumber,
       time_spent_total_seconds: Math.floor(timeSpentTotal / 1000),
-      completion_percentage: (stepNumber / 13) * 100,
+      completion_percentage: (stepNumber / 12) * 100,
       reason: reason || 'unknown'
     }
 
@@ -359,7 +359,7 @@ export class AnalyticsService {
       sessionId,
       'form_submit',
       completionData,
-      13,
+      12,
       undefined,
       'user_action',
       totalTimeMinutes * 60 * 1000
@@ -376,7 +376,7 @@ export class AnalyticsService {
   ): void {
     const funnelData = {
       current_step: currentStep,
-      step_completion_rate: (currentStep / 13) * 100,
+      step_completion_rate: (currentStep / 12) * 100,
       total_sessions_today: totalSessions
     }
 
@@ -558,8 +558,7 @@ export class AnalyticsService {
       9: ['imageStyle'],
       10: ['colorPalette'],
       11: ['websiteSections', 'primaryGoal'],
-      12: [], // Optional uploads
-      13: ['completedAt']
+      12: [] // Optional uploads
     }
 
     return fieldMap[stepNumber] || []

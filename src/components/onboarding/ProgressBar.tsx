@@ -18,7 +18,7 @@ interface ProgressBarProps {
 
 export function ProgressBar({
   currentStep,
-  totalSteps = 13,
+  totalSteps = 12,
   variant = 'compact',
   showLabels = false,
   className
@@ -114,13 +114,12 @@ function DetailedProgressBar({
     { key: 'image-style', label: t('imageStyle') },
     { key: 'color-palette', label: t('colorPalette') },
     { key: 'website-structure', label: t('websiteStructure') },
-    { key: 'business-assets', label: t('businessAssets') },
-    { key: 'completion', label: t('completion') }
+    { key: 'business-assets', label: t('businessAssets') }
   ]
 
   return (
     <div className={cn("space-y-4", className)}>
-      <div className="grid grid-cols-1 md:grid-cols-13 gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-2">
         {steps.map((step, i) => {
           const stepNumber = i + 1
           const isCompleted = stepNumber < currentStep
@@ -208,7 +207,7 @@ function DetailedProgressBar({
 // Simplified mobile progress bar
 export function MobileProgressBar({ 
   currentStep, 
-  totalSteps = 13,
+  totalSteps = 12,
   className
 }: { 
   currentStep: number

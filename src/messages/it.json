@@ -80,7 +80,7 @@
     },
     "welcome": {
       "title": "Benvenuti in WhiteBoar",
-      "subtitle": "Creiamo il tuo sito web perfetto in soli 13 semplici passaggi. Il nostro processo basato su AI garantisce un risultato professionale su misura per la tua attività.",
+      "subtitle": "Creiamo il tuo sito web perfetto in soli 12 semplici passaggi. Il nostro processo basato su AI garantisce un risultato professionale su misura per la tua attività.",
       "features": {
         "fast": {
           "title": "Veloce come un Fulmine",
@@ -999,95 +999,6 @@
           "quality": "Qualità prima della quantità",
           "authentic": "Momenti autentici",
           "variety": "Mostra varietà"
-        }
-      },
-      "13": {
-        "celebration": {
-          "title": "Congratulazioni!",
-          "description": "Hai completato con successo il processo di onboarding di WhiteBoar. Siamo entusiasti di dare vita alla tua visione.",
-          "completion": "Completamento",
-          "timeEstimate": "~15 minuti"
-        },
-        "summary": {
-          "title": "Riepilogo del Progetto",
-          "business": {
-            "title": "Informazioni Aziendali",
-            "name": "Nome dell'Attività",
-            "type": "Tipo di Attività",
-            "email": "Email di Contatto",
-            "phone": "Numero di Telefono"
-          },
-          "project": {
-            "title": "Dettagli del Progetto",
-            "goal": "Obiettivo Primario",
-            "style": "Stile di Design",
-            "colors": "Palette di Colori",
-            "sections": "Sezioni del Sito Web",
-            "sectionsCount": "sezioni"
-          },
-          "assets": {
-            "title": "Risorse e Contenuti",
-            "logo": "Logo",
-            "photos": "Foto Aziendali",
-            "offerings": "Servizi/Prodotti",
-            "photosUploaded": "foto caricate",
-            "offeringsAdded": "elementi aggiunti"
-          },
-          "notProvided": "Non fornito",
-          "uploaded": "Caricato",
-          "notUploaded": "Non caricato"
-        },
-        "nextSteps": {
-          "title": "Cosa Succede Ora",
-          "review": {
-            "title": "Revisione del Progetto",
-            "description": "Il nostro team esaminerà le tue esigenze e creerà un piano di progetto dettagliato",
-            "timeframe": "Entro 24 ore"
-          },
-          "preview": {
-            "title": "Anteprima del Design",
-            "description": "Creeremo i concetti di design iniziali e ti invieremo un link di anteprima",
-            "timeframe": "3-5 giorni lavorativi"
-          },
-          "revisions": {
-            "title": "Feedback e Revisioni",
-            "description": "Esamina l'anteprima e richiedi eventuali modifiche necessarie",
-            "timeframe": "1-2 giorni lavorativi"
-          },
-          "launch": {
-            "title": "Lancio del Sito Web",
-            "description": "Approvazione finale e il tuo sito web va online con hosting incluso",
-            "timeframe": "Stesso giorno"
-          }
-        },
-        "contact": {
-          "title": "Contattaci",
-          "support": {
-            "title": "Team di Supporto"
-          },
-          "availability": {
-            "title": "Disponibilità",
-            "description": "Dal lunedì al venerdì, dalle 9:00 alle 18:00 CET"
-          },
-          "response": {
-            "title": "Risposta Rapida Garantita",
-            "description": "Di solito rispondiamo entro 2 ore durante l'orario lavorativo"
-          }
-        },
-        "thankYou": {
-          "title": "Grazie per Aver Scelto WhiteBoar",
-          "message": "Ci impegniamo a fornire risultati eccezionali e ad aiutare la tua attività a prosperare online. Il tuo progetto è ora nelle mani di esperti.",
-          "team": "Il Team WhiteBoar"
-        },
-        "cta": {
-          "button": "Completa Onboarding",
-          "description": "Riceverai presto un'email di conferma con i prossimi passi"
-        },
-        "submission": {
-          "submitting": "Invio in corso...",
-          "completed": "Inviato con Successo!",
-          "success": "Il tuo onboarding è stato inviato con successo!",
-          "error": "Invio fallito. Riprova."
         }
       }
     },

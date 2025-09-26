@@ -17,16 +17,24 @@ export interface OnboardingFormData {
   businessName: string
   businessEmail: string
   businessPhone: string
-  physicalAddress: {
+  businessStreet: string
+  businessCity: string
+  businessProvince: string
+  businessPostalCode: string
+  businessCountry: string
+  businessPlaceId?: string // Google Places ID
+  industry: string
+  vatNumber?: string
+
+  // Legacy compatibility - will be transformed to flat fields
+  physicalAddress?: {
     street: string
     city: string
     province: string
     postalCode: string
     country: string
-    placeId?: string // Google Places ID
+    placeId?: string
   }
-  industry: string
-  vatNumber?: string
   
   // Step 4: Brand Definition
   businessDescription: string
@@ -68,7 +76,7 @@ export interface OnboardingFormData {
   logoUpload?: UploadedFile
   businessPhotos?: UploadedFile[]
   
-  // Step 13: Completion (metadata)
+  // Step 12: Completion (metadata)
   completedAt?: string
   totalTimeSeconds?: number
 }
@@ -358,7 +366,7 @@ export interface StepConfig {
 export type FormDataAtStep<T extends StepNumber> = 
   T extends 1 ? Pick<OnboardingFormData, 'firstName' | 'lastName' | 'email'> :
   T extends 2 ? Pick<OnboardingFormData, 'emailVerified'> :
-  T extends 3 ? Pick<OnboardingFormData, 'businessName' | 'businessEmail' | 'businessPhone' | 'physicalAddress' | 'industry' | 'vatNumber'> :
+  T extends 3 ? Pick<OnboardingFormData, 'businessName' | 'businessEmail' | 'businessPhone' | 'businessStreet' | 'businessCity' | 'businessProvince' | 'businessPostalCode' | 'businessCountry' | 'businessPlaceId' | 'industry' | 'vatNumber'> :
   T extends 4 ? Pick<OnboardingFormData, 'businessDescription' | 'competitorUrls' | 'competitorAnalysis'> :
   T extends 5 ? Pick<OnboardingFormData, 'customerProfile'> :
   T extends 6 ? Pick<OnboardingFormData, 'customerProblems' | 'customerDelight'> :

@@ -192,54 +192,6 @@ test.describe('Onboarding Advanced Features', () => {
     });
   });
 
-  test.describe('Step 13: Completion & Summary', () => {
-    test.beforeEach(async ({ page }) => {
-      await page.goto('/onboarding/step/13');
-      await page.waitForLoadState('networkidle');
-    });
-
-    test('displays completion summary correctly', async ({ page }) => {
-      // Check for completion elements
-      await expect(page.locator('text=Complete').or(page.locator('text=Summary')).or(page.locator('text=Congratulations')).or(page.locator('text=Finish'))).toBeVisible();
-
-      // Check for project timeline information
-      await expect(page.locator('text=timeline').or(page.locator('text=days')).or(page.locator('text=delivery')).or(page.locator('text=project'))).toBeVisible();
-
-      // Check for contact or next steps information
-      await expect(page.locator('text=contact').or(page.locator('text=next')).or(page.locator('text=email')).or(page.locator('text=start'))).toBeVisible();
-    });
-
-    test('final submission works', async ({ page }) => {
-      const submitButton = page.getByRole('button', { name: /submit|finish|complete|send/i });
-
-      if (await submitButton.isVisible()) {
-        await expect(submitButton).toBeEnabled();
-
-        // Click submit
-        await submitButton.click();
-
-        // Should show success state or redirect
-        await page.waitForTimeout(2000);
-
-        // Check for success indication
-        const successIndicators = page.locator('text=success').or(page.locator('text=submitted')).or(page.locator('text=received')).or(page.locator('text=thank'));
-        await expect(successIndicators.first()).toBeVisible();
-      }
-    });
-
-    test('project summary displays collected information', async ({ page }) => {
-      // Look for summary sections displaying gathered data
-      const summaryElements = page.locator('[class*="summary"], [class*="review"], .project-info');
-
-      if (await summaryElements.count() > 0) {
-        await expect(summaryElements.first()).toBeVisible();
-
-        // Should show business name, email, or other collected info
-        const businessInfo = page.locator('text=business').or(page.locator('text=company')).or(page.locator('text=@'));
-        await expect(businessInfo.first()).toBeVisible();
-      }
-    });
-  });
 
   test.describe('Session Management & Auto-Save', () => {
     test('auto-save functionality works', async ({ page }) => {

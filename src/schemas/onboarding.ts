@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 // =============================================================================
-// VALIDATION SCHEMAS FOR ALL 13 ONBOARDING STEPS
+// VALIDATION SCHEMAS FOR ALL 12 ONBOARDING STEPS
 // =============================================================================
 
 // Helper schemas and validators
@@ -90,15 +90,13 @@ export const step3Schema = z.object({
     .max(50, 'Business name cannot exceed 50 characters'),
   businessEmail: emailSchema,
   businessPhone: phoneSchema,
-  physicalAddress: z.object({
-    street: z.string().min(1, 'Street address is required'),
-    city: z.string().min(1, 'City is required'),
-    province: z.string().min(1, 'Province is required'),
-    postalCode: z.string()
-      .regex(/^\d{5}$/, 'Please enter a valid Italian postal code (5 digits)'),
-    country: z.string().min(1, 'Country is required'),
-    placeId: z.string().optional()
-  }),
+  businessStreet: z.string().min(1, 'Street address is required'),
+  businessCity: z.string().min(1, 'City is required'),
+  businessProvince: z.string().min(1, 'Province is required'),
+  businessPostalCode: z.string()
+    .regex(/^\d{5}$/, 'Please enter a valid Italian postal code (5 digits)'),
+  businessCountry: z.string().min(1, 'Country is required'),
+  businessPlaceId: z.string().optional(),
   industry: z.string().min(1, 'Please select an industry'),
   vatNumber: italianVatSchema
 })
@@ -313,13 +311,6 @@ export const step12Schema = z.object({
   }
 })
 
-// =============================================================================
-// STEP 13: COMPLETION
-// =============================================================================
-export const step13Schema = z.object({
-  completedAt: z.string().datetime().optional(),
-  totalTimeSeconds: z.number().min(0).optional()
-})
 
 // =============================================================================
 // COMPLETE FORM SCHEMA (for final validation)
@@ -394,8 +385,6 @@ export type Step9FormData = z.infer<typeof step9Schema>
 export type Step10FormData = z.infer<typeof step10Schema>
 export type Step11FormData = z.infer<typeof step11Schema>
 export type Step12FormData = z.infer<typeof step12Schema>
-export type Step13FormData = z.infer<typeof step13Schema>
-
 // Union type for all step data
 export type StepFormData =
   | Step1FormData
@@ -410,7 +399,6 @@ export type StepFormData =
   | Step10FormData
   | Step11FormData
   | Step12FormData
-  | Step13FormData
 
 // Complete onboarding data type
 export type OnboardingFormData = z.infer<typeof completeFormSchema>

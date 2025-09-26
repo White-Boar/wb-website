@@ -15,7 +15,6 @@ import { Step9ImageStyle } from './Step9ImageStyle'
 import { Step10ColorPalette } from './Step10ColorPalette'
 import { Step11WebsiteStructure } from './Step11WebsiteStructure'
 import { Step12BusinessAssets } from './Step12BusinessAssets'
-import { Step13Completion } from './Step13Completion'
 
 export interface StepComponentProps {
   form: UseFormReturn<StepFormData>
@@ -41,7 +40,6 @@ const stepComponents: Record<number, StepComponent> = {
   10: Step10ColorPalette,
   11: Step11WebsiteStructure,
   12: Step12BusinessAssets,
-  13: Step13Completion
 }
 
 export function getStepComponent(stepNumber: number): StepComponent | null {
@@ -62,7 +60,6 @@ export const stepTitles: Record<number, string> = {
   10: 'colorPalette',
   11: 'websiteStructure',
   12: 'businessAssets',
-  13: 'completion'
 }
 
 export {
@@ -78,5 +75,4 @@ export {
   Step10ColorPalette,
   Step11WebsiteStructure,
   Step12BusinessAssets,
-  Step13Completion
 }

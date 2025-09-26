@@ -379,7 +379,7 @@ export class OnboardingService {
       await this.trackEvent(sessionId, 'form_submit', {
         business_name: formData.businessName,
         completion_time_seconds: completionTimeSeconds,
-        total_steps: 13
+        total_steps: 12
       })
 
       return this.mapSubmissionFromDB(data)

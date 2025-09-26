@@ -69,7 +69,7 @@ export default function OnboardingStep() {
 
       // If we have a session but current step is behind the step number,
       // update current step to allow access to this step
-      else if (sessionId && currentStep < stepNumber && stepNumber <= 13) {
+      else if (sessionId && currentStep < stepNumber && stepNumber <= 12) {
         // This handles cases where user bookmarked a step or has progressed beyond the stored current step
         const { updateCurrentStep } = useOnboardingStore.getState()
         updateCurrentStep(stepNumber)
@@ -109,14 +109,12 @@ export default function OnboardingStep() {
           businessName: formData?.businessName ?? '',
           businessEmail: formData?.businessEmail ?? '',
           businessPhone: formData?.businessPhone ?? '',
-          physicalAddress: {
-            street: formData?.physicalAddress?.street ?? '',
-            city: formData?.physicalAddress?.city ?? '',
-            province: formData?.physicalAddress?.province ?? '',
-            postalCode: formData?.physicalAddress?.postalCode ?? '',
-            country: formData?.physicalAddress?.country || 'Italy',
-            placeId: formData?.physicalAddress?.placeId ?? ''
-          },
+          businessStreet: formData?.businessStreet ?? formData?.physicalAddress?.street ?? '',
+          businessCity: formData?.businessCity ?? formData?.physicalAddress?.city ?? '',
+          businessProvince: formData?.businessProvince ?? formData?.physicalAddress?.province ?? '',
+          businessPostalCode: formData?.businessPostalCode ?? formData?.physicalAddress?.postalCode ?? '',
+          businessCountry: formData?.businessCountry ?? formData?.physicalAddress?.country ?? 'Italy',
+          businessPlaceId: formData?.businessPlaceId ?? formData?.physicalAddress?.placeId ?? '',
           industry: formData?.industry ?? '',
           vatNumber: formData?.vatNumber ?? ''
         }
@@ -185,7 +183,20 @@ export default function OnboardingStep() {
     mode: 'onChange'
   })
 
-  const { handleSubmit, formState: { errors, isValid, isDirty } } = form
+  const { handleSubmit, formState: { errors, isValid, isDirty }, watch } = form
+
+  // Manual validation for Step 3 to fix isValid timing issues
+  const watchedValues = watch()
+  const isStep3Valid = stepNumber === 3 ?
+    !!(watchedValues?.businessName &&
+       watchedValues?.industry &&
+       watchedValues?.businessPhone &&
+       watchedValues?.businessEmail &&
+       watchedValues?.businessStreet &&
+       watchedValues?.businessCity &&
+       watchedValues?.businessPostalCode &&
+       watchedValues?.businessProvince &&
+       watchedValues?.businessCountry) : isValid
 
   // Reset form values when formData changes (e.g., loaded from localStorage)
   useEffect(() => {
@@ -281,13 +292,13 @@ export default function OnboardingStep() {
             title: 'Business Details',
             requiredFields: [
               'businessName', 'businessEmail', 'businessPhone', 'industry',
-              'physicalAddress.street', 'physicalAddress.city', 'physicalAddress.postalCode',
-              'physicalAddress.province', 'physicalAddress.country'
+              'businessStreet', 'businessCity', 'businessPostalCode',
+              'businessProvince', 'businessCountry'
             ]
           },
           { step: 4, title: 'Brand Definition', requiredFields: ['businessDescription'] },
           { step: 5, title: 'Customer Profile', requiredFields: ['customerProfile'] },
-          { step: 6, title: 'Customer Needs', requiredFields: ['customerProblems', 'customerDelight'] },
+          { step: 6, title: 'Customer Needs', requiredFields: ['customerProblems'] },
           { step: 7, title: 'Visual Inspiration', requiredFields: [] },
           { step: 8, title: 'Design Style', requiredFields: ['designStyle'] },
           { step: 9, title: 'Image Style', requiredFields: ['imageStyle'] },
@@ -410,7 +421,7 @@ export default function OnboardingStep() {
       description={t(`${stepNumber}.description`)}
       onNext={handleSubmit(handleNext)}
       onPrevious={handlePrevious}
-      canGoNext={(stepNumber === 12 || isValid) && !isLoading}
+      canGoNext={(stepNumber === 12 || isStep3Valid) && !isLoading}
       canGoPrevious={stepNumber > 1}
       isLoading={isLoading}
       error={error}

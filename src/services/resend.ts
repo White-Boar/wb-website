@@ -619,13 +619,13 @@ export class EmailService {
     const content = locale === 'it' ? {
       title: 'Non perdere la tua creazione',
       message: `Ciao ${name}, hai iniziato a creare il tuo sito web WhiteBoar ma non hai completato il processo.`,
-      progress: `Sei arrivato al passo ${currentStep} di 13.`,
+      progress: `Sei arrivato al passo ${currentStep} di 12.`,
       cta: 'Continua la Creazione',
       urgency: 'La tua sessione scadrà presto. Completa ora per non perdere i tuoi progressi.'
     } : {
       title: 'Don\'t lose your creation',
       message: `Hello ${name}, you started creating your WhiteBoar website but haven\'t finished the process.`,
-      progress: `You made it to step ${currentStep} of 13.`,
+      progress: `You made it to step ${currentStep} of 12.`,
       cta: 'Continue Creating',
       urgency: 'Your session will expire soon. Complete now to avoid losing your progress.'
     }
@@ -664,8 +664,8 @@ export class EmailService {
     locale: 'en' | 'it'
   ): string {
     return locale === 'it'
-      ? `Ciao ${name},\n\nHai iniziato a creare il tuo sito WhiteBoar ma non hai completato il processo. Sei arrivato al passo ${currentStep} di 13.\n\nContinua qui: ${recoveryUrl}\n\nLa tua sessione scadrà presto - completa ora per non perdere i progressi!`
-      : `Hello ${name},\n\nYou started creating your WhiteBoar website but haven't finished. You made it to step ${currentStep} of 13.\n\nContinue here: ${recoveryUrl}\n\nYour session will expire soon - complete now to avoid losing progress!`
+      ? `Ciao ${name},\n\nHai iniziato a creare il tuo sito WhiteBoar ma non hai completato il processo. Sei arrivato al passo ${currentStep} di 12.\n\nContinua qui: ${recoveryUrl}\n\nLa tua sessione scadrà presto - completa ora per non perdere i progressi!`
+      : `Hello ${name},\n\nYou started creating your WhiteBoar website but haven't finished. You made it to step ${currentStep} of 12.\n\nContinue here: ${recoveryUrl}\n\nYour session will expire soon - complete now to avoid losing progress!`
   }
 }
 

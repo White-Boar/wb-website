@@ -568,11 +568,6 @@ function extractStepData(formData: Partial<OnboardingFormData>, step: number): a
         logoUpload: formData.logoUpload,
         businessPhotos: formData.businessPhotos
       }
-    case 13:
-      return {
-        completedAt: formData.completedAt,
-        totalTimeSeconds: formData.totalTimeSeconds
-      }
     default:
       return formData
   }

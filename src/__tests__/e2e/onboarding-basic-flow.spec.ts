@@ -18,7 +18,7 @@ test.describe('Basic Onboarding Flow Verification', () => {
     await page.getByRole('button', { name: /Start Your Website/i }).click();
     await page.waitForURL(/\/step\/1/);
 
-    await expect(page.locator('text=Step 1 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 1 of 12')).toBeVisible();
     await expect(page.locator('h1').filter({ hasText: /Welcome/i })).toBeVisible();
 
     // Test 3: Step 1 form validation works
@@ -35,7 +35,7 @@ test.describe('Basic Onboarding Flow Verification', () => {
     await nextButton.click();
     await page.waitForURL(/\/step\/2/);
 
-    await expect(page.locator('text=Step 2 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 2 of 12')).toBeVisible();
     await expect(page.locator('h1').filter({ hasText: /Email Verification/i })).toBeVisible();
 
     // Test 5: Email verification inputs are present
@@ -52,7 +52,7 @@ test.describe('Basic Onboarding Flow Verification', () => {
 
     // Should auto-progress to Step 3
     await page.waitForURL(/\/step\/3/, { timeout: 10000 });
-    await expect(page.locator('text=Step 3 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 3 of 12')).toBeVisible();
     await expect(page.locator('h1').filter({ hasText: /Business Details/i })).toBeVisible();
 
     console.log('✅ Basic onboarding flow verification completed successfully!');
@@ -87,7 +87,7 @@ test.describe('Basic Onboarding Flow Verification', () => {
     } else {
       // We successfully reached Step 12 - test its functionality
       await expect(page.locator('h1').filter({ hasText: /Business Assets/i })).toBeVisible();
-      await expect(page.locator('text=Step 12 of 13')).toBeVisible();
+      await expect(page.locator('text=Step 12 of 12')).toBeVisible();
 
       // Test file upload areas are present
       await expect(page.locator('text=Upload Logo')).toBeVisible();

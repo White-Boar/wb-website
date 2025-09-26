@@ -141,7 +141,7 @@ test.describe('Step 12 File Upload Tests', () => {
 
     // Now test Step 12 functionality
     await expect(page.locator('h1').filter({ hasText: /Business Assets/i })).toBeVisible();
-    await expect(page.locator('text=Step 12 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 12 of 12')).toBeVisible();
 
     // Test that Finish button is present and enabled (files are optional)
     const finishButton = page.locator('button:text("Finish")');

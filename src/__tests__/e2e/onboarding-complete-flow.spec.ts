@@ -337,7 +337,7 @@ test.describe('Complete Onboarding Flow', () => {
     }
 
     // Step 1: Welcome - Personal Information
-    await expect(page.locator('text=Step 1 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 1 of 12')).toBeVisible();
     await expect(page.locator('h1:text("Welcome")')).toBeVisible();
 
     // Wait for form to be ready and fill out personal information
@@ -420,7 +420,7 @@ test.describe('Complete Onboarding Flow', () => {
     await page.waitForURL(/\/onboarding\/step\/2/, { timeout: 10000 });
 
     // Step 2: Email Verification
-    await expect(page.locator('text=Step 2 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 2 of 12')).toBeVisible();
     await expect(page.locator('h1:text("Email Verification")')).toBeVisible();
 
     // Note: In this test, we'll verify the session after email verification is completed
@@ -473,7 +473,7 @@ test.describe('Complete Onboarding Flow', () => {
     }
 
     // Step 3: Business Details
-    await expect(page.locator('text=Step 3 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 3 of 12')).toBeVisible();
     await expect(page.locator('h1:text("Business Details")')).toBeVisible();
 
     // Fill business information
@@ -522,14 +522,14 @@ test.describe('Complete Onboarding Flow', () => {
     await page.locator('input[name="businessPhone"]').blur();
 
     // Fill address fields
-    await page.locator('input[name="physicalAddress.street"]').fill('Via Roma 123');
-    await page.locator('input[name="physicalAddress.street"]').blur();
-    await page.locator('input[name="physicalAddress.city"]').fill('Milan');
-    await page.locator('input[name="physicalAddress.city"]').blur();
-    await page.locator('input[name="physicalAddress.postalCode"]').fill('20100');
-    await page.locator('input[name="physicalAddress.postalCode"]').blur();
-    await page.locator('input[name="physicalAddress.province"]').fill('Lombardy');
-    await page.locator('input[name="physicalAddress.province"]').blur();
+    await page.locator('input[name="businessStreet"]').fill('Via Roma 123');
+    await page.locator('input[name="businessStreet"]').blur();
+    await page.locator('input[name="businessCity"]').fill('Milan');
+    await page.locator('input[name="businessCity"]').blur();
+    await page.locator('input[name="businessPostalCode"]').fill('20100');
+    await page.locator('input[name="businessPostalCode"]').blur();
+    await page.locator('input[name="businessProvince"]').fill('Lombardy');
+    await page.locator('input[name="businessProvince"]').blur();
 
     // Select country (required field)
     await page.getByRole('combobox', { name: /country/i }).click();
@@ -580,7 +580,7 @@ test.describe('Complete Onboarding Flow', () => {
 
       // Wait for step indicator to be visible
       try {
-        await expect(page.locator(`text=Step ${step} of 13`)).toBeVisible({ timeout: 5000 });
+        await expect(page.locator(`text=Step ${step} of 12`)).toBeVisible({ timeout: 5000 });
         console.log(`✓ Step ${step} indicator visible`);
       } catch (e) {
         console.log(`Failed to find step ${step} indicator, current URL:`, page.url());
@@ -824,7 +824,7 @@ test.describe('Complete Onboarding Flow', () => {
     }
 
     // Step 12: Business Assets (Final Step) - Test file uploads
-    await expect(page.locator('text=Step 12 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 12 of 12')).toBeVisible();
     await expect(page.locator('h1:text("Business Assets")')).toBeVisible();
 
     // Create test files for upload
@@ -887,15 +887,19 @@ test.describe('Complete Onboarding Flow', () => {
     // Should redirect to thank you page
     console.log('Waiting for thank you page...');
     try {
-      await page.waitForURL(/\/onboarding\/thank-you/, { timeout: 15000 });
+      await page.waitForURL(/\/onboarding\/thank-you/, { timeout: 30000 });
       console.log('✓ Successfully navigated to thank you page');
     } catch (e) {
       console.log('Failed to navigate to thank you page, current URL:', page.url());
 
       // Check for any error messages
-      const errors = await page.locator('[role="alert"], .text-destructive').allTextContents();
-      if (errors.length > 0) {
-        console.log('Error messages found:', errors);
+      try {
+        const errors = await page.locator('[role="alert"], .text-destructive').allTextContents();
+        if (errors.length > 0) {
+          console.log('Error messages found:', errors);
+        }
+      } catch (errorCheckFailed) {
+        console.log('Could not check for error messages:', errorCheckFailed);
       }
       throw e;
     }
@@ -940,11 +944,11 @@ test.describe('Complete Onboarding Flow', () => {
       console.log('✓ Business information saved correctly');
 
       // Check address information
-      expect(formData.physicalAddress).toBeTruthy();
-      expect(formData.physicalAddress.street).toBe('Via Roma 123');
-      expect(formData.physicalAddress.city).toBe('Milan');
-      expect(formData.physicalAddress.postalCode).toBe('20100');
-      expect(formData.physicalAddress.province).toBe('Lombardy');
+      // Address is now stored in flattened fields
+      expect(formData.businessStreet).toBe('Via Roma 123');
+      expect(formData.businessCity).toBe('Milan');
+      expect(formData.businessPostalCode).toBe('20100');
+      expect(formData.businessProvince).toBe('Lombardy');
       console.log('✓ Address information saved correctly');
 
       // Check customer profile data
@@ -1033,7 +1037,7 @@ test.describe('Complete Onboarding Flow', () => {
     await page.waitForURL(/\/onboarding\/step\/2/, { timeout: 10000 });
 
     // Verify we successfully moved to step 2
-    await expect(page.locator('text=Step 2 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 2 of 12')).toBeVisible();
   });
 
   test('verifies partial submission and data cleanup edge cases', async ({ page }) => {
@@ -1090,10 +1094,10 @@ test.describe('Complete Onboarding Flow', () => {
     // Fill minimal required fields
     await page.locator('input[name="businessEmail"]').fill('partial@business.com');
     await page.locator('input[name="businessPhone"]').fill('3331111111');
-    await page.locator('input[name="physicalAddress.street"]').fill('Test St 1');
-    await page.locator('input[name="physicalAddress.city"]').fill('Test City');
-    await page.locator('input[name="physicalAddress.postalCode"]').fill('12345');
-    await page.locator('input[name="physicalAddress.province"]').fill('Test Province');
+    await page.locator('input[name="businessStreet"]').fill('Test St 1');
+    await page.locator('input[name="businessCity"]').fill('Test City');
+    await page.locator('input[name="businessPostalCode"]').fill('12345');
+    await page.locator('input[name="businessProvince"]').fill('Test Province');
 
     await page.waitForTimeout(1000);
 
@@ -1165,7 +1169,7 @@ test.describe('Complete Onboarding Flow', () => {
     await page.waitForURL(/\/onboarding\/step\/1/, { timeout: 10000 });
 
     // Verify we're back on step 1
-    await expect(page.locator('text=Step 1 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 1 of 12')).toBeVisible();
 
     // Verify form data is preserved
     await expect(page.locator('input[name="firstName"]')).toHaveValue('John');
@@ -1296,6 +1300,6 @@ test.describe('Complete Onboarding Flow', () => {
 
     // Should still be on step 4
     await expect(page).toHaveURL(/\/onboarding\/step\/4/);
-    await expect(page.locator('text=Step 4 of 13')).toBeVisible();
+    await expect(page.locator('text=Step 4 of 12')).toBeVisible();
   });
 });

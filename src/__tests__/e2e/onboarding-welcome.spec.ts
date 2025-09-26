@@ -25,7 +25,7 @@ test.describe('Onboarding Welcome Page', () => {
 
     // Check main content
     await expect(page.getByRole('heading', { level: 1, name: /Welcome to WhiteBoar/ })).toBeVisible();
-    await expect(page.locator('text=Let\'s create your perfect website in just 13 simple steps')).toBeVisible();
+    await expect(page.locator('text=Let\'s create your perfect website in just 12 simple steps')).toBeVisible();
 
     // Check feature cards
     await expect(page.locator('text=Lightning Fast')).toBeVisible();
@@ -113,7 +113,7 @@ test.describe('Onboarding Welcome Page', () => {
     await expect(page).toHaveURL(/\/(en\/)?onboarding\/step\/1/);
 
     // Check for step indicator (may vary across devices)
-    const stepIndicator = page.locator('text=Step 1 of 13');
+    const stepIndicator = page.locator('text=Step 1 of 12');
     await expect(stepIndicator).toBeVisible();
 
     await expect(page.getByRole('heading', { name: 'Welcome', exact: true })).toBeVisible();
@@ -263,7 +263,7 @@ test.describe('Onboarding Welcome Page', () => {
     await page.waitForURL(/\/onboarding\/step\/1/, { timeout: 10000 });
 
     // Check progress indicator
-    const stepIndicator = page.locator('text=Step 1 of 13');
+    const stepIndicator = page.locator('text=Step 1 of 12');
     await expect(stepIndicator).toBeVisible();
 
     // Check pricing display
