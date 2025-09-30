@@ -1060,23 +1060,27 @@ test.describe('Complete Onboarding Flow', () => {
     }
     await expect(page.locator('text=Step 12 of 12')).toBeVisible();
 
-    // Test optional file upload functionality
-    console.log('📁 Testing optional file upload fields...');
+    // Test file upload functionality
+    console.log('📁 Testing file upload fields...');
 
-    // Check for logo upload input
+    // Upload logo
     const logoUpload = page.locator('input[type="file"]').first();
     if (await logoUpload.isVisible()) {
-      console.log('🖼️ Logo upload field available (optional - leaving empty for test)');
+      const logoPath = path.resolve(__dirname, '../fixtures/test-logo.png');
+      await logoUpload.setInputFiles(logoPath);
+      await page.waitForTimeout(2000); // Wait for upload to complete
+      console.log('🖼️ Uploaded logo file: test-logo.png');
     }
 
-    // Check for business photos upload
+    // Upload business photo
     const photoUpload = page.locator('input[type="file"]').nth(1);
     if (await photoUpload.isVisible()) {
-      console.log('📷 Business photos upload field available (optional - leaving empty for test)');
+      const photoPath = path.resolve(__dirname, '../fixtures/test-photo.jpg');
+      await photoUpload.setInputFiles(photoPath);
+      await page.waitForTimeout(2000); // Wait for upload to complete
+      console.log('📷 Uploaded business photo: test-photo.jpg');
     }
 
-    // These are optional fields - test that form works without uploads
-    console.log('✓ Confirmed optional upload fields can be left empty');
     await page.waitForTimeout(1000);
 
     // Complete the onboarding - Step 12 is the final step with Finish button
@@ -1219,10 +1223,25 @@ test.describe('Complete Onboarding Flow', () => {
     expect(formData?.offerings?.length).toBeGreaterThan(0); // Must have at least one offering
     console.log('✓ Website structure validation passed');
 
-    // 14. Verify optional business assets (Step 12)
-    expect(formData?.logoUpload).toBeDefined(); // Should be null or file data
-    expect(formData?.businessPhotos).toBeDefined(); // Should be empty array or file data
-    console.log('✓ Optional business assets validation passed');
+    // 14. Verify business assets uploads (Step 12)
+    expect(formData?.logoUpload).toBeTruthy(); // Should have logo data
+    if (formData?.logoUpload) {
+      expect(formData.logoUpload.fileName).toContain('test-logo');
+      expect(formData.logoUpload.mimeType).toMatch(/image\/(png|jpeg)/);
+      expect(formData.logoUpload.url).toBeTruthy();
+      console.log(`✓ Logo upload validated: ${formData.logoUpload.fileName} (${formData.logoUpload.mimeType})`);
+    }
+
+    expect(Array.isArray(formData?.businessPhotos)).toBe(true);
+    expect(formData?.businessPhotos?.length).toBeGreaterThan(0); // Should have at least 1 photo
+    if (formData?.businessPhotos && formData.businessPhotos.length > 0) {
+      const firstPhoto = formData.businessPhotos[0];
+      expect(firstPhoto.fileName).toContain('test-photo');
+      expect(firstPhoto.mimeType).toMatch(/image\/(jpeg|jpg|png)/);
+      expect(firstPhoto.url).toBeTruthy();
+      console.log(`✓ Business photo upload validated: ${firstPhoto.fileName} (${firstPhoto.mimeType})`);
+    }
+    console.log('✓ Business assets validation passed');
 
     // 15. Verify submission metadata
     expect(submission?.completion_time_seconds).toBeTruthy();
