@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
@@ -14,11 +15,72 @@ import { useOnboardingStore } from '@/stores/onboarding'
 
 export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.12')
-  const { control, watch } = form
+  const { control, watch, setValue } = form
   const sessionId = useOnboardingStore((state) => state.sessionId)
 
   const businessLogo = watch('logoUpload')
   const businessPhotos = watch('businessPhotos') || []
+
+  // Track upload states
+  const [logoUploadState, setLogoUploadState] = React.useState<FileUploadProgress[]>([])
+  const [photosUploadState, setPhotosUploadState] = React.useState<FileUploadProgress[]>([])
+  const [hasInitialized, setHasInitialized] = React.useState(false)
+
+  // Helper function to convert saved file metadata back to FileUploadProgress format
+  const convertToFileUploadProgress = React.useCallback((savedFile: any): FileUploadProgress | null => {
+    if (!savedFile || !savedFile.url) return null
+
+    // Create a mock File object for display purposes
+    const mockFile = new File([], savedFile.fileName || 'file', {
+      type: savedFile.mimeType || 'application/octet-stream'
+    })
+
+    return {
+      id: savedFile.id || crypto.randomUUID(),
+      file: mockFile,
+      progress: 100,
+      status: 'completed',
+      url: savedFile.url,
+      preview: savedFile.url // Use the uploaded URL as preview for images
+    }
+  }, [])
+
+  // Initialize upload states from saved form data on mount
+  React.useEffect(() => {
+    if (!hasInitialized) {
+      // Restore logo if exists
+      if (businessLogo) {
+        const logoProgress = convertToFileUploadProgress(businessLogo)
+        if (logoProgress) {
+          setLogoUploadState([logoProgress])
+        }
+      }
+
+      // Restore photos if exist
+      if (businessPhotos && businessPhotos.length > 0) {
+        const photosProgress = businessPhotos
+          .map(convertToFileUploadProgress)
+          .filter((p): p is FileUploadProgress => p !== null)
+        if (photosProgress.length > 0) {
+          setPhotosUploadState(photosProgress)
+        }
+      }
+
+      setHasInitialized(true)
+    }
+  }, [businessLogo, businessPhotos, convertToFileUploadProgress, hasInitialized])
+
+  // Check if any files are currently uploading
+  const hasUploadingFiles = React.useMemo(() => {
+    const logoUploading = logoUploadState.some(f => f.status === 'uploading')
+    const photosUploading = photosUploadState.some(f => f.status === 'uploading')
+    return logoUploading || photosUploading
+  }, [logoUploadState, photosUploadState])
+
+  // Update a hidden form field to track upload status
+  React.useEffect(() => {
+    setValue('_uploading', hasUploadingFiles, { shouldValidate: false })
+  }, [hasUploadingFiles, setValue])
 
   return (
     <div className="space-y-8">
@@ -75,7 +137,11 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                     maxFiles={1}
                     maxFileSize={2 * 1024 * 1024} // 2MB
                     sessionId={sessionId || undefined}
+                    existingFiles={logoUploadState}
                     onFilesChange={(files: FileUploadProgress[]) => {
+                      // Track upload state
+                      setLogoUploadState(files)
+
                       // Convert to the expected format
                       const completedFile = files.find(f => f.status === 'completed')
                       field.onChange(completedFile ? {
@@ -177,7 +243,11 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                     maxFiles={30}
                     maxFileSize={10 * 1024 * 1024} // 10MB per file
                     sessionId={sessionId || undefined}
+                    existingFiles={photosUploadState}
                     onFilesChange={(files: FileUploadProgress[]) => {
+                      // Track upload state
+                      setPhotosUploadState(files)
+
                       // Convert completed files to expected format
                       const completedFiles = files
                         .filter(f => f.status === 'completed')

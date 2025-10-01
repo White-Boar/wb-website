@@ -1129,5 +1129,64 @@
     "delete": "Delete",
     "add": "Add",
     "remove": "Remove"
+  },
+  "customSoftware": {
+    "meta": {
+      "title": "Custom Software Development - WhiteBoar",
+      "description": "Professional custom web and mobile application development. SaaS platforms, dashboards, API integrations, and more."
+    },
+    "hero": {
+      "title": "Custom Software Development",
+      "subtitle": "From concept to launch, we build custom solutions that scale with your business",
+      "description": "Whether you need a SaaS platform, mobile app, or complex web application, our team delivers professional software tailored to your exact requirements."
+    },
+    "services": {
+      "title": "What We Build",
+      "webApps": "Web Applications",
+      "webAppsDesc": "Full-stack custom web applications with modern frameworks",
+      "mobileApps": "Mobile Apps",
+      "mobileAppsDesc": "Native iOS and Android applications",
+      "saas": "SaaS Platforms",
+      "saasDesc": "Multi-tenant platforms with subscription management",
+      "dashboards": "Custom Dashboards",
+      "dashboardsDesc": "Data visualization and business intelligence tools",
+      "api": "API Integrations",
+      "apiDesc": "Connect your systems and automate workflows",
+      "ecommerce": "E-commerce Solutions",
+      "ecommerceDesc": "Custom online stores and payment processing"
+    },
+    "form": {
+      "title": "Tell Us About Your Project",
+      "subtitle": "Share your vision and we'll help bring it to life",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "phoneLabel": "Phone",
+      "phonePlaceholder": "+39 123 456 7890",
+      "descriptionLabel": "Describe what you would like us to build",
+      "descriptionPlaceholder": "Tell us about your project, goals, and any specific requirements...",
+      "submitButton": "Send",
+      "submitting": "Sending...",
+      "success": {
+        "title": "Thank you!",
+        "message": "We will be in touch within 2 business days."
+      },
+      "errors": {
+        "nameRequired": "Name is required",
+        "nameTooShort": "Name must be at least 2 characters",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Please enter a valid email address",
+        "phoneRequired": "Phone is required",
+        "phoneInvalid": "Please enter a valid phone number",
+        "descriptionRequired": "Project description is required",
+        "descriptionTooShort": "Please provide more details (at least 20 characters)",
+        "submitFailed": "Failed to send your request. Please try again."
+      }
+    },
+    "clients": {
+      "title": "Our Work",
+      "subtitle": "See what we've built for businesses like yours"
+    }
   }
 }

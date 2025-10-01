@@ -200,12 +200,11 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     return (
       <div className={cn("space-y-2", className)}>
         {/* Label */}
-        <Label 
+        <Label
           htmlFor={inputId}
           className={cn(
             "text-sm font-medium",
-            hasError && "text-destructive",
-            hasSuccess && "text-green-600"
+            hasError && "text-destructive"
           )}
         >
           {label}
@@ -259,8 +258,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
               placeholder={currentCountryData.placeholder}
               className={cn(
                 "pl-16 pr-10",
-                hasError && "border-destructive focus-visible:ring-destructive",
-                hasSuccess && "border-green-500 focus-visible:ring-green-500"
+                hasError && "border-destructive focus-visible:ring-destructive"
               )}
               aria-invalid={hasError}
               aria-describedby={cn(
@@ -277,7 +275,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
                 <AlertCircle className="w-4 h-4 text-destructive" />
               )}
               {hasSuccess && (
-                <CheckCircle2 className="w-4 h-4 text-green-600" />
+                <CheckCircle2 className="w-4 h-4 text-foreground" />
               )}
             </div>
           </div>
@@ -306,7 +304,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               id={`${inputId}-success`}
-              className="text-sm text-green-600"
+              className="text-sm text-foreground"
             >
               {displaySuccess}
             </motion.p>

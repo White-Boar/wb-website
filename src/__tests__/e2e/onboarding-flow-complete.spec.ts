@@ -135,7 +135,7 @@ const testData = {
     street: 'Via Giuseppe Mazzini 142',
     city: 'Milano',
     postalCode: '20123',
-    province: 'Lombardia',
+    province: 'BG', // Province code (Bergamo)
     country: 'Italy'
   },
   vatNumber: 'IT12345678901',
@@ -411,12 +411,33 @@ test.describe('Complete Onboarding Flow', () => {
       console.log('❌ businessPostalCode input not found');
     }
 
-    const businessProvinceInput = page.locator('input[name="businessProvince"]');
-    if (await businessProvinceInput.isVisible()) {
-      await businessProvinceInput.fill(testDataForWorker.physicalAddress.province);
-      console.log(`✓ Filled businessProvince: ${testDataForWorker.physicalAddress.province}`);
-    } else {
-      console.log('❌ businessProvince input not found');
+    // Province is now a dropdown - select from Italian regions
+    console.log('📍 Selecting province from dropdown...');
+    const provinceDropdowns = await page.getByRole('combobox').all();
+    let provinceSelected = false;
+
+    // Find the province dropdown (should be before country dropdown)
+    for (let i = 0; i < provinceDropdowns.length; i++) {
+      const dropdownText = await provinceDropdowns[i].textContent();
+      if (dropdownText && (dropdownText.includes('province') || dropdownText.includes('region') || dropdownText.includes('Enter province'))) {
+        console.log(`  Found province dropdown ${i} (current: "${dropdownText}")`);
+        await provinceDropdowns[i].click();
+        await page.waitForTimeout(500);
+
+        // Select the matching region (Lombardia for Milano)
+        const regionOption = page.locator('[role="option"]').filter({ hasText: /Lombardia/i }).first();
+        if (await regionOption.isVisible()) {
+          await regionOption.click();
+          provinceSelected = true;
+          console.log(`✓ Selected Lombardia as province`);
+          await page.waitForTimeout(1000);
+          break;
+        }
+      }
+    }
+
+    if (!provinceSelected) {
+      console.log('❌ Could not select province from dropdown');
     }
 
     // Country is a dropdown/combobox, not a regular input

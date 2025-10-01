@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
@@ -15,12 +15,31 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
   const params = useParams()
   const [verificationError, setVerificationError] = useState<string>('')
   const [isVerifying, setIsVerifying] = useState(false)
+  const hasAutoSentRef = useRef(false)
 
   const { verifyEmail, resendVerificationCode, formData, nextStep, validateStep } = useOnboardingStore()
   const locale = params.locale as string
-  
+
   // Get email from Step 1 (with fallback for testing)
   const email = formData[1]?.email || formData.email || 'john.doe@test.com'
+
+  // Auto-send verification email when component mounts
+  useEffect(() => {
+    // Only send once per mount
+    if (!hasAutoSentRef.current && email) {
+      hasAutoSentRef.current = true
+
+      // Send verification email automatically
+      resendVerificationCode(email)
+        .then(() => {
+          console.log('✓ Verification email sent automatically to:', email)
+        })
+        .catch((err) => {
+          console.error('Failed to auto-send verification email:', err)
+          // Don't show error to user - they can manually resend
+        })
+    }
+  }, [email, resendVerificationCode])
 
   const handleVerificationComplete = async (code: string) => {
     setIsVerifying(true)

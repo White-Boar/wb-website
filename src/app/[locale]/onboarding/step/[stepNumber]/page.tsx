@@ -220,6 +220,10 @@ export default function OnboardingStep() {
       return result;
     })() : isValid
 
+  // Step 12: Check if any files are uploading
+  const isStep12Valid = stepNumber === 12 ?
+    !watchedValues?._uploading : true
+
   // Reset form values when formData changes (e.g., loaded from localStorage)
   useEffect(() => {
     const currentValues = getStepDefaultValues(stepNumber)
@@ -459,7 +463,7 @@ export default function OnboardingStep() {
       description={t(`${stepNumber}.description`)}
       onNext={handleSubmit(handleNext)}
       onPrevious={handlePrevious}
-      canGoNext={(stepNumber === 12 || (stepNumber === 3 ? isStep3Valid : stepNumber === 6 ? isStep6Valid : stepNumber === 11 ? isStep11Valid : isValid)) && !isLoading}
+      canGoNext={(stepNumber === 3 ? isStep3Valid : stepNumber === 6 ? isStep6Valid : stepNumber === 11 ? isStep11Valid : stepNumber === 12 ? isStep12Valid : isValid) && !isLoading}
       canGoPrevious={stepNumber > 1}
       isLoading={isLoading}
       error={error}

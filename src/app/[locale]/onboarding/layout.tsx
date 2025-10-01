@@ -67,11 +67,11 @@ function OnboardingFooter() {
     <footer className="border-t bg-background/50 backdrop-blur-sm mt-auto">
       <div className="container px-4 py-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:mr-auto">
             <span>© 2025 WhiteBoar</span>
           </div>
 
-          <div className="flex items-center gap-2 sm:ml-auto">
+          <div className="flex items-center gap-2">
             <span>Secure & SSL Protected</span>
             <div className="w-2 h-2 rounded-full bg-green-500"></div>
           </div>

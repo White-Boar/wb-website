@@ -20,7 +20,7 @@ const websiteSections = [
   { id: 'contact', label: 'Contact', description: 'Contact information and form', essential: true },
   { id: 'events', label: 'Events', description: 'Upcoming events and activities', essential: false },
   { id: 'portfolio', label: 'Portfolio/Gallery', description: 'Showcase your work', essential: false },
-  { id: 'services', label: 'Services/Products', description: 'What you offer', essential: true },
+  { id: 'services', label: 'Services/Products', description: 'What you offer', essential: false },
   { id: 'testimonials', label: 'Testimonials', description: 'Customer reviews and feedback', essential: false }
 ]
 
