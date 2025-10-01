@@ -23,7 +23,7 @@ Follow-up TODOs: None
 ## Core Principles
 
 ### I. User-First Design
-Every feature MUST prioritize small business owners' needs over technical elegance. The platform targets users with limited time, budget, and technical expertise. All UX decisions MUST eliminate jargon, minimize friction, and deliver immediate value. Features that require technical knowledge to operate are prohibited unless absolutely necessary for the business model.
+Every feature MUST prioritize small business owners' needs over technical elegance. The platform targets users with limited time, budget, and technical expertise. All UX decisions MUST eliminate jargon, minimize friction, and deliver immediate value. Features that require technical knowledge to operate are prohibited unless absolutely necessary for the business model. The UX must be top world class.
 
 **Rationale**: WhiteBoar's core value proposition is "no jargon, no hassle, just results" for small businesses. Complex interfaces or technical requirements directly undermine this promise and reduce market fit.
 

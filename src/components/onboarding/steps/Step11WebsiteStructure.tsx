@@ -67,12 +67,12 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
       ? [...current, sectionId]
       : current.filter((id: string) => id !== sectionId)
 
-    setValue('websiteSections', updated as any)
+    setValue('websiteSections', updated as any, { shouldValidate: true, shouldDirty: true })
   }
 
   const handleOfferingsChange = (items: any[]) => {
     const offeringsList = items.map(item => item.value)
-    setValue('offerings', offeringsList)
+    setValue('offerings', offeringsList, { shouldValidate: true, shouldDirty: true })
   }
 
   const getRecommendedSections = (goal: string) => {
@@ -258,6 +258,47 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
             </div>
 
             <div className="space-y-4">
+              {/* Offering Type Selection */}
+              <Controller
+                name="offeringType"
+                control={control}
+                render={({ field }) => (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">What do you offer?</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {[
+                        { value: 'products', label: 'Products', description: 'Physical or digital goods' },
+                        { value: 'services', label: 'Services', description: 'Consulting, support, maintenance' },
+                        { value: 'both', label: 'Both', description: 'Products and services' }
+                      ].map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => field.onChange(option.value)}
+                          className={`flex flex-col items-center space-y-2 border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors ${
+                            field.value === option.value
+                              ? 'border-primary bg-primary/5'
+                              : 'border-muted'
+                          }`}
+                        >
+                          <div className={`w-4 h-4 rounded-full border-2 ${
+                            field.value === option.value
+                              ? 'border-primary bg-primary'
+                              : 'border-muted-foreground'
+                          }`}>
+                            {field.value === option.value && (
+                              <div className="w-full h-full rounded-full bg-white scale-50" />
+                            )}
+                          </div>
+                          <Label className="cursor-pointer font-medium">{option.label}</Label>
+                          <span className="text-xs text-muted-foreground text-center">{option.description}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              />
+
               <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                 <h4 className="font-medium text-sm text-muted-foreground">{t('offerings.examples.title')}</h4>
                 <div className="grid md:grid-cols-2 gap-2 text-xs text-muted-foreground">

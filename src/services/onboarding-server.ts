@@ -117,7 +117,7 @@ export class OnboardingServerService {
 
       const submissionData = {
         session_id: sessionId,
-        email: session.email,
+        email: formData.email || session.email, // Use form email if available, fallback to session email
         business_name: formData.businessName || 'Unnamed Business',
         form_data: formData,
         completion_time_seconds: completionTimeSeconds,

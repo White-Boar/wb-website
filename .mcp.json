@@ -27,13 +27,6 @@
       "env": {
         "SUPABASE_ACCESS_TOKEN": "sbp_42422fdca823c791ba2dd4643dfcefb8014ff4e0"
       }
-    },
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp",
-      "headers": {
-        "Authorization": "Bearer ${GITHUB_PAT}"
-      }
-    }  
+    }
   }
 }

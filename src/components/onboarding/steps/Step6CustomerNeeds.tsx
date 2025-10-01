@@ -147,7 +147,7 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
                     hint={t('delight.input.hint')}
                     error={errors.customerDelight?.message}
                     disabled={isLoading}
-                    maxLength={300}
+                    maxLength={400}
                     showCharacterCount
                   />
                 )}

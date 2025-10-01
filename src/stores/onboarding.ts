@@ -507,27 +507,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
           isSessionExpired: state.isSessionExpired
         }),
         // Version for breaking changes
-        version: 2,
-        // Migration function to handle breaking changes
-        migrate: (persistedState: any, version: number) => {
-          if (version < 2) {
-            // Migrate from nested physicalAddress to flattened fields
-            if (persistedState?.formData?.physicalAddress) {
-              const { physicalAddress, ...restFormData } = persistedState.formData
-              persistedState.formData = {
-                ...restFormData,
-                businessStreet: physicalAddress.street || '',
-                businessCity: physicalAddress.city || '',
-                businessProvince: physicalAddress.province || '',
-                businessPostalCode: physicalAddress.postalCode || '',
-                businessCountry: physicalAddress.country || '',
-                businessPlaceId: physicalAddress.placeId || undefined,
-              }
-              delete persistedState.formData.physicalAddress
-            }
-          }
-          return persistedState
-        },
+        version: 1,
       }
     ),
     {
@@ -550,7 +530,12 @@ function extractStepData(formData: Partial<OnboardingFormData>, step: number): a
         businessName: formData.businessName,
         businessEmail: formData.businessEmail,
         businessPhone: formData.businessPhone,
-        physicalAddress: formData.physicalAddress,
+        businessStreet: formData.businessStreet,
+        businessCity: formData.businessCity,
+        businessProvince: formData.businessProvince,
+        businessPostalCode: formData.businessPostalCode,
+        businessCountry: formData.businessCountry,
+        businessPlaceId: formData.businessPlaceId,
         industry: formData.industry,
         vatNumber: formData.vatNumber
       }

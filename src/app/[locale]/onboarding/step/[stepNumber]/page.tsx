@@ -185,7 +185,7 @@ export default function OnboardingStep() {
 
   const { handleSubmit, formState: { errors, isValid, isDirty }, watch } = form
 
-  // Manual validation for Step 3 to fix isValid timing issues
+  // Manual validation for Step 3 and Step 6 to fix isValid timing issues
   const watchedValues = watch()
   const isStep3Valid = stepNumber === 3 ?
     !!(watchedValues?.businessName &&
@@ -197,6 +197,28 @@ export default function OnboardingStep() {
        watchedValues?.businessPostalCode &&
        watchedValues?.businessProvince &&
        watchedValues?.businessCountry) : isValid
+
+  const isStep6Valid = stepNumber === 6 ?
+    !!(watchedValues?.customerProblems &&
+       watchedValues?.customerProblems.length >= 30) : isValid
+
+  const isStep11Valid = stepNumber === 11 ?
+    (() => {
+      const hasWebsiteSections = watchedValues?.websiteSections && watchedValues?.websiteSections.length >= 1;
+      const hasPrimaryGoal = !!watchedValues?.primaryGoal;
+
+      console.log('Step 11 Validation Debug:', {
+        websiteSections: watchedValues?.websiteSections,
+        hasWebsiteSections,
+        primaryGoal: watchedValues?.primaryGoal,
+        hasPrimaryGoal
+      });
+
+      const result = !!(hasWebsiteSections && hasPrimaryGoal);
+
+      console.log('Step 11 validation result:', result);
+      return result;
+    })() : isValid
 
   // Reset form values when formData changes (e.g., loaded from localStorage)
   useEffect(() => {
@@ -228,6 +250,7 @@ export default function OnboardingStep() {
 
   // Handle next step
   const handleNext = async (data: StepFormData) => {
+    console.log(`🚀 handleNext called for step ${stepNumber}`)
     setIsLoading(true)
     setError('')
 
@@ -303,7 +326,7 @@ export default function OnboardingStep() {
           { step: 8, title: 'Design Style', requiredFields: ['designStyle'] },
           { step: 9, title: 'Image Style', requiredFields: ['imageStyle'] },
           { step: 10, title: 'Color Palette', requiredFields: ['colorPalette'] },
-          { step: 11, title: 'Website Structure', requiredFields: ['websiteSections', 'primaryGoal', 'offerings'] }
+          { step: 11, title: 'Website Structure', requiredFields: ['websiteSections', 'primaryGoal'] }
         ]
 
         // Check each step
@@ -350,21 +373,33 @@ export default function OnboardingStep() {
       }
 
       // Move to next step or complete using smart navigation
-      const nextStepNumber = getNextStep(stepNumber as StepNumber, { ...formData, ...data } as any)
+      const mergedData = { ...formData, ...data } as any
+      const nextStepNumber = getNextStep(stepNumber as StepNumber, mergedData)
+      console.log(`🔍 Navigation logic: stepNumber=${stepNumber}, nextStepNumber=${nextStepNumber}`)
+      console.log(`🔍 Step number check: stepNumber === 12? ${stepNumber === 12}`)
+      console.log(`🔍 NextStep check: nextStepNumber=${nextStepNumber}, nextStepNumber && nextStepNumber <= 12? ${nextStepNumber && nextStepNumber <= 12}`)
 
       if (nextStepNumber && nextStepNumber <= 12) {
+        console.log('Moving to next step:', nextStepNumber)
         await nextStep()
         router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
       } else {
         // Complete onboarding - Step 12 is the final step
         try {
+          console.log('🎯 Step 12 completion triggered')
+          console.log('Session ID:', sessionId)
+          console.log('Form data keys:', Object.keys(formData))
+
           // Calculate completion time if we have session start time
           const startTime = sessionId ? localStorage.getItem(`wb-onboarding-start-${sessionId}`) : null
           const completionTimeSeconds = startTime
             ? Math.round((Date.now() - parseInt(startTime)) / 1000)
             : undefined
 
+          console.log('Completion time:', completionTimeSeconds, 'seconds')
+
           // Submit all onboarding data to Supabase
+          console.log('Calling submitOnboarding...')
           const submission = await submitOnboarding(
             sessionId!,
             { ...formData, ...data } as OnboardingFormData, // Merge current step data with all form data
@@ -424,7 +459,7 @@ export default function OnboardingStep() {
       description={t(`${stepNumber}.description`)}
       onNext={handleSubmit(handleNext)}
       onPrevious={handlePrevious}
-      canGoNext={(stepNumber === 12 || isStep3Valid) && !isLoading}
+      canGoNext={(stepNumber === 12 || (stepNumber === 3 ? isStep3Valid : stepNumber === 6 ? isStep6Valid : stepNumber === 11 ? isStep11Valid : isValid)) && !isLoading}
       canGoPrevious={stepNumber > 1}
       isLoading={isLoading}
       error={error}

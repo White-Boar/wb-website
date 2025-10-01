@@ -45,7 +45,18 @@ export class OnboardingClientService {
         expiresAt.setDate(expiresAt.getDate() + 7) // 7 days from now
 
         // Generate a unique temporary email as placeholder (required by schema)
-        const sessionId = crypto.randomUUID()
+        // Use crypto.randomUUID() if available, fallback for Firefox in non-HTTPS contexts
+        let sessionId: string
+        try {
+          sessionId = crypto.randomUUID()
+        } catch (e) {
+          // Fallback for browsers that don't support crypto.randomUUID in insecure contexts
+          sessionId = 'xxxx-xxxx-4xxx-yxxx-xxxx'.replace(/[xy]/g, function(c) {
+            const r = Math.random() * 16 | 0
+            const v = c === 'x' ? r : (r & 0x3 | 0x8)
+            return v.toString(16)
+          }) + '-' + Date.now().toString(36)
+        }
         const tempEmail = `temp-${sessionId}@whiteboar.onboarding`
 
         const { data, error } = await supabase

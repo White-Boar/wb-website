@@ -75,12 +75,6 @@ export const STEP_CONFIGS: Record<StepNumber, StepConfig> = {
     number: 9,
     title: 'Image Style',
     description: 'Type of imagery for your site',
-    skipCondition: (formData) => {
-      // Skip for service-only businesses with minimal design needs
-      return formData.offeringType === 'services' &&
-             formData.designStyle === 'minimalist' &&
-             !formData.websiteSections?.includes('gallery')
-    },
     estimatedMinutes: 2
   },
   10: {

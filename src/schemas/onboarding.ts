@@ -137,7 +137,7 @@ export const step6Schema = z.object({
     .min(30, 'Please describe customer problems in at least 30 characters')
     .max(400, 'Customer problems description cannot exceed 400 characters'),
   customerDelight: z.string()
-    .max(300, 'Customer delight description cannot exceed 300 characters')
+    .max(400, 'Customer delight description cannot exceed 400 characters')
     .optional()
 })
 
@@ -229,25 +229,6 @@ export const step11Schema = z.object({
   offerings: z.array(z.string().min(1, 'Offering cannot be empty'))
     .max(6, 'Please provide no more than 6 offerings')
     .optional()
-}).superRefine((data, ctx) => {
-  // Conditional validation: if products-services is selected, offeringType and offerings are required
-  if (data.websiteSections.includes('products-services')) {
-    if (!data.offeringType) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Please select whether you offer products, services, or both',
-        path: ['offeringType']
-      })
-    }
-    
-    if (!data.offerings || data.offerings.length === 0) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: 'Please list at least one offering',
-        path: ['offerings']
-      })
-    }
-  }
 })
 
 // =============================================================================
