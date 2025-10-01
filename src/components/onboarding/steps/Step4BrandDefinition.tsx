@@ -27,7 +27,7 @@ export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Target className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Your offer</h3>
+              <h2 className="text-lg font-semibold text-foreground">Your offer</h2>
               <Badge variant="secondary" className="ml-auto">
                 {t('offering.required')}
               </Badge>
@@ -65,7 +65,7 @@ export function Step4BrandDefinition({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Link className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">Your competitors</h3>
+              <h2 className="text-lg font-semibold text-foreground">Your competitors</h2>
               <Badge variant="outline" className="ml-auto">
                 {t('competitors.optional')}
               </Badge>

@@ -126,7 +126,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Building2 className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('businessInfo.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('businessInfo.title')}</h2>
               <Badge variant="secondary" className="ml-auto">
                 {t('businessInfo.required')}
               </Badge>
@@ -231,7 +231,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Phone className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('contactInfo.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('contactInfo.title')}</h2>
               <Badge variant="secondary" className="ml-auto">
                 {t('contactInfo.required')}
               </Badge>
@@ -288,7 +288,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('address.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('address.title')}</h2>
               <Badge variant="secondary" className="ml-auto">
                 {t('address.required')}
               </Badge>

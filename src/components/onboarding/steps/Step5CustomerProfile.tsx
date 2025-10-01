@@ -160,7 +160,7 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6">
             <div className="flex items-center gap-2 mb-6">
               <Users className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('profile.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('profile.title')}</h2>
               <Badge variant="secondary" className="ml-auto">
                 {t('profile.required')}
               </Badge>

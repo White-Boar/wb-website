@@ -196,7 +196,7 @@ test.describe('Accessibility Tests', () => {
     const liveRegions = await page.locator('[aria-live], [role="status"], [role="alert"]').count();
     
     // For theme switching and language switching, check if changes are announced
-    await page.getByLabel('Toggle theme').click();
+    await page.getByRole('button', { name: /toggle theme/i }).click();
     await page.getByText('Dark').click();
     
     // Check that theme change is reflected

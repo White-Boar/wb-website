@@ -174,7 +174,7 @@ export function Step10ColorPalette({ form, errors, isLoading }: StepComponentPro
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Palette className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('selection.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('selection.title')}</h2>
               <Badge variant="secondary" className="ml-auto">
                 {t('selection.required')}
               </Badge>

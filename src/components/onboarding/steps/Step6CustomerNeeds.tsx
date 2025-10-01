@@ -44,7 +44,7 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <HelpCircle className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('problems.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('problems.title')}</h2>
               <Badge variant="secondary" className="ml-auto">
                 {t('problems.required')}
               </Badge>
@@ -107,7 +107,7 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <Heart className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('delight.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('delight.title')}</h2>
               <Badge variant="outline" className="ml-auto">
                 {t('delight.optional')}
               </Badge>

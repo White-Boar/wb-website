@@ -17,8 +17,8 @@ test.describe('Onboarding Accessibility', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000); // Allow extra time for step 1 to fully render
 
-    // Verify we're on step 1 with the proper heading (be specific to avoid strict mode violation)
-    await expect(page.getByRole('heading', { name: 'Welcome', exact: true })).toBeVisible();
+    // Verify we're on step 1 by checking for first name input
+    await expect(page.getByRole('textbox', { name: /First Name.*required/i })).toBeVisible();
   });
 
   test('should not have accessibility violations on Step 1', async ({ page }) => {
@@ -54,7 +54,8 @@ test.describe('Onboarding Accessibility', () => {
     for (let i = 0; i < 10; i++) {
       await page.keyboard.press('Tab');
       const nextButton = getOnboardingNextButton(page);
-      if (await nextButton.isFocused()) {
+      const isFocused = await nextButton.evaluate((el) => el === document.activeElement);
+      if (isFocused) {
         break;
       }
     }

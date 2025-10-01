@@ -50,7 +50,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('logo.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('logo.title')}</h2>
               <Badge variant="outline" className="ml-auto">
                 {t('logo.optional')}
               </Badge>
@@ -141,7 +141,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
           <CardContent className="pt-6 space-y-6">
             <div className="flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold text-foreground">{t('photos.title')}</h3>
+              <h2 className="text-lg font-semibold text-foreground">{t('photos.title')}</h2>
               <Badge variant="outline" className="ml-auto">
                 {t('photos.optional')}
               </Badge>
