@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const type = formData.get('type') as string
+    const sessionId = formData.get('sessionId') as string
 
     if (!file) {
       return NextResponse.json(
@@ -23,6 +24,13 @@ export async function POST(request: NextRequest) {
     if (!type) {
       return NextResponse.json(
         { error: 'File type not specified' },
+        { status: 400 }
+      )
+    }
+
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: 'Session ID not provided' },
         { status: 400 }
       )
     }
@@ -83,17 +91,36 @@ export async function POST(request: NextRequest) {
       .from('onboarding-uploads')
       .getPublicUrl(data.path)
 
+    const uploadResponse = {
+      id: data.id,
+      path: data.path,
+      url: publicUrlData.publicUrl,
+      fileName: file.name,
+      fileSize: file.size,
+      mimeType: file.type,
+      fullPath: data.fullPath
+    }
+
+    // Record the upload in the database
+    try {
+      const { OnboardingServerService } = await import('@/services/onboarding-server')
+      await OnboardingServerService.recordFileUpload(
+        sessionId,
+        type === 'business-asset' ? 'photo' : 'logo', // Map type to file_type
+        publicUrlData.publicUrl,
+        file.name,
+        file.size,
+        file.type
+      )
+    } catch (dbError) {
+      console.error('Failed to record file upload in database:', dbError)
+      // Don't fail the upload if database recording fails
+      // File is already in storage, user can still proceed
+    }
+
     return NextResponse.json({
       success: true,
-      data: {
-        id: data.id,
-        path: data.path,
-        url: publicUrlData.publicUrl,
-        fileName: file.name,
-        fileSize: file.size,
-        mimeType: file.type,
-        fullPath: data.fullPath
-      }
+      data: uploadResponse
     })
 
   } catch (error) {

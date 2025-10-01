@@ -10,10 +10,12 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { StepComponentProps } from './index'
+import { useOnboardingStore } from '@/stores/onboarding'
 
 export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.12')
   const { control, watch } = form
+  const sessionId = useOnboardingStore((state) => state.sessionId)
 
   const businessLogo = watch('logoUpload')
   const businessPhotos = watch('businessPhotos') || []
@@ -72,6 +74,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                     accept={['image/png', 'image/jpeg', 'image/svg+xml']}
                     maxFiles={1}
                     maxFileSize={2 * 1024 * 1024} // 2MB
+                    sessionId={sessionId || undefined}
                     onFilesChange={(files: FileUploadProgress[]) => {
                       // Convert to the expected format
                       const completedFile = files.find(f => f.status === 'completed')
@@ -173,6 +176,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                     accept={['image/png', 'image/jpeg']}
                     maxFiles={30}
                     maxFileSize={10 * 1024 * 1024} // 10MB per file
+                    sessionId={sessionId || undefined}
                     onFilesChange={(files: FileUploadProgress[]) => {
                       // Convert completed files to expected format
                       const completedFiles = files

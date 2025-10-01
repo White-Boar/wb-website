@@ -26,6 +26,7 @@ interface FileUploadWithProgressProps {
   className?: string
   disabled?: boolean
   existingFiles?: FileUploadProgress[]
+  sessionId?: string
 }
 
 export function FileUploadWithProgress({
@@ -37,7 +38,8 @@ export function FileUploadWithProgress({
   description,
   className,
   disabled = false,
-  existingFiles = []
+  existingFiles = [],
+  sessionId
 }: FileUploadWithProgressProps) {
   const [uploadQueue, setUploadQueue] = useState<FileUploadProgress[]>(existingFiles)
   const [isDragActive, setIsDragActive] = useState(false)
@@ -87,6 +89,9 @@ export function FileUploadWithProgress({
         const formData = new FormData()
         formData.append('file', fileProgress.file)
         formData.append('type', 'business-asset')
+        if (sessionId) {
+          formData.append('sessionId', sessionId)
+        }
 
         const response = await fetch('/api/onboarding/upload', {
           method: 'POST',
