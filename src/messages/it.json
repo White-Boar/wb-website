@@ -1127,5 +1127,64 @@
     "delete": "Elimina",
     "add": "Aggiungi",
     "remove": "Rimuovi"
+  },
+  "customSoftware": {
+    "meta": {
+      "title": "Sviluppo Software Personalizzato - WhiteBoar",
+      "description": "Sviluppo professionale di applicazioni web e mobile personalizzate. Piattaforme SaaS, dashboard, integrazioni API e altro."
+    },
+    "hero": {
+      "title": "Sviluppo Software Personalizzato",
+      "subtitle": "Dal concetto al lancio, costruiamo soluzioni personalizzate che crescono con la tua attività",
+      "description": "Che tu abbia bisogno di una piattaforma SaaS, un'app mobile o un'applicazione web complessa, il nostro team realizza software professionale su misura per le tue esigenze specifiche."
+    },
+    "services": {
+      "title": "Cosa Realizziamo",
+      "webApps": "Applicazioni Web",
+      "webAppsDesc": "Applicazioni web full-stack personalizzate con framework moderni",
+      "mobileApps": "App Mobile",
+      "mobileAppsDesc": "Applicazioni native iOS e Android",
+      "saas": "Piattaforme SaaS",
+      "saasDesc": "Piattaforme multi-tenant con gestione abbonamenti",
+      "dashboards": "Dashboard Personalizzate",
+      "dashboardsDesc": "Visualizzazione dati e strumenti di business intelligence",
+      "api": "Integrazioni API",
+      "apiDesc": "Connetti i tuoi sistemi e automatizza i flussi di lavoro",
+      "ecommerce": "Soluzioni E-commerce",
+      "ecommerceDesc": "Negozi online personalizzati ed elaborazione pagamenti"
+    },
+    "form": {
+      "title": "Parlaci del Tuo Progetto",
+      "subtitle": "Condividi la tua visione e ti aiuteremo a realizzarla",
+      "nameLabel": "Nome",
+      "namePlaceholder": "Il tuo nome",
+      "emailLabel": "Email",
+      "emailPlaceholder": "tua@email.com",
+      "phoneLabel": "Telefono",
+      "phonePlaceholder": "+39 123 456 7890",
+      "descriptionLabel": "Descrivi cosa vorresti che costruissimo",
+      "descriptionPlaceholder": "Parlaci del tuo progetto, obiettivi e requisiti specifici...",
+      "submitButton": "Invia",
+      "submitting": "Invio in corso...",
+      "success": {
+        "title": "Grazie!",
+        "message": "Ti contatteremo entro 2 giorni lavorativi."
+      },
+      "errors": {
+        "nameRequired": "Il nome è obbligatorio",
+        "nameTooShort": "Il nome deve contenere almeno 2 caratteri",
+        "emailRequired": "L'email è obbligatoria",
+        "emailInvalid": "Inserisci un indirizzo email valido",
+        "phoneRequired": "Il telefono è obbligatorio",
+        "phoneInvalid": "Inserisci un numero di telefono valido",
+        "descriptionRequired": "La descrizione del progetto è obbligatoria",
+        "descriptionTooShort": "Fornisci maggiori dettagli (almeno 20 caratteri)",
+        "submitFailed": "Invio non riuscito. Riprova."
+      }
+    },
+    "clients": {
+      "title": "I Nostri Lavori",
+      "subtitle": "Guarda cosa abbiamo costruito per aziende come la tua"
+    }
   }
 }

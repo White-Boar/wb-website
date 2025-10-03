@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { Palette, Sparkles, Eye } from 'lucide-react'
@@ -9,140 +9,15 @@ import { ColorPalette } from '@/components/onboarding/ColorPalette'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { StepComponentProps } from './index'
-
-// Color palette options
-const colorPaletteOptions = [
-  {
-    id: 'professional-blue',
-    name: 'Professional Blue',
-    description: 'Trust-building blues with neutral grays for professional services',
-    category: 'Professional Blue',
-    colors: [
-      { name: 'Primary Blue', hex: '#2563eb' },
-      { name: 'Light Blue', hex: '#dbeafe' },
-      { name: 'Dark Blue', hex: '#1e40af' },
-      { name: 'Gray', hex: '#6b7280' },
-      { name: 'Light Gray', hex: '#f3f4f6' }
-    ],
-    preview: {
-      primary: '#2563eb',
-      secondary: '#6b7280',
-      accent: '#1e40af',
-      background: '#f3f4f6',
-      text: '#374151'
-    },
-    tags: ['Trustworthy', 'Professional', 'Clean', 'Corporate']
-  },
-  {
-    id: 'warm-orange',
-    name: 'Warm Orange',
-    description: 'Energetic oranges with warm yellows for creative and welcoming brands',
-    category: 'Warm Orange',
-    colors: [
-      { name: 'Primary Orange', hex: '#ea580c' },
-      { name: 'Light Orange', hex: '#fed7aa' },
-      { name: 'Dark Orange', hex: '#c2410c' },
-      { name: 'Warm Yellow', hex: '#fbbf24' },
-      { name: 'Cream', hex: '#fffbeb' }
-    ],
-    preview: {
-      primary: '#ea580c',
-      secondary: '#92400e',
-      accent: '#fbbf24',
-      background: '#fffbeb',
-      text: '#451a03'
-    },
-    tags: ['Energetic', 'Warm', 'Creative', 'Friendly']
-  },
-  {
-    id: 'nature-green',
-    name: 'Nature Green',
-    description: 'Fresh greens with earth tones for sustainable and organic brands',
-    category: 'Nature Green',
-    colors: [
-      { name: 'Primary Green', hex: '#059669' },
-      { name: 'Light Green', hex: '#d1fae5' },
-      { name: 'Dark Green', hex: '#065f46' },
-      { name: 'Earth Brown', hex: '#92400e' },
-      { name: 'Natural Cream', hex: '#fefce8' }
-    ],
-    preview: {
-      primary: '#059669',
-      secondary: '#6b7280',
-      accent: '#92400e',
-      background: '#fefce8',
-      text: '#064e3b'
-    },
-    tags: ['Natural', 'Sustainable', 'Fresh', 'Organic']
-  },
-  {
-    id: 'elegant-purple',
-    name: 'Elegant Purple',
-    description: 'Sophisticated purples with silver accents for luxury and creativity',
-    category: 'Elegant Purple',
-    colors: [
-      { name: 'Primary Purple', hex: '#7c3aed' },
-      { name: 'Light Purple', hex: '#ede9fe' },
-      { name: 'Dark Purple', hex: '#5b21b6' },
-      { name: 'Silver', hex: '#9ca3af' },
-      { name: 'Platinum', hex: '#f9fafb' }
-    ],
-    preview: {
-      primary: '#7c3aed',
-      secondary: '#9ca3af',
-      accent: '#5b21b6',
-      background: '#f9fafb',
-      text: '#374151'
-    },
-    tags: ['Luxury', 'Creative', 'Sophisticated', 'Premium']
-  },
-  {
-    id: 'classic-black',
-    name: 'Classic Black & White',
-    description: 'Timeless black and white with subtle gray accents for elegance',
-    category: 'Classic Black & White',
-    colors: [
-      { name: 'Deep Black', hex: '#111827' },
-      { name: 'Charcoal', hex: '#374151' },
-      { name: 'Medium Gray', hex: '#6b7280' },
-      { name: 'Light Gray', hex: '#d1d5db' },
-      { name: 'Pure White', hex: '#ffffff' }
-    ],
-    preview: {
-      primary: '#111827',
-      secondary: '#6b7280',
-      accent: '#374151',
-      background: '#ffffff',
-      text: '#111827'
-    },
-    tags: ['Classic', 'Elegant', 'Timeless', 'Minimal']
-  },
-  {
-    id: 'vibrant-pink',
-    name: 'Vibrant Pink',
-    description: 'Bold pinks with complementary purples for creative and bold brands',
-    category: 'Vibrant Pink',
-    colors: [
-      { name: 'Primary Pink', hex: '#ec4899' },
-      { name: 'Light Pink', hex: '#fce7f3' },
-      { name: 'Dark Pink', hex: '#be185d' },
-      { name: 'Purple Accent', hex: '#a855f7' },
-      { name: 'Soft Lavender', hex: '#f3e8ff' }
-    ],
-    preview: {
-      primary: '#ec4899',
-      secondary: '#9333ea',
-      accent: '#a855f7',
-      background: '#f3e8ff',
-      text: '#581c87'
-    },
-    tags: ['Bold', 'Creative', 'Modern', 'Confident']
-  }
-]
+import { getColorPalettes } from '@/lib/color-palettes'
 
 export function Step10ColorPalette({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.10')
+  const locale = useLocale()
   const { control } = form
+
+  // Load color palettes based on current locale
+  const colorPaletteOptions = getColorPalettes(locale)
 
   return (
     <div className="space-y-8">

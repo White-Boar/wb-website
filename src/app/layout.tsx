@@ -1,5 +1,6 @@
-import { routing } from '@/i18n/routing';
 import { notFound } from 'next/navigation';
+
+const locales = ['en', 'it'];
 
 export default async function RootLayout({
   children,
@@ -10,7 +11,7 @@ export default async function RootLayout({
 }) {
   const { locale } = await params;
 
-  if (locale && !routing.locales.includes(locale as 'en' | 'it')) {
+  if (locale && !locales.includes(locale)) {
     notFound();
   }
 

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useTranslations } from "next-intl"
+import Link from "next/link"
 import { Check } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
@@ -13,12 +14,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { AddOnsPopover } from "@/components/AddOnsPopover"
 import { fadeInUp, staggerChildren, scaleIn } from "../../context/design-system/motion/variants"
 
 export function PricingTable() {
   const t = useTranslations('pricing')
-  const [selectedPlan, setSelectedPlan] = React.useState<string | null>(null)
   const shouldReduce = useReducedMotion()
 
   const variants = shouldReduce ? {} : {
@@ -42,12 +41,13 @@ export function PricingTable() {
         t('fast.feature6'),
         t('fast.feature7')
       ],
-      popular: true
+      popular: true,
+      href: '/onboarding?plan=fast'
     },
     {
       id: 'custom',
       name: t('custom.name'),
-      tagline: t('custom.tagline'), 
+      tagline: t('custom.tagline'),
       price: t('custom.price'),
       features: [
         t('custom.feature1'),
@@ -56,15 +56,11 @@ export function PricingTable() {
         t('custom.feature4'),
         t('custom.feature5')
       ],
-      popular: false
+      popular: false,
+      href: '/custom-software'
     }
   ]
 
-  const handlePlanSelect = (planId: string) => {
-    setSelectedPlan(planId)
-    // Navigate to onboarding with plan parameter
-    window.location.href = `/onboarding?plan=${planId}`
-  }
 
   return (
     <section id="pricing" className="py-24 bg-muted">
@@ -121,15 +117,15 @@ export function PricingTable() {
               </CardContent>
 
               <CardFooter className="flex flex-col space-y-4">
-                <Button 
-                  className="w-full" 
-                  onClick={() => handlePlanSelect(plan.id)}
+                <Button
+                  className="w-full"
                   variant={plan.popular ? "default" : "outline"}
+                  asChild
                 >
-                  Start with {plan.name}
+                  <Link href={plan.href}>
+                    Start with {plan.name}
+                  </Link>
                 </Button>
-                
-                {selectedPlan === plan.id && <AddOnsPopover />}
               </CardFooter>
             </Card>
             </motion.div>
