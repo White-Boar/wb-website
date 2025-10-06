@@ -188,17 +188,10 @@ export const step9Schema = z.object({
 // STEP 10: COLOR PALETTE
 // =============================================================================
 export const step10Schema = z.object({
-  colorPalette: z.enum([
-    'professional-blue',
-    'warm-orange',
-    'nature-green',
-    'elegant-purple',
-    'classic-black',
-    'vibrant-pink'
-  ], {
+  colorPalette: z.string({
     required_error: 'Please select a color palette',
     invalid_type_error: 'Please select a valid color palette'
-  })
+  }).min(1, 'Please select a color palette')
 })
 
 // =============================================================================

@@ -83,9 +83,10 @@ export function ColorPalette({
 
   // Handle selection
   const handleSelection = (optionId: string) => {
-    const newSelected = selectedId === optionId ? '' : optionId
-    setSelectedId(newSelected)
-    onSelectionChange?.(newSelected)
+    // Don't allow deselection - once a palette is selected, user must pick another one
+    // This prevents accidental deselection by clicking the same card twice
+    setSelectedId(optionId)
+    onSelectionChange?.(optionId)
   }
 
 
