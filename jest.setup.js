@@ -1,5 +1,14 @@
 import '@testing-library/jest-dom'
 
+// Mock next-intl/server
+jest.mock('next-intl/server', () => ({
+  getRequestConfig: jest.fn((config) => config),
+  getTranslations: async () => (key) => key,
+  getLocale: async () => 'en',
+  getMessages: async () => ({}),
+  setRequestLocale: jest.fn(),
+}))
+
 // Mock next-intl
 jest.mock('next-intl', () => ({
   useTranslations: (namespace = '') => (key) => {
@@ -42,15 +51,29 @@ jest.mock('next-intl', () => ({
       'footer.quickLinks': 'Quick Links',
       'footer.followUs': 'Follow Us',
       'footer.copyright': '© 2025 WhiteBoar · VAT No. 1234567890',
+      'customSoftware.form.title': 'Tell Us About Your Project',
+      'customSoftware.form.subtitle': 'Share your vision and we\'ll help bring it to life',
       'customSoftware.form.nameLabel': 'Name',
       'customSoftware.form.namePlaceholder': 'Your name',
       'customSoftware.form.emailLabel': 'Email',
       'customSoftware.form.emailPlaceholder': 'your@email.com',
       'customSoftware.form.phoneLabel': 'Phone',
       'customSoftware.form.phonePlaceholder': '+39 123 456 7890',
-      'customSoftware.form.descriptionLabel': 'Project Description',
-      'customSoftware.form.descriptionPlaceholder': 'Tell us about your project...',
+      'customSoftware.form.descriptionLabel': 'Describe what you would like us to build',
+      'customSoftware.form.descriptionPlaceholder': 'Tell us about your project, goals, and any specific requirements...',
       'customSoftware.form.submitButton': 'Send',
+      'customSoftware.form.submitting': 'Sending...',
+      'customSoftware.form.success.title': 'Thank you!',
+      'customSoftware.form.success.message': 'We will be in touch within 2 business days.',
+      'customSoftware.form.errors.nameRequired': 'Name is required',
+      'customSoftware.form.errors.nameTooShort': 'Name must be at least 2 characters',
+      'customSoftware.form.errors.emailRequired': 'Email is required',
+      'customSoftware.form.errors.emailInvalid': 'Please enter a valid email address',
+      'customSoftware.form.errors.phoneRequired': 'Phone is required',
+      'customSoftware.form.errors.phoneInvalid': 'Please enter a valid phone number',
+      'customSoftware.form.errors.descriptionRequired': 'Project description is required',
+      'customSoftware.form.errors.descriptionTooShort': 'Please provide more details (at least 20 characters)',
+      'customSoftware.form.errors.submitFailed': 'Failed to send your request. Please try again.',
     }
 
     const fullKey = namespace ? `${namespace}.${key}` : key
@@ -98,6 +121,12 @@ jest.mock('@/i18n/navigation', () => ({
     prefetch: jest.fn(),
   }),
   getPathname: jest.fn(() => '/'),
+}))
+
+// Mock @/lib/i18n
+jest.mock('@/lib/i18n', () => ({
+  locales: ['en', 'it'],
+  default: jest.fn(),
 }))
 
 // Mock framer-motion

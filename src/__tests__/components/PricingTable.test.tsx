@@ -42,23 +42,24 @@ describe('PricingTable', () => {
     expect(screen.getByText(/SaaS platforms/)).toBeInTheDocument()
   })
 
-  it('has CTA buttons for both plans', () => {
+  it('has CTA links for both plans', () => {
     render(<PricingTable />)
-    
-    const fastButton = screen.getByText('Start with Fast & Simple')
-    const customButton = screen.getByText('Start with Custom-made')
-    
-    expect(fastButton).toBeInTheDocument()
-    expect(customButton).toBeInTheDocument()
+
+    const fastLink = screen.getByRole('link', { name: 'Start with Fast & Simple' })
+    const customLink = screen.getByRole('link', { name: 'Start with Custom-made' })
+
+    expect(fastLink).toBeInTheDocument()
+    expect(customLink).toBeInTheDocument()
   })
 
-  it('navigates to onboarding when plan is selected', () => {
+  it('has correct href for plan links', () => {
     render(<PricingTable />)
 
-    const fastButton = screen.getByText('Start with Fast & Simple')
-    fireEvent.click(fastButton)
+    const fastLink = screen.getByRole('link', { name: 'Start with Fast & Simple' })
+    const customLink = screen.getByRole('link', { name: 'Start with Custom-made' })
 
-    expect(window.location.href).toBe('/onboarding?plan=fast')
+    expect(fastLink).toHaveAttribute('href', '/en/onboarding')
+    expect(customLink).toHaveAttribute('href', '/en/custom-software')
   })
 
   it('shows popular badge on fast plan', () => {
@@ -74,24 +75,13 @@ describe('PricingTable', () => {
     expect(section).toBeInTheDocument()
   })
 
-  it('displays add-ons popover when plan is selected', () => {
-    render(<PricingTable />)
-
-    const fastButton = screen.getByText('Start with Fast & Simple')
-    fireEvent.click(fastButton)
-
-    // After clicking, the add-ons button should appear
-    // Note: This tests the component logic, actual popover opening requires user interaction
-    expect(window.location.href).toBe('/onboarding?plan=fast')
-  })
-
   it('has accessible structure', () => {
     render(<PricingTable />)
-    
+
     const heading = screen.getByRole('heading', { name: 'Packages' })
     expect(heading).toBeInTheDocument()
-    
-    const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBeGreaterThan(0)
+
+    const links = screen.getAllByRole('link')
+    expect(links.length).toBeGreaterThan(0)
   })
 })
