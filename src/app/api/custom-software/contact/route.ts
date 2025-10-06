@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { EmailService } from '@/services/resend'
 import { CustomSoftwareFormData } from '@/types/custom-software'
 
 // Validation helper functions
@@ -114,6 +113,9 @@ export async function POST(request: NextRequest) {
     if (isTestEmail) {
       console.log('Test email detected - skipping custom software inquiry email:', formData.email)
     } else {
+      // Dynamically import EmailService only when needed (avoids slow compilation on test requests)
+      const { EmailService } = await import('@/services/resend')
+
       // Send email notification to admin
       const emailSent = await EmailService.sendCustomSoftwareInquiry(formData, locale)
 

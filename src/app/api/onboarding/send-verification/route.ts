@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { OnboardingServerService } from '@/services/onboarding-server'
-import { EmailService } from '@/services/resend'
 
 export async function POST(request: NextRequest) {
   try {
-    const { sessionId, email, name, locale = 'en' } = await request.json()
+    let body
+    try {
+      body = await request.json()
+    } catch (jsonError) {
+      console.error('Send verification API - invalid JSON:', jsonError)
+      return NextResponse.json(
+        { error: 'Invalid request body' },
+        { status: 400 }
+      )
+    }
+
+    const { sessionId, email, name, locale = 'en' } = body
 
     if (!sessionId || !email) {
       return NextResponse.json(
@@ -27,6 +37,9 @@ export async function POST(request: NextRequest) {
         testMode: true
       })
     }
+
+    // Dynamically import EmailService only when needed (avoids slow compilation on test requests)
+    const { EmailService } = await import('@/services/resend')
 
     // Send email via Resend
     const emailResult = await EmailService.sendVerificationEmail(
