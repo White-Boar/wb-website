@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Development Commands
 
-- `pnpm dev` - Start development server
+- `PORT=3783 pnpm dev` - Start development server (**ALWAYS use port 3783**)
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
 - `pnpm lint` - Run ESLint
@@ -16,6 +16,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm test` - Run Jest unit tests
 - `pnpm test:watch` - Run Jest in watch mode
 - `pnpm test:e2e` - Run Playwright e2e tests
+
+### Port Configuration
+- **CRITICAL**: Always use port 3783 for the development server
+- Playwright tests are configured to run against `http://localhost:3783`
+- All manual testing with Playwright MCP should use `http://localhost:3783`
+- Use `PORT=3783 pnpm dev` to start the server on the correct port
 
 ## Architecture & Tech Stack
 

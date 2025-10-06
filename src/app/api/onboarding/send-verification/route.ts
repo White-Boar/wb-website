@@ -16,6 +16,18 @@ export async function POST(request: NextRequest) {
     // Generate verification code
     const verificationCode = await OnboardingServerService.generateVerificationCode(sessionId, email)
 
+    // Skip sending emails during automated tests (detect by .test@ pattern)
+    const isTestEmail = email.includes('.test@')
+
+    if (isTestEmail) {
+      console.log('Test email detected - skipping Resend API call:', email)
+      return NextResponse.json({
+        success: true,
+        message: 'Verification code sent successfully (test mode)',
+        testMode: true
+      })
+    }
+
     // Send email via Resend
     const emailResult = await EmailService.sendVerificationEmail(
       email,

@@ -14,6 +14,10 @@ import { submitOnboarding } from '@/services/onboarding-client'
 import { getNextStep, getPreviousStep, calculateProgress } from '@/lib/step-navigation'
 import { OnboardingFormData, StepNumber } from '@/types/onboarding'
 
+// Tell Next.js this is a fully dynamic route (no static generation)
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+
 export default function OnboardingStep() {
   const router = useRouter()
   const params = useParams()
@@ -84,9 +88,9 @@ export default function OnboardingStep() {
     // Only redirect if we have a valid session and user is trying to skip ahead
     if (sessionId && currentStep > 0 && stepNumber > currentStep + 1) {
       console.log(`Redirecting from step ${stepNumber} to current step ${currentStep}`)
-      router.push(`/onboarding/step/${currentStep}`)
+      router.push(`/${locale}/onboarding/step/${currentStep}`)
     }
-  }, [stepNumber, currentStep, router, sessionId])
+  }, [stepNumber, currentStep, router, sessionId, locale])
 
   // Get step schema and form setup - must be called before any early returns
   const schema = getStepSchema(stepNumber)
@@ -242,13 +246,13 @@ export default function OnboardingStep() {
 
   // Validate step number (Step 12 is now the final step)
   if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 12) {
-    router.push('/onboarding')
+    router.push(`/${locale}/onboarding`)
     return null
   }
 
   // Validate schema exists
   if (!schema) {
-    router.push('/onboarding')
+    router.push(`/${locale}/onboarding`)
     return null
   }
 
@@ -447,9 +451,9 @@ export default function OnboardingStep() {
 
   // Get step component
   const StepComponent = getStepComponent(stepNumber)
-  
+
   if (!StepComponent) {
-    router.push('/onboarding')
+    router.push(`/${locale}/onboarding`)
     return null
   }
 

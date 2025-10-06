@@ -189,8 +189,8 @@ test.describe('Complete Onboarding Flow', () => {
     // Start fresh
     await cleanupTestData(testEmail);
 
-    // Navigate to homepage
-    await page.goto('http://localhost:3001/');
+    // Navigate to homepage (uses baseURL from playwright.config.ts)
+    await page.goto('/');
     await expect(page.locator('h1')).toContainText(/Brand. Build. Boom.|WhiteBoar|Digital Agency/i);
   });
 
@@ -217,8 +217,8 @@ test.describe('Complete Onboarding Flow', () => {
     // =============================================================================
     console.log('📍 Step 0: Starting from homepage');
 
-    // Find and click the main CTA button to start onboarding (choose the first option)
-    const startButton = page.getByRole('button', { name: 'Start with Fast & Simple' });
+    // Find and click the main CTA link to start onboarding (choose the first option)
+    const startButton = page.getByRole('link', { name: 'Start with Fast & Simple' });
     await expect(startButton).toBeVisible();
     await startButton.click();
 

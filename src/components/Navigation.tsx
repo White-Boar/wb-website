@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
+import { useParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { X, Linkedin, Github, Menu, X as CloseIcon } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
@@ -12,6 +13,8 @@ import { WhiteBoarLogo } from "@/components/WhiteBoarLogo"
 import { slideFade } from "../../context/design-system/motion/variants"
 
 export function Navigation() {
+  const params = useParams()
+  const locale = (params.locale as string) || 'en'
   const t = useTranslations('nav')
   const shouldReduce = useReducedMotion()
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)

@@ -27,15 +27,15 @@ export default function OnboardingWelcome() {
     // Only redirect if there's a valid session with an ID (not just default state)
     if (existingSession && existingSession.id && existingSession.currentStep && existingSession.currentStep > 1) {
       // Redirect to appropriate step
-      router.push(`/onboarding/step/${existingSession.currentStep}`)
+      router.push(`/${locale}/onboarding/step/${existingSession.currentStep}`)
     }
-  }, [loadExistingSession, router])
+  }, [loadExistingSession, router, locale])
 
   const handleStart = async () => {
     try {
       const session = await initializeSession(locale)
       const step = session.currentStep && session.currentStep >= 1 ? session.currentStep : 1
-      router.push(`/onboarding/step/${step}`)
+      router.push(`/${locale}/onboarding/step/${step}`)
     } catch (error) {
       console.error('Failed to initialize onboarding session:', error)
     }

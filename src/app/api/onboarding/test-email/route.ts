@@ -17,6 +17,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email address is required' }, { status: 400 })
     }
 
+    // Skip sending emails during automated tests (detect by .test@ pattern)
+    const isTestEmail = email.includes('.test@')
+
+    if (isTestEmail) {
+      console.log('Test email detected - skipping test email API call:', email)
+      return NextResponse.json({
+        success: true,
+        message: `Test verification email skipped for ${email} (test mode)`,
+        testCode: '123456',
+        testMode: true
+      })
+    }
+
     // Send test verification email
     const testCode = '123456'
     const result = await EmailService.sendVerificationEmail(email, name, testCode, locale as 'en' | 'it')

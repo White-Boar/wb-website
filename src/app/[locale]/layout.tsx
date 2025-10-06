@@ -1,24 +1,20 @@
 import '@/app/globals.css';
-import { NextIntlClientProvider } from 'next-intl';
+import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-
-const locales = ['en', 'it'];
+import { routing } from '@/i18n/routing';
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }));
+  return routing.locales.map((locale) => ({ locale }));
 }
 
 export default async function LocaleLayout({
   children,
   params
-}: {
-  children: React.ReactNode;
-  params: Promise<{ locale: string }>;
-}) {
+}: LayoutProps<'/[locale]'>)  {
+  // Ensure that the incoming `locale` is valid
   const { locale } = await params;
-
-  if (!locales.includes(locale)) {
+  if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
 
@@ -28,8 +24,37 @@ export default async function LocaleLayout({
   const messages = await getMessages({ locale });
 
   return (
-    <NextIntlClientProvider messages={messages} locale={locale}>
-      {children}
-    </NextIntlClientProvider>
+    <html lang={locale} className="scroll-smooth light">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var stored = localStorage.getItem('wb-ui-theme');
+                  if (stored && ['light', 'dark', 'system'].includes(stored)) {
+                    if (stored === 'system') {
+                      var systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                      if (systemTheme === 'dark') {
+                        document.documentElement.classList.replace('light', 'dark');
+                      }
+                    } else if (stored === 'dark') {
+                      document.documentElement.classList.replace('light', 'dark');
+                    }
+                  }
+                } catch (e) {
+                  // Keep default 'light' class
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
+      <body className="font-body antialiased">
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }
