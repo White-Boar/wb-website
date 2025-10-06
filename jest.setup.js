@@ -20,7 +20,7 @@ jest.mock('next-intl', () => ({
       'pricing.fast.tagline': 'Let the world know you exist.',
       'pricing.fast.price': '€40 / month',
       'pricing.fast.feature1': 'Branding',
-      'pricing.fast.feature2': 'One-page custom design', 
+      'pricing.fast.feature2': 'One-page custom design',
       'pricing.fast.feature3': '2 business-day delivery',
       'pricing.fast.feature4': 'Copy in EN+IT',
       'pricing.fast.feature5': 'SEO meta',
@@ -30,7 +30,7 @@ jest.mock('next-intl', () => ({
       'pricing.custom.tagline': 'Custom web apps. No limits. Just results.',
       'pricing.custom.price': 'from €5,000 + €40 / month',
       'pricing.custom.feature1': 'SaaS platforms',
-      'pricing.custom.feature2': 'Web portals & dashboards', 
+      'pricing.custom.feature2': 'Web portals & dashboards',
       'pricing.custom.feature3': 'Auth & admin',
       'pricing.custom.feature4': 'API integrations',
       'pricing.custom.feature5': 'Scalable infra',
@@ -41,9 +41,18 @@ jest.mock('next-intl', () => ({
       'footer.brandDescription': 'AI-driven digital agency empowering small businesses with professional online presence.',
       'footer.quickLinks': 'Quick Links',
       'footer.followUs': 'Follow Us',
-      'footer.copyright': '© 2025 WhiteBoar · VAT No. 1234567890'
+      'footer.copyright': '© 2025 WhiteBoar · VAT No. 1234567890',
+      'customSoftware.form.nameLabel': 'Name',
+      'customSoftware.form.namePlaceholder': 'Your name',
+      'customSoftware.form.emailLabel': 'Email',
+      'customSoftware.form.emailPlaceholder': 'your@email.com',
+      'customSoftware.form.phoneLabel': 'Phone',
+      'customSoftware.form.phonePlaceholder': '+39 123 456 7890',
+      'customSoftware.form.descriptionLabel': 'Project Description',
+      'customSoftware.form.descriptionPlaceholder': 'Tell us about your project...',
+      'customSoftware.form.submitButton': 'Send',
     }
-    
+
     const fullKey = namespace ? `${namespace}.${key}` : key
     return mockTranslations[fullKey] || fullKey
   },
@@ -60,6 +69,35 @@ jest.mock('next/navigation', () => ({
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
+  useParams: () => ({ locale: 'en' }),
+}))
+
+// Mock next-intl/navigation
+jest.mock('next-intl/navigation', () => ({
+  createNavigation: () => ({
+    Link: ({ children, href, ...props }) => <a href={href} {...props}>{children}</a>,
+    redirect: jest.fn(),
+    usePathname: () => '/',
+    useRouter: () => ({
+      push: jest.fn(),
+      replace: jest.fn(),
+      prefetch: jest.fn(),
+    }),
+    getPathname: jest.fn(() => '/'),
+  }),
+}))
+
+// Mock @/i18n/navigation
+jest.mock('@/i18n/navigation', () => ({
+  Link: ({ children, href, ...props }) => <a href={href} {...props}>{children}</a>,
+  redirect: jest.fn(),
+  usePathname: () => '/',
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+  getPathname: jest.fn(() => '/'),
 }))
 
 // Mock framer-motion

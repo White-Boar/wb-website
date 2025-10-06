@@ -12,6 +12,9 @@ const customJestConfig = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(next-intl)/)',
+  ],
   collectCoverageFrom: [
     'src/components/**/*.{js,jsx,ts,tsx}',
     'src/app/**/*.{js,jsx,ts,tsx}',
