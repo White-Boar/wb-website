@@ -151,3 +151,16 @@ The project is production-ready when it meets all requirements specified in `./c
 - **NEVER jump** from step 3 to step 7 - validate steps 4, 5, 6 in between
 - **COMPLETE THE FULL FLOW** from start to finish when requested
 - Document each step's validation results clearly
+
+### Code Quality and Technical Debt
+- **NEVER implement workarounds** - Always fix the root cause of problems
+- **NEVER add shortcuts** that mask underlying issues, even under time pressure
+- **NEVER sacrifice code quality** to make tests pass quickly
+- When encountering validation, timing, or state management issues:
+  - ✅ Debug and fix the root cause in the affected components
+  - ✅ Ensure framework features (like React Hook Form validation) work correctly
+  - ✅ Test both automated AND manual user flows before considering it fixed
+  - ❌ DO NOT add manual checks that bypass framework validation
+  - ❌ DO NOT create test-passing code that breaks real user experience
+- **Technical debt compounds** - A workaround today becomes a maintenance nightmare tomorrow
+- **Always validate** that fixes work for real users, not just automated tests

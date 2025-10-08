@@ -6,7 +6,7 @@ test('Restart button clears localStorage properly', async ({ page }) => {
   await page.waitForLoadState('networkidle');
 
   // Verify no initial session
-  let localStorageData = await page.evaluate(() => {
+  const localStorageData = await page.evaluate(() => {
     const data = localStorage.getItem('wb-onboarding-store');
     return data ? JSON.parse(data).state?.sessionId : null;
   });

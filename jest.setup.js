@@ -123,10 +123,13 @@ jest.mock('@/i18n/navigation', () => ({
   getPathname: jest.fn(() => '/'),
 }))
 
-// Mock @/lib/i18n
-jest.mock('@/lib/i18n', () => ({
-  locales: ['en', 'it'],
-  default: jest.fn(),
+// Mock @/i18n/routing (replaces old @/lib/i18n)
+jest.mock('@/i18n/routing', () => ({
+  routing: {
+    locales: ['en', 'it'],
+    defaultLocale: 'en',
+    localePrefix: 'as-needed',
+  },
 }))
 
 // Mock framer-motion
@@ -155,7 +158,7 @@ jest.mock('./context/design-system/motion/variants', () => ({
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ fill, priority, placeholder, blurDataURL, sizes, ...props }) => {
-    // eslint-disable-next-line @next/next/no-img-element
+     
     return <img {...props} alt={props.alt} style={fill ? { objectFit: 'cover' } : {}} />
   },
 }))

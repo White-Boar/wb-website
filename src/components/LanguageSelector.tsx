@@ -10,7 +10,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { locales, type Locale } from "@/lib/i18n"
+import { routing } from "@/i18n/routing"
+
+type Locale = (typeof routing.locales)[number]
+const locales = routing.locales
 
 export function LanguageSelector() {
   const t = useTranslations('nav.language')

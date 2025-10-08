@@ -13,7 +13,8 @@ export function useTranslationWithFallback(
   fallbackNamespace?: string
 ) {
   const t = useTranslations(namespace)
-  const fallbackT = fallbackNamespace ? useTranslations(fallbackNamespace) : null
+  // Always call the hook (Rules of Hooks), use empty string as fallback
+  const fallbackT = useTranslations(fallbackNamespace || '')
 
   const translate = useCallback((
     key: string,
@@ -30,7 +31,7 @@ export function useTranslationWithFallback(
       }
 
       // Try fallback namespace if provided
-      if (fallbackT) {
+      if (fallbackNamespace) {
         try {
           const fallbackTranslation = fallbackT(fallbackKey || key, values)
           if (fallbackTranslation && fallbackTranslation !== (fallbackKey || key)) {
