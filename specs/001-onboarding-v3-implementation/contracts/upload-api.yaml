@@ -1,0 +1,426 @@
+openapi: 3.0.3
+info:
+  title: Onboarding Upload API
+  description: |
+    API for uploading files (logo and business photos) to Supabase Storage in Step 12.
+    Handles file validation, virus scanning, and metadata tracking.
+  version: 3.0.0
+
+servers:
+  - url: http://localhost:3783/api
+    description: Local development
+  - url: https://whiteboar.com/api
+    description: Production
+
+paths:
+  /onboarding/upload:
+    post:
+      summary: Upload file (logo or photo)
+      description: |
+        Uploads a file to Supabase Storage and creates an upload record.
+        Validates file type, size, and enforces limits (1 logo, max 30 photos).
+        Triggers virus scanning in background.
+      operationId: uploadFile
+      tags:
+        - Upload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - sessionId
+                - fileType
+                - file
+              properties:
+                sessionId:
+                  type: string
+                  format: uuid
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+                fileType:
+                  type: string
+                  enum: [logo, photo]
+                  example: "logo"
+                  description: Type of file being uploaded
+                file:
+                  type: string
+                  format: binary
+                  description: File to upload
+      responses:
+        '201':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - uploadId
+                  - fileUrl
+                  - fileType
+                  - fileName
+                  - fileSize
+                  - mimeType
+                properties:
+                  uploadId:
+                    type: string
+                    format: uuid
+                    example: "770e8400-e29b-41d4-a716-446655440000"
+                  fileUrl:
+                    type: string
+                    format: uri
+                    example: "https://abc123.supabase.co/storage/v1/object/public/onboarding-assets/550e8400.../logo-1696800000.png"
+                  fileType:
+                    type: string
+                    enum: [logo, photo]
+                    example: "logo"
+                  fileName:
+                    type: string
+                    example: "acme-logo.png"
+                  fileSize:
+                    type: integer
+                    example: 524288
+                    description: File size in bytes
+                  mimeType:
+                    type: string
+                    example: "image/png"
+                  width:
+                    type: integer
+                    nullable: true
+                    example: 1024
+                    description: Image width in pixels (if image)
+                  height:
+                    type: integer
+                    nullable: true
+                    example: 768
+                    description: Image height in pixels (if image)
+                  virusScanStatus:
+                    type: string
+                    enum: [pending, clean, infected, failed]
+                    example: "pending"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2025-10-08T14:30:00Z"
+        '400':
+          description: Invalid file or limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalidType:
+                  value:
+                    error: "Invalid File Type"
+                    message: "Logo must be PNG, JPG, or SVG"
+                    code: "INVALID_FILE_TYPE"
+                    allowedTypes: ["image/png", "image/jpeg", "image/svg+xml"]
+                tooLarge:
+                  value:
+                    error: "File Too Large"
+                    message: "Logo must be less than 10MB"
+                    code: "FILE_TOO_LARGE"
+                    maxSize: 10485760
+                logoLimit:
+                  value:
+                    error: "Upload Limit Exceeded"
+                    message: "Only 1 logo allowed per session"
+                    code: "LOGO_LIMIT"
+                    currentCount: 1
+                    maxCount: 1
+                photoLimit:
+                  value:
+                    error: "Upload Limit Exceeded"
+                    message: "Maximum 30 photos allowed"
+                    code: "PHOTO_LIMIT"
+                    currentCount: 30
+                    maxCount: 30
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Session not found"
+                message: "Session has expired or does not exist"
+                code: "SESSION_NOT_FOUND"
+        '413':
+          description: Payload too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Payload Too Large"
+                message: "File exceeds maximum upload size"
+                code: "PAYLOAD_TOO_LARGE"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/upload/{uploadId}:
+    get:
+      summary: Get upload details
+      description: |
+        Retrieves upload metadata including virus scan status.
+        Used to check scan results before form submission.
+      operationId: getUpload
+      tags:
+        - Upload
+      parameters:
+        - $ref: '#/components/parameters/UploadId'
+      responses:
+        '200':
+          description: Upload retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Upload'
+        '404':
+          description: Upload not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Upload not found"
+                message: "Upload does not exist"
+                code: "UPLOAD_NOT_FOUND"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      summary: Delete uploaded file
+      description: |
+        Deletes file from Supabase Storage and removes upload record.
+        Used when user clicks delete button on uploaded file preview.
+      operationId: deleteUpload
+      tags:
+        - Upload
+      parameters:
+        - $ref: '#/components/parameters/UploadId'
+      responses:
+        '200':
+          description: Upload deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - deleted
+                properties:
+                  deleted:
+                    type: boolean
+                    example: true
+                  uploadId:
+                    type: string
+                    format: uuid
+                    example: "770e8400-e29b-41d4-a716-446655440000"
+        '404':
+          description: Upload not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Upload not found"
+                message: "Upload does not exist or already deleted"
+                code: "UPLOAD_NOT_FOUND"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/uploads/{sessionId}:
+    get:
+      summary: List all uploads for session
+      description: |
+        Retrieves all uploads (logo and photos) for a session.
+        Used to display upload previews and calculate storage usage.
+      operationId: listUploads
+      tags:
+        - Upload
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          description: UUID of the onboarding session
+          schema:
+            type: string
+            format: uuid
+            example: "550e8400-e29b-41d4-a716-446655440000"
+        - name: fileType
+          in: query
+          required: false
+          description: Filter by file type
+          schema:
+            type: string
+            enum: [logo, photo]
+            example: "photo"
+      responses:
+        '200':
+          description: Uploads retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - uploads
+                  - totalCount
+                  - totalSize
+                properties:
+                  uploads:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Upload'
+                  totalCount:
+                    type: integer
+                    example: 5
+                    description: Total number of uploads
+                  totalSize:
+                    type: integer
+                    example: 15728640
+                    description: Total size of all uploads in bytes
+                  logoCount:
+                    type: integer
+                    example: 1
+                  photoCount:
+                    type: integer
+                    example: 4
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Session not found"
+                message: "Session has expired or does not exist"
+                code: "SESSION_NOT_FOUND"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    UploadId:
+      name: uploadId
+      in: path
+      required: true
+      description: UUID of the upload
+      schema:
+        type: string
+        format: uuid
+        example: "770e8400-e29b-41d4-a716-446655440000"
+
+  schemas:
+    Upload:
+      type: object
+      required:
+        - id
+        - sessionId
+        - fileType
+        - fileUrl
+        - fileName
+        - fileSize
+        - mimeType
+        - uploadCompleted
+        - virusScanStatus
+        - isProcessed
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "770e8400-e29b-41d4-a716-446655440000"
+        sessionId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        fileType:
+          type: string
+          enum: [logo, photo]
+          example: "logo"
+        fileUrl:
+          type: string
+          format: uri
+          example: "https://abc123.supabase.co/storage/v1/object/public/onboarding-assets/..."
+        fileName:
+          type: string
+          example: "acme-logo.png"
+        fileSize:
+          type: integer
+          example: 524288
+          description: File size in bytes
+        mimeType:
+          type: string
+          example: "image/png"
+        width:
+          type: integer
+          nullable: true
+          example: 1024
+        height:
+          type: integer
+          nullable: true
+          example: 768
+        uploadCompleted:
+          type: boolean
+          example: true
+        virusScanStatus:
+          type: string
+          enum: [pending, clean, infected, failed]
+          example: "clean"
+        isProcessed:
+          type: boolean
+          example: true
+          description: Whether file has been processed (resized, optimized)
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-08T14:30:00Z"
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid request parameters"
+        code:
+          type: string
+          example: "INVALID_PARAMS"
+        details:
+          type: object
+          additionalProperties: true
+        allowedTypes:
+          type: array
+          items:
+            type: string
+          description: List of allowed MIME types
+        maxSize:
+          type: integer
+          description: Maximum file size in bytes
+        currentCount:
+          type: integer
+          description: Current number of uploads
+        maxCount:
+          type: integer
+          description: Maximum allowed uploads
+
+  responses:
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal Server Error"
+            message: "An unexpected error occurred. Please try again."
+            code: "INTERNAL_ERROR"
+
+tags:
+  - name: Upload
+    description: File upload operations

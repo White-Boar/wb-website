@@ -1,0 +1,301 @@
+openapi: 3.0.3
+info:
+  title: Onboarding Progress API
+  description: |
+    API for saving step progress and form data during the onboarding flow.
+    Supports partial updates (save current step only) and full state persistence.
+  version: 3.0.0
+
+servers:
+  - url: http://localhost:3783/api
+    description: Local development
+  - url: https://whiteboar.com/api
+    description: Production
+
+paths:
+  /onboarding/save:
+    post:
+      summary: Save step progress
+      description: |
+        Saves form data for the current step and updates session progress.
+        Merges new data with existing form_data (does not replace).
+        Triggers both localStorage and database persistence.
+      operationId: saveProgress
+      tags:
+        - Progress
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sessionId
+                - stepNumber
+                - data
+              properties:
+                sessionId:
+                  type: string
+                  format: uuid
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+                stepNumber:
+                  type: integer
+                  minimum: 1
+                  maximum: 13
+                  example: 3
+                data:
+                  type: object
+                  description: Form data for the current step (flat field naming)
+                  additionalProperties: true
+                  example:
+                    businessName: "Acme Corp"
+                    businessEmail: "contact@acme.com"
+                    businessPhone: "+39 123 456 7890"
+                    physicalAddressStreet: "Via Roma 123"
+                    physicalAddressCity: "Milano"
+                    physicalAddressProvince: "MI"
+                    physicalAddressPostalCode: "20100"
+                    physicalAddressCountry: "Italy"
+                    physicalAddressPlaceId: "ChIJ..."
+                    industry: "retail"
+                    vatNumber: "IT12345678901"
+      responses:
+        '200':
+          description: Progress saved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - savedAt
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  savedAt:
+                    type: string
+                    format: date-time
+                    example: "2025-10-08T14:30:00Z"
+                  currentStep:
+                    type: integer
+                    example: 3
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Session not found"
+                message: "Session has expired or does not exist"
+                code: "SESSION_NOT_FOUND"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/email/verify:
+    post:
+      summary: Send email verification code
+      description: |
+        Sends a 6-digit OTP code to the user's email address.
+        Enforces rate limiting (60s cooldown) and attempt limits (max 5).
+      operationId: sendVerificationCode
+      tags:
+        - Email Verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sessionId
+                - email
+              properties:
+                sessionId:
+                  type: string
+                  format: uuid
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+                email:
+                  type: string
+                  format: email
+                  example: "john@example.com"
+      responses:
+        '200':
+          description: Verification code sent
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - expiresAt
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    example: "2025-10-08T14:40:00Z"
+                    description: Code expiration time (10 minutes from send)
+                  resendAvailableAt:
+                    type: string
+                    format: date-time
+                    example: "2025-10-08T14:31:00Z"
+                    description: When resend is available (60s cooldown)
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Too Many Requests"
+                message: "Please wait 45 seconds before requesting another code"
+                code: "RATE_LIMITED"
+                retryAfter: 45
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/email/verify/confirm:
+    post:
+      summary: Verify email code
+      description: |
+        Verifies the 6-digit OTP code entered by the user.
+        Enforces attempt limits (max 5) with 15-minute lockout.
+      operationId: confirmVerificationCode
+      tags:
+        - Email Verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sessionId
+                - code
+              properties:
+                sessionId:
+                  type: string
+                  format: uuid
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+                code:
+                  type: string
+                  pattern: '^\d{6}$'
+                  example: "123456"
+                  description: 6-digit verification code
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - emailVerified
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  emailVerified:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid or expired code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                invalid:
+                  value:
+                    error: "Invalid Code"
+                    message: "The verification code is incorrect"
+                    code: "INVALID_CODE"
+                    attemptsRemaining: 3
+                expired:
+                  value:
+                    error: "Code Expired"
+                    message: "Verification code has expired. Please request a new one."
+                    code: "CODE_EXPIRED"
+        '429':
+          description: Too many failed attempts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Too Many Attempts"
+                message: "Maximum verification attempts exceeded. Please try again in 15 minutes."
+                code: "ATTEMPTS_EXCEEDED"
+                lockedUntil: "2025-10-08T14:45:00Z"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid request parameters"
+        code:
+          type: string
+          example: "INVALID_PARAMS"
+        details:
+          type: object
+          additionalProperties: true
+        attemptsRemaining:
+          type: integer
+          example: 3
+        retryAfter:
+          type: integer
+          description: Seconds until retry is allowed
+          example: 45
+        lockedUntil:
+          type: string
+          format: date-time
+          example: "2025-10-08T14:45:00Z"
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Bad Request"
+            message: "Invalid step number. Must be between 1 and 13."
+            code: "INVALID_STEP"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal Server Error"
+            message: "An unexpected error occurred. Please try again."
+            code: "INTERNAL_ERROR"
+
+tags:
+  - name: Progress
+    description: Step progress management
+  - name: Email Verification
+    description: Email verification workflow

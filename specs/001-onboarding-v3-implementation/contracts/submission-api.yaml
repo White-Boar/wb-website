@@ -1,0 +1,343 @@
+openapi: 3.0.3
+info:
+  title: Onboarding Submission API
+  description: |
+    API for creating and managing onboarding submissions.
+    Submission created after Step 12 with status "unpaid", updated to "paid" after payment.
+  version: 3.0.0
+
+servers:
+  - url: http://localhost:3783/api
+    description: Local development
+  - url: https://whiteboar.com/api
+    description: Production
+
+paths:
+  /onboarding/submit:
+    post:
+      summary: Create submission after Step 12
+      description: |
+        Creates a submission record with status "unpaid" after Step 12 validation succeeds.
+        This is called BEFORE the payment step.
+        Returns submission ID which is used in payment step.
+      operationId: createSubmission
+      tags:
+        - Submission
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sessionId
+                - formData
+              properties:
+                sessionId:
+                  type: string
+                  format: uuid
+                  example: "550e8400-e29b-41d4-a716-446655440000"
+                formData:
+                  type: object
+                  description: Complete form data from all 12 steps
+                  additionalProperties: true
+                  example:
+                    _version: "3.0.0"
+                    firstName: "John"
+                    lastName: "Doe"
+                    email: "john@example.com"
+                    businessName: "Acme Corp"
+                    businessEmail: "contact@acme.com"
+      responses:
+        '201':
+          description: Submission created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - submissionId
+                  - status
+                  - createdAt
+                properties:
+                  submissionId:
+                    type: string
+                    format: uuid
+                    example: "660e8400-e29b-41d4-a716-446655440000"
+                  status:
+                    type: string
+                    enum: [unpaid]
+                    example: "unpaid"
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: "2025-10-08T14:30:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Session not found"
+                message: "Session has expired or does not exist"
+                code: "SESSION_NOT_FOUND"
+        '409':
+          description: Submission already exists for this session
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Submission Exists"
+                message: "A submission already exists for this session"
+                code: "SUBMISSION_EXISTS"
+                submissionId: "660e8400-e29b-41d4-a716-446655440000"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/submission/{submissionId}:
+    get:
+      summary: Get submission details
+      description: |
+        Retrieves submission details including status and payment information.
+        Used to check submission state when user returns to payment step.
+      operationId: getSubmission
+      tags:
+        - Submission
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      responses:
+        '200':
+          description: Submission retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+        '404':
+          description: Submission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Submission not found"
+                message: "Submission does not exist"
+                code: "SUBMISSION_NOT_FOUND"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Update submission status
+      description: |
+        Updates submission metadata (admin only).
+        Normal users should use payment API to update payment status.
+      operationId: updateSubmission
+      tags:
+        - Submission
+      security:
+        - AdminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/SubmissionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [unpaid, paid, preview_sent, completed, cancelled]
+                  example: "preview_sent"
+                adminNotes:
+                  type: string
+                  example: "Preview sent to client via email"
+      responses:
+        '200':
+          description: Submission updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Submission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    SubmissionId:
+      name: submissionId
+      in: path
+      required: true
+      description: UUID of the submission
+      schema:
+        type: string
+        format: uuid
+        example: "660e8400-e29b-41d4-a716-446655440000"
+
+  schemas:
+    Submission:
+      type: object
+      required:
+        - id
+        - sessionId
+        - email
+        - businessName
+        - formData
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "660e8400-e29b-41d4-a716-446655440000"
+        sessionId:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        email:
+          type: string
+          format: email
+          example: "contact@acme.com"
+        businessName:
+          type: string
+          example: "Acme Corp"
+        formData:
+          type: object
+          description: Complete form data (JSONB)
+          additionalProperties: true
+        status:
+          type: string
+          enum: [unpaid, paid, preview_sent, completed, cancelled]
+          example: "unpaid"
+          description: |
+            Submission workflow status:
+            - unpaid: Submission created, awaiting payment
+            - paid: Payment received, awaiting preview
+            - preview_sent: Preview sent to client
+            - completed: Client approved preview, website live
+            - cancelled: Submission cancelled (refund or abandonment)
+        paymentTransactionId:
+          type: string
+          nullable: true
+          example: "pi_1234567890"
+          description: Stripe payment intent ID
+        paymentAmount:
+          type: integer
+          nullable: true
+          example: 4000
+          description: Payment amount in cents (€40 = 4000)
+        paymentCurrency:
+          type: string
+          nullable: true
+          example: "EUR"
+        paymentCardLast4:
+          type: string
+          nullable: true
+          example: "4242"
+        paymentStatus:
+          type: string
+          enum: [pending, succeeded, failed]
+          nullable: true
+          example: null
+        paymentCompletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+        completionTimeSeconds:
+          type: integer
+          nullable: true
+          example: 780
+          description: Total time from start to completion (seconds)
+        previewSentAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+        previewViewedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+        adminNotes:
+          type: string
+          nullable: true
+          example: null
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-08T14:30:00Z"
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid request parameters"
+        code:
+          type: string
+          example: "INVALID_PARAMS"
+        details:
+          type: object
+          additionalProperties: true
+        submissionId:
+          type: string
+          format: uuid
+          description: Submission ID if duplicate submission attempt
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Bad Request"
+            message: "Invalid status transition"
+            code: "INVALID_TRANSITION"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal Server Error"
+            message: "An unexpected error occurred. Please try again."
+            code: "INTERNAL_ERROR"
+
+  securitySchemes:
+    AdminAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Admin JWT token for protected operations
+
+tags:
+  - name: Submission
+    description: Submission management operations

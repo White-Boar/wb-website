@@ -1,0 +1,290 @@
+openapi: 3.0.3
+info:
+  title: Onboarding Session API
+  description: |
+    API for creating, loading, and updating onboarding sessions.
+    Sessions track user progress through the 13-step onboarding flow.
+  version: 3.0.0
+  contact:
+    name: WhiteBoar Development Team
+
+servers:
+  - url: http://localhost:3783/api
+    description: Local development
+  - url: https://whiteboar.com/api
+    description: Production
+
+paths:
+  /onboarding/session:
+    post:
+      summary: Create new onboarding session
+      description: |
+        Creates a new onboarding session and returns a session ID.
+        Session ID should be stored in httpOnly cookie for subsequent requests.
+      operationId: createSession
+      tags:
+        - Session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - locale
+              properties:
+                locale:
+                  type: string
+                  enum: [en, it]
+                  example: en
+                  description: User's selected language
+                ipAddress:
+                  type: string
+                  format: ipv4
+                  example: "192.168.1.1"
+                  description: User's IP address (auto-captured if omitted)
+                userAgent:
+                  type: string
+                  example: "Mozilla/5.0..."
+                  description: Browser user agent (auto-captured if omitted)
+      responses:
+        '201':
+          description: Session created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - sessionId
+                  - currentStep
+                  - expiresAt
+                properties:
+                  sessionId:
+                    type: string
+                    format: uuid
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  currentStep:
+                    type: integer
+                    minimum: 1
+                    maximum: 13
+                    example: 1
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    example: "2025-10-15T14:30:00Z"
+                    description: Session expiration timestamp (7 days from creation)
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/session/{sessionId}:
+    get:
+      summary: Load existing session
+      description: |
+        Retrieves session data including current step and form progress.
+        Returns 404 if session expired or not found.
+      operationId: loadSession
+      tags:
+        - Session
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      responses:
+        '200':
+          description: Session loaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionData'
+        '404':
+          description: Session not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Session not found"
+                message: "Session has expired or does not exist"
+                code: "SESSION_NOT_FOUND"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      summary: Update session metadata
+      description: |
+        Updates session metadata (current step, locale, etc.).
+        Does NOT update form data - use /onboarding/save for that.
+      operationId: updateSession
+      tags:
+        - Session
+      parameters:
+        - $ref: '#/components/parameters/SessionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentStep:
+                  type: integer
+                  minimum: 1
+                  maximum: 13
+                  example: 3
+                locale:
+                  type: string
+                  enum: [en, it]
+                  example: it
+                emailVerified:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Session updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionData'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Session not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    SessionId:
+      name: sessionId
+      in: path
+      required: true
+      description: UUID of the onboarding session
+      schema:
+        type: string
+        format: uuid
+        example: "550e8400-e29b-41d4-a716-446655440000"
+
+  schemas:
+    SessionData:
+      type: object
+      required:
+        - id
+        - currentStep
+        - locale
+        - formData
+        - emailVerified
+        - expiresAt
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: "john@example.com"
+        emailVerified:
+          type: boolean
+          example: false
+        currentStep:
+          type: integer
+          minimum: 1
+          maximum: 13
+          example: 1
+        submissionId:
+          type: string
+          format: uuid
+          nullable: true
+          example: null
+          description: Populated after Step 12 completes
+        formData:
+          type: object
+          description: Progressive form data (JSONB)
+          additionalProperties: true
+          example:
+            _version: "3.0.0"
+            firstName: "John"
+            lastName: "Doe"
+            email: "john@example.com"
+        locale:
+          type: string
+          enum: [en, it]
+          example: en
+        ipAddress:
+          type: string
+          format: ipv4
+          nullable: true
+          example: "192.168.1.1"
+        userAgent:
+          type: string
+          nullable: true
+          example: "Mozilla/5.0..."
+        lastActivity:
+          type: string
+          format: date-time
+          example: "2025-10-08T14:30:00Z"
+        expiresAt:
+          type: string
+          format: date-time
+          example: "2025-10-15T14:30:00Z"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-08T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-10-08T14:30:00Z"
+
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid request parameters"
+        code:
+          type: string
+          example: "INVALID_PARAMS"
+        details:
+          type: object
+          additionalProperties: true
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Bad Request"
+            message: "Invalid locale. Must be 'en' or 'it'."
+            code: "INVALID_LOCALE"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal Server Error"
+            message: "An unexpected error occurred. Please try again."
+            code: "INTERNAL_ERROR"
+
+tags:
+  - name: Session
+    description: Session management operations

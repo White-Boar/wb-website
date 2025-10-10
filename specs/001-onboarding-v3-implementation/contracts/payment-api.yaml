@@ -1,0 +1,320 @@
+openapi: 3.0.3
+info:
+  title: Onboarding Payment API
+  description: |
+    API for processing payments via Stripe in Step 13.
+    Updates submission status from "unpaid" to "paid" after successful payment.
+  version: 3.0.0
+
+servers:
+  - url: http://localhost:3783/api
+    description: Local development
+  - url: https://whiteboar.com/api
+    description: Production
+
+paths:
+  /onboarding/payment/intent:
+    post:
+      summary: Create Stripe payment intent
+      description: |
+        Creates a Stripe payment intent for €40 subscription.
+        Returns client secret for Stripe Elements integration.
+      operationId: createPaymentIntent
+      tags:
+        - Payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - submissionId
+              properties:
+                submissionId:
+                  type: string
+                  format: uuid
+                  example: "660e8400-e29b-41d4-a716-446655440000"
+                  description: Submission ID from Step 12
+      responses:
+        '201':
+          description: Payment intent created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - clientSecret
+                  - amount
+                  - currency
+                properties:
+                  clientSecret:
+                    type: string
+                    example: "pi_1234567890_secret_abcdef"
+                    description: Stripe payment intent client secret
+                  amount:
+                    type: integer
+                    example: 4000
+                    description: Payment amount in cents (€40)
+                  currency:
+                    type: string
+                    example: "EUR"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Submission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Submission not found"
+                message: "Submission does not exist"
+                code: "SUBMISSION_NOT_FOUND"
+        '409':
+          description: Payment already completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Payment Completed"
+                message: "Payment has already been processed for this submission"
+                code: "PAYMENT_EXISTS"
+                paymentStatus: "succeeded"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/payment/complete:
+    post:
+      summary: Complete payment and update submission
+      description: |
+        Called after Stripe payment succeeds (via webhook or client confirmation).
+        Updates submission status from "unpaid" to "paid".
+        Stores payment transaction details.
+      operationId: completePayment
+      tags:
+        - Payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - submissionId
+                - paymentIntentId
+              properties:
+                submissionId:
+                  type: string
+                  format: uuid
+                  example: "660e8400-e29b-41d4-a716-446655440000"
+                paymentIntentId:
+                  type: string
+                  example: "pi_1234567890"
+                  description: Stripe payment intent ID
+                paymentMethodId:
+                  type: string
+                  example: "pm_1234567890"
+                  description: Stripe payment method ID (for card details)
+      responses:
+        '200':
+          description: Payment completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - submissionStatus
+                  - paymentStatus
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  submissionStatus:
+                    type: string
+                    enum: [paid]
+                    example: "paid"
+                  paymentStatus:
+                    type: string
+                    enum: [succeeded]
+                    example: "succeeded"
+                  paymentCompletedAt:
+                    type: string
+                    format: date-time
+                    example: "2025-10-08T14:35:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          description: Submission or payment intent not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Payment Intent not found"
+                message: "Invalid payment intent ID"
+                code: "PAYMENT_NOT_FOUND"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/payment/status/{submissionId}:
+    get:
+      summary: Check payment status
+      description: |
+        Retrieves current payment status for a submission.
+        Used when user returns after closing browser during payment.
+        Only checks payments initiated within last 24 hours (FR-149).
+      operationId: getPaymentStatus
+      tags:
+        - Payment
+      parameters:
+        - name: submissionId
+          in: path
+          required: true
+          description: UUID of the submission
+          schema:
+            type: string
+            format: uuid
+            example: "660e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Payment status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - submissionStatus
+                  - paymentStatus
+                properties:
+                  submissionStatus:
+                    type: string
+                    enum: [unpaid, paid]
+                    example: "unpaid"
+                  paymentStatus:
+                    type: string
+                    enum: [null, pending, succeeded, failed]
+                    nullable: true
+                    example: "pending"
+                  paymentTransactionId:
+                    type: string
+                    nullable: true
+                    example: "pi_1234567890"
+                  paymentInitiatedAt:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    example: "2025-10-08T14:00:00Z"
+                  canRetry:
+                    type: boolean
+                    example: true
+                    description: Whether payment can be retried (within 24h window)
+        '404':
+          description: Submission not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Submission not found"
+                message: "Submission does not exist"
+                code: "SUBMISSION_NOT_FOUND"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /onboarding/payment/webhook:
+    post:
+      summary: Stripe webhook handler
+      description: |
+        Receives Stripe webhook events for payment processing.
+        Handles: payment_intent.succeeded, payment_intent.payment_failed.
+        This endpoint is called by Stripe, not the client.
+      operationId: handleStripeWebhook
+      tags:
+        - Payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Stripe webhook event payload
+              additionalProperties: true
+      responses:
+        '200':
+          description: Webhook processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - received
+                properties:
+                  received:
+                    type: boolean
+                    example: true
+        '400':
+          description: Invalid webhook signature
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "Invalid Signature"
+                message: "Webhook signature verification failed"
+                code: "INVALID_SIGNATURE"
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: "Bad Request"
+        message:
+          type: string
+          example: "Invalid request parameters"
+        code:
+          type: string
+          example: "INVALID_PARAMS"
+        details:
+          type: object
+          additionalProperties: true
+        paymentStatus:
+          type: string
+          description: Current payment status if applicable
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Bad Request"
+            message: "Invalid submission ID format"
+            code: "INVALID_SUBMISSION_ID"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: "Internal Server Error"
+            message: "An unexpected error occurred. Please try again."
+            code: "INTERNAL_ERROR"
+
+tags:
+  - name: Payment
+    description: Payment processing operations

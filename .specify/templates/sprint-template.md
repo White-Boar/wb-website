@@ -17,10 +17,8 @@
 1. Load sprint goal and selected tasks
    → Sprint goal defines the value to deliver
    → Tasks are prioritized and estimated
-2. Execute tasks in priority order
-   → P0: Critical path - must complete for goal
-   → P1: Important - significantly enhances value
-   → P2: Nice to have - additional polish
+2. Execute tasks in **priority order**
+   → In the order listed in the spring file 
 3. Track progress against acceptance criteria
    → Each task has specific, measurable criteria
    → Criteria validated before marking complete
