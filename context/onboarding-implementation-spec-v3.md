@@ -1,9 +1,11 @@
-# Onboarding System Implementation Specification v3.0
+# Onboarding System Implementation Specification v3.1
 ## Complete Requirements & Implementation Guide
+
+**Visual Design Reference**: See `context/Visual design/onboarding-*.png` for UI mockups of each step
 
 ## Table of Contents
 1. [Business Context](#1-business-context)
-2. [Functional Requirements - All 12 Steps](#2-functional-requirements---all-12-steps)
+2. [Functional Requirements - All 13 Steps](#2-functional-requirements---all-13-steps)
 3. [Interaction Design](#3-interaction-design)
 4. [Technical Architecture](#4-technical-architecture)
 5. [Implementation Patterns](#5-implementation-patterns)
@@ -18,7 +20,7 @@
 - **Target Market**: Italian Small and Medium Businesses (SMBs)
 - **Service**: "Fast & Simple" website package
 - **Pricing**: €40/month subscription
-- **Model**: Preview-first approach (payment after approval)
+- **Model**: Payment upfront after form submission
 - **Delivery**: 5 business days for preview
 
 ### Success Metrics
@@ -30,19 +32,21 @@
 
 ### User Journey
 1. Arrive from marketing site/campaign
-2. Complete 12-step onboarding process
-3. Receive confirmation email
-4. Wait 5 business days for preview
-5. Review and approve preview
-6. Complete payment
-7. Website goes live
+2. Complete 12-step onboarding form (Steps 1-12)
+3. System creates submission record (status: "unpaid")
+4. Complete payment in Step 13
+5. Receive confirmation email
+6. Wait 5 business days for preview
+7. Review and approve preview
+8. Website goes live
 
 ---
 
-## 2. Functional Requirements - All 12 Steps
+## 2. Functional Requirements - All 13 Steps
 
 ### Step 1: Welcome & Personal Information
 **Purpose**: Capture user identity and create session
+**Visual Reference**: `context/Visual design/onboarding-01-personal-info.png`
 
 **UI Elements**:
 ```
@@ -79,6 +83,7 @@
 
 ### Step 2: Email Verification
 **Purpose**: Verify email ownership and prevent spam
+**Visual Reference**: `context/Visual design/onboarding-02-email-verification.png`
 
 **UI Elements**:
 ```
@@ -113,6 +118,7 @@
 
 ### Step 3: Business Basics
 **Purpose**: Collect essential business information
+**Visual Reference**: `context/Visual design/onboarding-03-business-details.png`
 
 **UI Elements**:
 ```
@@ -163,6 +169,7 @@
 
 ### Step 4: Brand Definition
 **Purpose**: Understand unique value proposition
+**Visual Reference**: `context/Visual design/onboarding-04-brand-definition.png`
 
 **UI Elements**:
 ```
@@ -209,6 +216,7 @@
 
 ### Step 5: Customer Profile
 **Purpose**: Define target audience characteristics
+**Visual Reference**: `context/Visual design/onboarding-05-customer-profile.png`
 
 **UI Elements**:
 ```
@@ -252,6 +260,7 @@
 
 ### Step 6: Customer Needs
 **Purpose**: Identify problems solved and value delivered
+**Visual Reference**: `context/Visual design/onboarding-06-customer-needs.png`
 
 **UI Elements**:
 ```
@@ -283,6 +292,7 @@
 
 ### Step 7: Visual Inspiration
 **Purpose**: Gather aesthetic preferences
+**Visual Reference**: `context/Visual design/onboarding-07-visual-inspiration.png`
 
 **UI Elements**:
 ```
@@ -319,6 +329,7 @@
 
 ### Step 8: Design Style Selection
 **Purpose**: Choose overall aesthetic direction
+**Visual Reference**: `context/Visual design/onboarding-08-design-style.png`
 
 **UI Elements**:
 ```
@@ -357,6 +368,7 @@
 
 ### Step 9: Image Style Selection
 **Purpose**: Define visual content style
+**Visual Reference**: `context/Visual design/onboarding-09-image-style.png`
 
 **UI Elements**:
 ```
@@ -393,6 +405,7 @@
 
 ### Step 10: Color Palette Selection
 **Purpose**: Choose brand colors
+**Visual Reference**: `context/Visual design/onboarding-10-color-palette.png`
 
 **UI Elements**:
 ```
@@ -428,6 +441,7 @@
 
 ### Step 11: Website Structure
 **Purpose**: Plan site architecture and goals
+**Visual Reference**: `context/Visual design/onboarding-11-website-structure.png`
 
 **UI Elements**:
 ```
@@ -474,6 +488,7 @@
 
 ### Step 12: Business Assets Upload
 **Purpose**: Collect visual materials
+**Visual Reference**: `context/Visual design/onboarding-12-business-assets.png`
 
 **UI Elements**:
 ```
@@ -507,15 +522,93 @@
 
 ---
 
+### Step 12 to 13 Transition: Form Submission
+
+**Purpose**: Create submission record before payment
+
+**Process**:
+1. User clicks Next on Step 12
+2. System validates all form data from Steps 1-12
+3. System creates submission record with status "unpaid"
+4. System stores submission ID in session
+5. System prevents backward navigation to Steps 1-12
+6. System navigates to Step 13 (payment)
+
+**Critical Rules**:
+- NO backward navigation after submission created
+- Submission persists even if payment fails
+- User can retry payment without re-submitting form
+- Unpaid submissions tracked for follow-up
+
+---
+
+### Step 13: Payment
+**Purpose**: Collect payment for website service
+**Visual Reference**: Visual design pending (no mockup yet)
+
+**UI Elements**:
+```
+┌─────────────────────────────────────────┐
+│  Complete Your Order                    │
+│                                          │
+│  Subscription: €40/month                │
+│  First month due today                  │
+│                                          │
+│  [Stripe Payment Element]               │
+│  Card number, expiry, CVC               │
+│                                          │
+│  🔒 Secure payment via Stripe           │
+│  💳 Visa, Mastercard, Amex accepted    │
+│                                          │
+│  [Complete Payment →]                   │
+│                                          │
+│  Note: Back button disabled             │
+└─────────────────────────────────────────┘
+```
+
+**Fields**:
+| Field | Type | Validation | Required |
+|-------|------|------------|----------|
+| Payment card info | Stripe Element | Via Stripe | Yes |
+| Amount | Fixed | €40 | Display only |
+
+**Behavior**:
+- Integrates with Stripe payment processing
+- Displays loading state during payment
+- Prevents duplicate submissions
+- Updates submission status from "unpaid" to "paid" on success
+- Stores transaction ID, timestamp, card last 4 digits
+- Allows retry on failure without losing form data
+- Verifies payment status if user returns after closing browser
+- Back button disabled (submission already created)
+- Proceeds to thank-you page only after successful payment
+
+**Payment Flow**:
+1. User submits payment information
+2. Stripe processes payment
+3. On success:
+   - Update submission status to "paid"
+   - Store payment transaction details
+   - Send confirmation email
+   - Send admin notification
+   - Navigate to thank-you page
+4. On failure:
+   - Display error message
+   - Allow retry
+   - Preserve submission (no duplicate)
+
+---
+
 ## 3. Interaction Design
 
 ### Navigation Patterns
 
 #### Back Button
-- **State**: Always visible except Step 1
+- **State**: Always visible except Step 1 and Step 13
 - **Action**: Saves current data, no validation
 - **Transition**: Slide right animation
 - **Keyboard**: Alt+Left Arrow
+- **Step 13 Exception**: Disabled because submission already created
 
 #### Next Button
 - **States**:
@@ -529,8 +622,8 @@
 
 #### Progress Bar
 ```
-[●]━[●]━[●]━[○]━[○]━[○]━[○]━[○]━[○]━[○]━[○]━[○]
- 1   2   3   4   5   6   7   8   9   10  11  12
+[●]━[●]━[●]━[○]━[○]━[○]━[○]━[○]━[○]━[○]━[○]━[○]━[○]
+ 1   2   3   4   5   6   7   8   9   10  11  12  13
 ```
 - Completed: Filled circle with checkmark
 - Current: Filled circle with pulse
@@ -876,7 +969,8 @@ Active onboarding sessions with form progress and email verification.
 | `verification_code` | text | nullable | - | Temporary OTP code for email verification |
 | `verification_attempts` | integer | nullable | `0` | Number of failed verification attempts |
 | `verification_locked_until` | timestamptz | nullable | - | Timestamp when verification attempts can resume |
-| `current_step` | integer | nullable, CHECK (1-13) | `1` | Current step in onboarding flow |
+| `current_step` | integer | nullable, CHECK (1-13) | `1` | Current step in onboarding flow (13 total) |
+| `submission_id` | uuid | FOREIGN KEY → onboarding_submissions(id), nullable | - | Reference to submission after Step 12 |
 | `form_data` | jsonb | - | `'{}'` | JSONB storage for progressive form data across all steps |
 | `locale` | text | nullable | `'en'` | User's selected language (en/it) |
 | `ip_address` | inet | nullable | - | Session IP address for analytics |
@@ -906,7 +1000,13 @@ Completed onboarding forms ready for processing.
 | `email` | text | NOT NULL | - | Business contact email |
 | `business_name` | text | NOT NULL | - | Business name from form |
 | `form_data` | jsonb | NOT NULL | - | Complete form data from all steps |
-| `status` | text | CHECK | `'submitted'` | Workflow status: submitted → preview_sent → paid → completed → cancelled |
+| `status` | text | CHECK | `'unpaid'` | Workflow status: unpaid → paid → preview_sent → completed → cancelled |
+| `payment_transaction_id` | text | nullable | - | Stripe transaction ID |
+| `payment_amount` | integer | nullable | - | Payment amount in cents (€40 = 4000) |
+| `payment_currency` | text | nullable | `'EUR'` | Payment currency |
+| `payment_card_last4` | text | nullable | - | Last 4 digits of card |
+| `payment_status` | text | CHECK, nullable | - | Payment status: pending, succeeded, failed |
+| `payment_completed_at` | timestamptz | nullable | - | When payment succeeded |
 | `completion_time_seconds` | integer | nullable | - | Total time from start to completion in seconds |
 | `preview_sent_at` | timestamptz | nullable | - | When preview was sent to client |
 | `preview_viewed_at` | timestamptz | nullable | - | When client viewed preview |
@@ -916,10 +1016,12 @@ Completed onboarding forms ready for processing.
 
 **Status Flow:**
 ```
-submitted → preview_sent → paid → completed
-         ↓
-    cancelled (any time)
+unpaid → paid → preview_sent → completed
+  ↓
+cancelled (any time)
 ```
+
+**Note**: Submissions are created with status "unpaid" after Step 12. Payment in Step 13 updates status to "paid".
 
 **RLS:** Enabled
 
@@ -947,7 +1049,12 @@ User behavior and conversion tracking events.
 - `onboarding_step_viewed`
 - `onboarding_step_completed`
 - `onboarding_field_error`
-- `onboarding_completed`
+- `onboarding_form_submitted` (after Step 12)
+- `onboarding_payment_initiated` (Step 13 viewed)
+- `onboarding_payment_succeeded`
+- `onboarding_payment_failed`
+- `onboarding_payment_retried`
+- `onboarding_completed` (after successful payment)
 - `onboarding_abandoned`
 - `onboarding_session_resumed`
 
@@ -989,11 +1096,14 @@ File uploads associated with onboarding sessions.
 onboarding_sessions (1) ──→ (many) onboarding_analytics
                     (1) ──→ (1) onboarding_submissions
                     (1) ──→ (many) onboarding_uploads
+
+onboarding_submissions (1) ──→ (many) payment attempts (via payment_transaction_id)
 ```
 
 **Foreign Key Cascades:**
 - On session deletion: CASCADE (removes related analytics, uploads)
 - On session deletion: RESTRICT for submissions (prevent data loss)
+- Sessions reference submissions after Step 12 (submission_id)
 
 ---
 
@@ -1019,7 +1129,9 @@ onboarding_sessions (1) ──→ (many) onboarding_analytics
   "tailwindcss": "^3.4.17",
   "framer-motion": "^11.11.17",
   "lucide-react": "^0.460.0",
-  "sonner": "^2.0.7"
+  "sonner": "^2.0.7",
+  "@stripe/stripe-js": "^4.0.0",
+  "@stripe/react-stripe-js": "^3.0.0"
 }
 ```
 
@@ -1096,10 +1208,14 @@ export default function OnboardingStepPage() {
     // Navigate
     if (stepNumber < 12) {
       router.push(`/${locale}/onboarding/step/${stepNumber + 1}`)
-    } else {
-      // Final step - submit everything
-      await submitOnboarding(sessionId, data)
-      router.push(`/${locale}/onboarding/thank-you`)
+    } else if (stepNumber === 12) {
+      // Create submission after Step 12
+      const submissionId = await createSubmission(sessionId, data)
+      // Navigate to payment step
+      router.push(`/${locale}/onboarding/step/13`)
+    } else if (stepNumber === 13) {
+      // Payment handled by Stripe, navigated after success
+      // See Step13Payment.tsx for payment flow
     }
   }
 
@@ -1132,7 +1248,7 @@ export default function OnboardingStepPage() {
           onNext={handleSubmit(handleNext)}
           onBack={handleBack}
           canGoNext={isValid && !isSubmitting}
-          canGoBack={stepNumber > 1}
+          canGoBack={stepNumber > 1 && stepNumber !== 13}
           isLoading={isSubmitting}
         />
       </div>
@@ -1491,7 +1607,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
 
       nextStep: () => {
         set((state) => ({
-          currentStep: Math.min(state.currentStep + 1, 12)
+          currentStep: Math.min(state.currentStep + 1, 13)
         }))
       },
 
@@ -2004,32 +2120,40 @@ export async function loadSession(sessionId: string) {
   return data
 }
 
-export async function completeOnboarding(
+/**
+ * Create submission after Step 12
+ * Called BEFORE payment step
+ */
+export async function createSubmission(
   sessionId: string,
   formData: any
-) {
+): Promise<string> {
   const supabase = createClient()
 
-  // Insert into submissions table
-  const { error: submissionError } = await supabase
+  // Insert into submissions table with status "unpaid"
+  const { data, error: submissionError } = await supabase
     .from('onboarding_submissions')
     .insert({
       session_id: sessionId,
       email: formData.email,
       business_name: formData.businessName,
       form_data: formData,
+      status: 'unpaid',
       created_at: new Date().toISOString()
     })
+    .select('id')
+    .single()
 
   if (submissionError) {
     console.error('Failed to save submission:', submissionError)
     throw new Error('Failed to submit your onboarding. Please try again.')
   }
 
-  // Mark session as completed
+  // Update session with submission ID
   const { error: sessionError } = await supabase
     .from('onboarding_sessions')
     .update({
+      submission_id: data.id,
       current_step: 13,
       updated_at: new Date().toISOString()
     })
@@ -2039,7 +2163,44 @@ export async function completeOnboarding(
     console.error('Failed to update session:', sessionError)
   }
 
-  // TODO: Trigger email notification
+  revalidatePath('/onboarding')
+  return data.id
+}
+
+/**
+ * Complete payment and update submission
+ * Called AFTER Stripe payment succeeds
+ */
+export async function completePayment(
+  submissionId: string,
+  paymentDetails: {
+    transactionId: string
+    amount: number
+    cardLast4: string
+  }
+) {
+  const supabase = createClient()
+
+  const { error } = await supabase
+    .from('onboarding_submissions')
+    .update({
+      status: 'paid',
+      payment_transaction_id: paymentDetails.transactionId,
+      payment_amount: paymentDetails.amount,
+      payment_currency: 'EUR',
+      payment_card_last4: paymentDetails.cardLast4,
+      payment_status: 'succeeded',
+      payment_completed_at: new Date().toISOString()
+    })
+    .eq('id', submissionId)
+
+  if (error) {
+    console.error('Failed to update payment:', error)
+    throw new Error('Failed to record payment. Please try again.')
+  }
+
+  // TODO: Trigger confirmation email
+  // TODO: Send admin notification
   // TODO: Create preview request in queue
 
   revalidatePath('/onboarding')
@@ -2105,7 +2266,7 @@ This specification provides a complete blueprint for implementing the WhiteBoar 
 
 ### What This Spec Contains
 
-1. **Functional Requirements**: All 12 steps with exact fields, validation rules, and UI layouts
+1. **Functional Requirements**: All 13 steps with exact fields, validation rules, and UI layouts
 2. **Interaction Design**: Every user interaction, animation, and state transition
 3. **Technical Architecture**: Clean separation between RHF (form data) and Zustand (metadata)
 4. **Development Principles**: 10 core principles extracted from analyzing failed implementations
@@ -2113,6 +2274,7 @@ This specification provides a complete blueprint for implementing the WhiteBoar 
 6. **Anti-Patterns to Avoid**: Common mistakes that cause brittleness and bugs
 7. **Testing Strategy**: Comprehensive unit and E2E test coverage
 8. **Performance**: Optimization strategies for production
+9. **Payment Integration**: Stripe payment flow after form submission
 
 ### Key Implementation Rules
 
@@ -2124,7 +2286,7 @@ This specification provides a complete blueprint for implementing the WhiteBoar 
 - Save ONLY when user clicks Next/Back
 
 **Session State Management:**
-- Zustand stores ONLY: `sessionId`, `currentStep`, `lastSaved`
+- Zustand stores ONLY: `sessionId`, `submissionId` (after Step 12), `currentStep`, `lastSaved`
 - NO form data in Zustand
 - NO validation logic in Zustand
 - NO auto-save with `watch()` + debounce
@@ -2132,14 +2294,18 @@ This specification provides a complete blueprint for implementing the WhiteBoar 
 **Validation:**
 - React Hook Form + Zod is the ONLY validation system
 - NO duplicate validation in Zustand
-- NO manual field checks at Step 12
+- NO manual field checks at Step 12 or Step 13
 - Trust the framework
+- Stripe handles payment validation
 
 **User Experience:**
 - NO auto-navigation (user controls flow)
 - NO auto-save on every keystroke
 - Explicit state transitions only
 - User clicks button → action happens
+- Form submission happens after Step 12 (before payment)
+- Payment in Step 13 updates submission status
+- Back button disabled on Step 13 (submission already created)
 
 ### Success Criteria
 

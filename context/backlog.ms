@@ -1,1 +1,0 @@
-id, task, status (planned, wip, review, done)
