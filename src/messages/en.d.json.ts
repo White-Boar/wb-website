@@ -131,27 +131,24 @@ declare const messages: {
         "title": "What You'll Need",
         "business": {
           "title": "Business Information",
-          "items": {
-            "name": "Business name and description",
-            "email": "Contact email address",
-            "address": "Business address (optional)",
-            "phone": "Phone number (optional)"
-          }
+          "name": "Business name and description",
+          "email": "Contact email address",
+          "address": "Business address (optional)",
+          "phone": "Phone number (optional)"
         },
-        "optional": {
+        "assets": {
           "title": "Optional Assets",
-          "items": {
-            "logo": "Business logo (PNG, JPG, or SVG)",
-            "photos": "Business photos or product images",
-            "competitors": "Examples of websites you like",
-            "content": "Existing content or copy"
-          }
+          "logo": "Business logo (PNG, JPG, or SVG)",
+          "photos": "Business photos or product images",
+          "examples": "Examples of websites you like",
+          "content": "Existing content or copy"
         }
       },
       "actions": {
         "start": "Start Your Website",
         "continue": "Continue Where You Left Off",
-        "startOver": "Start Over"
+        "startOver": "Start Over",
+        "restart": "Restart"
       },
       "disclaimer": "Takes approximately 10-15 minutes. Your progress is automatically saved."
     },

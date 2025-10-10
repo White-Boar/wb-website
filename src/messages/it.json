@@ -120,27 +120,24 @@
         "title": "Cosa Ti Servirà",
         "business": {
           "title": "Informazioni Aziendali",
-          "items": {
-            "name": "Nome e descrizione dell'attività",
-            "email": "Indirizzo email di contatto",
-            "address": "Indirizzo dell'attività (opzionale)",
-            "phone": "Numero di telefono (opzionale)"
-          }
+          "name": "Nome e descrizione dell'attività",
+          "email": "Indirizzo email di contatto",
+          "address": "Indirizzo dell'attività (opzionale)",
+          "phone": "Numero di telefono (opzionale)"
         },
-        "optional": {
+        "assets": {
           "title": "Risorse Opzionali",
-          "items": {
-            "logo": "Logo aziendale (PNG, JPG, o SVG)",
-            "photos": "Foto dell'attività o immagini prodotto",
-            "competitors": "Esempi di siti web che ti piacciono",
-            "content": "Contenuti o testi esistenti"
-          }
+          "logo": "Logo aziendale (PNG, JPG, o SVG)",
+          "photos": "Foto dell'attività o immagini prodotto",
+          "examples": "Esempi di siti web che ti piacciono",
+          "content": "Contenuti o testi esistenti"
         }
       },
       "actions": {
         "start": "Crea il Tuo Sito Web",
         "continue": "Continua Da Dove Hai Lasciato",
-        "startOver": "Ricomincia"
+        "startOver": "Ricomincia",
+        "restart": "Ricomincia"
       },
       "disclaimer": "Richiede circa 10-15 minuti. I tuoi progressi vengono salvati automaticamente."
     },

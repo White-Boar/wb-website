@@ -42,7 +42,7 @@
 
 ## Backlog
 
-- **T001** [Phase 3.1: Setup] Create Next.js app directory structure for onboarding feature [WIP]
+- **T001** [Phase 3.1: Setup] Create Next.js app directory structure for onboarding feature [Done]
   → Sprint 001
   - Paths: `app/[locale]/onboarding/`, `app/[locale]/onboarding/step/[stepNumber]/`, `app/[locale]/onboarding/thank-you/`
   - Create layout.tsx with progress bar component
@@ -50,7 +50,7 @@
   - Dependencies: None
   - Files: app/[locale]/onboarding/layout.tsx, app/[locale]/onboarding/page.tsx, app/[locale]/onboarding/step/[stepNumber]/page.tsx
 
-- **T002** [Phase 3.1: Setup] Install and configure onboarding dependencies [WIP]
+- **T002** [Phase 3.1: Setup] Install and configure onboarding dependencies [Done]
   → Sprint 001
   - Install: react-hook-form@7.62.0, zod@4.1.5, @hookform/resolvers, zustand@5.0.8
   - Install: @supabase/ssr, @stripe/stripe-js@4.0.0, @stripe/react-stripe-js
@@ -60,7 +60,7 @@
   - Parallel: [P]
   - Files: package.json, pnpm-lock.yaml
 
-- **T003** [Phase 3.1: Setup] Configure TypeScript types for onboarding domain [WIP]
+- **T003** [Phase 3.1: Setup] Configure TypeScript types for onboarding domain [Done]
   → Sprint 001
   - Create types/onboarding.ts with FormData, SessionState, SubmissionStatus, AnalyticsEvent types
   - Add Zod schemas for all 13 steps in lib/validation/onboarding-schemas.ts
@@ -93,7 +93,7 @@
   - Parallel: [P]
   - Files: lib/stripe/client.ts, lib/stripe/server.ts
 
-- **T007** [Phase 3.1: Setup] Add onboarding translations to messages/en.json and messages/it.json [WIP]
+- **T007** [Phase 3.1: Setup] Add onboarding translations to messages/en.json and messages/it.json [Done]
   → Sprint 001
   - Add namespace onboarding.* with all step titles, field labels, placeholders, error messages
   - Add onboarding.nav.* for Next/Back buttons, progress bar
@@ -103,7 +103,7 @@
   - Parallel: [P]
   - Files: messages/en.json, messages/it.json
 
-- **T008** [Phase 3.1: Setup] Configure environment variables for onboarding [WIP]
+- **T008** [Phase 3.1: Setup] Configure environment variables for onboarding [Done]
   → Sprint 001
   - Add to .env.local: NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY
   - Add: SUPABASE_SERVICE_ROLE_KEY (for server-side operations)
@@ -315,7 +315,7 @@
   - Parallel: [P]
   - Files: __tests__/integration/onboarding-payment-retry.test.tsx
 
-- **T030** [Phase 3.3: Core Implementation] Create Zustand store for onboarding session metadata [WIP]
+- **T030** [Phase 3.3: Core Implementation] Create Zustand store for onboarding session metadata [Done]
   → Sprint 001
   - File: `lib/store/onboarding-store.ts`
   - Store ONLY metadata: sessionId (uuid | null), currentStep (1-13), lastSaved (timestamp | null)
@@ -378,7 +378,7 @@
   - Dependencies: T013 (test must fail first), T005, T004
   - Files: app/api/onboarding/upload/route.ts, app/api/onboarding/upload/[id]/route.ts
 
-- **T035A** [Phase 3.3: Core Implementation] Create Welcome component for onboarding landing page [WIP]
+- **T035A** [Phase 3.3: Core Implementation] Create Welcome component for onboarding landing page [Done]
   → Sprint 001
   - File: `components/onboarding/Welcome.tsx`
   - Design reference: context/Visual design/onboarding-00-welcome.png
@@ -525,7 +525,7 @@
   - Dependencies: T026 (test must fail first), T034 (Payment API), T030, T003, T006 (Stripe)
   - Files: components/onboarding/Step13Payment.tsx
 
-- **T049** [Phase 3.3: Core Implementation] Create ProgressBar component for onboarding layout [WIP]
+- **T049** [Phase 3.3: Core Implementation] Create ProgressBar component for onboarding layout [Done]
   → Sprint 001
   - File: `components/onboarding/ProgressBar.tsx`
   - Display current step (1-13) with visual progress indicator
@@ -535,7 +535,7 @@
   - Dependencies: T007 (translations), T030 (Zustand for currentStep)
   - Files: components/onboarding/ProgressBar.tsx
 
-- **T050** [Phase 3.3: Core Implementation] Create StepNavigation component (Next/Back buttons) [WIP]
+- **T050** [Phase 3.3: Core Implementation] Create StepNavigation component (Next/Back buttons) [Done]
   → Sprint 001
   - File: `components/onboarding/StepNavigation.tsx`
   - Next button: disabled if form invalid, calls save API then navigates
@@ -594,7 +594,7 @@
   - Dependencies: T048 (Step 13), T034 (Payment API), T051 (analytics)
   - Files: components/onboarding/Step13Payment.tsx
 
-- **T057** [Phase 3.4: Integration] Create Thank You page with completion summary [WIP]
+- **T057** [Phase 3.4: Integration] Create Thank You page with completion summary [Done]
   → Sprint 001
   - File: `app/[locale]/onboarding/thank-you/page.tsx`
   - Design reference: context/Visual design/onboarding-13-thank-you.png
