@@ -89,7 +89,7 @@ export function Welcome() {
               <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900 dark:text-gray-100">
                 {t('title')}
               </h1>
-              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+              <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
                 {t('subtitle')}
               </p>
             </motion.div>
@@ -112,7 +112,7 @@ export function Welcome() {
                 <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
                   {t('features.fast.title')}
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   {t('features.fast.description')}
                 </p>
               </motion.div>
@@ -133,7 +133,7 @@ export function Welcome() {
                 <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
                   {t('features.secure.title')}
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   {t('features.secure.description')}
                 </p>
               </motion.div>
@@ -155,7 +155,7 @@ export function Welcome() {
                 <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
                   {t('features.smart.title')}
                 </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   {t('features.smart.description')}
                 </p>
               </motion.div>
@@ -185,7 +185,7 @@ export function Welcome() {
                       <h4 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">
                         {t(`process.steps.${step}.title`)}
                       </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="text-sm text-gray-700 dark:text-gray-300">
                         {t(`process.steps.${step}.description`)}
                       </p>
                     </div>
@@ -216,7 +216,7 @@ export function Welcome() {
                         <svg className="w-5 h-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
                           {t(`requirements.business.${item}`)}
                         </span>
                       </li>
@@ -235,7 +235,7 @@ export function Welcome() {
                         <svg className="w-5 h-5 text-green-600 dark:text-green-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">
                           {t(`requirements.assets.${item}`)}
                         </span>
                       </li>
@@ -261,7 +261,7 @@ export function Welcome() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">{t('disclaimer')}</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 mt-4">{t('disclaimer')}</p>
             </motion.div>
           </div>
         </div>

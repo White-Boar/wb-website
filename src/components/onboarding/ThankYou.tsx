@@ -111,7 +111,7 @@ export function ThankYou() {
               <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
                 {t('title')}
               </h1>
-              <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">{t('message')}</p>
+              <p className="text-base text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">{t('message')}</p>
             </motion.div>
 
             {/* Timeline Cards */}
@@ -142,7 +142,7 @@ export function ThankYou() {
                 <h3 className="font-semibold text-base mb-1 text-gray-900 dark:text-gray-100">
                   {t('timeline.title')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{t('timeline.description')}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">{t('timeline.description')}</p>
               </motion.div>
 
               {/* Email Notification - Purple icon */}
@@ -171,7 +171,7 @@ export function ThankYou() {
                 <h3 className="font-semibold text-base mb-1 text-gray-900 dark:text-gray-100">
                   {t('notification.title')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   {t('notification.description')}
                 </p>
               </motion.div>
@@ -202,13 +202,13 @@ export function ThankYou() {
                 <h3 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">
                   {t('payment.title')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{t('payment.description')}</p>
+                <p className="text-sm text-gray-700 dark:text-gray-300">{t('payment.description')}</p>
               </motion.div>
             </div>
 
             {/* What happens next? - Gradient background */}
             <motion.div
-              className="px-10 py-6 rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 dark:bg-gray-800 max-w-4xl mx-auto"
+              className="px-10 py-6 rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 dark:from-gray-800 dark:via-gray-700 dark:to-gray-800 max-w-4xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
