@@ -14,8 +14,11 @@
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useOnboardingStore, useHasActiveSession } from '@/lib/store/onboarding-store';
 import { WhiteBoarLogo } from '@/components/WhiteBoarLogo';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function ThankYou() {
   const t = useTranslations('onboarding.thankYou');
@@ -41,15 +44,15 @@ export function ThankYou() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--wb-background)] flex flex-col">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
       {/* Navigation Header */}
-      <header className="border-b border-[var(--wb-neutral-200)] bg-white">
-        <div className="container mx-auto px-4 py-4">
+      <header className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="container mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <div className="flex items-center gap-2">
-              <WhiteBoarLogo width={40} height={40} />
-              <span className="text-xl font-bold text-[var(--wb-neutral-900)]">WhiteBoar</span>
+            <div className="flex items-center gap-3">
+              <WhiteBoarLogo width={80} height={80} />
+              <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">WhiteBoar</span>
             </div>
 
             {/* Right side controls */}
@@ -58,7 +61,7 @@ export function ThankYou() {
               {hasActiveSession && (
                 <button
                   onClick={handleRestart}
-                  className="flex items-center gap-2 text-sm text-[var(--wb-neutral-600)] hover:text-[var(--wb-neutral-900)] transition-colors"
+                  className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
                   aria-label={tNav('actions.restart')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,24 +72,10 @@ export function ThankYou() {
               )}
 
               {/* Language selector */}
-              <button
-                className="p-2 text-[var(--wb-neutral-600)] hover:text-[var(--wb-neutral-900)] transition-colors"
-                aria-label="Change language"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                </svg>
-              </button>
+              <LanguageSelector />
 
               {/* Theme toggle */}
-              <button
-                className="p-2 text-[var(--wb-neutral-600)] hover:text-[var(--wb-neutral-900)] transition-colors"
-                aria-label="Toggle theme"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </button>
+              <ThemeToggle />
             </div>
           </div>
         </div>
@@ -97,10 +86,15 @@ export function ThankYou() {
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-4xl mx-auto">
             {/* Success Icon */}
-            <div className="text-center mb-8">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+            <motion.div
+              className="text-center mb-12"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
                 <svg
-                  className="w-12 h-12 text-green-600"
+                  className="w-10 h-10 text-green-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -109,24 +103,29 @@ export function ThankYou() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
+                    strokeWidth={2.5}
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-4 text-[var(--wb-neutral-900)]">
+              <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-gray-100">
                 {t('title')}
               </h1>
-              <p className="text-lg text-[var(--wb-neutral-600)] max-w-2xl mx-auto">{t('message')}</p>
-            </div>
+              <p className="text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">{t('message')}</p>
+            </motion.div>
 
             {/* Timeline Cards */}
-            <div className="grid md:grid-cols-3 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
               {/* Preview Ready - Blue icon */}
-              <div className="p-6 rounded-lg bg-white border border-[var(--wb-neutral-200)] text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-100 flex items-center justify-center">
+              <motion.div
+                className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-center shadow-sm"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
                   <svg
-                    className="w-8 h-8 text-blue-600"
+                    className="w-7 h-7 text-blue-600 dark:text-blue-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -140,17 +139,22 @@ export function ThankYou() {
                     />
                   </svg>
                 </div>
-                <h3 className="font-semibold mb-2 text-[var(--wb-neutral-900)]">
+                <h3 className="font-semibold text-base mb-1 text-gray-900 dark:text-gray-100">
                   {t('timeline.title')}
                 </h3>
-                <p className="text-sm text-[var(--wb-neutral-600)]">{t('timeline.description')}</p>
-              </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('timeline.description')}</p>
+              </motion.div>
 
               {/* Email Notification - Purple icon */}
-              <div className="p-6 rounded-lg bg-white border border-[var(--wb-neutral-200)] text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-purple-100 flex items-center justify-center">
+              <motion.div
+                className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-center shadow-sm"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
                   <svg
-                    className="w-8 h-8 text-purple-600"
+                    className="w-7 h-7 text-purple-600 dark:text-purple-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -164,19 +168,24 @@ export function ThankYou() {
                     />
                   </svg>
                 </div>
-                <h3 className="font-semibold mb-2 text-[var(--wb-neutral-900)]">
+                <h3 className="font-semibold text-base mb-1 text-gray-900 dark:text-gray-100">
                   {t('notification.title')}
                 </h3>
-                <p className="text-sm text-[var(--wb-neutral-600)]">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {t('notification.description')}
                 </p>
-              </div>
+              </motion.div>
 
               {/* Payment - Green star icon */}
-              <div className="p-6 rounded-lg bg-white border border-[var(--wb-neutral-200)] text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+              <motion.div
+                className="p-6 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-center shadow-sm"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <div className="w-14 h-14 mx-auto mb-3 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
                   <svg
-                    className="w-8 h-8 text-green-600"
+                    className="w-7 h-7 text-green-600 dark:text-green-400"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -190,36 +199,41 @@ export function ThankYou() {
                     />
                   </svg>
                 </div>
-                <h3 className="font-semibold mb-2 text-[var(--wb-neutral-900)]">
+                <h3 className="font-semibold mb-2 text-gray-900 dark:text-gray-100">
                   {t('payment.title')}
                 </h3>
-                <p className="text-sm text-[var(--wb-neutral-600)]">{t('payment.description')}</p>
-              </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{t('payment.description')}</p>
+              </motion.div>
             </div>
 
-            {/* What happens next? - Beige background */}
-            <div className="p-8 rounded-lg bg-[#F5F5DC] mb-8">
-              <h2 className="text-xl font-bold mb-6 text-center text-[var(--wb-neutral-900)]">
+            {/* What happens next? - Gradient background */}
+            <motion.div
+              className="px-10 py-6 rounded-lg bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 dark:bg-gray-800 max-w-4xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <h2 className="text-xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
                 {t('nextSteps.title')}
               </h2>
-              <ol className="space-y-4 max-w-2xl mx-auto">
+              <ol className="space-y-3 max-w-2xl mx-auto">
                 <li className="flex items-start gap-4">
-                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--wb-neutral-300)] text-[var(--wb-neutral-900)] text-sm flex items-center justify-center font-semibold">
+                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-base flex items-center justify-center font-semibold">
                     1
                   </span>
-                  <p className="text-[var(--wb-neutral-700)] pt-1">{t('nextSteps.step1')}</p>
+                  <p className="text-gray-700 dark:text-gray-300 pt-2 leading-snug">{t('nextSteps.step1')}</p>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--wb-neutral-300)] text-[var(--wb-neutral-900)] text-sm flex items-center justify-center font-semibold">
+                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-base flex items-center justify-center font-semibold">
                     2
                   </span>
-                  <p className="text-[var(--wb-neutral-700)] pt-1">{t('nextSteps.step2')}</p>
+                  <p className="text-gray-700 dark:text-gray-300 pt-2 leading-snug">{t('nextSteps.step2')}</p>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="flex-shrink-0 w-8 h-8 rounded-full bg-[var(--wb-neutral-300)] text-[var(--wb-neutral-900)] text-sm flex items-center justify-center font-semibold">
+                  <span className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-base flex items-center justify-center font-semibold">
                     3
                   </span>
-                  <p className="text-[var(--wb-neutral-700)] pt-1">{t('nextSteps.step3')}</p>
+                  <p className="text-gray-700 dark:text-gray-300 pt-2 leading-snug">{t('nextSteps.step3')}</p>
                 </li>
               </ol>
 
@@ -227,20 +241,20 @@ export function ThankYou() {
               <div className="text-center mt-8">
                 <button
                   onClick={handleBackHome}
-                  className="px-8 py-3 bg-[var(--wb-accent)] text-black font-semibold rounded-lg hover:bg-[var(--wb-accent)]/90 transition-colors"
+                  className="px-8 py-3 bg-[rgb(255_212_0)] text-black font-semibold rounded-lg hover:opacity-90 transition-opacity"
                 >
                   {t('backHome')}
                 </button>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[var(--wb-neutral-200)] bg-white mt-auto">
+      <footer className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 mt-auto">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between text-sm text-[var(--wb-neutral-600)]">
+          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
             <p>© 2025 WhiteBoar</p>
             <div className="flex items-center gap-2">
               <span>Secure & SSL Protected</span>
