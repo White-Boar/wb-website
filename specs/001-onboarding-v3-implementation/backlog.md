@@ -69,29 +69,32 @@
   - Parallel: [P]
   - Files: types/onboarding.ts, lib/validation/onboarding-schemas.ts
 
-- **T004** [Phase 3.1: Setup] Create Supabase database migration for onboarding tables [Planned]
+- **T004** [Phase 3.1: Setup] Create Supabase database migration for onboarding tables [Done]
+  → Sprint 002 - Completed 2025-10-12
   - Create migration: supabase/migrations/YYYYMMDD_onboarding_v3.sql
   - Copy migration SQL from data-model.md (4 tables: onboarding_sessions, onboarding_submissions, onboarding_analytics, onboarding_uploads)
   - Include all indexes, foreign keys, RLS policies
   - Test migration with `supabase db push`
   - Dependencies: None
-  - Files: supabase/migrations/YYYYMMDD_onboarding_v3.sql
+  - Files: supabase/migrations/20251012122748_onboarding_v3.sql, supabase/migrations/20251012122749_rollback_onboarding_v3.sql, __tests__/database/onboarding-migration.test.ts
 
-- **T005** [Phase 3.1: Setup] Configure Supabase client for onboarding API routes [Planned]
+- **T005** [Phase 3.1: Setup] Configure Supabase client for onboarding API routes [Done]
+  → Sprint 002 - Completed 2025-10-12
   - Create lib/supabase/server.ts with createClient() for Server Components and Route Handlers
   - Create lib/supabase/client.ts with createClient() for Client Components
   - Add RLS helper functions for session access (verifySessionOwnership)
   - Dependencies: T004 (migration must exist)
   - Files: lib/supabase/server.ts, lib/supabase/client.ts
 
-- **T006** [Phase 3.1: Setup] Configure Stripe client and webhook handling [Planned]
+- **T006** [Phase 3.1: Setup] Configure Stripe client and webhook handling [Done]
+  → Sprint 002 - Completed 2025-10-12
   - Create lib/stripe/client.ts with loadStripe() initialization
   - Create lib/stripe/server.ts with Stripe SDK initialization (STRIPE_SECRET_KEY)
   - Add webhook signature verification helper
   - Add types for Stripe PaymentIntent and webhook events
   - Dependencies: None
   - Parallel: [P]
-  - Files: lib/stripe/client.ts, lib/stripe/server.ts
+  - Files: lib/stripe/client.ts, lib/stripe/server.ts, __tests__/lib/stripe/client.test.ts
 
 - **T007** [Phase 3.1: Setup] Add onboarding translations to messages/en.json and messages/it.json [Done]
   → Sprint 001
@@ -325,27 +328,33 @@
   - Dependencies: T002 (zustand installed), T003 (types)
   - Files: lib/store/onboarding-store.ts
 
-- **T031** [Phase 3.3: Core Implementation] Implement Session API route handlers [Planned]
-  - File: `app/api/onboarding/session/route.ts` (POST)
-  - File: `app/api/onboarding/session/[sessionId]/route.ts` (GET, PATCH)
-  - POST: Create session with locale, ipAddress, userAgent
-  - GET: Load session with form_data and metadata
-  - PATCH: Update currentStep, locale, emailVerified
-  - Verify RLS policies enforced (session owner only)
-  - Dependencies: T009 (test must fail first), T005 (Supabase client), T004 (migration)
-  - Files: app/api/onboarding/session/route.ts, app/api/onboarding/session/[sessionId]/route.ts
+- **T031** [Phase 3.3: Core Implementation] Implement Session API route handlers [Done]
+  → Sprint 002 | Completed: 2025-10-12
+  - File: `src/app/api/onboarding/session/route.ts` (POST)
+  - File: `src/app/api/onboarding/session/[sessionId]/route.ts` (GET, PATCH)
+  - POST: Create session with locale, ipAddress, userAgent ✅
+  - GET: Load session with form_data and metadata ✅
+  - PATCH: Update currentStep, locale, emailVerified ✅
+  - Verify RLS policies enforced (session owner only) ✅
+  - E2E Tests: `src/__tests__/e2e/api/onboarding-session.spec.ts` (12 tests passing)
+  - Dependencies: T005 (Supabase client), T004 (migration)
+  - Files: src/app/api/onboarding/session/route.ts, src/app/api/onboarding/session/[sessionId]/route.ts, src/__tests__/e2e/api/onboarding-session.spec.ts
 
-- **T032** [Phase 3.3: Core Implementation] Implement Onboarding Progress API route handlers [Planned]
-  - File: `app/api/onboarding/save/route.ts` (POST)
-  - File: `app/api/onboarding/email/verify/route.ts` (POST)
-  - File: `app/api/onboarding/email/verify/confirm/route.ts` (POST)
-  - POST /save: Merge form data with existing session.form_data (JSONB)
-  - POST /verify: Generate 6-digit OTP, send email, store in verification_code
-  - POST /verify/confirm: Verify code, check attempts (max 5), check lockout (15 min), check expiry (10 min)
-  - Dependencies: T010 (test must fail first), T005, T004
-  - Files: app/api/onboarding/save/route.ts, app/api/onboarding/email/verify/route.ts, app/api/onboarding/email/verify/confirm/route.ts
+- **T032** [Phase 3.3: Core Implementation] Implement Onboarding Progress API route handlers [Done]
+  → Sprint 002 | Completed: 2025-10-12
+  - File: `src/app/api/onboarding/save/route.ts` (POST) ✅
+  - File: `src/app/api/onboarding/email/verify/route.ts` (POST) ✅
+  - File: `src/app/api/onboarding/email/verify/confirm/route.ts` (POST) ✅
+  - POST /save: Merge form data with existing session.form_data (JSONB) ✅
+  - POST /verify: Generate 6-digit OTP, send email, store in verification_code ✅
+  - POST /verify/confirm: Verify code, check attempts (max 5), check lockout (15 min), check expiry (60 sec) ✅
+  - E2E Tests: `src/__tests__/e2e/api/onboarding-progress.spec.ts` (9 tests passing)
+  - Note: Changed OTP expiry from 10 min to 60 sec, using updated_at timestamp (no extra column)
+  - Dependencies: T005, T004
+  - Files: src/app/api/onboarding/save/route.ts, src/app/api/onboarding/email/verify/route.ts, src/app/api/onboarding/email/verify/confirm/route.ts, src/__tests__/e2e/api/onboarding-progress.spec.ts
 
-- **T033** [Phase 3.3: Core Implementation] Implement Submission API route handlers [Planned]
+- **T033** [Phase 3.3: Core Implementation] Implement Submission API route handlers [Done]
+  → Sprint 002 - Completed 2025-10-12
   - File: `app/api/onboarding/submit/route.ts` (POST)
   - File: `app/api/onboarding/submission/[id]/route.ts` (GET)
   - POST: Create submission with status="unpaid", link to session via submission_id FK
@@ -355,7 +364,8 @@
   - Dependencies: T011 (test must fail first), T005, T004
   - Files: app/api/onboarding/submit/route.ts, app/api/onboarding/submission/[id]/route.ts
 
-- **T034** [Phase 3.3: Core Implementation] Implement Payment API route handlers [Planned]
+- **T034** [Phase 3.3: Core Implementation] Implement Payment API route handlers [Done]
+  → Sprint 002 - Completed 2025-10-12
   - File: `app/api/onboarding/payment/intent/route.ts` (POST)
   - File: `app/api/onboarding/payment/complete/route.ts` (POST)
   - File: `app/api/onboarding/payment/status/[id]/route.ts` (GET)
@@ -367,7 +377,8 @@
   - Dependencies: T012 (test must fail first), T006 (Stripe), T005, T004
   - Files: app/api/onboarding/payment/intent/route.ts, app/api/onboarding/payment/complete/route.ts, app/api/onboarding/payment/status/[id]/route.ts, app/api/onboarding/payment/webhook/route.ts
 
-- **T035** [Phase 3.3: Core Implementation] Implement Upload API route handlers [Planned]
+- **T035** [Phase 3.3: Core Implementation] Implement Upload API route handlers [Done]
+  → Sprint 002 - Completed 2025-10-12
   - File: `app/api/onboarding/upload/route.ts` (POST)
   - File: `app/api/onboarding/upload/[id]/route.ts` (DELETE)
   - POST: Upload file to Supabase Storage (bucket: onboarding-assets)
@@ -545,13 +556,14 @@
   - Dependencies: T032 (save API), T030 (Zustand)
   - Files: components/onboarding/StepNavigation.tsx
 
-- **T051** [Phase 3.3: Core Implementation] Create analytics tracking utility [Planned]
+- **T051** [Phase 3.3: Core Implementation] Create analytics tracking utility [Done]
+  → Sprint 002 - Completed 2025-10-12
   - File: `lib/analytics/onboarding-analytics.ts`
   - Helper functions: trackStepViewed(), trackStepCompleted(), trackFieldError(), trackPaymentInitiated(), etc.
   - Insert events into onboarding_analytics table
   - Include session_id, event_type, step_number, metadata (JSONB)
   - Dependencies: T005 (Supabase client), T004 (analytics table migration)
-  - Files: lib/analytics/onboarding-analytics.ts
+  - Files: lib/analytics/tracker.ts, __tests__/lib/analytics/tracker.test.ts
 
 - **T052** [Phase 3.4: Integration] Integrate analytics tracking into all step components [Planned]
   - Add trackStepViewed() on component mount for Steps 1-13
@@ -794,6 +806,394 @@
   - Dependencies: All implementation complete
   - Files: Multiple (across components, API routes, utilities)
 
+- **T079** [Phase 3.1: Setup] Install missing UI utility dependencies [Planned]
+  - Install: react-dropzone@^14.3.8 (file uploads with drag & drop)
+  - Install: react-otp-input@^3.1.1 (Step 2 email verification)
+  - Install: react-international-phone@^4.6.0 (Step 3 phone input)
+  - Install: @react-google-maps/api@^2.20.7 (Step 3 address autocomplete)
+  - Install: lodash.debounce@^4.0.8 (form input debouncing)
+  - Install: sonner@^2.0.7 (toast notifications)
+  - Update package.json with correct versions
+  - Dependencies: None (can run in parallel with T002)
+  - Parallel: [P]
+  - Files: package.json, pnpm-lock.yaml
+
+- **T080** [Phase 3.1: Setup] Configure email service for OTP and notifications [Planned]
+  - Choose email provider: Resend (recommended) or SendGrid or Nodemailer
+  - Add env vars: EMAIL_SERVICE_API_KEY, EMAIL_FROM_ADDRESS, EMAIL_FROM_NAME
+  - Create lib/email/client.ts with send() function
+  - Test email sending with test recipient
+  - Dependencies: None
+  - Parallel: [P]
+  - Files: lib/email/client.ts, .env.local, .env.example
+
+- **T081** [Phase 3.1: Setup] Create email templates for onboarding [Planned]
+  - Create lib/email/templates/otp-verification.tsx (Step 2 email verification code)
+  - Create lib/email/templates/payment-confirmation.tsx (payment success confirmation)
+  - Create lib/email/templates/admin-notification.tsx (notify admin of new paid submission)
+  - Use React Email or plain HTML templates
+  - Include WhiteBoar branding, logo, footer
+  - Dependencies: T080 (email service)
+  - Files: lib/email/templates/otp-verification.tsx, lib/email/templates/payment-confirmation.tsx, lib/email/templates/admin-notification.tsx
+
+- **T082** [Phase 3.3: Core Implementation] Create FormField universal wrapper component [Done]
+  → Sprint 002 - Completed 2025-10-12
+  - File: `components/onboarding/form-fields/FormField.tsx`
+  - Universal wrapper for all form inputs with label, error display, description
+  - Integrates with React Hook Form Controller
+  - Props: name, label, description, required, error, children
+  - Displays validation errors from Zod schemas
+  - Accessible with proper ARIA labels and error announcements
+  - Dependencies: T003 (types), T007 (translations)
+  - Parallel: [P]
+  - Files: components/onboarding/form-fields/FormField.tsx
+
+- **T083** [Phase 3.3: Core Implementation] Create TextInput component [Done]
+  → Sprint 002 - Completed 2025-10-12
+  - File: `components/onboarding/form-fields/TextInput.tsx`
+  - Standard text input field wrapped in FormField
+  - Props: type (text/password), placeholder, maxLength, autoComplete
+  - Character counter if maxLength provided
+  - Dependencies: T082 (FormField)
+  - Parallel: [P]
+  - Files: components/onboarding/form-fields/TextInput.tsx
+
+- **T084** [Phase 3.3: Core Implementation] Create EmailInput component [Planned]
+  - File: `components/onboarding/form-fields/EmailInput.tsx`
+  - Email input with validation indicator
+  - Props: placeholder, autoComplete
+  - Visual feedback for valid/invalid email format
+  - Dependencies: T082 (FormField)
+  - Parallel: [P]
+  - Files: components/onboarding/form-fields/EmailInput.tsx
+
+- **T085** [Phase 3.3: Core Implementation] Create PhoneInput component with country selector [Planned]
+  - File: `components/onboarding/form-fields/PhoneInput.tsx`
+  - Phone input with country code dropdown using react-international-phone
+  - Formats to E.164 format for submission
+  - Default country: IT (Italy)
+  - Props: placeholder, defaultCountry
+  - Dependencies: T082 (FormField), T079 (react-international-phone installed)
+  - Files: components/onboarding/form-fields/PhoneInput.tsx
+
+- **T086** [Phase 3.3: Core Implementation] Create AddressInput component with Google Places [Planned]
+  - File: `components/onboarding/form-fields/AddressInput.tsx`
+  - Google Places Autocomplete integration using @react-google-maps/api
+  - Auto-fills: street, city, state/province, postal code, country
+  - Manual entry fallback if autocomplete fails or unavailable
+  - Returns flat field structure: physicalAddressStreet, physicalAddressCity, etc.
+  - Props: onPlaceSelected callback
+  - Dependencies: T082 (FormField), T079 (@react-google-maps/api installed), T008 (Google API key)
+  - Files: components/onboarding/form-fields/AddressInput.tsx
+
+- **T087** [Phase 3.3: Core Implementation] Create SelectInput component [Done]
+  → Sprint 002 - Completed 2025-10-12
+  - File: `components/onboarding/form-fields/SelectInput.tsx`
+  - Dropdown select using shadcn/ui Select
+  - Props: options (array of {value, label}), placeholder
+  - Keyboard navigation support
+  - Dependencies: T082 (FormField)
+  - Parallel: [P]
+  - Files: components/onboarding/form-fields/SelectInput.tsx
+
+- **T088** [Phase 3.3: Core Implementation] Create SliderInput component [Planned]
+  - File: `components/onboarding/form-fields/SliderInput.tsx`
+  - Range slider (0-100) using Radix UI Slider
+  - Props: min, max, step, leftLabel, rightLabel (e.g., "Budget-Conscious" ↔ "Premium")
+  - Visual feedback with current value display
+  - Used in Step 5 (Customer Profile) for 5 slider fields
+  - Dependencies: T082 (FormField)
+  - Parallel: [P]
+  - Files: components/onboarding/form-fields/SliderInput.tsx
+
+- **T089** [Phase 3.3: Core Implementation] Create DynamicList component [Planned]
+  - File: `components/onboarding/form-fields/DynamicList.tsx`
+  - Add/remove list items with validation (e.g., competitor URLs, website references)
+  - Props: minItems, maxItems, itemType (text/url), placeholder
+  - Visual feedback for array limits
+  - Used in Step 4 (competitorUrls), Step 7 (websiteReferences), Step 11 (offerings)
+  - Dependencies: T082 (FormField)
+  - Parallel: [P]
+  - Files: components/onboarding/form-fields/DynamicList.tsx
+
+- **T090** [Phase 3.3: Core Implementation] Create ImageGrid component for design/image style selection [Planned]
+  - File: `components/onboarding/form-fields/ImageGrid.tsx`
+  - Grid of selectable images with radio/checkbox behavior
+  - Props: options (array of {value, label, imageUrl}), selectionMode (single/multiple)
+  - Visual indicator for selected option
+  - Lazy loading for images
+  - Used in Step 8 (Design Style), Step 9 (Image Style), Step 10 (Color Palette)
+  - Dependencies: T082 (FormField)
+  - Parallel: [P]
+  - Files: components/onboarding/form-fields/ImageGrid.tsx
+
+- **T091** [Phase 3.3: Core Implementation] Create FileUpload component with drag & drop [Planned]
+  - File: `components/onboarding/form-fields/FileUpload.tsx`
+  - Drag & drop + file picker using react-dropzone
+  - Props: maxFiles, maxSizeBytes, acceptedFileTypes, uploadType (logo/photo)
+  - File preview with thumbnails
+  - Delete uploaded file button
+  - Upload progress indicator
+  - Validates file limits before upload
+  - Calls T035 (Upload API) for actual upload
+  - Used in Step 12 (Business Assets)
+  - Dependencies: T082 (FormField), T079 (react-dropzone installed)
+  - Files: components/onboarding/form-fields/FileUpload.tsx
+
+- **T092** [Phase 3.3: Core Implementation] Implement Step page route handler [Done]
+  → Sprint 002 - Completed 2025-10-12
+  - File: `app/[locale]/onboarding/step/[stepNumber]/page.tsx`
+  - Central orchestrator for all 13 steps
+  - Validate stepNumber param (1-13)
+  - Setup React Hook Form with mode: 'onBlur', resolver: zodResolver
+  - Dynamic component loading based on stepNumber
+  - Load form data from session on mount
+  - Render: ProgressBar + StepComponent + StepNavigation
+  - Handle Next/Back navigation with form validation
+  - Call POST /api/onboarding/save before navigation
+  - Note: Sprint 002 implemented minimal infrastructure, full step components in later sprints
+  - Dependencies: T031 (Session API), T032 (save API), T036-T048 (all step components), T082-T091 (form field components)
+  - Files: app/[locale]/onboarding/step/[stepNumber]/page.tsx
+
+- **T093** [Phase 3.3: Core Implementation] Create form field utility helpers [Planned]
+  - File: `lib/utils/form-helpers.ts`
+  - validateUrl(url: string): boolean - URL validation beyond Zod
+  - formatPhoneNumber(phone: string): string - E.164 formatting
+  - validateFileSize(file: File, maxBytes: number): boolean
+  - validateFileType(file: File, allowedTypes: string[]): boolean
+  - formatBytes(bytes: number): string - "10.5 MB" formatting
+  - Dependencies: None
+  - Parallel: [P]
+  - Files: lib/utils/form-helpers.ts
+
+- **T094** [Phase 3.3: Core Implementation] Create Skeleton loading component [Planned]
+  - File: `components/ui/skeleton.tsx`
+  - Reusable skeleton loader component (if not already from shadcn/ui)
+  - Used for dynamic imports and async content loading
+  - Prevents layout shift (CLS)
+  - Props: className for sizing
+  - Dependencies: None
+  - Parallel: [P]
+  - Files: components/ui/skeleton.tsx
+
+- **T095** [Phase 3.3: Core Implementation] Configure Google Maps API script loading [Planned]
+  - File: `lib/google/maps-loader.ts`
+  - Load Google Maps JavaScript API script dynamically
+  - Use LoadScript from @react-google-maps/api
+  - Load only when AddressInput component mounts
+  - Handle loading states and errors
+  - Dependencies: T079 (@react-google-maps/api installed), T008 (Google API key)
+  - Files: lib/google/maps-loader.ts
+
+- **T096** [Phase 3.4: Integration] Implement email sending in Step 2 verification API [Planned]
+  - Modify T032 (POST /api/onboarding/email/verify) to send OTP email
+  - Generate 6-digit code and store in session.verification_code with expiry
+  - Send email using lib/email/client.ts with otp-verification template
+  - Include user's firstName in email greeting
+  - Track email sent event in analytics
+  - Dependencies: T080 (email service), T081 (email templates), T032 (verification API exists)
+  - Files: app/api/onboarding/email/verify/route.ts
+
+- **T097** [Phase 3.4: Integration] Enhance Stripe webhook handler with signature verification [Planned]
+  - Modify T034 (POST /api/onboarding/payment/webhook) to verify Stripe signature
+  - Add idempotency handling (check payment_transaction_id before processing)
+  - Handle payment_intent.succeeded event
+  - Handle payment_intent.payment_failed event
+  - Log webhook events to onboarding_analytics table
+  - Add retry logic for failed webhook processing
+  - Dependencies: T034 (webhook route exists), T006 (Stripe client)
+  - Files: app/api/onboarding/payment/webhook/route.ts
+
+- **T098** [Phase 3.4: Integration] Add payment confirmation email sending [Planned]
+  - Modify T034 (POST /api/onboarding/payment/complete) to send confirmation email
+  - Send to user's email with submission details
+  - Include: submission ID, business name, amount paid, next steps (5 business days)
+  - Use payment-confirmation email template
+  - Track email sent event in analytics
+  - Dependencies: T080 (email service), T081 (email templates), T034 (payment complete API exists)
+  - Files: app/api/onboarding/payment/complete/route.ts
+
+- **T099** [Phase 3.4: Integration] Add admin notification email on payment success [Planned]
+  - Modify T034 (POST /api/onboarding/payment/complete) to send admin notification
+  - Send to ADMIN_EMAIL env var with new paid submission details
+  - Include: submission ID, business name, email, phone, industry, submission timestamp
+  - Link to admin dashboard (if exists)
+  - Use admin-notification email template
+  - Dependencies: T080 (email service), T081 (email templates), T034 (payment complete API exists)
+  - Files: app/api/onboarding/payment/complete/route.ts
+
+- **T100** [Phase 3.4: Integration] Add file upload progress tracking [Planned]
+  - Modify T091 (FileUpload component) to track upload progress
+  - Use XMLHttpRequest or fetch with progress events
+  - Display progress bar (0-100%) during upload
+  - Show upload speed and estimated time remaining
+  - Handle pause/resume functionality (optional)
+  - Dependencies: T091 (FileUpload component exists), T035 (Upload API)
+  - Files: components/onboarding/form-fields/FileUpload.tsx
+
+- **T101** [Phase 3.4: Integration] Add image thumbnail generation for uploads [Planned]
+  - Modify T035 (POST /api/onboarding/upload) to generate thumbnails
+  - Create 200x200px thumbnails for photo uploads
+  - Store thumbnail URL in onboarding_uploads.thumbnail_url field
+  - Use sharp or Next.js Image optimization
+  - Async processing (don't block upload response)
+  - Dependencies: T035 (Upload API exists)
+  - Files: app/api/onboarding/upload/route.ts
+
+- **T102** [Phase 3.4: Integration] Add virus scan status tracking placeholder [Planned]
+  - Modify T035 (POST /api/onboarding/upload) to set virus_scan_status = "pending"
+  - Add virus_scan_status to upload response
+  - Document future virus scan integration point (ClamAV/VirusTotal)
+  - Display scan status in FileUpload component
+  - Block form submission if any file has status = "infected"
+  - Dependencies: T035 (Upload API exists), T091 (FileUpload component)
+  - Files: app/api/onboarding/upload/route.ts, components/onboarding/form-fields/FileUpload.tsx
+
+- **T103** [Phase 3.5: Polish] Implement session expiry cleanup job [Planned]
+  - Create app/api/cron/cleanup-sessions/route.ts (Vercel Cron or manual trigger)
+  - Delete sessions older than 7 days with no submission
+  - Delete submissions with status="unpaid" older than 90 days (GDPR)
+  - Delete associated uploads from Supabase Storage
+  - Log cleanup actions to analytics
+  - Schedule: Daily at 2am UTC
+  - Dependencies: T004 (migration), T005 (Supabase client)
+  - Files: app/api/cron/cleanup-sessions/route.ts, vercel.json (cron config)
+
+- **T104** [Phase 3.5: Polish] Add session expiry warning UI [Planned]
+  - Modify T092 (Step page) to check session age on mount
+  - Show warning toast if session > 6 days old: "Session expires in X hours"
+  - Provide "Extend session" button (updates last_activity timestamp)
+  - Redirect to /onboarding with error message if session expired
+  - Dependencies: T092 (Step page exists), T031 (Session API)
+  - Files: app/[locale]/onboarding/step/[stepNumber]/page.tsx
+
+- **T105** [Phase 3.5: Polish] Configure Vercel Analytics (optional) [Planned]
+  - Install @vercel/analytics (if not already installed)
+  - Add Analytics component to root layout
+  - Track custom events: step_viewed, step_completed, payment_succeeded
+  - Add VERCEL_ANALYTICS_ID to env vars
+  - Optional: Only enable in production
+  - Dependencies: None
+  - Parallel: [P]
+  - Files: app/[locale]/layout.tsx, package.json, .env.local
+
+- **T106** [Phase 3.5: Polish] Create analytics dashboard queries [Planned]
+  - Create lib/analytics/dashboard-queries.ts
+  - Query 1: Completion rate by step (funnel analysis)
+  - Query 2: Average time spent per step
+  - Query 3: Common validation errors by field
+  - Query 4: Payment success/failure rates
+  - Query 5: Session recovery statistics
+  - Query 6: Unpaid submission follow-up list
+  - Document query usage in docs/analytics.md
+  - Dependencies: T004 (onboarding_analytics table)
+  - Files: lib/analytics/dashboard-queries.ts, docs/analytics.md
+
+- **T107** [Phase 3.5: Polish] Configure Next.js production optimizations [Planned]
+  - Update next.config.js with production settings
+  - Add: experimental.optimizeCss: true
+  - Add: compiler.removeConsole: { exclude: ['error', 'warn'] }
+  - Configure bundle splitting for onboarding routes
+  - Set output: 'standalone' for Docker deployment (optional)
+  - Dependencies: None
+  - Files: next.config.js
+
+- **T108** [Phase 3.5: Polish] Configure image optimization settings [Planned]
+  - Update next.config.js images config
+  - Add Supabase Storage domain to remotePatterns
+  - Set deviceSizes and imageSizes for responsive images
+  - Configure formats: ['image/avif', 'image/webp']
+  - Set minimumCacheTTL for uploaded assets
+  - Dependencies: None
+  - Files: next.config.js
+
+- **T109** [Phase 3.5: Polish] Unit test for all 9 reusable form field components [Planned]
+  - Test files: __tests__/components/form-fields/*.test.tsx
+  - Test FormField, TextInput, EmailInput, PhoneInput, AddressInput, SelectInput, SliderInput, DynamicList, ImageGrid, FileUpload
+  - Test rendering with React Hook Form integration
+  - Test validation error display
+  - Test accessibility (ARIA labels, keyboard navigation)
+  - Test user interactions (typing, selecting, uploading)
+  - Dependencies: T082-T091 (all form field components)
+  - Parallel: [P]
+  - Files: __tests__/components/form-fields/FormField.test.tsx, __tests__/components/form-fields/TextInput.test.tsx, etc.
+
+- **T110** [Phase 3.5: Polish] Unit test for Step page route handler [Planned]
+  - Test file: __tests__/app/onboarding/step/[stepNumber]/page.test.tsx
+  - Test dynamic step loading (Steps 1-13)
+  - Test invalid stepNumber (404 or redirect)
+  - Test session loading on mount
+  - Test form data restoration
+  - Test navigation flow (Next/Back)
+  - Dependencies: T092 (Step page exists)
+  - Files: __tests__/app/onboarding/step/[stepNumber]/page.test.tsx
+
+- **T111** [Phase 3.5: Polish] E2E test for Google Places autocomplete [Planned]
+  - Test file: __tests__/e2e/onboarding-google-places.spec.ts
+  - Navigate to Step 3 (Business Basics)
+  - Type "Via Roma, Milano" in address field
+  - Select autocomplete suggestion
+  - Verify all address fields auto-filled (street, city, postal code, country)
+  - Test manual entry fallback if autocomplete unavailable
+  - Dependencies: T086 (AddressInput component), T038 (Step 3 component)
+  - Files: __tests__/e2e/onboarding-google-places.spec.ts
+
+- **T112** [Phase 3.5: Polish] E2E test for file upload with progress [Planned]
+  - Test file: __tests__/e2e/onboarding-file-upload-progress.spec.ts
+  - Navigate to Step 12 (Business Assets)
+  - Upload 5MB test image
+  - Verify progress bar appears and updates (0% → 100%)
+  - Verify thumbnail generated after upload
+  - Verify file preview displays
+  - Test delete uploaded file
+  - Dependencies: T091 (FileUpload component), T100 (progress tracking)
+  - Files: __tests__/e2e/onboarding-file-upload-progress.spec.ts
+
+- **T113** [Phase 3.6: Future] Implement ARIA live regions for save indicators [Planned]
+  - Modify T050 (StepNavigation) to add ARIA live region
+  - Announce "Saving..." and "Saved" to screen readers
+  - Use role="status" aria-live="polite"
+  - Visual indicator for sighted users (checkmark icon)
+  - Dependencies: T050 (StepNavigation component)
+  - Files: components/onboarding/StepNavigation.tsx
+
+- **T114** [Phase 3.6: Future] Add high contrast mode support [Planned]
+  - Add CSS media query for @media (prefers-contrast: high)
+  - Increase contrast ratios for all form fields
+  - Enhance focus indicators with thicker borders
+  - Test with Windows High Contrast Mode
+  - Dependencies: T082-T091 (all form field components)
+  - Files: components/onboarding/form-fields/*.tsx, globals.css
+
+- **T115** [Phase 3.6: Future] Implement mobile swipe gestures for step navigation [Planned]
+  - Add swipe left/right gesture support on mobile
+  - Swipe right = Back, Swipe left = Next (if form valid)
+  - Visual feedback during swipe (slide preview)
+  - Disable swipe on Step 13 (payment)
+  - Use framer-motion or react-swipeable
+  - Dependencies: T092 (Step page exists)
+  - Files: app/[locale]/onboarding/step/[stepNumber]/page.tsx
+
+- **T116** [Phase 3.7: Future] Create admin dashboard for unpaid submission follow-up [Planned]
+  - File: app/admin/onboarding/submissions/page.tsx
+  - List all submissions with status="unpaid"
+  - Filter by date, industry, amount
+  - Show time since submission created
+  - Provide "Send reminder email" action
+  - Require admin authentication
+  - Dependencies: T033 (Submission API), T080 (email service)
+  - Files: app/admin/onboarding/submissions/page.tsx
+
+- **T117** [Phase 3.7: Future] Implement GDPR data retention and deletion APIs [Planned]
+  - File: app/api/gdpr/export/route.ts (export user data)
+  - File: app/api/gdpr/delete/route.ts (delete user data)
+  - POST /export: Return all session, submission, upload data as JSON
+  - POST /delete: Delete user's session, submission, uploads (with confirmation token)
+  - Verify user identity before export/deletion
+  - Log GDPR actions to audit table
+  - Dependencies: T004 (migration), T005 (Supabase client)
+  - Files: app/api/gdpr/export/route.ts, app/api/gdpr/delete/route.ts
+
 ---
 
 ## Notes
@@ -819,9 +1219,22 @@
 - [x] All file paths included
 - [x] All dependencies noted
 - [x] Parallel execution markers [P] included where applicable
+- [x] Additional 39 tasks (T079-T117) added from spec analysis
 
 ---
 
-**Total Tasks**: 78
-**Estimated Duration**: 6-8 weeks (assuming 2-3 developers working in parallel)
+**Total Tasks**: 117 (78 original + 39 from spec analysis)
+**Estimated Duration**: 10-14 weeks (assuming 2-3 developers working in parallel)
 **Ready for Execution**: ✅ YES
+
+**Additional Tasks Summary**:
+- T079-T081: Missing dependencies and email service (3 tasks)
+- T082-T091: Reusable form field components (10 tasks)
+- T092: Step page route handler (1 task)
+- T093-T095: Form utilities and loading states (3 tasks)
+- T096-T099: Email and Stripe integration enhancements (4 tasks)
+- T100-T102: File upload enhancements (3 tasks)
+- T103-T106: Session management and analytics (4 tasks)
+- T107-T108: Next.js optimizations (2 tasks)
+- T109-T112: Testing for new components (4 tasks)
+- T113-T117: Future enhancements (5 tasks)

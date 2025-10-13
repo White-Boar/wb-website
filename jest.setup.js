@@ -1,5 +1,20 @@
 import '@testing-library/jest-dom'
 
+// Polyfill Web APIs for Node.js test environment
+const util = require('util');
+
+// Use Node.js 18+ native fetch (Node 22 has it)
+global.fetch = globalThis.fetch || global.fetch;
+global.Headers = globalThis.Headers || global.Headers;
+global.Request = globalThis.Request || global.Request;
+global.Response = globalThis.Response || global.Response;
+
+// Polyfill TextEncoder/TextDecoder
+if (typeof global.TextEncoder === 'undefined') {
+  global.TextEncoder = util.TextEncoder;
+  global.TextDecoder = util.TextDecoder;
+}
+
 // Mock next-intl/server
 jest.mock('next-intl/server', () => ({
   getRequestConfig: jest.fn((config) => config),
@@ -81,6 +96,23 @@ jest.mock('next-intl', () => ({
   },
   useLocale: () => 'en',
   getTranslations: async () => (key) => key,
+}))
+
+// Mock next/headers
+jest.mock('next/headers', () => ({
+  cookies: jest.fn(() => Promise.resolve({
+    getAll: jest.fn(() => []),
+    get: jest.fn(() => null),
+    set: jest.fn(),
+    delete: jest.fn(),
+  })),
+  headers: jest.fn(() => ({
+    get: jest.fn((name) => {
+      if (name === 'x-forwarded-for') return '127.0.0.1';
+      if (name === 'user-agent') return 'test-agent';
+      return null;
+    }),
+  })),
 }))
 
 // Mock next/navigation
@@ -187,3 +219,15 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 })
+
+// Polyfill Pointer Capture API for Radix UI components
+// JSDOM doesn't implement setPointerCapture/releasePointerCapture/hasPointerCapture
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = jest.fn()
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = jest.fn()
+}
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = jest.fn(() => false)
+}

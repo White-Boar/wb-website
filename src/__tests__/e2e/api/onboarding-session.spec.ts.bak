@@ -1,0 +1,230 @@
+/**
+ * E2E Test: Session API Route Handlers
+ * Tests for POST /api/onboarding/session and GET/PATCH /api/onboarding/session/[sessionId]
+ *
+ * These tests make real HTTP calls to the dev server and test the complete flow.
+ */
+
+import { test, expect } from '@playwright/test';
+
+const API_BASE = 'http://localhost:3783';
+
+// Helper to generate unique test emails
+const uniqueEmail = (base: string) => `test-e2e-${base}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}@example.com`;
+
+test.describe('Session API Routes E2E', () => {
+  let testSessionId: string;
+
+  test.describe('POST /api/onboarding/session', () => {
+    test('should create new session with locale, ip_address, user_agent', async ({ request }) => {
+      const response = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email: uniqueEmail('create')
+        }
+      });
+
+      expect(response.status()).toBe(201);
+      const data = await response.json();
+      expect(data.session).toBeDefined();
+      expect(data.session.locale).toBe('en');
+      expect(data.session.ip_address).toBeDefined();
+      expect(data.session.user_agent).toContain('Playwright');
+
+      testSessionId = data.session.id;
+    });
+
+    test('should return 201 with session object including id, current_step, expires_at', async ({ request }) => {
+      const email = uniqueEmail('fields');
+      const response = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'it',
+          email
+        }
+      });
+
+      expect(response.status()).toBe(201);
+      const data = await response.json();
+      expect(data.session.id).toBeDefined();
+      expect(data.session.current_step).toBe(1);
+      expect(data.session.expires_at).toBeDefined();
+      expect(data.session.email).toBe(email);
+    });
+
+    test('should set expires_at to 7 days from now', async ({ request }) => {
+      const beforeCreate = new Date();
+      const response = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email: uniqueEmail('expiry')
+        }
+      });
+
+      const data = await response.json();
+      const expiresAt = new Date(data.session.expires_at);
+      const expectedExpiry = new Date(beforeCreate);
+      expectedExpiry.setDate(expectedExpiry.getDate() + 7);
+
+      // Allow 1 minute tolerance
+      const timeDiff = Math.abs(expiresAt.getTime() - expectedExpiry.getTime());
+      expect(timeDiff).toBeLessThan(60000);
+    });
+
+    test('should initialize form_data as empty object', async ({ request }) => {
+      const response = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email: uniqueEmail('form-data')
+        }
+      });
+
+      const data = await response.json();
+      expect(data.session.form_data).toEqual({});
+    });
+  });
+
+  test.describe('GET /api/onboarding/session/[sessionId]', () => {
+    test('should load session by ID', async ({ request }) => {
+      // First create a session
+      const email = uniqueEmail('get');
+      const createResponse = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email
+        }
+      });
+      const createData = await createResponse.json();
+      testSessionId = createData.session.id;
+
+      // Then load it
+      const response = await request.get(`${API_BASE}/api/onboarding/session/${testSessionId}`);
+      expect(response.status()).toBe(200);
+
+      const data = await response.json();
+      expect(data.session.id).toBe(testSessionId);
+      expect(data.session.email).toBe(email);
+      expect(data.session.current_step).toBe(1);
+    });
+
+    test('should return 404 if session not found', async ({ request }) => {
+      const response = await request.get(`${API_BASE}/api/onboarding/session/00000000-0000-0000-0000-000000000000`);
+      expect(response.status()).toBe(404);
+
+      const data = await response.json();
+      expect(data.error).toBeDefined();
+    });
+  });
+
+  test.describe('PATCH /api/onboarding/session/[sessionId]', () => {
+    test('should update currentStep field', async ({ request }) => {
+      // Create a session first
+      const createResponse = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email: uniqueEmail('patch-step')
+        }
+      });
+      const createData = await createResponse.json();
+      testSessionId = createData.session.id;
+
+      // Update it
+      const response = await request.patch(`${API_BASE}/api/onboarding/session/${testSessionId}`, {
+        data: { current_step: 7 }
+      });
+
+      expect(response.status()).toBe(200);
+      const data = await response.json();
+      expect(data.session.current_step).toBe(7);
+    });
+
+    test('should update locale field', async ({ request }) => {
+      // Create a session first
+      const createResponse = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email: uniqueEmail('patch-locale')
+        }
+      });
+      const createData = await createResponse.json();
+      testSessionId = createData.session.id;
+
+      // Update it
+      const response = await request.patch(`${API_BASE}/api/onboarding/session/${testSessionId}`, {
+        data: { locale: 'it' }
+      });
+
+      expect(response.status()).toBe(200);
+      const data = await response.json();
+      expect(data.session.locale).toBe('it');
+    });
+
+    test('should update emailVerified field', async ({ request }) => {
+      // Create a session first
+      const createResponse = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email: uniqueEmail('patch-verified')
+        }
+      });
+      const createData = await createResponse.json();
+      testSessionId = createData.session.id;
+
+      // Update it
+      const response = await request.patch(`${API_BASE}/api/onboarding/session/${testSessionId}`, {
+        data: { email_verified: true }
+      });
+
+      expect(response.status()).toBe(200);
+      const data = await response.json();
+      expect(data.session.email_verified).toBe(true);
+    });
+
+    test('should return 400 if current_step out of range (< 1)', async ({ request }) => {
+      // Create a session first
+      const createResponse = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email: uniqueEmail('validation-low')
+        }
+      });
+      const createData = await createResponse.json();
+
+      // Try invalid update
+      const response = await request.patch(`${API_BASE}/api/onboarding/session/${createData.session.id}`, {
+        data: { current_step: 0 }
+      });
+
+      expect(response.status()).toBe(400);
+      const data = await response.json();
+      expect(data.error).toBeDefined();
+    });
+
+    test('should return 400 if current_step out of range (> 13)', async ({ request }) => {
+      // Create a session first
+      const createResponse = await request.post(`${API_BASE}/api/onboarding/session`, {
+        data: {
+          locale: 'en',
+          email: uniqueEmail('validation-high')
+        }
+      });
+      const createData = await createResponse.json();
+
+      // Try invalid update
+      const response = await request.patch(`${API_BASE}/api/onboarding/session/${createData.session.id}`, {
+        data: { current_step: 14 }
+      });
+
+      expect(response.status()).toBe(400);
+      const data = await response.json();
+      expect(data.error).toBeDefined();
+    });
+
+    test('should return 404 if session not found', async ({ request }) => {
+      const response = await request.patch(`${API_BASE}/api/onboarding/session/00000000-0000-0000-0000-000000000000`, {
+        data: { current_step: 6 }
+      });
+
+      expect(response.status()).toBe(404);
+    });
+  });
+});
