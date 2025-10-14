@@ -8,308 +8,158 @@ User input:
 
 $ARGUMENTS
 
-## Configuration
-**Test Performance Thresholds**:
-- Individual test: < 1 minute (hard limit - optimize if exceeded)
-- Unit test suite: < 20 seconds total
-- Integration test suite: < 30 seconds total
-- E2E test suite: < 3 minutes total
-- Full test suite: < 5 minutes total
+## Architecture
 
-## Execution Accountability
+This command acts as an **orchestrator** that:
+1. Loads sprint context and validates prerequisites
+2. Launches the `task-coder` agent for each task sequentially
+3. Validates post-sprint requirements (tests, build, backlog consistency)
+4. Handles git commit
 
-For EVERY task completed, the agent MUST produce these artifacts:
-
-**Required Artifacts Per Task**:
-1. Test file path (e.g., `__tests__/components/Welcome.test.tsx`)
-2. Test output showing PASS status
-3. Implementation file path(s)
-4. Build success confirmation
-5. Backlog.md with task marked [Done]
-
-**For UI Tasks, Also Required**:
-6. Screenshot path (desktop view)
-7. Screenshot path (mobile view)
-8. Visual validation confirmation
-
-**Sprint Completion Artifacts**:
-9. Full test suite output (unit + e2e)
-10. Production build success output
-11. Git commit hash
-
-**Verification Method**:
-- Agent reports artifact paths after each task
-- User can verify files exist at reported paths
-- No task is "complete" without these artifacts
+The `task-coder` agent handles all task-specific work (TDD cycle, implementation, validation). This command handles fixing any test or build failures.
 
 ## Implementation
 
-1. Run `.specify/scripts/bash/check-prerequisites.sh --json` from repo root and parse FEATURE_DIR. All paths must be absolute.
+### Step 1: Prerequisites and Sprint Loading
 
-2. Validate prerequisites and load sprint:
-   - Check for sprint files in FEATURE_DIR (sprint-*.md)
-   - If sprint number not provided: Find most recent sprint file
+1. Run `.specify/scripts/bash/check-prerequisites.sh --json` from repo root and parse FEATURE_DIR
+
+2. Load sprint file (sprint-XXX.md from FEATURE_DIR):
+   - If sprint number provided: Use that sprint file
+   - If not provided: Find most recent sprint file
    - If no sprint files found: ERROR "No sprint found. Run /plan-sprint first"
-   - Load selected sprint file (sprint-XXX.md)
 
-3. Load and analyze sprint context:
-   - Parse sprint goal and elaboration
-   - Extract tasks with IDs, priorities, estimates, acceptance criteria
-   - Note dependencies between tasks
-   - Load related documentation:
-     * **REQUIRED**: Read FEATURE_DIR/spec.md for requirements
-     * **REQUIRED**: Read FEATURE_DIR/backlog.md for tasks
-     * **REQUIRED**: Read FEATURE_DIR/plan.md for architecture
-     * **IF EXISTS**: Read FEATURE_DIR/data-model.md for entities
-     * **IF EXISTS**: Read FEATURE_DIR/contracts/ for API specs
-   - Use context to understand implementation requirements
+3. Load context for troubleshooting:
+   - Read FEATURE_DIR/spec.md
+   - Read FEATURE_DIR/backlog.md
+   - Read FEATURE_DIR/plan.md
+   - IF EXISTS: Read FEATURE_DIR/data-model.md
+   - IF EXISTS: Read FEATURE_DIR/contracts/
 
-4. Execute tasks in **priority order**:
-   - Execute task in the order listed
-   - Respect task dependencies
+4. Parse sprint file and extract:
+   - Sprint number and goal
+   - All tasks with IDs, descriptions, priorities, acceptance criteria
+   - Task dependencies
 
-5. Execute each task in priority order following TDD:
+5. Display sprint summary:
+   ```
+   Sprint [N]: [Sprint Goal]
+   Tasks: [X] total ([Y] P0, [Z] P1, [W] P2)
+   Estimated: [X] hours
+   ```
 
-   a) **Start task**:
-      ```
-      Starting Task [ID]: [Description]
-      Priority: [P0/P1/P2] | Estimate: [X hours]
-      ```
+### Step 2: Task Execution Loop
 
-   b) **Create test file**:
-      - Based on task type, create test file:
-        * UI Component → __tests__/components/[name].test.tsx
-        * API Route → __tests__/api/[name].test.ts
-        * Utility → __tests__/lib/[name].test.ts
-      - Write test matching acceptance criteria
-      - Run test command to verify it fails
+For each task in the order listed in the sprint file:
 
-      **CHECKPOINT**: Test MUST show "FAIL" or "0 passing"
-      → If test passes without implementation: HALT "Test insufficient - add assertions that fail without implementation"
+1. Display task header:
+   ```
+   ═══════════════════════════════════════════
+   Task [ID]/[TOTAL]: [Description]
+   Priority: [P0/P1/P2] | Estimate: [X hours]
+   ═══════════════════════════════════════════
+   ```
 
-      Report: "✅ Test created and failing: [filepath]"
+2. Launch task-coder agent with:
+   ```
+   Execute task [ID] from sprint [N].
+   ```
 
-   c) **Implement code**:
-      - Write minimal code to make test pass
-      - Focus on acceptance criteria requirements
-      - Don't over-engineer beyond task scope
-      - Run test again
+3. Wait for task-coder agent to complete and report artifacts
 
-      **CHECKPOINT**: Test MUST now show "PASS"
-      → If test fails after 3 attempts: HALT "Tests failing after 3 attempts" and ask user for guidance
+4. If agent reports failure or gets stuck:
+   - Review the failure details
+   - Load relevant files to diagnose
+   - HALT and report back to the user.
 
-      Report: "✅ Implementation complete: [filepath]"
+5. Display task completion:
+   ```
+   ✅ Task [ID] complete
+   ```
 
-   d) **Validate acceptance criteria**:
-      - Load acceptance criteria from sprint file for this task
-      - For each criterion:
-        * Read criterion text
-        * Verify criterion is met (check files, test output, behavior)
-        * Collect evidence (file paths, test output, screenshots)
+### Step 3: Sprint Validation
 
-      **CHECKPOINT**: All criteria MUST be met
-      → If any criterion not met after 3 attempts: HALT "Acceptance criteria not met: [list failed criteria]" and ask user for guidance
+After all tasks executed:
 
-      Report: "✅ Acceptance criteria validated: [count]/[total]"
+#### 3a. Run Full Test Suite
 
-   e) **Visual validation** (for UI tasks only):
-      - Check if acceptance criteria mentions "Visual design matches"
-      - If yes:
-        * Start dev server: `PORT=3783 pnpm dev` (run in background)
-        * Use Playwright MCP to navigate to the route
-        * Take screenshot (desktop): screenshots/sprint-[N]-task-[ID]-desktop.png
-        * Check responsive (mobile 375x667): screenshots/sprint-[N]-task-[ID]-mobile.png
-        * Check dark theme if applicable
+Execute tests:
+```bash
+pnpm test && pnpm test:e2e
+```
 
-      **CHECKPOINT**: Screenshots MUST be saved
-      → If visual issues found: Fix styling and re-validate
+**CHECKPOINT**: All tests MUST pass
+→ If ANY test fails:
+  - Review test failures and diagnose root cause.
+  - HALT and report back to the user.
 
-      Report: "✅ Visual validation complete: [screenshot paths]"
+Report test counts and performance
 
-      - If no visual validation needed: Skip and report "⊘ No visual validation required"
+#### 3b. Run Production Build
 
-   f) **Update backlog immediately**:
-      - Open FEATURE_DIR/backlog.md
-      - Find line containing "**T[ID]**"
-      - Change status from [WIP] to [Done]
-      - Add completion comment: "→ Sprint [N] - Completed [YYYY-MM-DD]"
-      - Write file back to disk
-      - Read file again to verify change
+Execute:
+```bash
+pnpm next build
+```
 
-      **CHECKPOINT**: File MUST contain updated status
-      → If update failed: HALT "Failed to update backlog.md for task [ID]"
+**CHECKPOINT**: Build MUST succeed
+→ If fails:
+  - Review build errors and diagnose root cause.
+  - HALT and report back to the user.
 
-      Report: "✅ Backlog updated: Task [ID] marked [Done]"
+#### 3c. Verify Sprint Goal
 
-   g) **Run build**:
-      - Execute project build command: `pnpm next build`
+Count completed tasks in backlog:
+```bash
+grep -c "→ Sprint [N] - Completed" [FEATURE_DIR]/backlog.md
+```
 
-      **CHECKPOINT**: Build MUST succeed without errors
-      → If build fails: Fix issues (max 3 attempts)
-      → If still failing after 3 attempts: HALT "Build broken after 3 fix attempts" and ask user for guidance
+**CHECKPOINT**: All tasks MUST be [Done]
+→ If any task not [Done]: HALT "Sprint incomplete - [X] tasks remaining: [list task IDs]"
 
-      Report: "✅ Build successful"
+Report: `✅ Sprint goal achieved: All tasks complete`
 
-6. Sprint validation (MANDATORY - cannot skip):
+### Step 4: Verify Backlog Consistency
 
-   a) **Run full test suite**:
-      1. Execute unit tests:
-         - Command: `pnpm test`
-         - Capture: pass_count, fail_count, duration
+1. Count tasks in sprint file's "Selected Tasks" section
+2. Count completed tasks in backlog (grep command from 3c)
 
-      2. Execute E2E tests:
-         - Command: `pnpm test:e2e` OR `pnpm exec playwright test`
-         - Capture: pass_count, fail_count, duration
+**CHECKPOINT**: Counts MUST match
+→ If mismatch: Fix backlog.md to reflect actual completions
 
-      3. **CHECKPOINT**: All tests MUST pass
-         → If ANY test fails: HALT "Cannot complete sprint with failing tests. Fix or remove failing tests."
+Report: `✅ Backlog verified: [count] tasks marked [Done]`
 
-      4. Count new test files created:
-         - Command: `git diff --cached --name-only | grep -E '\.test\.(ts|tsx)$' | wc -l`
-         - Store as: new_test_count
+### Step 5: Git Commit
 
-      5. Report test summary:
-         ```
-         Test Results:
-         - Unit tests: [X] passed in [Y]s
-         - E2E tests: [X] passed in [Y]s
-         - New test files created this sprint: [new_test_count]
-         ```
+1. Stage all changes: `git add .`
 
-   b) **Run build process**:
-      - Execute: `pnpm next build`
+2. Create commit.
 
-      **CHECKPOINT**: Build MUST succeed
-      → If fails: HALT "Production build broken - fix before committing"
+3. Execute commit using HEREDOC format
 
-      Report: "✅ Production build successful"
+### Step 6: Final Report
 
-   c) **Verify sprint goal**:
-      - Read sprint goal from sprint-[N].md
-      - Count P0 tasks in sprint file
-      - Count completed tasks: `grep -c "→ Sprint [N] - Completed" FEATURE_DIR/backlog.md`
+Display:
+```
+Sprint [N] Complete
 
-      **CHECKPOINT**: All P0 tasks MUST be [Done]
-      → If any P0 task still [WIP]: HALT "Sprint incomplete - [X] P0 tasks remaining: [list task IDs]"
-
-      Report: "✅ Sprint goal achieved: All P0 tasks complete"
-
-7. Verify backlog consistency:
-
-   a) Count tasks in sprint file:
-      - Open sprint-[N].md
-      - Count tasks listed in "Selected Tasks" section
-      - Store as: sprint_task_count
-
-   b) Count completed tasks in backlog:
-      - Command: `grep -c "→ Sprint [N] - Completed" FEATURE_DIR/backlog.md`
-      - Store as: completed_task_count
-
-   c) **CHECKPOINT**: Counts MUST match
-      → If mismatch: HALT "Backlog inconsistent. Sprint file has [X] tasks but backlog shows [Y] completed."
-
-   Report: "✅ Backlog verified: [completed_task_count] tasks marked [Done]"
-
-   NOTE: Backlog updates happen in step 5f immediately after each task completes.
-         This step only VERIFIES all updates happened correctly.
-
-7.5. Pre-commit artifact verification:
-
-   a) Count test files being committed:
-      - Command: `git diff --cached --name-only | grep -E '\.test\.(ts|tsx)$' | wc -l`
-      - Store as: new_test_count
-
-   b) Count tasks completed:
-      - Use: completed_task_count from step 7
-
-   c) **CHECKPOINT**: Verify test coverage
-      → If new_test_count < completed_task_count:
-        WARN "Only [new_test_count] tests for [completed_task_count] tasks"
-        WARN "Expected at least 1 test per task (TDD requirement)"
-        Ask user: "Proceed with commit despite missing tests? (y/n)"
-        → If user says no: HALT execution
-
-   d) List all staged files:
-      - Command: `git diff --cached --name-status`
-      - Display full list to user
-
-   e) Ask for final confirmation:
-      Display:
-      ```
-      Ready to commit:
-      - [X] files changed
-      - [Y] new test files
-      - [Z] tasks completed
-
-      Proceed with commit? (y/n)
-      ```
-      → If user says no: HALT execution
-
-   Report: "✅ Pre-commit verification complete"
-
-8. Git commit (only after all checkpoints passed):
-   - Stage all changes: `git add .`
-   - Create commit message:
-     ```
-     feat: Complete Sprint [XXX] - [Sprint Goal Summary]
-
-     Completed tasks:
-     - [Task ID]: [Brief description]
-     - [Task ID]: [Brief description]
-
-     All tests passing, build successful.
-     Sprint goal achieved: [Goal elaboration]
-     ```
-   - Execute commit
-   - If commit fails: report error
-
-9. Deployment prompt:
-   - Ask user: "Sprint completed successfully. Deploy to production? (y/n)"
-   - If yes:
-     * Determine deployment command from project setup
-     * Common options: `pnpm deploy`, `npm run deploy`, `git push origin main`
-     * Execute deployment
-     * Report deployment status
-   - If no:
-     * Report: "Sprint completed. Code committed but not deployed."
-
-10. Final report:
-    - Sprint number and goal
-    - Tasks completed: X of Y
-    - Tests created: X files
-    - Test performance metrics
-    - Commit hash
-    - Deployment status
-    - Any warnings or issues encountered
+Tasks: [X]/[X] ✅
+Tests: [X] passed
+Build: ✅ Success
+Commit: [hash]
+```
 
 ## Error Handling
 
-- **Fix-first approach**: Always attempt to fix issues automatically
-- **Max 3 attempts**: Stop after 3 failed fix attempts
-- **Clear reporting**: Provide context about what was tried
-- **Manual fallback**: Ask for user guidance when auto-fix fails
-
-## Test Optimization Strategies
-
-When tests exceed time limits:
-1. **Reduce waits**: Replace fixed delays with condition checks
-2. **Mock externals**: Mock API calls, database queries
-3. **Use fixtures**: Pre-create test data instead of generating
-4. **Parallelize**: Run independent tests concurrently
-5. **Skip redundant**: Avoid duplicate setup/teardown
-6. **Focus scope**: Test only what's needed for the task
+- **Task failures**: Diagnose, halt and report to user and ask if to attempt to resolve
 
 ## Success Criteria
 
-Sprint implementation succeeds when:
-- All tasks completed with [Done] status in backlog.md
-- All tests passing (unit + e2e)
-- All test files created (min 1 per task for TDD compliance)
-- Visual validation screenshots saved (for UI tasks)
-- No test exceeds 1 minute
-- Build succeeds (development and production)
-- Sprint goal achieved (all P0 tasks complete)
-- Backlog consistency verified
-- Code committed successfully with all artifacts
+Sprint succeeds when:
+- All tasks completed with [Done] status
+- All tests passing
+- Production build succeeds
+- Backlog consistent
+- Code committed
 
 Context for sprint implementation: $ARGUMENTS
