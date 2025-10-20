@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useEffect, useMemo } from 'react'
+import { useTranslations, useLocale } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
 import { Building2, MapPin, Phone, Globe, Hash } from 'lucide-react'
@@ -13,22 +13,7 @@ import { AddressAutocomplete } from '@/components/onboarding/AddressAutocomplete
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { StepComponentProps } from './index'
-
-// Sample industries for dropdown
-const industries = [
-  { value: 'restaurant', label: 'Restaurant & Food Service', description: 'Restaurants, cafes, catering' },
-  { value: 'retail', label: 'Retail & E-commerce', description: 'Shops, online stores' },
-  { value: 'professional', label: 'Professional Services', description: 'Legal, consulting, accounting' },
-  { value: 'health', label: 'Health & Wellness', description: 'Medical, fitness, beauty' },
-  { value: 'construction', label: 'Construction & Trades', description: 'Building, plumbing, electrical' },
-  { value: 'technology', label: 'Technology & IT', description: 'Software, hardware, support' },
-  { value: 'education', label: 'Education & Training', description: 'Schools, courses, tutoring' },
-  { value: 'automotive', label: 'Automotive', description: 'Car sales, repair, services' },
-  { value: 'real-estate', label: 'Real Estate', description: 'Property sales, rentals' },
-  { value: 'arts', label: 'Arts & Entertainment', description: 'Creative services, events' },
-  { value: 'nonprofit', label: 'Non-Profit', description: 'Charities, associations' },
-  { value: 'other', label: 'Other', description: 'Tell us more about your business' }
-]
+import industriesData from '@/data/industries.json'
 
 // Country list - Italy only for business address
 const countries = [
@@ -148,10 +133,20 @@ const italianProvinces = [
 
 export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.3')
+  const locale = useLocale()
   const { control, setValue, watch, trigger } = form
 
   const selectedIndustry = watch('industry')
   const businessCountry = watch('businessCountry')
+
+  // Transform industries data based on locale
+  const industries = useMemo(() => {
+    return industriesData.map((industry) => ({
+      value: industry.category.toLowerCase().replace(/\s+/g, '-').replace(/&/g, 'and'),
+      label: locale === 'it' ? industry.category_it : industry.category,
+      description: locale === 'it' ? industry.description_it : industry.description
+    }))
+  }, [locale])
 
   // Pre-select Italy if no country is set
   useEffect(() => {

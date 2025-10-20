@@ -1,0 +1,128 @@
+[
+  {
+    "category": "Agriculture & Agribusiness",
+    "description": "Farms, greenhouses, producers of fruits, vegetables, dairy, and olive oil",
+    "category_it": "Agricoltura e Agroindustria",
+    "description_it": "Aziende agricole, serre, produttori di frutta, verdura, latticini e olio d'oliva."
+  },
+  {
+    "category": "Artisan & Craftsmanship",
+    "description": "Furniture makers, ceramicists, leather artisans, and other handmade goods producers",
+    "category_it": "Artigianato e Manifattura",
+    "description_it": "Falegnami, ceramisti, artigiani della pelle e altri produttori di beni fatti a mano."
+  },
+  {
+    "category": "Automotive & Mobility Services",
+    "description": "Car repair shops, tire services, car washes, and scooter/bike rentals",
+    "category_it": "Automotive e Servizi di Mobilità",
+    "description_it": "Officine meccaniche, gommisti, autolavaggi e noleggio di scooter/biciclette."
+  },
+  {
+    "category": "Beauty & Personal Care",
+    "description": "Hairdressers, barbers, nail studios, and beauty salons",
+    "category_it": "Bellezza e Cura della Persona",
+    "description_it": "Parrucchieri, barbieri, centri unghie e saloni di bellezza."
+  },
+  {
+    "category": "Cleaning & Maintenance Services",
+    "description": "Residential and commercial cleaners, window washers, janitorial services",
+    "category_it": "Servizi di Pulizia e Manutenzione",
+    "description_it": "Imprese di pulizie residenziali e commerciali, lavavetri e servizi di custodia."
+  },
+  {
+    "category": "Construction & Renovation",
+    "description": "Builders, electricians, plumbers, roofers, and general contractors",
+    "category_it": "Edilizia e Ristrutturazione",
+    "description_it": "Imprese edili, elettricisti, idraulici, coperturisti e general contractor."
+  },
+  {
+    "category": "Education & Training",
+    "description": "Language schools, tutoring centers, music academies, and vocational training",
+    "category_it": "Istruzione e Formazione",
+    "description_it": "Scuole di lingue, centri ripetizioni, accademie di musica e formazione professionale."
+  },
+  {
+    "category": "Events & Creative Services",
+    "description": "Photographers, videographers, event planners, and graphic designers",
+    "category_it": "Eventi e Servizi Creativi",
+    "description_it": "Fotografi, videomaker, organizzatori di eventi e graphic designer."
+  },
+  {
+    "category": "Fashion & Apparel",
+    "description": "Clothing boutiques, tailors, shoemakers, and accessory designers",
+    "category_it": "Moda e Abbigliamento",
+    "description_it": "Boutique di abbigliamento, sarti, calzolai e designer di accessori."
+  },
+  {
+    "category": "Food & Beverage",
+    "description": "Restaurants, cafés, bakeries, and artisanal food producers like cheese or cured meats",
+    "category_it": "Cibo e Bevande",
+    "description_it": "Ristoranti, caffè, pasticcerie e produttori artigianali di alimenti come formaggi o salumi."
+  },
+  {
+    "category": "Health & Wellness",
+    "description": "Pharmacies, physiotherapists, private clinics, spas, and wellness centers",
+    "category_it": "Salute e Benessere",
+    "description_it": "Farmacie, fisioterapisti, cliniche private, spa e centri benessere."
+  },
+  {
+    "category": "Hospitality & Tourism",
+    "description": "Hotels, B&Bs, agriturismi, and travel services targeting local and international guests",
+    "category_it": "Ospitalità e Turismo",
+    "description_it": "Hotel, B&B, agriturismi e servizi turistici per clienti locali e internazionali."
+  },
+  {
+    "category": "Pet Services & Supplies",
+    "description": "Pet groomers, boarding facilities, pet shops, and dog walking businesses",
+    "category_it": "Servizi e Prodotti per Animali",
+    "description_it": "Toelettatori, pensioni per animali, negozi per animali e servizi di dog walking."
+  },
+  {
+    "category": "Professional Services",
+    "description": "Accountants, notaries, lawyers, architects, and business consultants",
+    "category_it": "Servizi Professionali",
+    "description_it": "Commercialisti, notai, avvocati, architetti e consulenti aziendali."
+  },
+  {
+    "category": "Real Estate & Property Management",
+    "description": "Real estate agencies, property managers, and vacation rental hosts",
+    "category_it": "Immobiliare e Gestione Proprietà",
+    "description_it": "Agenzie immobiliari, property manager e gestori di case vacanza."
+  },
+  {
+    "category": "Retail & Local Shops",
+    "description": "Grocery stores, bookshops, florists, toy stores, and general neighborhood retailers",
+    "category_it": "Commercio al Dettaglio e Negozi Locali",
+    "description_it": "Supermercati, librerie, fiorai, negozi di giocattoli e altri negozi di quartiere."
+  },
+  {
+    "category": "Sports & Recreation",
+    "description": "Gyms, yoga/pilates studios, dance schools, martial arts centers, and sports clubs",
+    "category_it": "Sport e Tempo Libero",
+    "description_it": "Palestre, studi di yoga/pilates, scuole di danza, centri di arti marziali e club sportivi."
+  },
+  {
+    "category": "Technology & IT Services",
+    "description": "Web developers, software firms, IT consultants, and cybersecurity services",
+    "category_it": "Tecnologia e Servizi IT",
+    "description_it": "Sviluppatori web, aziende software, consulenti IT e servizi di cybersicurezza."
+  },
+  {
+    "category": "Transport & Delivery Services",
+    "description": "Local couriers, moving companies, shuttle services, and freight handlers",
+    "category_it": "Trasporti e Servizi di Consegna",
+    "description_it": "Corrieri locali, ditte di traslochi, servizi navetta e operatori logistici."
+  },
+  {
+    "category": "Wine, Beer & Distilleries",
+    "description": "Small vineyards, craft breweries, grappa distillers, and tasting rooms",
+    "category_it": "Vino, Birra e Distillerie",
+    "description_it": "Piccole cantine, birrifici artigianali, distillerie di grappa e sale degustazione."
+  },
+  {
+    "category": "Other",
+    "description": "Other business industry",
+    "category_it": "Altro",
+    "description_it": "Altro settore commerciale"
+  }
+]
