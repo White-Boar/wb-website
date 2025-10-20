@@ -1050,7 +1050,8 @@
         "noClientSecret": "Unable to initialize payment form",
         "goBack": "Go Back",
         "stripeNotLoaded": "Payment system is loading. Please try again.",
-        "sessionCreationFailed": "Failed to create checkout session"
+        "sessionCreationFailed": "Failed to create checkout session",
+        "loadingCheckout": "Loading checkout session..."
       }
     },
     "thankYou": {

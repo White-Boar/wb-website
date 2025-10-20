@@ -1051,7 +1051,8 @@
         "noClientSecret": "Impossibile inizializzare il modulo di pagamento",
         "goBack": "Torna Indietro",
         "stripeNotLoaded": "Il sistema di pagamento si sta caricando. Riprova.",
-        "sessionCreationFailed": "Impossibile creare la sessione di checkout"
+        "sessionCreationFailed": "Impossibile creare la sessione di checkout",
+        "loadingCheckout": "Caricamento della sessione di checkout..."
       }
     },
     "thankYou": {
