@@ -36,7 +36,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON onboarding_uploads TO anon;
 -- Analytics: Allow public to track onboarding events
 GRANT SELECT, INSERT ON onboarding_analytics TO anon;
 
--- Note: onboarding_submissions remains service_role only as it's created via API routes after payment
+-- Submissions: Allow anon SELECT for RLS policy checks (NOT EXISTS queries)
+-- This is required for the UPDATE policy on sessions to check if a submission exists
+GRANT SELECT ON onboarding_submissions TO anon;
 
 -- -----------------------------------------------------------------------------
 -- STEP 3: Create restrictive RLS policies for onboarding_sessions
