@@ -294,14 +294,6 @@ declare const messages: {
             "label": "Postal Code",
             "placeholder": "58000"
           },
-          "city": {
-            "label": "City",
-            "placeholder": "Enter city"
-          },
-          "postalCode": {
-            "label": "Postal Code",
-            "placeholder": "58000"
-          },
           "region": {
             "label": "Province/Region",
             "placeholder": "Enter province or region"
@@ -1034,6 +1026,18 @@ declare const messages: {
         "step3": "Review the preview and only pay if you're completely satisfied"
       },
       "backHome": "Back to Homepage"
+    },
+    "restart": {
+      "button": "Restart",
+      "dialogTitle": "Start Over?",
+      "dialogDescription": "This will clear all your progress and return you to the beginning of the onboarding process. Are you sure you want to restart?",
+      "cancel": "Cancel",
+      "confirm": "Start Over",
+      "confirming": "Restarting...",
+      "successTitle": "Onboarding restarted",
+      "successDescription": "You've been taken back to the beginning.",
+      "errorTitle": "Error",
+      "errorDescription": "Failed to restart onboarding. Please try again."
     }
   },
   "forms": {
