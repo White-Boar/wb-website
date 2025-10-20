@@ -463,7 +463,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
             }
           },
 
-          resendVerificationCode: async (email: string): Promise<void> => {
+          resendVerificationCode: async (email: string, locale: 'en' | 'it' = 'en'): Promise<void> => {
             const { sessionId, formData } = get()
             if (!sessionId) {
               throw new Error('No active session')
@@ -479,7 +479,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
                   sessionId,
                   email,
                   name: `${formData.firstName} ${formData.lastName}`.trim() || 'User',
-                  locale: 'en' // TODO: Get from context
+                  locale
                 })
               })
 

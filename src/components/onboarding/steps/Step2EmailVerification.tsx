@@ -30,7 +30,7 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
       hasAutoSentRef.current = true
 
       // Send verification email automatically
-      resendVerificationCode(email)
+      resendVerificationCode(email, locale as 'en' | 'it')
         .then(() => {
           console.log('✓ Verification email sent automatically to:', email)
         })
@@ -39,7 +39,7 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
           // Don't show error to user - they can manually resend
         })
     }
-  }, [email, resendVerificationCode])
+  }, [email, locale, resendVerificationCode])
 
   const handleVerificationComplete = async (code: string) => {
     setIsVerifying(true)
@@ -80,7 +80,7 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
 
   const handleResendCode = async () => {
     try {
-      await resendVerificationCode(email)
+      await resendVerificationCode(email, locale as 'en' | 'it')
     } catch (error) {
       console.error('Failed to resend verification code:', error)
       throw error // Let EmailVerification component handle the error
