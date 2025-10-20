@@ -1197,6 +1197,34 @@
       "Blu navy"
     ],
     "description_en": "Bright tropical mix for playful, adventurous energy.",
-    "description_it": "Mix tropicale brillante per un’energia giocosa e avventurosa."
+    "description_it": "Mix tropicale brillante per un'energia giocosa e avventurosa."
+  },
+  {
+    "palette_name_en": "Monochrome Grayscale",
+    "palette_name_it": "Monocromatico",
+    "hex_colours": [
+      "000000",
+      "333333",
+      "666666",
+      "999999",
+      "CCCCCC",
+      "FFFFFF"
+    ],
+    "main_colors_en": [
+      "Black",
+      "Dark gray",
+      "Gray",
+      "Light gray",
+      "White"
+    ],
+    "main_colors_it": [
+      "Nero",
+      "Grigio scuro",
+      "Grigio",
+      "Grigio chiaro",
+      "Bianco"
+    ],
+    "description_en": "Pure grayscale palette for timeless, minimal elegance and versatility.",
+    "description_it": "Tavolozza monocromatica pura per un'eleganza minimalista e versatile senza tempo."
   }
 ]
