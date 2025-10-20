@@ -1024,6 +1024,18 @@
         "step3": "Rivedi l'anteprima e paga solo se sei completamente soddisfatto"
       },
       "backHome": "Torna alla Homepage"
+    },
+    "restart": {
+      "button": "Ricomincia",
+      "dialogTitle": "Ricominciare da Capo?",
+      "dialogDescription": "Questo cancellerà tutti i tuoi progressi e ti riporterà all'inizio del processo di onboarding. Sei sicuro di voler ricominciare?",
+      "cancel": "Annulla",
+      "confirm": "Ricomincia",
+      "confirming": "Riavvio in corso...",
+      "successTitle": "Onboarding riavviato",
+      "successDescription": "Sei stato riportato all'inizio.",
+      "errorTitle": "Errore",
+      "errorDescription": "Impossibile riavviare l'onboarding. Riprova."
     }
   },
   "forms": {
