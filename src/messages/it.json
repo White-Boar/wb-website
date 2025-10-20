@@ -80,7 +80,7 @@
     },
     "welcome": {
       "title": "Benvenuti in WhiteBoar",
-      "subtitle": "Creiamo il tuo sito web perfetto in soli 12 semplici passaggi. Il nostro processo basato su AI garantisce un risultato professionale su misura per la tua attività.",
+      "subtitle": "Creiamo il tuo sito web perfetto in soli 14 semplici passaggi. Il nostro processo basato su AI garantisce un risultato professionale su misura per la tua attività.",
       "features": {
         "fast": {
           "title": "Veloce come un Fulmine",
@@ -1000,6 +1000,58 @@
           "authentic": "Momenti autentici",
           "variety": "Mostra varietà"
         }
+      },
+      "13": {
+        "title": "Lingue Aggiuntive",
+        "description": "Seleziona lingue aggiuntive per il tuo sito web",
+        "heading": "Scegli Lingue Aggiuntive",
+        "subtitle": "Inglese e italiano sono inclusi. Aggiungi altre lingue per €75 ciascuna.",
+        "includedLanguages": "Inclusi: Inglese e Italiano",
+        "availableLanguages": "Lingue Disponibili ({count})",
+        "selectedCount": "{count} lingua selezionata",
+        "pricePerLanguage": "€75 per lingua",
+        "searchPlaceholder": "Cerca lingue...",
+        "selectLanguage": "Seleziona {language}",
+        "speakers": "parlanti",
+        "clearAll": "Cancella tutto",
+        "noResults": "Nessuna lingua trovata corrispondente alla tua ricerca",
+        "clearSearch": "Cancella ricerca"
+      },
+      "14": {
+        "title": "Pagamento",
+        "description": "Completa il tuo abbonamento",
+        "heading": "Completa il Tuo Ordine",
+        "subtitle": "Pagamento sicuro tramite Stripe",
+        "orderSummary": "Riepilogo Ordine",
+        "basePackage": "Pacchetto Base WhiteBoar",
+        "billedMonthly": "Fatturazione mensile",
+        "annualCommitment": "Impegno di 12 mesi",
+        "languageAddons": "Lingue Aggiuntive",
+        "oneTimeFee": "Costo di configurazione una tantum",
+        "dueToday": "Da Pagare Oggi",
+        "subscription": "abbonamento",
+        "setupFees": "costi di configurazione",
+        "thenMonthly": "Poi €{amount}/mese",
+        "discountCode": "Codice Sconto",
+        "enterCode": "Hai un codice sconto?",
+        "codePlaceholder": "Inserisci codice",
+        "paymentMethod": "Metodo di Pagamento",
+        "securePayment": "Le tue informazioni di pagamento sono sicure e crittografate",
+        "termsText": "Accetto i <termsLink>Termini e Condizioni</termsLink> e la <privacyLink>Informativa sulla Privacy</privacyLink>",
+        "paymentError": "Errore di Pagamento",
+        "paymentFailed": "Pagamento fallito. Riprova.",
+        "unexpectedError": "Si è verificato un errore imprevisto. Riprova.",
+        "paymentSuccess": "Pagamento Riuscito",
+        "redirecting": "Reindirizzamento alla conferma...",
+        "commitmentNotice": "Ti impegni a 12 pagamenti mensili di €35. Dopo 12 mesi, puoi annullare in qualsiasi momento.",
+        "processing": "Elaborazione...",
+        "payNow": "Paga €{amount}",
+        "preparingCheckout": "Preparazione della sessione di pagamento...",
+        "checkoutError": "Errore di Checkout",
+        "noClientSecret": "Impossibile inizializzare il modulo di pagamento",
+        "goBack": "Torna Indietro",
+        "stripeNotLoaded": "Il sistema di pagamento si sta caricando. Riprova.",
+        "sessionCreationFailed": "Impossibile creare la sessione di checkout"
       }
     },
     "thankYou": {

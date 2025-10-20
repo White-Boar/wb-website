@@ -395,7 +395,9 @@ export function getStepSchema(step: number) {
     9: step9Schema,
     10: step10Schema,
     11: step11Schema,
-    12: step12Schema
+    12: step12Schema,
+    13: step13Schema,
+    14: step14Schema
   }
   
   return schemas[step as keyof typeof schemas] || null
@@ -492,3 +494,53 @@ export const italianBusinessNameValidator = z.string().refine(
   },
   { message: 'Please enter a valid Italian business name' }
 )
+
+// =============================================================================
+// STEP 13: LANGUAGE ADD-ONS SELECTION
+// =============================================================================
+
+export const step13Schema = z.object({
+  additionalLanguages: z.array(z.string())
+    .refine(
+      (codes) => {
+        // Validate all codes are valid ISO 639-1 codes
+        const validCodes = ['nl', 'fr', 'de', 'pt', 'es', 'da', 'fi', 'no', 'sv',
+                           'bg', 'cs', 'hu', 'pl', 'ro', 'sk', 'uk', 'sq', 'bs',
+                           'hr', 'el', 'sr', 'sl', 'tr', 'ca', 'lv', 'lt']
+        return codes.every(code => validCodes.includes(code))
+      },
+      { message: 'Invalid language code selected' }
+    )
+    .refine(
+      (codes) => {
+        // Ensure English and Italian are not in the selection
+        // (they are included in base package)
+        return !codes.includes('en') && !codes.includes('it')
+      },
+      { message: 'English and Italian are already included in the base package' }
+    )
+    .default([])
+})
+
+export type Step13FormData = z.infer<typeof step13Schema>
+
+// =============================================================================
+// STEP 14: STRIPE CHECKOUT
+// =============================================================================
+
+export const step14Schema = z.object({
+  // Payment details are handled by Stripe Elements
+  // This schema validates the discount code if provided
+  discountCode: z.string()
+    .max(50, 'Discount code must be 50 characters or less')
+    .regex(/^[A-Z0-9-_]+$/i, 'Discount code can only contain letters, numbers, hyphens, and underscores')
+    .optional()
+    .or(z.literal('')),
+
+  // Terms and conditions acceptance
+  acceptTerms: z.boolean().refine(val => val === true, {
+    message: 'You must accept the terms and conditions to proceed'
+  })
+})
+
+export type Step14FormData = z.infer<typeof step14Schema>

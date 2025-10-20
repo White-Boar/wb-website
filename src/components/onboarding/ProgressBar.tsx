@@ -18,7 +18,7 @@ interface ProgressBarProps {
 
 export function ProgressBar({
   currentStep,
-  totalSteps = 12,
+  totalSteps = 14,
   variant = 'compact',
   showLabels = false,
   className
@@ -205,11 +205,11 @@ function DetailedProgressBar({
 }
 
 // Simplified mobile progress bar
-export function MobileProgressBar({ 
-  currentStep, 
-  totalSteps = 12,
+export function MobileProgressBar({
+  currentStep,
+  totalSteps = 14,
   className
-}: { 
+}: {
   currentStep: number
   totalSteps?: number
   className?: string

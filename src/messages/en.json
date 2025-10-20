@@ -88,7 +88,7 @@
     },
     "welcome": {
       "title": "Welcome to WhiteBoar",
-      "subtitle": "Let's create your perfect website in just 12 simple steps. Our AI-driven process ensures a professional result tailored to your business.",
+      "subtitle": "Let's create your perfect website in just 14 simple steps. Our AI-driven process ensures a professional result tailored to your business.",
       "features": {
         "fast": {
           "title": "Lightning Fast",
@@ -999,6 +999,58 @@
           "authentic": "Authentic moments",
           "variety": "Show variety"
         }
+      },
+      "13": {
+        "title": "Language Add-ons",
+        "description": "Select additional languages for your website",
+        "heading": "Choose Additional Languages",
+        "subtitle": "English and Italian are included. Add more languages for €75 each.",
+        "includedLanguages": "Included: English & Italian",
+        "availableLanguages": "Available Languages ({count})",
+        "selectedCount": "{count} language selected",
+        "pricePerLanguage": "€75 per language",
+        "searchPlaceholder": "Search languages...",
+        "selectLanguage": "Select {language}",
+        "speakers": "speakers",
+        "clearAll": "Clear all",
+        "noResults": "No languages found matching your search",
+        "clearSearch": "Clear search"
+      },
+      "14": {
+        "title": "Payment",
+        "description": "Complete your subscription",
+        "heading": "Complete Your Order",
+        "subtitle": "Secure checkout powered by Stripe",
+        "orderSummary": "Order Summary",
+        "basePackage": "WhiteBoar Base Package",
+        "billedMonthly": "Billed monthly",
+        "annualCommitment": "12-month commitment",
+        "languageAddons": "Language Add-ons",
+        "oneTimeFee": "One-time setup fee",
+        "dueToday": "Due Today",
+        "subscription": "subscription",
+        "setupFees": "setup fees",
+        "thenMonthly": "Then €{amount}/month",
+        "discountCode": "Discount Code",
+        "enterCode": "Have a discount code?",
+        "codePlaceholder": "Enter code",
+        "paymentMethod": "Payment Method",
+        "securePayment": "Your payment information is secure and encrypted",
+        "termsText": "I agree to the <termsLink>Terms & Conditions</termsLink> and <privacyLink>Privacy Policy</privacyLink>",
+        "paymentError": "Payment Error",
+        "paymentFailed": "Payment failed. Please try again.",
+        "unexpectedError": "An unexpected error occurred. Please try again.",
+        "paymentSuccess": "Payment Successful",
+        "redirecting": "Redirecting to confirmation...",
+        "commitmentNotice": "You are committing to 12 monthly payments of €35. After 12 months, you can cancel anytime.",
+        "processing": "Processing...",
+        "payNow": "Pay €{amount}",
+        "preparingCheckout": "Preparing your checkout session...",
+        "checkoutError": "Checkout Error",
+        "noClientSecret": "Unable to initialize payment form",
+        "goBack": "Go Back",
+        "stripeNotLoaded": "Payment system is loading. Please try again.",
+        "sessionCreationFailed": "Failed to create checkout session"
       }
     },
     "thankYou": {

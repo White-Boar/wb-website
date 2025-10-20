@@ -82,7 +82,7 @@ export function StepTemplate({
   }
 
   // Progress calculation
-  const progressPercentage = (stepNumber / 12) * 100
+  const progressPercentage = (stepNumber / 14) * 100
 
   // Auto-save indicator
   const renderAutoSaveIndicator = () => {

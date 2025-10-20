@@ -73,7 +73,7 @@ export default function OnboardingStep() {
 
       // If we have a session but current step is behind the step number,
       // update current step to allow access to this step
-      else if (sessionId && currentStep < stepNumber && stepNumber <= 12) {
+      else if (sessionId && currentStep < stepNumber && stepNumber <= 14) {
         // This handles cases where user bookmarked a step or has progressed beyond the stored current step
         const { updateCurrentStep } = useOnboardingStore.getState()
         updateCurrentStep(stepNumber)
@@ -176,6 +176,15 @@ export default function OnboardingStep() {
           logoUpload: formData?.logoUpload || null,
           businessPhotos: formData?.businessPhotos || []
         }
+      case 13:
+        return {
+          additionalLanguages: formData?.additionalLanguages || []
+        }
+      case 14:
+        return {
+          discountCode: formData?.discountCode || '',
+          acceptTerms: formData?.acceptTerms || false
+        }
       default:
         return {}
     }
@@ -244,8 +253,8 @@ export default function OnboardingStep() {
     return () => subscription.unsubscribe()
   }, [form, updateFormData, isDirty])
 
-  // Validate step number (Step 12 is now the final step)
-  if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 12) {
+  // Validate step number (Step 14 is now the final step)
+  if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 14) {
     router.push(`/${locale}/onboarding`)
     return null
   }
@@ -309,8 +318,8 @@ export default function OnboardingStep() {
         return
       }
 
-      // For Step 12 (final step), validate all previous steps using schemas
-      if (stepNumber === 12) {
+      // For Step 14 (final step), validate all previous steps using schemas
+      if (stepNumber === 14) {
         const allFormData = { ...formData, ...data } as OnboardingFormData
         const failedSteps: { step: number; title: string; errors: string[] }[] = []
 
@@ -384,17 +393,17 @@ export default function OnboardingStep() {
       const mergedData = { ...formData, ...data } as any
       const nextStepNumber = getNextStep(stepNumber as StepNumber, mergedData)
       console.log(`🔍 Navigation logic: stepNumber=${stepNumber}, nextStepNumber=${nextStepNumber}`)
-      console.log(`🔍 Step number check: stepNumber === 12? ${stepNumber === 12}`)
-      console.log(`🔍 NextStep check: nextStepNumber=${nextStepNumber}, nextStepNumber && nextStepNumber <= 12? ${nextStepNumber && nextStepNumber <= 12}`)
+      console.log(`🔍 Step number check: stepNumber === 14? ${stepNumber === 14}`)
+      console.log(`🔍 NextStep check: nextStepNumber=${nextStepNumber}, nextStepNumber && nextStepNumber <= 14? ${nextStepNumber && nextStepNumber <= 14}`)
 
-      if (nextStepNumber && nextStepNumber <= 12) {
+      if (nextStepNumber && nextStepNumber <= 14) {
         console.log('Moving to next step:', nextStepNumber)
         await nextStep()
         router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
       } else {
-        // Complete onboarding - Step 12 is the final step
+        // Complete onboarding - Step 14 is the final step
         try {
-          console.log('🎯 Step 12 completion triggered')
+          console.log('🎯 Step 14 completion triggered')
           console.log('Session ID:', sessionId)
           console.log('Form data keys:', Object.keys(formData))
 
@@ -471,7 +480,7 @@ export default function OnboardingStep() {
       canGoPrevious={stepNumber > 1}
       isLoading={isLoading}
       error={error}
-      nextLabel={stepNumber === 12 ? t('finish') : undefined}
+      nextLabel={stepNumber === 14 ? t('finish') : undefined}
       previousLabel={stepNumber === 1 ? t('back') : undefined}
     >
       <StepComponent
