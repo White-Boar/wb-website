@@ -49,77 +49,25 @@ interface CheckoutFormProps extends StepComponentProps {
 function CheckoutForm({
   form,
   errors,
-  isLoading,
-  sessionId,
-  submissionId
-}: CheckoutFormProps) {
+  isLoading
+}: StepComponentProps) {
   const t = useTranslations('onboarding.steps.14')
   const locale = useLocale() as 'en' | 'it'
   const stripe = useStripe()
   const elements = useElements()
-  const { control, watch } = form
+  const { control, getValues } = form
 
-  const [clientSecret, setClientSecret] = useState<string | null>(null)
-  const [checkoutSession, setCheckoutSession] = useState<CheckoutSession | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
-  const [isCreatingSession, setIsCreatingSession] = useState(true)
 
-  // Watch form values
-  const discountCode = watch('discountCode') || ''
-  const acceptTerms = watch('acceptTerms') || false
-  const selectedLanguages = watch('additionalLanguages') || []
+  // Get saved form values
+  const acceptTerms = getValues('acceptTerms') || false
+  const selectedLanguages = getValues('additionalLanguages') || []
 
   // Calculate pricing
   const basePackagePrice = 35 // €35/month
   const languageAddOnsTotal = calculateAddOnsTotal(selectedLanguages)
   const totalDueToday = basePackagePrice + languageAddOnsTotal
-
-  // Create Stripe checkout session on mount
-  useEffect(() => {
-    const createCheckoutSession = async () => {
-      try {
-        setIsCreatingSession(true)
-        setPaymentError(null)
-
-        const response = await fetch('/api/stripe/create-checkout-session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            submission_id: submissionId,
-            additionalLanguages: selectedLanguages,
-            discountCode: discountCode || undefined,
-            successUrl: `${window.location.origin}/${locale}/onboarding/thank-you`,
-            cancelUrl: `${window.location.origin}/${locale}/onboarding/step/14`,
-          }),
-        })
-
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error?.message || t('sessionCreationFailed'))
-        }
-
-        if (!data.success || !data.data.clientSecret) {
-          throw new Error(t('noClientSecret'))
-        }
-
-        setClientSecret(data.data.clientSecret)
-        setCheckoutSession(data.data)
-      } catch (error) {
-        console.error('Failed to create checkout session:', error)
-        setPaymentError(
-          error instanceof Error ? error.message : t('unexpectedError')
-        )
-      } finally {
-        setIsCreatingSession(false)
-      }
-    }
-
-    createCheckoutSession()
-  }, [submissionId, selectedLanguages, discountCode, locale, t])
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -244,19 +192,6 @@ function CheckoutForm({
               </>
             )}
 
-            {/* Discount Applied */}
-            {checkoutSession?.discountApplied && (
-              <div className="border-t pt-4">
-                <div className="flex justify-between items-center text-sm text-green-600">
-                  <div className="flex items-center gap-2">
-                    <Tag className="w-4 h-4" />
-                    <span>Discount: {checkoutSession.discountApplied.code}</span>
-                  </div>
-                  <span>-€{(checkoutSession.discountApplied.amount / 100).toFixed(2)}</span>
-                </div>
-              </div>
-            )}
-
             {/* Total */}
             <div className="border-t pt-4">
               <div className="flex justify-between items-center">
@@ -267,9 +202,7 @@ function CheckoutForm({
                   </p>
                 </div>
                 <p className="text-2xl font-bold text-primary">
-                  €{checkoutSession?.totalAmount
-                    ? (checkoutSession.totalAmount / 100).toFixed(2)
-                    : totalDueToday}
+                  €{totalDueToday}
                 </p>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
@@ -305,40 +238,16 @@ function CheckoutForm({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {isCreatingSession ? (
-              <div className="flex flex-col items-center justify-center py-12 space-y-4">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                <p className="text-sm text-muted-foreground">
-                  {t('preparingCheckout')}
-                </p>
-              </div>
-            ) : paymentError && !clientSecret ? (
-              <Alert variant="destructive">
-                <AlertCircle className="w-4 h-4" />
-                <AlertDescription>
-                  <p className="font-semibold mb-1">{t('checkoutError')}</p>
-                  <p className="text-sm">{paymentError}</p>
-                </AlertDescription>
-              </Alert>
-            ) : clientSecret ? (
-              <>
-                {/* Stripe Payment Element */}
-                <div className="min-h-[200px]">
-                  <PaymentElement />
-                </div>
+            {/* Stripe Payment Element */}
+            <div className="min-h-[200px]">
+              <PaymentElement />
+            </div>
 
-                {/* Security Notice */}
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Lock className="w-4 h-4" />
-                  <span>{t('securePayment')}</span>
-                </div>
-              </>
-            ) : (
-              <Alert variant="destructive">
-                <AlertCircle className="w-4 h-4" />
-                <AlertDescription>{t('noClientSecret')}</AlertDescription>
-              </Alert>
-            )}
+            {/* Security Notice */}
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Lock className="w-4 h-4" />
+              <span>{t('securePayment')}</span>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -400,7 +309,7 @@ function CheckoutForm({
       </motion.div>
 
       {/* Payment Error */}
-      {paymentError && clientSecret && (
+      {paymentError && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -428,8 +337,6 @@ function CheckoutForm({
           disabled={
             isProcessing ||
             isLoading ||
-            isCreatingSession ||
-            !clientSecret ||
             !stripe ||
             !elements ||
             !acceptTerms
@@ -527,12 +434,100 @@ export function Step14Checkout(props: StepComponentProps) {
   }
 
   return (
+    <CheckoutFormWrapper
+      {...props}
+      sessionId={sessionId}
+      submissionId={submissionId}
+    />
+  )
+}
+
+// Wrapper component that fetches clientSecret before initializing Stripe Elements
+function CheckoutFormWrapper(props: CheckoutFormProps) {
+  const { form, submissionId } = props
+  const t = useTranslations('onboarding.steps.14')
+  const locale = useLocale() as 'en' | 'it'
+
+  const [clientSecret, setClientSecret] = useState<string | null>(null)
+  const [isLoadingSecret, setIsLoadingSecret] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Get saved language selections
+  const selectedLanguages = form.getValues('additionalLanguages') || []
+  const discountCode = form.getValues('discountCode') || ''
+
+  // Fetch clientSecret on mount
+  useEffect(() => {
+    const fetchClientSecret = async () => {
+      try {
+        setIsLoadingSecret(true)
+        setError(null)
+
+        const response = await fetch('/api/stripe/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            submission_id: submissionId,
+            additionalLanguages: selectedLanguages,
+            discountCode: discountCode || undefined,
+            successUrl: `${window.location.origin}/${locale}/onboarding/thank-you`,
+            cancelUrl: `${window.location.origin}/${locale}/onboarding/step/14`,
+          }),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error?.message || 'Failed to create checkout session')
+        }
+
+        if (!data.data.clientSecret) {
+          throw new Error('No client secret received')
+        }
+
+        setClientSecret(data.data.clientSecret)
+      } catch (err) {
+        console.error('Failed to fetch client secret:', err)
+        setError(err instanceof Error ? err.message : 'Failed to initialize payment')
+      } finally {
+        setIsLoadingSecret(false)
+      }
+    }
+
+    fetchClientSecret()
+  }, [submissionId, selectedLanguages, discountCode, locale])
+
+  // Show loading state
+  if (isLoadingSecret) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 space-y-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">
+          {t('preparingCheckout')}
+        </p>
+      </div>
+    )
+  }
+
+  // Show error state
+  if (error || !clientSecret) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="w-4 h-4" />
+        <AlertDescription>
+          <p className="font-semibold mb-1">{t('checkoutError')}</p>
+          <p className="text-sm">{error || 'Failed to initialize payment'}</p>
+        </AlertDescription>
+      </Alert>
+    )
+  }
+
+  // Render Stripe Elements with clientSecret
+  return (
     <Elements
       stripe={stripePromise}
       options={{
-        mode: 'subscription',
-        currency: 'eur',
-        amount: 3500, // €35 base package in cents
+        clientSecret,
         appearance: {
           theme: 'stripe',
           variables: {
@@ -546,11 +541,7 @@ export function Step14Checkout(props: StepComponentProps) {
         },
       }}
     >
-      <CheckoutForm
-        {...props}
-        sessionId={sessionId}
-        submissionId={submissionId}
-      />
+      <CheckoutForm {...props} />
     </Elements>
   )
 }
