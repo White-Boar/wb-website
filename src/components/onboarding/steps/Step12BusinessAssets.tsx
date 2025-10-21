@@ -4,14 +4,24 @@ import React from 'react'
 import { useTranslations } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { Upload, Image as ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { Upload, Image as ImageIcon, AlertCircle, CheckCircle2, XCircle, RefreshCw } from 'lucide-react'
 
 import { FileUploadWithProgress, FileUploadProgress } from '@/components/onboarding/FileUploadWithProgress'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Button } from '@/components/ui/button'
 import { StepComponentProps } from './index'
 import { useOnboardingStore } from '@/stores/onboarding'
+
+/**
+ * Error types for upload failures
+ */
+interface UploadError {
+  type: 'network' | 'size' | 'type' | 'server' | 'session' | 'unknown'
+  message: string
+  fileName?: string
+}
 
 export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.12')
@@ -21,54 +31,148 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
   const businessLogo = watch('logoUpload')
   const businessPhotos = watch('businessPhotos') || []
 
-  // Track upload states
+  // Track upload states for ephemeral uploading status only (not for display)
   const [logoUploadState, setLogoUploadState] = React.useState<FileUploadProgress[]>([])
   const [photosUploadState, setPhotosUploadState] = React.useState<FileUploadProgress[]>([])
-  const [hasInitialized, setHasInitialized] = React.useState(false)
 
-  // Helper function to convert saved file metadata back to FileUploadProgress format
-  const convertToFileUploadProgress = React.useCallback((savedFile: any): FileUploadProgress | null => {
-    if (!savedFile || !savedFile.url) return null
+  // Track upload errors (NEW: explicit error state)
+  const [logoUploadError, setLogoUploadError] = React.useState<UploadError | null>(null)
+  const [photosUploadError, setPhotosUploadError] = React.useState<UploadError | null>(null)
 
-    // Create a mock File object for display purposes
-    const mockFile = new File([], savedFile.fileName || 'file', {
-      type: savedFile.mimeType || 'application/octet-stream'
-    })
+  /**
+   * Helper function to parse upload error and return user-friendly error object
+   */
+  const parseUploadError = React.useCallback((fileProgress: FileUploadProgress): UploadError => {
+    const errorMessage = fileProgress.error || 'Unknown error occurred'
+    const fileName = fileProgress.file.name
+
+    // Detect error type based on error message
+    if (errorMessage.includes('network') || errorMessage.includes('fetch') || errorMessage.includes('connection')) {
+      return {
+        type: 'network',
+        message: 'Network connection lost. Please check your internet and try again.',
+        fileName
+      }
+    }
+
+    if (errorMessage.includes('size') || errorMessage.includes('too large') || errorMessage.includes('exceeds')) {
+      return {
+        type: 'size',
+        message: 'File size exceeds the maximum allowed. Please choose a smaller file.',
+        fileName
+      }
+    }
+
+    if (errorMessage.includes('type') || errorMessage.includes('format') || errorMessage.includes('not supported')) {
+      return {
+        type: 'type',
+        message: 'File type not supported. Please use PNG, JPG, or SVG format.',
+        fileName
+      }
+    }
+
+    if (errorMessage.includes('500') || errorMessage.includes('server') || errorMessage.includes('internal')) {
+      return {
+        type: 'server',
+        message: 'Server error occurred. Please try again in a moment.',
+        fileName
+      }
+    }
+
+    if (errorMessage.includes('session') || errorMessage.includes('unauthorized') || errorMessage.includes('401')) {
+      return {
+        type: 'session',
+        message: 'Session expired. Please refresh the page and try again.',
+        fileName
+      }
+    }
 
     return {
-      id: savedFile.id || crypto.randomUUID(),
-      file: mockFile,
-      progress: 100,
-      status: 'completed',
-      url: savedFile.url,
-      preview: savedFile.url // Use the uploaded URL as preview for images
+      type: 'unknown',
+      message: `Upload failed: ${errorMessage}`,
+      fileName
     }
   }, [])
 
-  // Initialize upload states from saved form data on mount
-  React.useEffect(() => {
-    if (!hasInitialized) {
-      // Restore logo if exists
-      if (businessLogo) {
-        const logoProgress = convertToFileUploadProgress(businessLogo)
-        if (logoProgress) {
-          setLogoUploadState([logoProgress])
-        }
-      }
+  // Helper function to convert saved file metadata back to FileUploadProgress format
+  const convertToFileUploadProgress = React.useCallback((savedFile: any): FileUploadProgress | null => {
+    try {
+      // Validate required fields
+      if (!savedFile || typeof savedFile !== 'object') return null
+      if (!savedFile.url || typeof savedFile.url !== 'string') return null
+      if (!savedFile.fileName || typeof savedFile.fileName !== 'string') return null
 
-      // Restore photos if exist
-      if (businessPhotos && businessPhotos.length > 0) {
-        const photosProgress = businessPhotos
-          .map(convertToFileUploadProgress)
-          .filter((p): p is FileUploadProgress => p !== null)
-        if (photosProgress.length > 0) {
-          setPhotosUploadState(photosProgress)
-        }
-      }
+      // Create a mock File object for display purposes
+      const mockFile = new File([], savedFile.fileName, {
+        type: savedFile.mimeType || 'application/octet-stream'
+      })
 
-      setHasInitialized(true)
+      return {
+        id: savedFile.id || crypto.randomUUID(),
+        file: mockFile,
+        progress: 100,
+        status: 'completed',
+        url: savedFile.url,
+        preview: savedFile.url // Use the uploaded URL as preview for images
+      }
+    } catch (error) {
+      console.error('Failed to convert saved file to progress:', error, savedFile)
+      return null
     }
-  }, [businessLogo, businessPhotos, convertToFileUploadProgress, hasInitialized])
+  }, [])
+
+  /**
+   * Component State Management Strategy (Option A - Derived State):
+   *
+   * SINGLE source of truth: Form state (businessLogo, businessPhotos)
+   *
+   * UI state is DERIVED using useMemo:
+   * - logoDisplay: Derived from businessLogo (form state)
+   * - photosDisplay: Derived from businessPhotos (form state)
+   *
+   * Benefits:
+   * - No sync needed - always reflects current form state
+   * - No timing issues with form.reset()
+   * - Simpler architecture with single source of truth
+   */
+
+  // Derive logo display state from form state
+  const logoDisplay = React.useMemo(() => {
+    if (!businessLogo) return []
+    const progress = convertToFileUploadProgress(businessLogo)
+    return progress ? [progress] : []
+  }, [businessLogo, convertToFileUploadProgress])
+
+  // Derive photos display state from form state
+  const photosDisplay = React.useMemo(() => {
+    if (!businessPhotos || !Array.isArray(businessPhotos) || businessPhotos.length === 0) return []
+    return businessPhotos
+      .map(convertToFileUploadProgress)
+      .filter((p): p is FileUploadProgress => p !== null)
+  }, [businessPhotos, convertToFileUploadProgress])
+
+  /**
+   * Merge derived display state with ephemeral upload state
+   * - During upload: Show uploading status from component state
+   * - After navigation: Show persisted data from derived state
+   */
+  const mergedLogoState = React.useMemo(() => {
+    // If actively uploading, show upload state
+    const hasUploadingLogo = logoUploadState.some(f => f.status === 'uploading')
+    if (hasUploadingLogo) return logoUploadState
+
+    // Otherwise show persisted data from form
+    return logoDisplay
+  }, [logoUploadState, logoDisplay])
+
+  const mergedPhotosState = React.useMemo(() => {
+    // If actively uploading, show upload state
+    const hasUploadingPhotos = photosUploadState.some(f => f.status === 'uploading')
+    if (hasUploadingPhotos) return photosUploadState
+
+    // Otherwise show persisted data from form
+    return photosDisplay
+  }, [photosUploadState, photosDisplay])
 
   // Check if any files are currently uploading
   const hasUploadingFiles = React.useMemo(() => {
@@ -137,26 +241,99 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                     maxFiles={1}
                     maxFileSize={2 * 1024 * 1024} // 2MB
                     sessionId={sessionId || undefined}
-                    existingFiles={logoUploadState}
+                    existingFiles={mergedLogoState}
                     onFilesChange={(files: FileUploadProgress[]) => {
-                      // Track upload state
+                      /**
+                       * CRITICAL: Only update form on meaningful changes to prevent data loss
+                       *
+                       * Update form when:
+                       * 1. New upload completes (has completedFile)
+                       * 2. User explicitly removes all files (files.length === 0 AND had previous value)
+                       *
+                       * DO NOT update form when:
+                       * - Files are still uploading (preserve existing form data)
+                       * - Component is just re-rendering (no actual change)
+                       */
+
+                      // Track upload state for UI
                       setLogoUploadState(files)
 
-                      // Convert to the expected format
+                      // Check for errors in upload
+                      const errorFile = files.find(f => f.status === 'error')
+                      if (errorFile) {
+                        const error = parseUploadError(errorFile)
+                        setLogoUploadError(error)
+                      } else {
+                        // Clear error when upload succeeds or is retried
+                        setLogoUploadError(null)
+                      }
+
                       const completedFile = files.find(f => f.status === 'completed')
-                      field.onChange(completedFile ? {
-                        id: completedFile.id,
-                        fileName: completedFile.file.name,
-                        fileSize: completedFile.file.size,
-                        mimeType: completedFile.file.type,
-                        url: completedFile.url!,
-                        uploadedAt: new Date().toISOString()
-                      } : null)
+
+                      if (completedFile) {
+                        // New upload completed → save to form
+                        const newValue = {
+                          id: completedFile.id,
+                          fileName: completedFile.file.name,
+                          fileSize: completedFile.file.size,
+                          mimeType: completedFile.file.type,
+                          url: completedFile.url!,
+                          uploadedAt: new Date().toISOString()
+                        }
+                        field.onChange(newValue)
+                        // Clear error on successful upload
+                        setLogoUploadError(null)
+                      }
+
+                      /**
+                       * NOTE: We don't clear the form when files.length === 0 because:
+                       * 1. FileUploadWithProgress handles file removal by calling onFilesChange
+                       * 2. During component re-initialization, files.length === 0 temporarily
+                       * 3. This would cause data loss during navigation
+                       *
+                       * File removal is handled by FileUploadWithProgress's remove button,
+                       * which updates the internal state and will call this handler.
+                       */
                     }}
                     disabled={isLoading}
                   />
                 )}
               />
+
+              {/* Logo Upload Error Alert */}
+              {logoUploadError && (
+                <Alert variant="destructive" className="animate-in fade-in slide-in-from-top-2">
+                  <XCircle className="h-4 w-4" />
+                  <AlertTitle className="font-semibold">
+                    {logoUploadError.type === 'network' && 'Network Error'}
+                    {logoUploadError.type === 'size' && 'File Too Large'}
+                    {logoUploadError.type === 'type' && 'Invalid File Type'}
+                    {logoUploadError.type === 'server' && 'Server Error'}
+                    {logoUploadError.type === 'session' && 'Session Expired'}
+                    {logoUploadError.type === 'unknown' && 'Upload Failed'}
+                  </AlertTitle>
+                  <AlertDescription className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm">{logoUploadError.message}</p>
+                      {logoUploadError.fileName && (
+                        <p className="text-xs opacity-80">File: {logoUploadError.fileName}</p>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="shrink-0"
+                      onClick={() => {
+                        setLogoUploadError(null)
+                        setLogoUploadState([])
+                      }}
+                    >
+                      <RefreshCw className="w-3 h-3 mr-1" />
+                      Retry
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
 
               {/* Logo Requirements */}
               <div className="bg-muted/50 rounded-lg p-4 space-y-3">
@@ -243,12 +420,29 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                     maxFiles={30}
                     maxFileSize={10 * 1024 * 1024} // 10MB per file
                     sessionId={sessionId || undefined}
-                    existingFiles={photosUploadState}
+                    existingFiles={mergedPhotosState}
                     onFilesChange={(files: FileUploadProgress[]) => {
-                      // Track upload state
+                      /**
+                       * CRITICAL: Only update form when there are actual changes
+                       *
+                       * This prevents unnecessary re-renders and ensures we only
+                       * save to localStorage when the user has actually changed something.
+                       */
+
+                      // Track upload state for UI
                       setPhotosUploadState(files)
 
-                      // Convert completed files to expected format
+                      // Check for errors in uploads
+                      const errorFile = files.find(f => f.status === 'error')
+                      if (errorFile) {
+                        const error = parseUploadError(errorFile)
+                        setPhotosUploadError(error)
+                      } else {
+                        // Clear error when all uploads succeed or are retried
+                        setPhotosUploadError(null)
+                      }
+
+                      // Extract completed files
                       const completedFiles = files
                         .filter(f => f.status === 'completed')
                         .map(f => ({
@@ -259,12 +453,61 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                           url: f.url!,
                           uploadedAt: new Date().toISOString()
                         }))
-                      field.onChange(completedFiles)
+
+                      // Check if there are actual changes before updating form
+                      const currentFormValue = field.value || []
+                      const hasChanges =
+                        completedFiles.length !== currentFormValue.length ||
+                        completedFiles.some((f, i) => f.id !== currentFormValue[i]?.id)
+
+                      if (hasChanges) {
+                        field.onChange(completedFiles)
+                        // Clear error on successful upload
+                        if (completedFiles.length > 0) {
+                          setPhotosUploadError(null)
+                        }
+                      }
                     }}
                     disabled={isLoading}
                   />
                 )}
               />
+
+              {/* Photos Upload Error Alert */}
+              {photosUploadError && (
+                <Alert variant="destructive" className="animate-in fade-in slide-in-from-top-2">
+                  <XCircle className="h-4 w-4" />
+                  <AlertTitle className="font-semibold">
+                    {photosUploadError.type === 'network' && 'Network Error'}
+                    {photosUploadError.type === 'size' && 'File Too Large'}
+                    {photosUploadError.type === 'type' && 'Invalid File Type'}
+                    {photosUploadError.type === 'server' && 'Server Error'}
+                    {photosUploadError.type === 'session' && 'Session Expired'}
+                    {photosUploadError.type === 'unknown' && 'Upload Failed'}
+                  </AlertTitle>
+                  <AlertDescription className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <p className="text-sm">{photosUploadError.message}</p>
+                      {photosUploadError.fileName && (
+                        <p className="text-xs opacity-80">File: {photosUploadError.fileName}</p>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="shrink-0"
+                      onClick={() => {
+                        setPhotosUploadError(null)
+                        // Remove only failed files, keep completed ones
+                        setPhotosUploadState(prev => prev.filter(f => f.status !== 'error'))
+                      }}
+                    >
+                      <RefreshCw className="w-3 h-3 mr-1" />
+                      Retry
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
           </CardContent>
         </Card>

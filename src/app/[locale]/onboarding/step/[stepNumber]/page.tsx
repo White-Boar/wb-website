@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
@@ -92,6 +92,9 @@ export default function OnboardingStep() {
     }
   }, [stepNumber, currentStep, router, sessionId, locale])
 
+  // Track if we're currently resetting form from store to prevent auto-save loop
+  const isResettingRef = useRef(false)
+
   // Get step schema and form setup - must be called before any early returns
   const schema = getStepSchema(stepNumber)
 
@@ -172,10 +175,18 @@ export default function OnboardingStep() {
           offerings: formData?.offerings || []
         }
       case 12:
-        return {
-          logoUpload: formData?.logoUpload || null,
-          businessPhotos: formData?.businessPhotos || []
+        // CRITICAL FIX: Don't include logoUpload/businessPhotos if undefined or empty
+        // This allows keepDefaultValues to preserve existing form values
+        const step12Values: any = {}
+        if (formData?.logoUpload !== undefined && formData.logoUpload !== null) {
+          step12Values.logoUpload = formData.logoUpload
         }
+        // CRITICAL: Treat empty array same as undefined - don't include in reset values
+        // This allows keepDefaultValues to preserve existing form data
+        if (formData?.businessPhotos !== undefined && Array.isArray(formData.businessPhotos) && formData.businessPhotos.length > 0) {
+          step12Values.businessPhotos = formData.businessPhotos
+        }
+        return step12Values
       case 13:
         return {
           additionalLanguages: formData?.additionalLanguages || []
@@ -239,19 +250,36 @@ export default function OnboardingStep() {
 
   // Reset form values when formData changes (e.g., loaded from localStorage)
   useEffect(() => {
+    isResettingRef.current = true
     const currentValues = getStepDefaultValues(stepNumber)
-    form.reset(currentValues)
+    // Use keepDefaultValues to preserve other form fields not in currentValues
+    form.reset(currentValues, { keepDefaultValues: true })
+    // Use setTimeout to ensure the reset completes before allowing auto-save
+    setTimeout(() => {
+      isResettingRef.current = false
+    }, 0)
   }, [formData, stepNumber, form, getStepDefaultValues])
 
   // Auto-save functionality
   useEffect(() => {
     const subscription = form.watch((data) => {
-      if (isDirty && data) {
-        updateFormData(data as any)
+      // Save if form is dirty OR if we're not currently resetting (to catch programmatic changes like file uploads)
+      if (!isResettingRef.current && data && (isDirty || (data as any).logoUpload || (data as any).businessPhotos)) {
+        // CRITICAL FIX: Filter out undefined values AND empty arrays to prevent overwriting existing data
+        // Only include fields that have actual values (not undefined or empty arrays)
+        const cleanedData = Object.fromEntries(
+          Object.entries(data).filter(([key, value]) => {
+            if (value === undefined) return false
+            // Special handling for array fields - don't save empty arrays
+            if (key === 'businessPhotos' && Array.isArray(value) && value.length === 0) return false
+            return true
+          })
+        )
+        updateFormData(cleanedData as any)
       }
     })
     return () => subscription.unsubscribe()
-  }, [form, updateFormData, isDirty])
+  }, [form, updateFormData, isDirty, stepNumber])
 
   // Validate step number (Step 14 is now the final step)
   if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 14) {

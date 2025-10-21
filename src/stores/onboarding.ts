@@ -162,10 +162,10 @@ export const useOnboardingStore = create<OnboardingStore>()(
           updateFormData: (stepData: Partial<OnboardingFormData>) => {
             const currentData = get().formData
             const updatedData = { ...currentData, ...stepData }
-            
-            set({ 
+
+            set({
               formData: updatedData,
-              isDirty: true 
+              isDirty: true
             })
 
             // Trigger auto-save
@@ -506,6 +506,21 @@ export const useOnboardingStore = create<OnboardingStore>()(
           formData: state.formData, // Persist form data to prevent loss on refresh
           isSessionExpired: state.isSessionExpired
         }),
+        // CRITICAL: Custom merge to properly handle formData with file uploads
+        // Default shallow merge would overwrite formData, losing uploaded files
+        merge: (persistedState, currentState) => {
+          // Deep merge formData to preserve all fields including file uploads
+          const mergedFormData = {
+            ...currentState.formData,
+            ...(persistedState as any)?.formData
+          }
+
+          return {
+            ...currentState,
+            ...(persistedState as any),
+            formData: mergedFormData
+          }
+        },
         // Version for breaking changes
         version: 1,
       }
