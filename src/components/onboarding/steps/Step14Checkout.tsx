@@ -452,16 +452,16 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
   const [isLoadingSecret, setIsLoadingSecret] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Get saved language selections
-  const selectedLanguages = form.getValues('additionalLanguages') || []
-  const discountCode = form.getValues('discountCode') || ''
-
-  // Fetch clientSecret on mount
+  // Fetch clientSecret on mount ONCE
   useEffect(() => {
     const fetchClientSecret = async () => {
       try {
         setIsLoadingSecret(true)
         setError(null)
+
+        // Get form values inside the effect to avoid stale closures
+        const selectedLanguages = form.getValues('additionalLanguages') || []
+        const discountCode = form.getValues('discountCode') || ''
 
         const response = await fetch('/api/stripe/create-checkout-session', {
           method: 'POST',
@@ -495,7 +495,8 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
     }
 
     fetchClientSecret()
-  }, [submissionId, selectedLanguages, discountCode, locale])
+    // Only run once on mount with submissionId and locale
+  }, [submissionId, locale, form])
 
   // Show loading state
   if (isLoadingSecret) {
