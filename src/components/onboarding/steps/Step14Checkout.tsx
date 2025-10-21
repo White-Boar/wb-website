@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
@@ -452,8 +452,15 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
   const [isLoadingSecret, setIsLoadingSecret] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Prevent duplicate API calls (React Strict Mode runs effects twice in dev)
+  const hasFetchedRef = useRef(false)
+
   // Fetch clientSecret on mount ONCE
   useEffect(() => {
+    // Skip if already fetched
+    if (hasFetchedRef.current) {
+      return
+    }
     const fetchClientSecret = async () => {
       try {
         setIsLoadingSecret(true)
@@ -486,6 +493,7 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
         }
 
         setClientSecret(data.data.clientSecret)
+        hasFetchedRef.current = true
       } catch (err) {
         console.error('Failed to fetch client secret:', err)
         setError(err instanceof Error ? err.message : 'Failed to initialize payment')
@@ -496,7 +504,8 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
 
     fetchClientSecret()
     // Only run once on mount with submissionId and locale
-  }, [submissionId, locale, form])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submissionId, locale])
 
   // Show loading state
   if (isLoadingSecret) {
