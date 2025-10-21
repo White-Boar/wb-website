@@ -6,8 +6,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **WhiteBoar** is an AI-driven digital agency homepage built with Next.js 15+, featuring modern web standards and multilingual support. This is a production-ready website implementing the business requirements outlined in `context/CONTEXT.md`.
 
-## Development Commands
+## **CRITICAL** rules that must always be followed:
+- **Always** Follow User Instructions Precisely. 
+- **Always** Create full and complete implementation, 
+- **Never** create partial implementations. Take your time. 
+- **NEVER deviate** from explicit user requests without asking for permission. 
+- **ALWAYS ask for confirmation** before changing scope or approach
+- **Never** commit code without permission.
+- **Never** implement a fix without validating your assumptios first.
+- **Always** - Validate every fix. If it's UI effecting use Playwrite MCP.
+- Always use port 3783 for the development server
+- **Always** - run playright MCP after making changes to the UI to ensure that the changes are as intended. Check both light and dark themes. Check mobile and desktop layouts.
+- **NEVER edit .env files** - Environment variables are managed by Vercel. Never modify `.env` or `.env.development.locsl`. If environment variables need to be changed, inform the user to update them manually or through Vercel dashboard.
+- **BREAK DOWN** complex requests and confirm each part before proceeding
+- **FOCUS ONLY** on the specific task requested - ignore distracting background processes
+- **SEQUENTIAL EXECUTION** - when asked to validate "ALL steps", go through each step 1→2→3→4... systematically, never skip or jump around
+- **Don't** use emoticons.
 
+## Development Commands
 - `PORT=3783 pnpm dev` - Start development server (**ALWAYS use port 3783**)
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
@@ -16,12 +32,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `pnpm test` - Run Jest unit tests
 - `pnpm test:watch` - Run Jest in watch mode
 - `pnpm test:e2e` - Run Playwright e2e tests
-
-### Port Configuration
-- **CRITICAL**: Always use port 3783 for the development server
-- Playwright tests are configured to run against `http://localhost:3783`
-- All manual testing with Playwright MCP should use `http://localhost:3783`
-- Use `PORT=3783 pnpm dev` to start the server on the correct port
 
 ## Architecture & Tech Stack
 
@@ -119,8 +129,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Keep translations in sync** - update both `en.json` and `it.json`
 - **Follow component patterns** - use existing shadcn/ui + design tokens approach
 - **Performance first** - validate LCP and CLS requirements with tests
-- **Always** - run playright MCP after making changes to the UI to ensure that the changes are as intended. Check both light and dark themes. Check mobile and desktop layouts.
-- **NEVER edit .env files** - Environment variables are managed by Vercel. Only read from .env for information, never modify it. If environment variables need to be changed, inform the user to update them manually or through Vercel dashboard.
 
 ## CI/CD Pipeline
 
@@ -131,16 +139,7 @@ GitHub Actions workflow (`.github/workflows/test.yml`) runs:
 4. Playwright e2e tests including performance validation
 5. Accessibility testing with axe-core
 
-The project is production-ready when it meets all requirements specified in `./context`.
-
 ## Critical Instructions for AI Agents
-
-### ALWAYS Follow User Instructions Precisely
-- **NEVER deviate** from explicit user requests without asking for permission
-- **ALWAYS ask for confirmation** before changing scope or approach
-- **BREAK DOWN** complex requests and confirm each part before proceeding
-- **FOCUS ONLY** on the specific task requested - ignore distracting background processes
-- **SEQUENTIAL EXECUTION** - when asked to validate "ALL steps", go through each step 1→2→3→4... systematically, never skip or jump around
 
 ### Phase-Based Work Instructions
 - When user specifies "Phase 1 only" or specific phases, **STOP** after completing that phase

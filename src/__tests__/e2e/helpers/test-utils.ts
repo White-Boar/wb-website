@@ -382,17 +382,18 @@ export async function restartOnboarding(page: Page) {
  * This should be called at the beginning of each test to guarantee clean state
  */
 export async function ensureFreshOnboardingState(page: Page) {
-  // Navigate to onboarding if not already there
-  if (!page.url().includes('/onboarding')) {
-    await page.goto('/onboarding');
-    await page.waitForLoadState('networkidle');
-  }
+  // Clear localStorage using addInitScript to ensure it's cleared before any page navigation
+  await page.addInitScript(() => {
+    localStorage.clear();
+  });
 
-  // If we're already on a step, restart the flow
-  if (page.url().includes('/step/')) {
-    await restartOnboarding(page);
-  } else {
-    // If we're on the welcome page, we already have fresh state
-    await page.waitForLoadState('networkidle');
-  }
+  // Navigate directly to onboarding welcome page with cleared storage
+  await page.goto('http://localhost:3783/onboarding', { waitUntil: 'domcontentloaded' });
+  await page.waitForLoadState('networkidle');
+
+  // Verify we're on the welcome page (not redirected to a step)
+  await expect(page).toHaveURL(/\/onboarding$/);
+
+  // Verify the start button is visible
+  await expect(page.getByRole('button', { name: /Start Your Website/i })).toBeVisible({ timeout: 5000 });
 }
