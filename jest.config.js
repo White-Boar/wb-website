@@ -9,6 +9,7 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jsdom',
+  testTimeout: 30000, // 30 seconds for integration tests with Stripe API
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },

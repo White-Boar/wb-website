@@ -18,6 +18,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Always use port 3783 for the development server
 - **Always** - run playright MCP after making changes to the UI to ensure that the changes are as intended. Check both light and dark themes. Check mobile and desktop layouts.
 - **NEVER edit .env files** - Environment variables are managed by Vercel. Never modify `.env` or `.env.development.locsl`. If environment variables need to be changed, inform the user to update them manually or through Vercel dashboard.
+- **NEVER** skip tests. 
 - **BREAK DOWN** complex requests and confirm each part before proceeding
 - **FOCUS ONLY** on the specific task requested - ignore distracting background processes
 - **SEQUENTIAL EXECUTION** - when asked to validate "ALL steps", go through each step 1→2→3→4... systematically, never skip or jump around

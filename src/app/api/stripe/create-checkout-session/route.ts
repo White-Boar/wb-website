@@ -205,15 +205,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create subscription schedule with 12-month commitment
-    // Calculate end_date as 12 months from now (in seconds since epoch)
+    // Create subscription schedule with 12-month commitment FIRST
     const now = Math.floor(Date.now() / 1000)
-    const twelveMonthsLater = now + (365 * 24 * 60 * 60) // Approximate 12 months
+    // Calculate 12 months from now (approximately 365 days)
+    const twelveMonthsLater = now + (12 * 30 * 24 * 60 * 60) // 12 months in seconds
 
-    const scheduleData: Stripe.SubscriptionScheduleCreateParams = {
+    const schedule = await stripe.subscriptionSchedules.create({
       customer: customer.id,
       start_date: 'now',
-      end_behavior: 'release', // After 12 months, converts to regular subscription
+      end_behavior: 'release',
       phases: [
         {
           items: [
@@ -222,8 +222,12 @@ export async function POST(request: NextRequest) {
               quantity: 1
             }
           ],
-          end_date: twelveMonthsLater, // 12 months from now
-          ...(validatedCoupon && { coupon: validatedCoupon.id })
+          end_date: twelveMonthsLater,
+          ...(validatedCoupon && {
+            discounts: [{
+              coupon: validatedCoupon.id
+            }]
+          })
         }
       ],
       metadata: {
@@ -231,25 +235,28 @@ export async function POST(request: NextRequest) {
         session_id: submission.session_id,
         commitment_months: '12'
       }
-    }
-
-    const schedule = await stripe.subscriptionSchedules.create(scheduleData)
+    })
 
     // Get the subscription created by the schedule
-    const subscription = await stripe.subscriptions.retrieve(
-      schedule.subscription as string,
-      {
-        expand: ['latest_invoice.payment_intent']
-      }
-    )
+    const subscription = await stripe.subscriptions.retrieve(schedule.subscription as string, {
+      expand: ['latest_invoice']
+    })
 
     // Add language add-ons as invoice items to the first invoice
-    const invoice = subscription.latest_invoice as Stripe.Invoice
+    let invoiceId: string
+    if (typeof subscription.latest_invoice === 'string') {
+      invoiceId = subscription.latest_invoice
+    } else if (subscription.latest_invoice?.id) {
+      invoiceId = subscription.latest_invoice.id
+    } else {
+      throw new Error('No invoice found for subscription')
+    }
+
     const languageAddOnPromises = additionalLanguages.map((code: string) => {
       const language = EUROPEAN_LANGUAGES.find(l => l.code === code)
       return stripe.invoiceItems.create({
         customer: customer.id,
-        invoice: invoice.id,
+        invoice: invoiceId,
         amount: 7500, // €75.00 in cents
         currency: 'eur',
         description: `${language?.nameEn} Language Add-on`,
@@ -262,18 +269,33 @@ export async function POST(request: NextRequest) {
 
     await Promise.all(languageAddOnPromises)
 
-    // Finalize the invoice to create the payment intent
-    // The invoice is created in draft status by default, we need to finalize it
-    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id, {
-      expand: ['payment_intent']
+    // Retrieve the updated invoice with language add-ons
+    const invoice = await stripe.invoices.retrieve(invoiceId)
+
+    // Create a payment intent for the total amount
+    // We create this separately because subscription schedules don't auto-create payment intents
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: invoice.amount_due,
+      currency: 'eur',
+      customer: customer.id,
+      setup_future_usage: 'off_session',
+      automatic_payment_methods: {
+        enabled: true
+      },
+      metadata: {
+        invoice_id: invoice.id,
+        subscription_id: subscription.id,
+        subscription_schedule_id: schedule.id,
+        submission_id,
+        session_id: submission.session_id
+      }
     })
 
-    const paymentIntent = finalizedInvoice.payment_intent as Stripe.PaymentIntent
-
-    // Verify payment intent was created
-    if (!paymentIntent || !paymentIntent.client_secret) {
-      throw new Error('Failed to create payment intent for invoice')
+    if (!paymentIntent.client_secret) {
+      throw new Error('Payment intent client secret not available')
     }
+
+    const finalInvoice = invoice
 
     // Build line items for response
     const lineItems = [
@@ -298,8 +320,8 @@ export async function POST(request: NextRequest) {
 
     // Calculate discount if applied
     let discountApplied = undefined
-    if (validatedCoupon && finalizedInvoice.total_discount_amounts) {
-      const totalDiscount = finalizedInvoice.total_discount_amounts.reduce(
+    if (validatedCoupon && finalInvoice.total_discount_amounts) {
+      const totalDiscount = finalInvoice.total_discount_amounts.reduce(
         (sum, discount) => sum + discount.amount,
         0
       )
@@ -317,7 +339,7 @@ export async function POST(request: NextRequest) {
         subscriptionId: subscription.id,
         subscriptionScheduleId: schedule.id,
         customerId: customer.id,
-        totalAmount: finalizedInvoice.amount_due,
+        totalAmount: finalInvoice.amount_due,
         currency: 'EUR',
         lineItems,
         discountApplied

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createServiceClient } from '@/lib/supabase'
 import { stripe } from '@/lib/stripe'
+import { EmailService } from '@/services/resend'
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.NOTIFICATION_ADMIN_EMAIL
@@ -210,15 +211,27 @@ async function handleInvoicePaid(
     }
   })
 
-  // Send admin notification (implement email sending logic)
+  // Send admin notification email
   if (ADMIN_EMAIL) {
-    console.log('Payment received notification:', {
-      submission_id: submission.id,
-      business_name: submission.form_data?.step3?.businessName || submission.form_data?.businessName,
-      amount: invoice.amount_paid / 100,
-      stripe_payment_id: paymentIntentId
-    })
-    // TODO: Implement email sending via Resend or other service
+    const businessName = submission.form_data?.step3?.businessName || submission.form_data?.businessName || 'Unknown Business'
+    const email = submission.form_data?.step3?.email || submission.form_data?.email || 'unknown@example.com'
+    const additionalLanguages = submission.form_data?.step13?.additionalLanguages || []
+
+    try {
+      await EmailService.sendPaymentNotification(
+        submission.id,
+        businessName,
+        email,
+        invoice.amount_paid,
+        invoice.currency.toUpperCase(),
+        paymentIntentId,
+        additionalLanguages
+      )
+      console.log('Payment notification email sent successfully')
+    } catch (emailError) {
+      console.error('Failed to send payment notification email:', emailError)
+      // Log error but don't fail the webhook
+    }
   }
 }
 

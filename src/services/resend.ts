@@ -674,6 +674,67 @@ export class EmailService {
   // ===========================================================================
 
   /**
+   * Send payment notification to admin
+   */
+  static async sendPaymentNotification(
+    submissionId: string,
+    businessName: string,
+    email: string,
+    amount: number,
+    currency: string,
+    stripePaymentId: string,
+    additionalLanguages: string[] = []
+  ): Promise<boolean> {
+    try {
+      const subject = `💳 Payment Received: ${businessName} - €${(amount / 100).toFixed(2)}`
+
+      const htmlContent = this.generatePaymentNotificationHTML(
+        submissionId,
+        businessName,
+        email,
+        amount,
+        currency,
+        stripePaymentId,
+        additionalLanguages
+      )
+
+      const textContent = this.generatePaymentNotificationText(
+        submissionId,
+        businessName,
+        email,
+        amount,
+        currency,
+        stripePaymentId,
+        additionalLanguages
+      )
+
+      const { data, error } = await resend.emails.send({
+        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+        to: [ADMIN_EMAIL],
+        subject,
+        html: htmlContent,
+        text: textContent,
+        tags: [
+          { name: 'category', value: 'payment_notification' },
+          { name: 'business_name', value: businessName },
+          { name: 'amount', value: amount.toString() }
+        ]
+      })
+
+      if (error) {
+        console.error('Failed to send payment notification:', error)
+        return false
+      }
+
+      console.log('Payment notification sent:', data)
+      return true
+    } catch (error) {
+      console.error('Send payment notification error:', error)
+      return false
+    }
+  }
+
+  /**
    * Send custom software inquiry notification to admin
    */
   static async sendCustomSoftwareInquiry(
@@ -711,6 +772,157 @@ export class EmailService {
       console.error('Send custom software inquiry error:', error)
       return false
     }
+  }
+
+  private static generatePaymentNotificationHTML(
+    submissionId: string,
+    businessName: string,
+    email: string,
+    amount: number,
+    currency: string,
+    stripePaymentId: string,
+    additionalLanguages: string[]
+  ): string {
+    const adminUrl = `${APP_URL}/admin/submissions/${submissionId}`
+    const stripeUrl = `https://dashboard.stripe.com/payments/${stripePaymentId}`
+    const formattedAmount = (amount / 100).toFixed(2)
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Payment Received</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
+            .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; }
+            .content { padding: 30px; }
+            .success-badge { background: #d1fae5; color: #065f46; padding: 10px 20px; border-radius: 20px; display: inline-block; font-weight: bold; margin-bottom: 20px; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+            .info-item { background: #f8f9fa; padding: 15px; border-radius: 4px; }
+            .info-label { font-weight: bold; color: #374151; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
+            .info-value { color: #1f2937; font-size: 16px; }
+            .amount-box { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 25px; border-radius: 8px; text-align: center; margin: 20px 0; }
+            .amount-label { font-size: 14px; opacity: 0.9; margin-bottom: 5px; }
+            .amount-value { font-size: 36px; font-weight: bold; }
+            .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 10px 5px; }
+            .button-stripe { background: #635bff; }
+            .languages-list { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
+            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1 style="margin: 0; font-size: 24px;">💳 Payment Received!</h1>
+              <p style="margin: 10px 0 0; opacity: 0.9;">A customer has successfully completed payment</p>
+            </div>
+            <div class="content">
+              <div class="success-badge">✓ PAYMENT SUCCESSFUL</div>
+
+              <div class="amount-box">
+                <div class="amount-label">Total Amount</div>
+                <div class="amount-value">€${formattedAmount}</div>
+                <div class="amount-label" style="margin-top: 5px;">${currency}</div>
+              </div>
+
+              <h2 style="color: #1f2937; margin-top: 30px;">Customer Details</h2>
+              <div class="info-grid">
+                <div class="info-item">
+                  <div class="info-label">Business Name</div>
+                  <div class="info-value">${businessName}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Email</div>
+                  <div class="info-value"><a href="mailto:${email}">${email}</a></div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Submission ID</div>
+                  <div class="info-value" style="font-size: 12px; font-family: monospace;">${submissionId}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Stripe Payment ID</div>
+                  <div class="info-value" style="font-size: 12px; font-family: monospace;">${stripePaymentId}</div>
+                </div>
+              </div>
+
+              ${additionalLanguages.length > 0 ? `
+                <div class="languages-list">
+                  <strong>📦 Language Add-ons (${additionalLanguages.length}):</strong><br>
+                  ${additionalLanguages.map(lang => `• ${lang.toUpperCase()}`).join('<br>')}
+                </div>
+              ` : ''}
+
+              <h2 style="color: #1f2937; margin-top: 30px;">Next Steps</h2>
+              <ol>
+                <li>Review the complete submission in the admin panel</li>
+                <li>Verify payment in Stripe dashboard</li>
+                <li>Begin website creation process</li>
+                <li>Schedule preview delivery (5 business days)</li>
+              </ol>
+
+              <p style="text-align: center; margin-top: 30px;">
+                <a href="${adminUrl}" class="button">View Submission</a>
+                <a href="${stripeUrl}" class="button button-stripe">View in Stripe</a>
+              </p>
+            </div>
+            <div class="footer">
+              <p>WhiteBoar Admin Panel<br>
+              Payment received at ${new Date().toLocaleString('en-US')}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+  }
+
+  private static generatePaymentNotificationText(
+    submissionId: string,
+    businessName: string,
+    email: string,
+    amount: number,
+    currency: string,
+    stripePaymentId: string,
+    additionalLanguages: string[]
+  ): string {
+    const formattedAmount = (amount / 100).toFixed(2)
+    const adminUrl = `${APP_URL}/admin/submissions/${submissionId}`
+    const stripeUrl = `https://dashboard.stripe.com/payments/${stripePaymentId}`
+
+    return `
+💳 PAYMENT RECEIVED
+${'='.repeat(50)}
+
+✓ PAYMENT SUCCESSFUL
+
+Total Amount: €${formattedAmount} ${currency}
+
+CUSTOMER DETAILS:
+Business Name: ${businessName}
+Email: ${email}
+Submission ID: ${submissionId}
+Stripe Payment ID: ${stripePaymentId}
+
+${additionalLanguages.length > 0 ? `
+📦 LANGUAGE ADD-ONS (${additionalLanguages.length}):
+${additionalLanguages.map(lang => `• ${lang.toUpperCase()}`).join('\n')}
+` : ''}
+
+NEXT STEPS:
+1. Review the complete submission in the admin panel
+2. Verify payment in Stripe dashboard
+3. Begin website creation process
+4. Schedule preview delivery (5 business days)
+
+View Submission: ${adminUrl}
+View in Stripe: ${stripeUrl}
+
+---
+WhiteBoar Admin Panel
+Payment received at ${new Date().toLocaleString('en-US')}
+    `.trim()
   }
 
   private static generateCustomSoftwareInquiryHTML(
