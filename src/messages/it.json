@@ -1005,7 +1005,6 @@
         "title": "Lingue Aggiuntive",
         "description": "Seleziona lingue aggiuntive per il tuo sito web",
         "heading": "Scegli Lingue Aggiuntive",
-        "subtitle": "Inglese e italiano sono inclusi. Aggiungi altre lingue per €75 ciascuna.",
         "includedLanguages": "Inclusi: Inglese e Italiano",
         "availableLanguages": "Lingue Disponibili ({count})",
         "selectedCount": "{count} lingua selezionata",
@@ -1015,7 +1014,10 @@
         "speakers": "parlanti",
         "clearAll": "Cancella tutto",
         "noResults": "Nessuna lingua trovata corrispondente alla tua ricerca",
-        "clearSearch": "Cancella ricerca"
+        "clearSearch": "Cancella ricerca",
+        "basePackage": "Pacchetto Base (Italiano e Inglese sono inclusi)",
+        "languageAddonsInfo": "Le lingue aggiuntive sono costi di configurazione una tantum.",
+        "totalFirstMonth": "Totale Primo Mese"
       },
       "14": {
         "title": "Pagamento",

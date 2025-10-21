@@ -1007,7 +1007,6 @@ declare const messages: {
         "title": "Language Add-ons",
         "description": "Select additional languages for your website",
         "heading": "Choose Additional Languages",
-        "subtitle": "English and Italian are included. Add more languages for €75 each.",
         "includedLanguages": "Included: English & Italian",
         "availableLanguages": "Available Languages ({count})",
         "selectedCount": "{count} language selected",
@@ -1017,7 +1016,10 @@ declare const messages: {
         "speakers": "speakers",
         "clearAll": "Clear all",
         "noResults": "No languages found matching your search",
-        "clearSearch": "Clear search"
+        "clearSearch": "Clear search",
+        "basePackage": "Base Package (Italian and English are included)",
+        "languageAddonsInfo": "Language add-ons are one-time setup fees.",
+        "totalFirstMonth": "Total First Month"
       },
       "14": {
         "title": "Payment",

@@ -91,9 +91,6 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
           <h2 className="text-xl font-semibold text-foreground">
             {t('heading')}
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto text-sm">
-            {t('subtitle')}
-          </p>
         </div>
 
         {/* Included Languages Badge */}
@@ -148,7 +145,7 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
               <div className="space-y-2 pt-4 border-t">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">
-                    Base Package (EN + IT)
+                    {t('basePackage')}
                   </span>
                   <span className="font-medium">€{basePackagePrice}/month</span>
                 </div>
@@ -166,7 +163,7 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
               {/* Total Price (First Month) */}
               {selectedLanguages.length > 0 && (
                 <div className="flex justify-between pt-4 border-t">
-                  <span className="font-semibold">Total First Month</span>
+                  <span className="font-semibold">{t('totalFirstMonth')}</span>
                   <span className="text-xl font-bold text-primary">
                     €{basePackagePrice + totalAddOnsPrice}
                   </span>
@@ -309,8 +306,7 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
         className="text-center text-sm text-muted-foreground"
       >
         <p>
-          Language add-ons are one-time setup fees.
-          You can always add more languages later.
+          {t('languageAddonsInfo')}
         </p>
       </motion.div>
     </div>
