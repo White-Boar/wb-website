@@ -55,14 +55,14 @@ function CheckoutForm({
   const locale = useLocale() as 'en' | 'it'
   const stripe = useStripe()
   const elements = useElements()
-  const { control, getValues } = form
+  const { control, watch } = form
 
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
 
-  // Get saved form values
-  const acceptTerms = getValues('acceptTerms') || false
-  const selectedLanguages = getValues('additionalLanguages') || []
+  // Watch form values for reactive updates
+  const acceptTerms = watch('acceptTerms') || false
+  const selectedLanguages = watch('additionalLanguages') || []
 
   // Calculate pricing
   const basePackagePrice = 35 // €35/month
