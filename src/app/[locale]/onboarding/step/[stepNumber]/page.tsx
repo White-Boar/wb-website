@@ -194,7 +194,8 @@ export default function OnboardingStep() {
       case 14:
         return {
           discountCode: formData?.discountCode || '',
-          acceptTerms: formData?.acceptTerms || false
+          acceptTerms: formData?.acceptTerms || false,
+          additionalLanguages: formData?.additionalLanguages || []
         }
       default:
         return {}
