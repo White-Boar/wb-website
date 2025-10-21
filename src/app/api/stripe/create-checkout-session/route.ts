@@ -123,10 +123,25 @@ export async function POST(request: NextRequest) {
     })
 
     // Get customer email from submission
-    const customerEmail = submission.form_data?.email || submission.form_data?.step3?.businessEmail
-    const businessName = submission.form_data?.step3?.businessName || submission.form_data?.businessName
+    // Try multiple locations: form_data.email (Step 1), form_data.businessEmail (Step 3),
+    // legacy nested structure, and finally top-level submission.email
+    const customerEmail = submission.form_data?.email ||
+                         submission.form_data?.businessEmail ||
+                         submission.form_data?.step3?.businessEmail ||
+                         submission.email
+
+    const businessName = submission.form_data?.businessName ||
+                        submission.form_data?.step3?.businessName ||
+                        submission.business_name
 
     if (!customerEmail) {
+      console.error('Missing customer email. Submission data:', {
+        hasFormData: !!submission.form_data,
+        formDataEmail: submission.form_data?.email,
+        formDataBusinessEmail: submission.form_data?.businessEmail,
+        topLevelEmail: submission.email
+      })
+
       return NextResponse.json(
         {
           success: false,
@@ -191,6 +206,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Create subscription schedule with 12-month commitment
+    // Calculate end_date as 12 months from now (in seconds since epoch)
+    const now = Math.floor(Date.now() / 1000)
+    const twelveMonthsLater = now + (365 * 24 * 60 * 60) // Approximate 12 months
+
     const scheduleData: Stripe.SubscriptionScheduleCreateParams = {
       customer: customer.id,
       start_date: 'now',
@@ -203,7 +222,7 @@ export async function POST(request: NextRequest) {
               quantity: 1
             }
           ],
-          iterations: 12, // 12 monthly payments
+          end_date: twelveMonthsLater, // 12 months from now
           ...(validatedCoupon && { coupon: validatedCoupon.id })
         }
       ],
@@ -243,12 +262,18 @@ export async function POST(request: NextRequest) {
 
     await Promise.all(languageAddOnPromises)
 
-    // Retrieve updated invoice with add-ons
-    const updatedInvoice = await stripe.invoices.retrieve(invoice.id, {
+    // Finalize the invoice to create the payment intent
+    // The invoice is created in draft status by default, we need to finalize it
+    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoice.id, {
       expand: ['payment_intent']
     })
 
-    const paymentIntent = updatedInvoice.payment_intent as Stripe.PaymentIntent
+    const paymentIntent = finalizedInvoice.payment_intent as Stripe.PaymentIntent
+
+    // Verify payment intent was created
+    if (!paymentIntent || !paymentIntent.client_secret) {
+      throw new Error('Failed to create payment intent for invoice')
+    }
 
     // Build line items for response
     const lineItems = [
@@ -273,8 +298,8 @@ export async function POST(request: NextRequest) {
 
     // Calculate discount if applied
     let discountApplied = undefined
-    if (validatedCoupon && updatedInvoice.total_discount_amounts) {
-      const totalDiscount = updatedInvoice.total_discount_amounts.reduce(
+    if (validatedCoupon && finalizedInvoice.total_discount_amounts) {
+      const totalDiscount = finalizedInvoice.total_discount_amounts.reduce(
         (sum, discount) => sum + discount.amount,
         0
       )
@@ -292,7 +317,7 @@ export async function POST(request: NextRequest) {
         subscriptionId: subscription.id,
         subscriptionScheduleId: schedule.id,
         customerId: customer.id,
-        totalAmount: updatedInvoice.amount_due,
+        totalAmount: finalizedInvoice.amount_due,
         currency: 'EUR',
         lineItems,
         discountApplied

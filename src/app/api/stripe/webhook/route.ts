@@ -6,6 +6,11 @@ import { stripe } from '@/lib/stripe'
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.NOTIFICATION_ADMIN_EMAIL
 
+// Disable body parsing for webhook signature verification
+// Next.js needs the raw body bytes to verify Stripe signatures
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 /**
  * POST /api/stripe/webhook
  * Handles Stripe webhook events for payment confirmation and subscription updates

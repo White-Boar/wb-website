@@ -146,7 +146,7 @@ export function StepTemplate({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-muted-foreground">
-                {t('step')} {stepNumber} {t('of')} 12
+                {t('step')} {stepNumber} {t('of')} 14
               </span>
               {renderAutoSaveIndicator()}
             </div>
@@ -154,10 +154,10 @@ export function StepTemplate({
               {Math.round(progressPercentage)}%
             </div>
           </div>
-          <Progress 
-            value={progressPercentage} 
+          <Progress
+            value={progressPercentage}
             className="h-2"
-            aria-label={t('progressLabel', { step: stepNumber, total: 12 })}
+            aria-label={t('progressLabel', { step: stepNumber, total: 14 })}
           />
         </div>
       </div>
@@ -246,7 +246,7 @@ export function StepTemplate({
 
             {/* Step Indicators */}
             <div className="hidden md:flex items-center gap-2">
-              {Array.from({ length: 12 }, (_, i) => (
+              {Array.from({ length: 14 }, (_, i) => (
                 <div
                   key={i}
                   role="img"
@@ -284,8 +284,8 @@ export function StepTemplate({
                   </>
                 ) : (
                   <>
-                    {nextLabel || (stepNumber === 12 ? t('complete') : t('next'))}
-                    {stepNumber < 12 && <ArrowRight className="h-4 w-4" />}
+                    {nextLabel || t('next')}
+                    {stepNumber < 14 && <ArrowRight className="h-4 w-4" />}
                   </>
                 )}
               </Button>
@@ -298,12 +298,12 @@ export function StepTemplate({
 }
 
 // Mobile-specific progress component
-export function MobileProgressBar({ 
-  currentStep, 
-  totalSteps = 12 
-}: { 
+export function MobileProgressBar({
+  currentStep,
+  totalSteps = 14
+}: {
   currentStep: number
-  totalSteps?: number 
+  totalSteps?: number
 }) {
   const progressPercentage = (currentStep / totalSteps) * 100
   

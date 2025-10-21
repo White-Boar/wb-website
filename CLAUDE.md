@@ -120,6 +120,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Follow component patterns** - use existing shadcn/ui + design tokens approach
 - **Performance first** - validate LCP and CLS requirements with tests
 - **Always** - run playright MCP after making changes to the UI to ensure that the changes are as intended. Check both light and dark themes. Check mobile and desktop layouts.
+- **NEVER edit .env files** - Environment variables are managed by Vercel. Only read from .env for information, never modify it. If environment variables need to be changed, inform the user to update them manually or through Vercel dashboard.
 
 ## CI/CD Pipeline
 

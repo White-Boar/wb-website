@@ -393,19 +393,12 @@ export default function OnboardingStep() {
       const mergedData = { ...formData, ...data } as any
       const nextStepNumber = getNextStep(stepNumber as StepNumber, mergedData)
       console.log(`🔍 Navigation logic: stepNumber=${stepNumber}, nextStepNumber=${nextStepNumber}`)
-      console.log(`🔍 Step number check: stepNumber === 14? ${stepNumber === 14}`)
-      console.log(`🔍 NextStep check: nextStepNumber=${nextStepNumber}, nextStepNumber && nextStepNumber <= 14? ${nextStepNumber && nextStepNumber <= 14}`)
 
-      if (nextStepNumber && nextStepNumber <= 14) {
-        console.log('Moving to next step:', nextStepNumber)
-        await nextStep()
-        router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
-      } else {
-        // Complete onboarding - Step 14 is the final step
+      // Special case: When transitioning from Step 13 to Step 14, create submission first
+      if (stepNumber === 13 && nextStepNumber === 14) {
         try {
-          console.log('🎯 Step 14 completion triggered')
+          console.log('🎯 Creating submission before navigating to Step 14 (Checkout)')
           console.log('Session ID:', sessionId)
-          console.log('Form data keys:', Object.keys(formData))
 
           // Calculate completion time if we have session start time
           const startTime = sessionId ? localStorage.getItem(`wb-onboarding-start-${sessionId}`) : null
@@ -415,23 +408,35 @@ export default function OnboardingStep() {
 
           console.log('Completion time:', completionTimeSeconds, 'seconds')
 
-          // Submit all onboarding data to Supabase
+          // Submit all onboarding data to Supabase (Step 14 will load this submission)
           console.log('Calling submitOnboarding...')
           const submission = await submitOnboarding(
             sessionId!,
-            { ...formData, ...data } as OnboardingFormData, // Merge current step data with all form data
+            { ...formData, ...data } as OnboardingFormData,
             completionTimeSeconds
           )
 
-          console.log('Onboarding submitted successfully:', submission.id)
+          console.log('✅ Submission created successfully:', submission.id)
 
-          // Navigate to thank you page
-          router.push(`/${locale}/onboarding/thank-you`)
+          // Now navigate to Step 14 (checkout)
+          await nextStep()
+          router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
         } catch (submitError) {
-          console.error('Failed to submit onboarding:', submitError)
-          setError(t('submissionError') || 'Failed to submit onboarding. Please try again.')
+          console.error('Failed to create submission:', submitError)
+          setError(t('submissionError') || 'Failed to create submission. Please try again.')
           return
         }
+      }
+      // Regular step transitions (not 13→14)
+      else if (nextStepNumber && nextStepNumber <= 14) {
+        console.log('Moving to next step:', nextStepNumber)
+        await nextStep()
+        router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
+      }
+      // Step 14 completion - navigate to thank you page
+      else {
+        console.log('🎯 Step 14 complete - navigating to thank you page')
+        router.push(`/${locale}/onboarding/thank-you`)
       }
     } catch (error) {
       console.error('Error proceeding to next step:', error)
