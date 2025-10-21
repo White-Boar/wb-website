@@ -102,18 +102,28 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
       if (!savedFile.url || typeof savedFile.url !== 'string') return null
       if (!savedFile.fileName || typeof savedFile.fileName !== 'string') return null
 
-      // Create a mock File object for display purposes
+      // Create a mock File object for display purposes with proper size
       const mockFile = new File([], savedFile.fileName, {
         type: savedFile.mimeType || 'application/octet-stream'
       })
+
+      // Override the size property to show the actual file size
+      if (savedFile.fileSize && typeof savedFile.fileSize === 'number') {
+        Object.defineProperty(mockFile, 'size', {
+          value: savedFile.fileSize,
+          writable: false,
+          configurable: true
+        })
+      }
 
       return {
         id: savedFile.id || crypto.randomUUID(),
         file: mockFile,
         progress: 100,
         status: 'completed',
-        url: savedFile.url,
-        preview: savedFile.url // Use the uploaded URL as preview for images
+        url: savedFile.url
+        // Note: preview is intentionally omitted for restored files
+        // The FileUploadWithProgress component will show a file icon instead
       }
     } catch (error) {
       console.error('Failed to convert saved file to progress:', error, savedFile)
