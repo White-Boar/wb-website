@@ -229,23 +229,8 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
     }
   }
 
-  // Country dropdown
-  console.log('🌍 Selecting country from dropdown...')
-  let comboboxes = await page.getByRole('combobox').all()
-  const countryDropdownIndex = comboboxes.length - 1
-
-  if (comboboxes.length >= 3) {
-    const countryDropdown = comboboxes[countryDropdownIndex]
-    await countryDropdown.click()
-    await page.waitForTimeout(1000)
-
-    const italyOption = page.getByRole('option').filter({ hasText: 'Italy' }).first()
-    if (await italyOption.isVisible()) {
-      await italyOption.click()
-      console.log('✓ Selected Italy as country')
-      await page.waitForTimeout(1000)
-    }
-  }
+  // Country is now automatically set to Italy (disabled field) - no need to select
+  console.log('✓ Country automatically set to Italy (disabled field)')
 
   // Trigger validation
   await page.keyboard.press('Tab')

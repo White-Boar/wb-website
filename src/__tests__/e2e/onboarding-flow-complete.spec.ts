@@ -537,47 +537,8 @@ test.describe('Complete Onboarding Flow', () => {
     console.log(`  Found ${comboboxes.length} comboboxes on the page`);
 
     // With 3 comboboxes: 0=industry, 1=phone country code, 2=business country
-    // We need the last one (index 2) for the business country
-    const countryDropdownIndex = comboboxes.length - 1; // Last combobox should be country
-
-    if (comboboxes.length >= 3) {
-      const countryDropdown = comboboxes[countryDropdownIndex];
-
-      // Check if this is the right dropdown by looking at its current text
-      const currentText = await countryDropdown.textContent();
-      console.log(`  Attempting to select from dropdown ${countryDropdownIndex} (current: "${currentText}")`);
-
-      await countryDropdown.click();
-      await page.waitForTimeout(1000); // Wait for dropdown to fully open
-
-      // Try different selectors for Italy option
-      let italySelected = false;
-
-      // First try: exact text match
-      let italyOption = page.getByRole('option').filter({ hasText: 'Italy' }).first();
-      if (await italyOption.isVisible()) {
-        await italyOption.click();
-        italySelected = true;
-      } else {
-        // Second try: partial text match with flag emoji
-        italyOption = page.locator('[role="option"]').filter({ hasText: /🇮🇹.*Italia/i }).first();
-        if (await italyOption.isVisible()) {
-          await italyOption.click();
-          italySelected = true;
-        }
-      }
-
-      if (italySelected) {
-        console.log(`✓ Selected ${testDataForWorker.physicalAddress.country} as country`);
-        await page.waitForTimeout(1000); // Wait for dropdown to close and value to update
-      } else {
-        console.log('❌ Italy option not found in dropdown');
-        // Try to close the dropdown
-        await page.keyboard.press('Escape');
-      }
-    } else {
-      console.log(`❌ Could not find country dropdown (found only ${comboboxes.length} comboboxes, expected at least 3)`);
-    }
+    // Country is now automatically set to Italy (disabled field) - no need to select
+    console.log('  ✓ Country automatically set to Italy (disabled field)');
 
     // Log field values after filling
     console.log('📋 Verifying filled values...');

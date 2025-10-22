@@ -220,8 +220,8 @@ export default function OnboardingStep() {
        watchedValues?.businessStreet &&
        watchedValues?.businessCity &&
        watchedValues?.businessPostalCode &&
-       watchedValues?.businessProvince &&
-       watchedValues?.businessCountry) : isValid
+       watchedValues?.businessProvince) : isValid
+       // Note: businessCountry is always 'Italy' (disabled field) so not checked here
 
   const isStep6Valid = stepNumber === 6 ?
     !!(watchedValues?.customerProblems &&
@@ -338,7 +338,11 @@ export default function OnboardingStep() {
       }
 
       // Update form data
-      updateFormData(data as any)
+      // Special handling for Step 3: ensure businessCountry is always set to 'Italy'
+      const dataToSave = stepNumber === 3
+        ? { ...data, businessCountry: 'Italy' }
+        : data
+      updateFormData(dataToSave as any)
 
       // Validate current step
       const isStepValid = await validateStep(stepNumber)

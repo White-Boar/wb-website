@@ -148,10 +148,22 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
     }))
   }, [locale])
 
-  // Pre-select Italy if no country is set
+  // Pre-select Italy on mount and trigger validation
   useEffect(() => {
-    if (!businessCountry) {
-      setValue('businessCountry', 'Italy', { shouldValidate: true })
+    // Always set Italy if the field is empty, undefined, or not yet set
+    if (!businessCountry || businessCountry === '') {
+      setValue('businessCountry', 'Italy', { shouldValidate: true, shouldDirty: true, shouldTouch: true })
+      // Trigger validation after a short delay to ensure the form is ready
+      setTimeout(() => {
+        trigger('businessCountry')
+      }, 100)
+    }
+  }, []) // Only run on mount
+
+  // Separate effect to ensure value persists if cleared
+  useEffect(() => {
+    if (!businessCountry || businessCountry === '') {
+      setValue('businessCountry', 'Italy', { shouldValidate: false, shouldDirty: false })
     }
   }, [businessCountry, setValue])
 
@@ -437,11 +449,9 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                         // Trigger form validation after setting the value
                         trigger('businessCountry')
                       }}
-                      error={errors.businessCountry?.message}
-                      required
-                      searchable
-                      clearable={false} // Disable clear button since country is required
-                      disabled={isLoading}
+                      searchable={false}
+                      clearable={false}
+                      disabled={true} // Always disabled - Italy is the only option
                       name="businessCountry"
                     />
                   )}
