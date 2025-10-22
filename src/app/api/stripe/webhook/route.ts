@@ -17,11 +17,16 @@ export const dynamic = 'force-dynamic'
  * Handles Stripe webhook events for payment confirmation and subscription updates
  */
 export async function POST(request: NextRequest) {
+  const webhookId = `wh_${Date.now()}_${Math.random().toString(36).substring(7)}`
+  console.log(`[${webhookId}] === WEBHOOK RECEIVED ===`)
+  console.log(`[${webhookId}] Timestamp: ${new Date().toISOString()}`)
+
   try {
     const body = await request.text()
     const signature = request.headers.get('stripe-signature')
 
     if (!signature) {
+      console.log(`[${webhookId}] ❌ Missing signature`)
       return NextResponse.json(
         { error: 'Missing signature' },
         { status: 400 }
@@ -33,35 +38,44 @@ export async function POST(request: NextRequest) {
     try {
       event = stripe.webhooks.constructEvent(body, signature, WEBHOOK_SECRET)
     } catch (error) {
-      console.error('Webhook signature verification failed:', error)
+      console.error(`[${webhookId}] ❌ Webhook signature verification failed:`, error)
       return NextResponse.json(
         { error: 'Invalid signature' },
         { status: 400 }
       )
     }
 
+    console.log(`[${webhookId}] Event verified:`, {
+      event_id: event.id,
+      event_type: event.type,
+      created: event.created
+    })
+
     // Initialize Supabase client
     const supabase = await createServiceClient()
 
-    // Check idempotency - has this event been processed before?
-    const { data: existingEvent } = await supabase
-      .from('stripe_webhook_events')
-      .select('event_id')
-      .eq('event_id', event.id)
-      .single()
-
-    if (existingEvent) {
-      console.log(`Event ${event.id} already processed`)
-      return NextResponse.json({ received: true, duplicate: true })
-    }
-
-    // Mark event as processing
-    await supabase.from('stripe_webhook_events').insert({
+    // Mark event as processing - use unique constraint for idempotency
+    // Try to insert the event; if it already exists, the unique constraint will prevent duplicate processing
+    const { error: insertError } = await supabase.from('stripe_webhook_events').insert({
       event_id: event.id,
       event_type: event.type,
       processed_at: new Date().toISOString(),
       status: 'processing'
     })
+
+    // If insert failed due to unique constraint (duplicate event), return early
+    if (insertError && insertError.code === '23505') {
+      console.log(`[${webhookId}] ⚠️  DUPLICATE EVENT: ${event.id} already processed`)
+      return NextResponse.json({ received: true, duplicate: true })
+    }
+
+    // If insert failed for other reasons, throw error
+    if (insertError) {
+      console.log(`[${webhookId}] ❌ Failed to insert event record:`, insertError)
+      throw insertError
+    }
+
+    console.log(`[${webhookId}] Event record created, processing...`)
 
     // Handle different event types
     try {
@@ -99,7 +113,7 @@ export async function POST(request: NextRequest) {
           break
 
         default:
-          console.log(`Unhandled event type: ${event.type}`)
+          console.log(`[${webhookId}] ⚠️  Unhandled event type: ${event.type}`)
       }
 
       // Mark event as completed
@@ -111,6 +125,7 @@ export async function POST(request: NextRequest) {
         })
         .eq('event_id', event.id)
 
+      console.log(`[${webhookId}] ✓ Event processed successfully`)
       return NextResponse.json({ received: true })
     } catch (error) {
       console.error(`Error processing event ${event.id}:`, error)
@@ -148,12 +163,23 @@ async function handleInvoicePaid(
   const customerId = invoice.customer as string
   const paymentIntentId = invoice.payment_intent as string
 
-  // Retrieve subscription to get schedule ID
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
-  const scheduleId = subscription.schedule as string | null
+  // Retrieve subscription to get schedule ID and metadata
+  let scheduleId: string | null = null
+  let submissionIdFromMetadata: string | undefined
 
-  // Find submission by subscription ID or customer ID
+  try {
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+    scheduleId = subscription.schedule as string | null
+    submissionIdFromMetadata = subscription.metadata?.submission_id
+  } catch (error) {
+    console.error(`Failed to retrieve subscription ${subscriptionId}:`, error)
+    // Continue without subscription metadata - try to find submission by customer ID
+  }
+
+  // Find submission by subscription schedule ID, customer ID, or metadata
   let submission
+
+  // 1. Try to find by subscription schedule ID
   if (scheduleId) {
     const { data } = await supabase
       .from('onboarding_submissions')
@@ -163,11 +189,22 @@ async function handleInvoicePaid(
     submission = data
   }
 
+  // 2. Try to find by customer ID
   if (!submission) {
     const { data } = await supabase
       .from('onboarding_submissions')
       .select('*')
       .eq('stripe_customer_id', customerId)
+      .single()
+    submission = data
+  }
+
+  // 3. Try to find by submission_id from subscription metadata
+  if (!submission && submissionIdFromMetadata) {
+    const { data } = await supabase
+      .from('onboarding_submissions')
+      .select('*')
+      .eq('id', submissionIdFromMetadata)
       .single()
     submission = data
   }
@@ -203,7 +240,7 @@ async function handleInvoicePaid(
   await supabase.from('onboarding_analytics').insert({
     session_id: submission.session_id,
     event_type: 'payment_succeeded',
-    event_data: {
+    metadata: {
       submission_id: submission.id,
       stripe_payment_id: paymentIntentId,
       amount: invoice.amount_paid,
@@ -242,15 +279,88 @@ async function handleSubscriptionCreated(
   event: Stripe.Event,
   supabase: any
 ): Promise<void> {
+  console.log('[Webhook] 🎫 Processing customer.subscription.created')
   const subscription = event.data.object as Stripe.Subscription
+  const customerId = subscription.customer as string
+  const scheduleId = subscription.schedule as string | null
+  const submissionIdFromMetadata = subscription.metadata?.submission_id
+
+  console.log('[Webhook] Subscription details:', {
+    subscription_id: subscription.id,
+    customer_id: customerId,
+    schedule_id: scheduleId,
+    metadata_submission_id: submissionIdFromMetadata
+  })
+
+  // Find submission by schedule ID, customer ID, or metadata
+  let submission
+
+  // 1. Try to find by subscription schedule ID
+  if (scheduleId) {
+    const { data } = await supabase
+      .from('onboarding_submissions')
+      .select('*')
+      .eq('stripe_subscription_schedule_id', scheduleId)
+      .single()
+    submission = data
+  }
+
+  // 2. Try to find by customer ID
+  if (!submission) {
+    const { data } = await supabase
+      .from('onboarding_submissions')
+      .select('*')
+      .eq('stripe_customer_id', customerId)
+      .single()
+    submission = data
+  }
+
+  // 3. Try to find by submission_id from subscription metadata
+  if (!submission && submissionIdFromMetadata) {
+    const { data } = await supabase
+      .from('onboarding_submissions')
+      .select('*')
+      .eq('id', submissionIdFromMetadata)
+      .single()
+    submission = data
+  }
+
+  // Update submission with subscription ID if found
+  if (submission) {
+    console.log('[Webhook] Found submission:', submission.id)
+    console.log('[Webhook] Current stripe_subscription_id:', submission.stripe_subscription_id)
+
+    if (submission.stripe_subscription_id && submission.stripe_subscription_id !== subscription.id) {
+      console.log('[Webhook] ⚠️  WARNING: Submission already has different subscription_id!', {
+        existing: submission.stripe_subscription_id,
+        new: subscription.id
+      })
+    }
+
+    await supabase
+      .from('onboarding_submissions')
+      .update({
+        stripe_subscription_id: subscription.id,
+        stripe_customer_id: customerId,
+        stripe_subscription_schedule_id: scheduleId,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', submission.id)
+
+    console.log('[Webhook] ✓ Submission updated with subscription_id:', subscription.id)
+  } else {
+    console.log('[Webhook] ⚠️  No submission found for subscription:', subscription.id)
+  }
 
   await supabase.from('onboarding_analytics').insert({
-    session_id: null,
+    session_id: submission?.session_id || null,
     event_type: 'subscription_created',
-    event_data: {
+    metadata: {
+      stripe_event_id: event.id,
       subscription_id: subscription.id,
       customer_id: subscription.customer,
-      status: subscription.status
+      status: subscription.status,
+      submission_id: submission?.id || null
     }
   })
 }
@@ -278,7 +388,7 @@ async function handleSubscriptionUpdated(
   await supabase.from('onboarding_analytics').insert({
     session_id: null,
     event_type: 'subscription_updated',
-    event_data: {
+    metadata: {
       subscription_id: subscription.id,
       customer_id: subscription.customer,
       status: subscription.status
@@ -309,7 +419,7 @@ async function handleSubscriptionDeleted(
   await supabase.from('onboarding_analytics').insert({
     session_id: null,
     event_type: 'subscription_canceled',
-    event_data: {
+    metadata: {
       subscription_id: subscription.id,
       customer_id: subscription.customer
     }
@@ -341,7 +451,7 @@ async function handleScheduleCompleted(
   await supabase.from('onboarding_analytics').insert({
     session_id: null,
     event_type: 'schedule_completed',
-    event_data: {
+    metadata: {
       schedule_id: schedule.id,
       subscription_id: subscriptionId
     }
@@ -370,7 +480,7 @@ async function handleScheduleCanceled(
   await supabase.from('onboarding_analytics').insert({
     session_id: null,
     event_type: 'schedule_canceled',
-    event_data: {
+    metadata: {
       schedule_id: schedule.id
     }
   })
@@ -401,7 +511,7 @@ async function handleChargeRefunded(
   await supabase.from('onboarding_analytics').insert({
     session_id: null,
     event_type: 'payment_refunded',
-    event_data: {
+    metadata: {
       payment_intent_id: paymentIntentId,
       amount: charge.amount_refunded,
       currency: charge.currency
@@ -421,7 +531,7 @@ async function handlePaymentFailed(
   await supabase.from('onboarding_analytics').insert({
     session_id: null,
     event_type: 'payment_failed',
-    event_data: {
+    metadata: {
       payment_intent_id: paymentIntent.id,
       error_code: paymentIntent.last_payment_error?.code,
       error_message: paymentIntent.last_payment_error?.message

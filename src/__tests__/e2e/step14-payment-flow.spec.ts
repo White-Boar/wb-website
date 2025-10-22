@@ -69,15 +69,19 @@ async function startStripeListener(): Promise<void> {
     }, 10000)
 
     const checkReady = (data: Buffer) => {
-      if (data.toString().includes('Ready!')) {
+      const output = data.toString()
+      // Check both stdout and stderr for ready state
+      if (output.includes('Ready!') || output.includes('webhook signing secret')) {
         clearTimeout(timeout)
         console.log('✓ Stripe webhook listener ready')
         stripeListenerProcess!.stdout?.off('data', checkReady)
+        stripeListenerProcess!.stderr?.off('data', checkReady)
         resolve()
       }
     }
 
     stripeListenerProcess!.stdout?.on('data', checkReady)
+    stripeListenerProcess!.stderr?.on('data', checkReady)
   })
 }
 

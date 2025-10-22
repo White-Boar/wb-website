@@ -459,8 +459,12 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
   useEffect(() => {
     // Skip if already fetched
     if (hasFetchedRef.current) {
+      console.log('[Step14] ⏭️  Skipping fetch - already fetched (React Strict Mode protection)')
       return
     }
+
+    console.log('[Step14] 🚀 Fetching client secret for submission:', submissionId)
+
     const fetchClientSecret = async () => {
       try {
         setIsLoadingSecret(true)
@@ -469,6 +473,12 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
         // Get form values inside the effect to avoid stale closures
         const selectedLanguages = form.getValues('additionalLanguages') || []
         const discountCode = form.getValues('discountCode') || ''
+
+        console.log('[Step14] 📤 Sending create-checkout-session request:', {
+          submission_id: submissionId,
+          additionalLanguages: selectedLanguages,
+          discountCode: discountCode || undefined
+        })
 
         const response = await fetch('/api/stripe/create-checkout-session', {
           method: 'POST',
@@ -484,6 +494,14 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
 
         const data = await response.json()
 
+        console.log('[Step14] 📥 Response received:', {
+          ok: response.ok,
+          status: response.status,
+          success: data.success,
+          hasClientSecret: !!data.data?.clientSecret,
+          subscriptionId: data.data?.subscriptionId
+        })
+
         if (!response.ok || !data.success) {
           throw new Error(data.error?.message || 'Failed to create checkout session')
         }
@@ -494,6 +512,7 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
 
         setClientSecret(data.data.clientSecret)
         hasFetchedRef.current = true
+        console.log('[Step14] ✓ Client secret set, marked as fetched')
       } catch (err) {
         console.error('Failed to fetch client secret:', err)
         setError(err instanceof Error ? err.message : 'Failed to initialize payment')

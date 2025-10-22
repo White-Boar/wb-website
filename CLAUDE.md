@@ -111,6 +111,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Use `ensureFreshOnboardingState(page)` helper to ensure clean test state
 - The onboarding flow uses localStorage persistence which can cause auto-navigation to previous steps
 - Always use the restart button functionality to reset state between test runs
+- **ALWAYS use `--reporter=line`** when running Playwright tests - the default HTML reporter pauses execution at the end, making tests appear stuck
 
 ## Important Files
 

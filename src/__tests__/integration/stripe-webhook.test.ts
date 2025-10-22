@@ -255,7 +255,7 @@ describe('Stripe Webhook Handler Tests', () => {
     const { data: analytics } = await supabase
       .from('onboarding_analytics')
       .select('*')
-      .eq('event_data->>stripe_event_id', eventId)
+      .eq('metadata->>stripe_event_id', eventId)
 
     expect(analytics).toBeTruthy()
     expect(analytics!.length).toBeLessThanOrEqual(1) // Processed at most once
@@ -300,7 +300,7 @@ describe('Stripe Webhook Handler Tests', () => {
       .limit(1)
 
     expect(analytics).toBeTruthy()
-    expect(analytics![0].event_data.error_code).toBe('card_declined')
+    expect(analytics![0].metadata.error_code).toBe('card_declined')
   })
 
   it('should handle subscription.created event', async () => {
