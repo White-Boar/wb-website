@@ -457,12 +457,15 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
 
   // Fetch clientSecret on mount ONCE
   useEffect(() => {
-    // Skip if already fetched
+    // Skip if already fetched or currently fetching
     if (hasFetchedRef.current) {
       console.log('[Step14] ⏭️  Skipping fetch - already fetched (React Strict Mode protection)')
       return
     }
 
+    // Mark as fetched IMMEDIATELY to prevent race condition in React Strict Mode
+    // This prevents the second useEffect run from starting another fetch
+    hasFetchedRef.current = true
     console.log('[Step14] 🚀 Fetching client secret for submission:', submissionId)
 
     const fetchClientSecret = async () => {
@@ -511,11 +514,12 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
         }
 
         setClientSecret(data.data.clientSecret)
-        hasFetchedRef.current = true
-        console.log('[Step14] ✓ Client secret set, marked as fetched')
+        console.log('[Step14] ✓ Client secret set')
       } catch (err) {
         console.error('Failed to fetch client secret:', err)
         setError(err instanceof Error ? err.message : 'Failed to initialize payment')
+        // Reset flag on error to allow retry
+        hasFetchedRef.current = false
       } finally {
         setIsLoadingSecret(false)
       }
