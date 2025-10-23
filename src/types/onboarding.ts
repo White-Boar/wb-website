@@ -234,6 +234,9 @@ export type AnalyticsEventType =
   | 'payment_failed'
   | 'payment_processing'
   | 'drop_off'
+  | 'performance_warning'
+  | 'stripe_session_created'
+  | 'stripe_session_failed'
 
 export type AnalyticsCategory = 
   | 'user_action'
