@@ -340,7 +340,14 @@ export interface OnboardingStore {
 
   // Session helper functions for components
   initializeSession: (locale?: 'en' | 'it') => Promise<OnboardingSession>
-  loadExistingSession: () => OnboardingSession | null
+  loadExistingSession: () => {
+    id: string
+    currentStep: number
+    formData: Partial<OnboardingFormData>
+    completedSteps: number[]
+    expiresAt: string | null
+    lastSaved: Date | null
+  } | null
   hasExistingSession: () => boolean
   updateCurrentStep: (stepNumber: number) => void
 }

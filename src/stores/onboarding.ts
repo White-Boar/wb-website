@@ -105,6 +105,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
           lastSaved: null,
           isLoading: false,
           error: null,
+          autoSaveStatus: 'idle' as const,
           stepErrors: {},
           isDirty: false,
           isSessionExpired: false,
@@ -293,7 +294,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
                 return { isValid: true, errors: [] }
               } else {
                 // Convert Zod errors to our format
-                const errors: ValidationError[] = (result.error?.errors || []).map(err => ({
+                const errors: ValidationError[] = (result.error?.issues || []).map(err => ({
                   field: err.path?.join('.') || '',
                   message: err.message || 'Validation error',
                   code: err.code || 'validation_error'

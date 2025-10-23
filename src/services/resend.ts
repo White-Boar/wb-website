@@ -491,7 +491,7 @@ export class EmailService {
                 </div>
                 <div class="info-item">
                   <div class="info-label">Location</div>
-                  <div>${formData.physicalAddress.city}, ${formData.physicalAddress.province}</div>
+                  <div>${formData.businessCity || 'N/A'}, ${formData.businessProvince || 'N/A'}</div>
                 </div>
                 <div class="info-item">
                   <div class="info-label">Primary Goal</div>
@@ -552,7 +552,7 @@ export class EmailService {
     formData: OnboardingFormData,
     submissionId: string
   ): string {
-    return `New Onboarding Submission\n\nBusiness: ${formData.businessName}\nEmail: ${formData.businessEmail}\nPhone: ${formData.businessPhone}\nIndustry: ${formData.industry}\nLocation: ${formData.physicalAddress.city}, ${formData.physicalAddress.province}\n\nOffer: ${formData.businessDescription}\n\nView full submission: ${APP_URL}/admin/submissions/${submissionId}\n\nSubmission ID: ${submissionId}`
+    return `New Onboarding Submission\n\nBusiness: ${formData.businessName}\nEmail: ${formData.businessEmail}\nPhone: ${formData.businessPhone}\nIndustry: ${formData.industry}\nLocation: ${formData.businessCity || 'N/A'}, ${formData.businessProvince || 'N/A'}\n\nOffer: ${formData.businessDescription}\n\nView full submission: ${APP_URL}/admin/submissions/${submissionId}\n\nSubmission ID: ${submissionId}`
   }
 
   private static generatePreviewEmailHTML(

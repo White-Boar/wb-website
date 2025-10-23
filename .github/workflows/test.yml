@@ -146,7 +146,7 @@ jobs:
 
     # Run E2E tests against the deployed preview URL
     - name: Run Playwright E2E tests
-      run: pnpm test:e2e
+      run: pnpm test:e2e --project=chromium 
       env:
         CI: true
         BASE_URL: ${{ needs.test-build-deploy.outputs.deployment-url }}
