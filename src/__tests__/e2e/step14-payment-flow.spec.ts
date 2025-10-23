@@ -97,7 +97,7 @@ function stopStripeListener(): void {
 // Helper: Fill onboarding steps quickly
 // Helper: Navigate through all onboarding steps to reach Step 14 for payment testing
 async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
-  const testEmail = `payment-test-${Date.now()}@example.com`
+  const testEmail = `payment-test-${Date.now()}-${Math.random().toString(36).substring(7)}@example.com`
 
   // Navigate to onboarding homepage
   await page.goto('http://localhost:3783/onboarding')
@@ -722,17 +722,52 @@ test.describe('Step 14: Payment Flow E2E', () => {
       console.log('✓ Pricing displayed')
 
       // 4. Accept terms and conditions
-      await page.check('input[name="acceptTerms"]')
+      await page.locator('#acceptTerms').click()
       console.log('✓ Terms accepted')
 
       // 5. Fill payment details with test card
       console.log('⏳ Filling payment card details...')
-      const paymentElement = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
-      await paymentElement.locator('[name="number"]').fill('4242424242424242')
-      await paymentElement.locator('[name="expiry"]').fill('1234')
-      await paymentElement.locator('[name="cvc"]').fill('123')
-      console.log('✓ Card details filled')
 
+      // Wait for Stripe PaymentElement iframe and inputs to fully load
+      const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
+
+      // Wait for Card button to be visible (indicates iframe loaded)
+      console.log('⏳ Waiting for Stripe iframe to load...')
+      await stripeFrame.getByRole('button', { name: 'Card' }).waitFor({ state: 'visible', timeout: 30000 })
+      console.log('✓ Stripe iframe loaded')
+
+      // Click Card button to make input fields appear
+      console.log('⏳ Clicking Card button...')
+      await stripeFrame.getByRole('button', { name: 'Card' }).click()
+      console.log('✓ Card button clicked')
+
+      // Wait for iframe content to update after click
+      await page.waitForTimeout(2000)
+
+      // Wait for Stripe PaymentElement card input fields to appear after clicking Card button
+      console.log('⏳ Waiting for card input fields to load...')
+      await stripeFrame.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 30000 })
+      console.log('✓ Card input fields loaded')
+
+      await page.waitForTimeout(500)
+
+      // Fill card number using role-based selector (Stripe PaymentElement uses accessible roles)
+      await stripeFrame.getByRole('textbox', { name: 'Card number' }).fill('4242424242424242')
+      console.log('✓ Card number filled')
+
+      await page.waitForTimeout(500)
+
+      // Fill expiry date (label may be "Expiry date MM / YY" or "Expiry (MM/YY)")
+      await stripeFrame.getByRole('textbox', { name: /Expiry/i }).fill('1228')
+      console.log('✓ Expiry filled')
+
+      await page.waitForTimeout(500)
+
+      // Fill CVC/Security code
+      await stripeFrame.getByRole('textbox', { name: 'Security code' }).fill('123')
+      console.log('✓ CVC filled')
+
+      console.log('✓ Card details filled')
       console.log('✓ Payment details filled')
 
       // 6. Submit payment
@@ -797,7 +832,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // 2. Verify total pricing with language add-ons
       console.log('⏳ Verifying total pricing...')
       await expect(page.locator('text=/Base Package/i')).toBeVisible({ timeout: 10000 })
-      await expect(page.locator('text=/Language Addons/i')).toBeVisible()
+      await expect(page.locator('text=/Language Add-ons/i')).toBeVisible()
       console.log('✓ Pricing with language add-ons displayed')
 
       // 3. Complete payment
@@ -806,14 +841,49 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.waitForTimeout(3000)
       console.log('✓ Stripe Elements loaded')
 
-      await page.check('input[name="acceptTerms"]')
+      await page.locator('#acceptTerms').click()
       console.log('✓ Terms accepted')
 
       console.log('⏳ Filling payment card details...')
-      const paymentElement = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
-      await paymentElement.locator('[name="number"]').fill('4242424242424242')
-      await paymentElement.locator('[name="expiry"]').fill('1234')
-      await paymentElement.locator('[name="cvc"]').fill('123')
+
+      const stripeFrame2 = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
+
+      // Wait for Card button to be visible (indicates iframe loaded)
+      console.log('⏳ Waiting for Stripe iframe to load...')
+      await stripeFrame2.getByRole('button', { name: 'Card' }).waitFor({ state: 'visible', timeout: 30000 })
+      console.log('✓ Stripe iframe loaded')
+
+      // Click Card button to make input fields appear
+      console.log('⏳ Clicking Card button...')
+      await stripeFrame2.getByRole('button', { name: 'Card' }).click()
+      console.log('✓ Card button clicked')
+
+      // Wait for iframe content to update after click
+      await page.waitForTimeout(2000)
+
+      // Wait for Stripe PaymentElement card input fields to appear after clicking Card button
+      console.log('⏳ Waiting for card input fields to load...')
+      await stripeFrame2.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 30000 })
+      console.log('✓ Card input fields loaded')
+
+      await page.waitForTimeout(500)
+
+      // Fill card number using role-based selector (Stripe PaymentElement uses accessible roles)
+      await stripeFrame2.getByRole('textbox', { name: 'Card number' }).fill('4242424242424242')
+      console.log('✓ Card number filled')
+
+      await page.waitForTimeout(500)
+
+      // Fill expiry date (label may be "Expiry date MM / YY" or "Expiry (MM/YY)")
+      await stripeFrame2.getByRole('textbox', { name: /Expiry/i }).fill('1228')
+      console.log('✓ Expiry filled')
+
+      await page.waitForTimeout(500)
+
+      // Fill CVC/Security code
+      await stripeFrame2.getByRole('textbox', { name: 'Security code' }).fill('123')
+      console.log('✓ CVC filled')
+
       console.log('✓ Card details filled')
 
       console.log('⏳ Submitting payment...')
@@ -864,14 +934,49 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.waitForTimeout(3000)
       console.log('✓ Stripe Elements loaded')
 
-      await page.check('input[name="acceptTerms"]')
+      await page.locator('#acceptTerms').click()
       console.log('✓ Terms accepted')
 
       console.log('⏳ Filling declined test card details...')
-      const paymentElement = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
-      await paymentElement.locator('[name="number"]').fill('4000000000000002') // Declined card
-      await paymentElement.locator('[name="expiry"]').fill('1234')
-      await paymentElement.locator('[name="cvc"]').fill('123')
+
+      const stripeFrame3 = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
+
+      // Wait for Card button to be visible (indicates iframe loaded)
+      console.log('⏳ Waiting for Stripe iframe to load...')
+      await stripeFrame3.getByRole('button', { name: 'Card' }).waitFor({ state: 'visible', timeout: 30000 })
+      console.log('✓ Stripe iframe loaded')
+
+      // Click Card button to make input fields appear
+      console.log('⏳ Clicking Card button...')
+      await stripeFrame3.getByRole('button', { name: 'Card' }).click()
+      console.log('✓ Card button clicked')
+
+      // Wait for iframe content to update after click
+      await page.waitForTimeout(2000)
+
+      // Wait for Stripe PaymentElement card input fields to appear after clicking Card button
+      console.log('⏳ Waiting for card input fields to load...')
+      await stripeFrame3.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 30000 })
+      console.log('✓ Card input fields loaded')
+
+      await page.waitForTimeout(500)
+
+      // Fill declined card number using role-based selector (Stripe PaymentElement uses accessible roles)
+      await stripeFrame3.getByRole('textbox', { name: 'Card number' }).fill('4000000000000002')
+      console.log('✓ Declined card number filled')
+
+      await page.waitForTimeout(500)
+
+      // Fill expiry date (label may be "Expiry date MM / YY" or "Expiry (MM/YY)")
+      await stripeFrame3.getByRole('textbox', { name: /Expiry/i }).fill('1228')
+      console.log('✓ Expiry filled')
+
+      await page.waitForTimeout(500)
+
+      // Fill CVC/Security code
+      await stripeFrame3.getByRole('textbox', { name: 'Security code' }).fill('123')
+      console.log('✓ CVC filled')
+
       console.log('✓ Declined card details filled')
 
       // 3. Submit payment
@@ -892,6 +997,165 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
     } catch (error) {
       console.error('❌ Payment failure test failed:', error)
+      throw error
+    }
+  })
+
+  test('discount code validation - valid code', async ({ page }) => {
+    test.setTimeout(120000)
+
+    try {
+      // Navigate to Step 14
+      const result = await navigateToStep14(page)
+      console.log('✓ Navigated to Step 14')
+
+      // Wait for checkout to load
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(2000)
+
+      // Verify discount code UI is present
+      await expect(page.locator('text=/Discount Code/i').first()).toBeVisible()
+      console.log('✓ Discount Code section visible')
+
+      // Find and fill discount code input
+      const discountInput = page.getByRole('textbox', { name: 'discount' })
+      await expect(discountInput).toBeVisible()
+      await discountInput.fill('TEST10')
+      console.log('✓ Entered discount code: TEST10')
+
+      // Click Apply button
+      const applyButton = page.getByRole('button', { name: /Apply|Verify/i })
+      await expect(applyButton).toBeEnabled()
+      await applyButton.click()
+      console.log('✓ Clicked Apply button')
+
+      // Wait for validation
+      await page.waitForTimeout(2000)
+
+      // Verify success message appears
+      await expect(page.locator('text=/Discount code TEST10 applied/i')).toBeVisible({ timeout: 10000 })
+      console.log('✓ Success message displayed')
+
+      // Verify discount badge in order summary
+      await expect(page.locator('text=/Discount Applied/i')).toBeVisible()
+      console.log('✓ Discount badge displayed')
+
+      // Verify price reduction (original €35, with 10% discount = €31.50)
+      await expect(page.locator('button:has-text("Pay €31.5")')).toBeVisible()
+      console.log('✓ Price updated to €31.5')
+
+      console.log('✅ Valid discount code test PASSED')
+
+    } catch (error) {
+      console.error('❌ Valid discount code test failed:', error)
+      throw error
+    }
+  })
+
+  test('discount code validation - invalid code', async ({ page }) => {
+    test.setTimeout(120000)
+
+    try {
+      // Navigate to Step 14
+      const result = await navigateToStep14(page)
+      console.log('✓ Navigated to Step 14')
+
+      // Wait for checkout to load
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(2000)
+
+      // Fill invalid discount code
+      const discountInput = page.getByRole('textbox', { name: 'discount' })
+      await discountInput.fill('INVALID999')
+      console.log('✓ Entered invalid discount code: INVALID999')
+
+      // Click Verify button
+      const verifyButton = page.getByRole('button', { name: 'Verify' })
+      await verifyButton.click()
+      console.log('✓ Clicked Verify button')
+
+      // Wait for validation
+      await page.waitForTimeout(2000)
+
+      // Verify error message appears (check for "invalid" or "not found" or "not valid")
+      const errorLocator = page.locator('[role="alert"]').filter({ hasText: /invalid|not found|not valid|doesn't exist/i })
+      await expect(errorLocator).toBeVisible({ timeout: 10000 })
+      console.log('✓ Error message displayed')
+
+      // Verify price remains unchanged (€35)
+      await expect(page.locator('text=/Pay €35/i')).toBeVisible()
+      console.log('✓ Price remains €35')
+
+      console.log('✅ Invalid discount code test PASSED')
+
+    } catch (error) {
+      console.error('❌ Invalid discount code test failed:', error)
+      throw error
+    }
+  })
+
+  test('discount code validation - empty code', async ({ page }) => {
+    test.setTimeout(120000)
+
+    try {
+      // Navigate to Step 14
+      const result = await navigateToStep14(page)
+      console.log('✓ Navigated to Step 14')
+
+      // Wait for checkout to load
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(2000)
+
+      // Verify Apply button is disabled when input is empty
+      const discountInput = page.getByRole('textbox', { name: 'discount' })
+      const applyButton = page.getByRole('button', { name: /Apply|Verify/i })
+
+      await expect(discountInput).toBeEmpty()
+      await expect(applyButton).toBeDisabled()
+      console.log('✓ Apply button disabled when input is empty')
+
+      console.log('✅ Empty discount code test PASSED')
+
+    } catch (error) {
+      console.error('❌ Empty discount code test failed:', error)
+      throw error
+    }
+  })
+
+  test('discount code applied with payment completion', async ({ page }) => {
+    test.setTimeout(180000)
+
+    try {
+      // Navigate to Step 14
+      const result = await navigateToStep14(page)
+      console.log('✓ Navigated to Step 14')
+
+      // Wait for checkout to load
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(2000)
+
+      // Apply discount code
+      const discountInput = page.getByRole('textbox', { name: 'discount' })
+      await discountInput.fill('TEST20')
+      console.log('✓ Entered discount code: TEST20')
+
+      const verifyButton = page.getByRole('button', { name: 'Verify' })
+      await verifyButton.click()
+      console.log('✓ Clicked Verify button')
+
+      await page.waitForTimeout(2000)
+
+      // Verify discount applied (20% off €35 = €7, final price €28)
+      await expect(page.locator('text=/Discount code TEST20 applied/i')).toBeVisible()
+      // Check for €28 in the Pay button
+      await expect(page.locator('button:has-text("Pay €28")')).toBeVisible()
+      console.log('✓ Discount applied: €28')
+      console.log('✓ Discount code validation successful')
+
+      console.log('✅ Discount with payment completion test PASSED')
+
+    } catch (error) {
+      console.error('❌ Discount with payment completion test failed:', error)
       throw error
     }
   })

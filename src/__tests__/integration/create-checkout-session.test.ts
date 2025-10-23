@@ -23,21 +23,26 @@ describe('Stripe Checkout Session Creation Tests', () => {
   let testSessionId: string
   let testCustomerIds: string[] = []
   let testSubscriptionIds: string[] = []
+  let testEmail: string
 
   beforeAll(async () => {
-    // Create test session first
+    // Create test session first with unique email to avoid conflicts
     const { randomUUID } = await import('crypto')
     testSessionId = randomUUID()
+    testEmail = `checkout-test-${Date.now()}@example.com`
+
+    // Clean up any existing sessions with this ID (in case of interrupted previous run)
+    await supabase.from('onboarding_sessions').delete().eq('id', testSessionId)
 
     const sessionData = {
       id: testSessionId,
-      email: 'checkout-test@example.com',
+      email: testEmail,
       current_step: 14,
       expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
       form_data: {
         step3: {
           businessName: 'Checkout Test Business',
-          email: 'checkout-test@example.com'
+          email: testEmail
         },
         step13: {
           additionalLanguages: []
@@ -45,14 +50,15 @@ describe('Stripe Checkout Session Creation Tests', () => {
       }
     }
 
-    await supabase.from('onboarding_sessions').insert(sessionData)
+    const { error: sessionError } = await supabase.from('onboarding_sessions').insert(sessionData)
+    if (sessionError) throw new Error(`Failed to create session: ${sessionError.message}`)
 
     // Create test submission
     const { data, error } = await supabase
       .from('onboarding_submissions')
       .insert({
         session_id: testSessionId,
-        email: 'checkout-test@example.com',
+        email: testEmail,
         business_name: 'Checkout Test Business',
         status: 'submitted',
         form_data: sessionData.form_data
@@ -60,7 +66,7 @@ describe('Stripe Checkout Session Creation Tests', () => {
       .select()
       .single()
 
-    if (error) throw error
+    if (error) throw new Error(`Failed to create submission: ${error.message}`)
     testSubmissionId = data.id
   })
 

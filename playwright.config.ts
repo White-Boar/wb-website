@@ -34,7 +34,14 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
+  projects: process.env.CI ? [
+    // In CI, only run chromium to save time and resources
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ] : [
+    // Locally, test all browsers
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },

@@ -34,6 +34,12 @@ function isStripeListenerRunning(): boolean {
 
 // Helper function to start stripe listen
 async function startStripeListener(): Promise<void> {
+  // Skip Stripe listener in CI as it's not available
+  if (process.env.CI) {
+    console.log('ℹ️  Skipping Stripe webhook listener in CI (not available)');
+    return;
+  }
+
   if (isStripeListenerRunning()) {
     console.log('✓ Stripe webhook listener already running');
     return;

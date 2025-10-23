@@ -9,15 +9,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [20.x]
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
@@ -28,31 +28,39 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'pnpm'
-        
+
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
-      
+
+    - name: Pull environment variables from Vercel
+      run: |
+        npm i -g vercel
+        vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        vercel env pull .env --token=${{ secrets.VERCEL_TOKEN }}
+
     - name: Run ESLint
       run: pnpm lint
-      
+
     - name: Run Jest unit tests
       run: pnpm test
-      
+
     - name: Install Playwright browsers
       run: pnpm exec playwright install --with-deps
-      
+
     - name: Build application
       run: pnpm build
-      
+
     - name: Start application for E2E tests
       run: |
         pnpm start &
         sleep 10
       env:
         NODE_ENV: production
-        
+
     - name: Run Playwright E2E tests
       run: pnpm test:e2e
+      env:
+        CI: true
       
     - name: Upload Playwright report
       uses: actions/upload-artifact@v4
@@ -65,11 +73,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: test
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Install pnpm
       uses: pnpm/action-setup@v2
       with:
@@ -80,18 +88,24 @@ jobs:
       with:
         node-version: '20.x'
         cache: 'pnpm'
-        
+
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
-      
+
+    - name: Pull environment variables from Vercel
+      run: |
+        npm i -g vercel
+        vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        vercel env pull .env --token=${{ secrets.VERCEL_TOKEN }}
+
     - name: Build for production
       run: pnpm build
-      
+
     - name: Check build output
       run: |
         ls -la .next/
         du -sh .next/
-        
+
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:

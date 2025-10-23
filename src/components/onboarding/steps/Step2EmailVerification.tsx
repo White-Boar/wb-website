@@ -31,9 +31,6 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
 
       // Send verification email automatically
       resendVerificationCode(email, locale as 'en' | 'it')
-        .then(() => {
-          console.log('✓ Verification email sent automatically to:', email)
-        })
         .catch((err) => {
           console.error('Failed to auto-send verification email:', err)
           // Don't show error to user - they can manually resend
