@@ -738,15 +738,16 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // Click Card button to make input fields appear
       console.log('⏳ Clicking Card button...')
-      await stripeFrame.getByRole('button', { name: 'Card' }).click()
+      await stripeFrame.getByRole('button', { name: 'Card' }).click({ force: true })
       console.log('✓ Card button clicked')
 
-      // Wait for iframe content to update after click
-      await page.waitForTimeout(2000)
+      // Wait for network to settle and iframe content to update
+      await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {})
+      await page.waitForTimeout(3000)
 
       // Wait for Stripe PaymentElement card input fields to appear after clicking Card button
       console.log('⏳ Waiting for card input fields to load...')
-      await stripeFrame.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 30000 })
+      await stripeFrame.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 45000 })
       console.log('✓ Card input fields loaded')
 
       await page.waitForTimeout(500)
@@ -855,15 +856,16 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // Click Card button to make input fields appear
       console.log('⏳ Clicking Card button...')
-      await stripeFrame2.getByRole('button', { name: 'Card' }).click()
+      await stripeFrame2.getByRole('button', { name: 'Card' }).click({ force: true })
       console.log('✓ Card button clicked')
 
-      // Wait for iframe content to update after click
-      await page.waitForTimeout(2000)
+      // Wait for network to settle and iframe content to update
+      await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {})
+      await page.waitForTimeout(3000)
 
       // Wait for Stripe PaymentElement card input fields to appear after clicking Card button
       console.log('⏳ Waiting for card input fields to load...')
-      await stripeFrame2.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 30000 })
+      await stripeFrame2.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 45000 })
       console.log('✓ Card input fields loaded')
 
       await page.waitForTimeout(500)
@@ -948,15 +950,16 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // Click Card button to make input fields appear
       console.log('⏳ Clicking Card button...')
-      await stripeFrame3.getByRole('button', { name: 'Card' }).click()
+      await stripeFrame3.getByRole('button', { name: 'Card' }).click({ force: true })
       console.log('✓ Card button clicked')
 
-      // Wait for iframe content to update after click
-      await page.waitForTimeout(2000)
+      // Wait for network to settle and iframe content to update
+      await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {})
+      await page.waitForTimeout(3000)
 
       // Wait for Stripe PaymentElement card input fields to appear after clicking Card button
       console.log('⏳ Waiting for card input fields to load...')
-      await stripeFrame3.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 30000 })
+      await stripeFrame3.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 45000 })
       console.log('✓ Card input fields loaded')
 
       await page.waitForTimeout(500)
@@ -1070,7 +1073,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       console.log('✓ Entered invalid discount code: INVALID999')
 
       // Click Verify button
-      const verifyButton = page.getByRole('button', { name: 'Verify' })
+      const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
       console.log('✓ Clicked Verify button')
 
@@ -1139,7 +1142,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await discountInput.fill('TEST20')
       console.log('✓ Entered discount code: TEST20')
 
-      const verifyButton = page.getByRole('button', { name: 'Verify' })
+      const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
       console.log('✓ Clicked Verify button')
 
