@@ -3,6 +3,7 @@ import Stripe from 'stripe'
 import { createServiceClient } from '@/lib/supabase'
 import { stripe } from '@/lib/stripe'
 import { EUROPEAN_LANGUAGES, isValidLanguageCode } from '@/data/european-languages'
+import { requireCSRFToken } from '@/lib/csrf'
 
 const BASE_PACKAGE_PRICE_ID = process.env.STRIPE_BASE_PACKAGE_PRICE_ID!
 
@@ -34,6 +35,21 @@ export async function POST(request: NextRequest) {
           }
         },
         { status: 400 }
+      )
+    }
+
+    // Validate CSRF token
+    const csrfValidation = requireCSRFToken(request, submission_id)
+    if (!csrfValidation.valid) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'CSRF_VALIDATION_FAILED',
+            message: csrfValidation.error
+          }
+        },
+        { status: 403 }
       )
     }
 

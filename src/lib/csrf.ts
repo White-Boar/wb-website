@@ -6,7 +6,17 @@
 import { createHmac, randomBytes } from 'crypto'
 import { NextRequest } from 'next/server'
 
-const CSRF_SECRET = process.env.CSRF_SECRET || 'default-csrf-secret-change-in-production'
+// CSRF secret configuration
+// In production, this MUST be set via environment variable
+// In development, a fallback is provided for convenience
+const getCSRFSecret = () => {
+  const secret = process.env.CSRF_SECRET
+  if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('CSRF_SECRET environment variable is required in production')
+  }
+  return secret || 'development-csrf-secret-change-in-production'
+}
+
 const CSRF_TOKEN_EXPIRY = 3600000 // 1 hour in milliseconds
 
 export interface CSRFToken {
@@ -26,7 +36,7 @@ export function generateCSRFToken(sessionId: string): CSRFToken {
   const payload = `${sessionId}|${timestamp}|${nonce}`
 
   // Sign the payload with HMAC
-  const signature = createHmac('sha256', CSRF_SECRET)
+  const signature = createHmac('sha256', getCSRFSecret())
     .update(payload)
     .digest('hex')
 
@@ -53,7 +63,7 @@ export function validateCSRFToken(token: string, sessionId: string): boolean {
     }
 
     // Verify signature
-    const expectedSignature = createHmac('sha256', CSRF_SECRET)
+    const expectedSignature = createHmac('sha256', getCSRFSecret())
       .update(payload)
       .digest('hex')
 

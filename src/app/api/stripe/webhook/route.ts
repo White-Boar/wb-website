@@ -6,11 +6,23 @@ import { EmailService } from '@/services/resend'
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET!
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || process.env.NOTIFICATION_ADMIN_EMAIL
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
 
 // Disable body parsing for webhook signature verification
 // Next.js needs the raw body bytes to verify Stripe signatures
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+
+// Safe logging helper - only logs in development
+function debugLog(message: string, data?: unknown) {
+  if (!IS_PRODUCTION) {
+    if (data) {
+      console.log(message, data)
+    } else {
+      console.log(message)
+    }
+  }
+}
 
 /**
  * POST /api/stripe/webhook
@@ -18,15 +30,15 @@ export const dynamic = 'force-dynamic'
  */
 export async function POST(request: NextRequest) {
   const webhookId = `wh_${Date.now()}_${Math.random().toString(36).substring(7)}`
-  console.log(`[${webhookId}] === WEBHOOK RECEIVED ===`)
-  console.log(`[${webhookId}] Timestamp: ${new Date().toISOString()}`)
+  debugLog(`[${webhookId}] === WEBHOOK RECEIVED ===`)
+  debugLog(`[${webhookId}] Timestamp: ${new Date().toISOString()}`)
 
   try {
     const body = await request.text()
     const signature = request.headers.get('stripe-signature')
 
     if (!signature) {
-      console.log(`[${webhookId}] ❌ Missing signature`)
+      debugLog(`[${webhookId}] ❌ Missing signature`)
       return NextResponse.json(
         { error: 'Missing signature' },
         { status: 400 }
@@ -45,7 +57,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log(`[${webhookId}] Event verified:`, {
+    debugLog(`[${webhookId}] Event verified:`, {
       event_id: event.id,
       event_type: event.type,
       created: event.created
@@ -65,17 +77,17 @@ export async function POST(request: NextRequest) {
 
     // If insert failed due to unique constraint (duplicate event), return early
     if (insertError && insertError.code === '23505') {
-      console.log(`[${webhookId}] ⚠️  DUPLICATE EVENT: ${event.id} already processed`)
+      debugLog(`[${webhookId}] ⚠️  DUPLICATE EVENT: ${event.id} already processed`)
       return NextResponse.json({ received: true, duplicate: true })
     }
 
     // If insert failed for other reasons, throw error
     if (insertError) {
-      console.log(`[${webhookId}] ❌ Failed to insert event record:`, insertError)
+      debugLog(`[${webhookId}] ❌ Failed to insert event record:`, insertError)
       throw insertError
     }
 
-    console.log(`[${webhookId}] Event record created, processing...`)
+    debugLog(`[${webhookId}] Event record created, processing...`)
 
     // Handle different event types
     try {
@@ -113,7 +125,7 @@ export async function POST(request: NextRequest) {
           break
 
         default:
-          console.log(`[${webhookId}] ⚠️  Unhandled event type: ${event.type}`)
+          debugLog(`[${webhookId}] ⚠️  Unhandled event type: ${event.type}`)
       }
 
       // Mark event as completed
@@ -125,7 +137,7 @@ export async function POST(request: NextRequest) {
         })
         .eq('event_id', event.id)
 
-      console.log(`[${webhookId}] ✓ Event processed successfully`)
+      debugLog(`[${webhookId}] ✓ Event processed successfully`)
       return NextResponse.json({ received: true })
     } catch (error) {
       console.error(`Error processing event ${event.id}:`, error)
@@ -270,7 +282,7 @@ async function handleInvoicePaid(
         paymentIntentId,
         additionalLanguages
       )
-      console.log('Payment notification email sent successfully')
+      debugLog('Payment notification email sent successfully')
     } catch (emailError) {
       console.error('Failed to send payment notification email:', emailError)
       // Log error but don't fail the webhook
@@ -285,13 +297,13 @@ async function handleSubscriptionCreated(
   event: Stripe.Event,
   supabase: any
 ): Promise<void> {
-  console.log('[Webhook] 🎫 Processing customer.subscription.created')
+  debugLog('[Webhook] 🎫 Processing customer.subscription.created')
   const subscription = event.data.object as Stripe.Subscription
   const customerId = subscription.customer as string
   const scheduleId = subscription.schedule as string | null
   const submissionIdFromMetadata = subscription.metadata?.submission_id
 
-  console.log('[Webhook] Subscription details:', {
+  debugLog('[Webhook] Subscription details:', {
     subscription_id: subscription.id,
     customer_id: customerId,
     schedule_id: scheduleId,
@@ -333,11 +345,11 @@ async function handleSubscriptionCreated(
 
   // Update submission with subscription ID if found
   if (submission) {
-    console.log('[Webhook] Found submission:', submission.id)
-    console.log('[Webhook] Current stripe_subscription_id:', submission.stripe_subscription_id)
+    debugLog('[Webhook] Found submission:', submission.id)
+    debugLog('[Webhook] Current stripe_subscription_id:', submission.stripe_subscription_id)
 
     if (submission.stripe_subscription_id && submission.stripe_subscription_id !== subscription.id) {
-      console.log('[Webhook] ⚠️  WARNING: Submission already has different subscription_id!', {
+      debugLog('[Webhook] ⚠️  WARNING: Submission already has different subscription_id!', {
         existing: submission.stripe_subscription_id,
         new: subscription.id
       })
@@ -353,9 +365,9 @@ async function handleSubscriptionCreated(
       })
       .eq('id', submission.id)
 
-    console.log('[Webhook] ✓ Submission updated with subscription_id:', subscription.id)
+    debugLog('[Webhook] ✓ Submission updated with subscription_id:', subscription.id)
   } else {
-    console.log('[Webhook] ⚠️  No submission found for subscription:', subscription.id)
+    debugLog('[Webhook] ⚠️  No submission found for subscription:', subscription.id)
   }
 
   await supabase.from('onboarding_analytics').insert({

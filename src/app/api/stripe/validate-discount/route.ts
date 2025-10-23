@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { requireCSRFToken } from '@/lib/csrf'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-09-30.clover'
@@ -7,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
   try {
-    const { discountCode } = await request.json()
+    const { discountCode, sessionId } = await request.json()
 
     if (!discountCode || typeof discountCode !== 'string') {
       return NextResponse.json({
@@ -17,6 +18,28 @@ export async function POST(request: NextRequest) {
           message: 'Discount code is required'
         }
       }, { status: 400 })
+    }
+
+    if (!sessionId) {
+      return NextResponse.json({
+        success: false,
+        error: {
+          code: 'INVALID_REQUEST',
+          message: 'Session ID is required'
+        }
+      }, { status: 400 })
+    }
+
+    // Validate CSRF token
+    const csrfValidation = requireCSRFToken(request, sessionId)
+    if (!csrfValidation.valid) {
+      return NextResponse.json({
+        success: false,
+        error: {
+          code: 'CSRF_VALIDATION_FAILED',
+          message: csrfValidation.error
+        }
+      }, { status: 403 })
     }
 
     // Validate the discount code with Stripe
