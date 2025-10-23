@@ -26,7 +26,7 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
   // Watch selected languages
-  const selectedLanguages = watch('additionalLanguages') || []
+  const selectedLanguages = (watch('additionalLanguages' as any) as string[]) || []
 
   // Filter languages based on search query
   const filteredLanguages = useMemo(() => {
@@ -124,7 +124,7 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
                 </div>
                 {selectedLanguages.length > 0 && (
                   <Controller
-                    name="additionalLanguages"
+                    name={"additionalLanguages" as any}
                     control={control}
                     render={({ field }) => (
                       <Button
@@ -203,7 +203,7 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
 
       {/* Language Selection Grid */}
       <Controller
-        name="additionalLanguages"
+        name={"additionalLanguages" as any}
         control={control}
         render={({ field }) => (
           <motion.div
@@ -285,13 +285,13 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
             )}
 
             {/* Error Message */}
-            {errors.additionalLanguages && (
+            {(errors as any).additionalLanguages && (
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-sm text-destructive"
               >
-                {errors.additionalLanguages.message as string}
+                {((errors as any).additionalLanguages?.message as string) || 'Invalid selection'}
               </motion.p>
             )}
           </motion.div>
