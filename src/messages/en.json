@@ -1038,7 +1038,7 @@
         "codePlaceholder": "Enter code",
         "paymentMethod": "Payment Method",
         "securePayment": "Your payment information is secure and encrypted",
-        "termsText": "I agree to the <termsLink>Terms & Conditions</termsLink> and <privacyLink>Privacy Policy</privacyLink>",
+        "termsText": "I agree to the <termsLink>Terms and Conditions</termsLink> and <privacyLink>Privacy Policy</privacyLink>",
         "paymentError": "Payment Error",
         "paymentFailed": "Payment failed. Please try again.",
         "unexpectedError": "An unexpected error occurred. Please try again.",
@@ -1053,7 +1053,21 @@
         "goBack": "Go Back",
         "stripeNotLoaded": "Payment system is loading. Please try again.",
         "sessionCreationFailed": "Failed to create checkout session",
-        "loadingCheckout": "Loading checkout session..."
+        "loadingCheckout": "Loading checkout session...",
+        "discount": {
+          "title": "Discount Code",
+          "label": "discount",
+          "placeholder": "Enter discount code",
+          "verify": "Apply",
+          "verifying": "Applying...",
+          "applied": "Discount Applied",
+          "validMessage": "Discount code {code} applied! You save €{amount}.",
+          "emptyCode": "Please enter a discount code",
+          "invalidCode": "Invalid or expired discount code",
+          "timeout": "Verification timed out. Please try again.",
+          "verificationError": "Failed to verify discount code. Please try again.",
+          "helperText": "Enter your discount code and click Apply to add it to your order"
+        }
       }
     },
     "thankYou": {

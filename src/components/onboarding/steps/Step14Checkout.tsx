@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
+import Link from 'next/link'
 import {
   CreditCard,
   Lock,
@@ -59,15 +60,24 @@ function CheckoutForm({
 
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
+  const [isVerifyingDiscount, setIsVerifyingDiscount] = useState(false)
+  const [discountValidation, setDiscountValidation] = useState<{
+    status: 'valid' | 'invalid'
+    code?: string
+    amount?: number
+    error?: string
+  } | null>(null)
 
   // Watch form values for reactive updates
   const acceptTerms = watch('acceptTerms') || false
   const selectedLanguages = watch('additionalLanguages') || []
+  const discountCode = watch('discountCode') || ''
 
   // Calculate pricing
   const basePackagePrice = 35 // €35/month
   const languageAddOnsTotal = calculateAddOnsTotal(selectedLanguages)
-  const totalDueToday = basePackagePrice + languageAddOnsTotal
+  const discountAmount = discountValidation?.status === 'valid' ? (discountValidation.amount || 0) / 100 : 0
+  const totalDueToday = basePackagePrice + languageAddOnsTotal - discountAmount
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,6 +122,69 @@ function CheckoutForm({
         error instanceof Error ? error.message : t('unexpectedError')
       )
       setIsProcessing(false)
+    }
+  }
+
+  // Handle discount code verification
+  const handleVerifyDiscount = async () => {
+    const code = form.getValues('discountCode')?.trim()
+
+    if (!code) {
+      setDiscountValidation({
+        status: 'invalid',
+        error: t('discount.emptyCode')
+      })
+      return
+    }
+
+    try {
+      setIsVerifyingDiscount(true)
+      setDiscountValidation(null)
+
+      // Create AbortController with 10-minute timeout (600000ms)
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 600000)
+
+      const response = await fetch('/api/stripe/validate-discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ discountCode: code }),
+        signal: controller.signal
+      })
+
+      clearTimeout(timeoutId)
+
+      const data = await response.json()
+
+      if (!response.ok || !data.success) {
+        setDiscountValidation({
+          status: 'invalid',
+          error: data.error?.message || t('discount.invalidCode')
+        })
+        return
+      }
+
+      // Valid discount code
+      setDiscountValidation({
+        status: 'valid',
+        code: data.data.code,
+        amount: data.data.amount
+      })
+
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        setDiscountValidation({
+          status: 'invalid',
+          error: t('discount.timeout')
+        })
+      } else {
+        setDiscountValidation({
+          status: 'invalid',
+          error: t('discount.verificationError')
+        })
+      }
+    } finally {
+      setIsVerifyingDiscount(false)
     }
   }
 
@@ -192,6 +265,22 @@ function CheckoutForm({
               </>
             )}
 
+            {/* Discount */}
+            {discountValidation?.status === 'valid' && discountAmount > 0 && (
+              <div className="border-t pt-4">
+                <div className="flex justify-between items-center text-green-600 dark:text-green-400">
+                  <div className="flex items-center gap-2">
+                    <Tag className="w-4 h-4" />
+                    <p className="font-medium">{t('discount.applied')}</p>
+                    <Badge variant="secondary" className="text-xs">
+                      {discountValidation.code}
+                    </Badge>
+                  </div>
+                  <p className="font-semibold">-€{discountAmount.toFixed(2)}</p>
+                </div>
+              </div>
+            )}
+
             {/* Total */}
             <div className="border-t pt-4">
               <div className="flex justify-between items-center">
@@ -199,6 +288,7 @@ function CheckoutForm({
                   <p className="font-semibold text-lg">{t('dueToday')}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     €{basePackagePrice} {t('subscription')} + €{languageAddOnsTotal} {t('setupFees')}
+                    {discountAmount > 0 && ` - €${discountAmount.toFixed(2)} ${t('discount.label')}`}
                   </p>
                 </div>
                 <p className="text-2xl font-bold text-primary">
@@ -221,8 +311,107 @@ function CheckoutForm({
         </Card>
       </motion.div>
 
-      {/* Discount Code - Removed since it needs to be applied during session creation */}
-      {/* Payment form will recreate session if discount code changes */}
+      {/* Discount Code */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Tag className="w-5 h-5" />
+              {t('discount.title')}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Controller
+              name="discountCode"
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-2">
+                  <Label htmlFor="discountCode">{t('discount.label')}</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="discountCode"
+                      placeholder={t('discount.placeholder')}
+                      value={field.value || ''}
+                      onChange={(e) => {
+                        field.onChange(e.target.value.toUpperCase())
+                        // Reset validation when user changes the code
+                        if (discountValidation) {
+                          setDiscountValidation(null)
+                        }
+                      }}
+                      disabled={isVerifyingDiscount || isProcessing}
+                      className="flex-1 uppercase"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleVerifyDiscount}
+                      disabled={
+                        isVerifyingDiscount ||
+                        isProcessing ||
+                        !field.value?.trim()
+                      }
+                      className="min-w-[100px]"
+                    >
+                      {isVerifyingDiscount ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          {t('discount.verifying')}
+                        </>
+                      ) : (
+                        t('discount.verify')
+                      )}
+                    </Button>
+                  </div>
+                  {errors.discountCode && (
+                    <p className="text-sm text-destructive">
+                      {errors.discountCode.message as string}
+                    </p>
+                  )}
+                </div>
+              )}
+            />
+
+            {/* Validation Status */}
+            {discountValidation && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                {discountValidation.status === 'valid' ? (
+                  <Alert className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+                    <AlertDescription className="text-green-800 dark:text-green-200">
+                      {t('discount.validMessage', {
+                        code: discountValidation.code,
+                        amount: (discountValidation.amount || 0) / 100
+                      })}
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <Alert variant="destructive">
+                    <AlertCircle className="w-4 h-4" />
+                    <AlertDescription>
+                      {discountValidation.error}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </motion.div>
+            )}
+
+            {/* Helper Text */}
+            {!discountValidation && (
+              <p className="text-xs text-muted-foreground">
+                {t('discount.helperText')}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {/* Payment Method */}
       <motion.div
@@ -268,32 +457,20 @@ function CheckoutForm({
                 checked={field.value}
                 onCheckedChange={field.onChange}
                 disabled={isProcessing || isLoading}
+                className="mt-1 shrink-0"
               />
               <div className="flex-1">
-                <Label
-                  htmlFor="acceptTerms"
-                  className="text-sm leading-relaxed cursor-pointer"
-                >
+                <Label htmlFor="acceptTerms" className="text-sm cursor-pointer inline">
                   {t.rich('termsText', {
                     termsLink: (chunks) => (
-                      <a
-                        href={`/${locale}/terms`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
+                      <Link href="/terms" target="_blank" className="text-primary hover:underline">
                         {chunks}
-                      </a>
+                      </Link>
                     ),
                     privacyLink: (chunks) => (
-                      <a
-                        href={`/${locale}/privacy`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline"
-                      >
+                      <Link href="/privacy" target="_blank" className="text-primary hover:underline">
                         {chunks}
-                      </a>
+                      </Link>
                     ),
                   })}
                 </Label>
@@ -459,14 +636,12 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
   useEffect(() => {
     // Skip if already fetched or currently fetching
     if (hasFetchedRef.current) {
-      console.log('[Step14] ⏭️  Skipping fetch - already fetched (React Strict Mode protection)')
       return
     }
 
     // Mark as fetched IMMEDIATELY to prevent race condition in React Strict Mode
     // This prevents the second useEffect run from starting another fetch
     hasFetchedRef.current = true
-    console.log('[Step14] 🚀 Fetching client secret for submission:', submissionId)
 
     const fetchClientSecret = async () => {
       try {
@@ -476,12 +651,6 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
         // Get form values inside the effect to avoid stale closures
         const selectedLanguages = form.getValues('additionalLanguages') || []
         const discountCode = form.getValues('discountCode') || ''
-
-        console.log('[Step14] 📤 Sending create-checkout-session request:', {
-          submission_id: submissionId,
-          additionalLanguages: selectedLanguages,
-          discountCode: discountCode || undefined
-        })
 
         const response = await fetch('/api/stripe/create-checkout-session', {
           method: 'POST',
@@ -497,14 +666,6 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
 
         const data = await response.json()
 
-        console.log('[Step14] 📥 Response received:', {
-          ok: response.ok,
-          status: response.status,
-          success: data.success,
-          hasClientSecret: !!data.data?.clientSecret,
-          subscriptionId: data.data?.subscriptionId
-        })
-
         if (!response.ok || !data.success) {
           throw new Error(data.error?.message || 'Failed to create checkout session')
         }
@@ -514,7 +675,6 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
         }
 
         setClientSecret(data.data.clientSecret)
-        console.log('[Step14] ✓ Client secret set')
       } catch (err) {
         console.error('Failed to fetch client secret:', err)
         setError(err instanceof Error ? err.message : 'Failed to initialize payment')

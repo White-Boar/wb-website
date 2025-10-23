@@ -1054,7 +1054,21 @@
         "goBack": "Torna Indietro",
         "stripeNotLoaded": "Il sistema di pagamento si sta caricando. Riprova.",
         "sessionCreationFailed": "Impossibile creare la sessione di checkout",
-        "loadingCheckout": "Caricamento della sessione di checkout..."
+        "loadingCheckout": "Caricamento della sessione di checkout...",
+        "discount": {
+          "title": "Codice Sconto",
+          "label": "sconto",
+          "placeholder": "Inserisci codice sconto",
+          "verify": "Applica",
+          "verifying": "Applicazione...",
+          "applied": "Sconto Applicato",
+          "validMessage": "Codice sconto {code} applicato! Risparmi €{amount}.",
+          "emptyCode": "Inserisci un codice sconto",
+          "invalidCode": "Codice sconto non valido o scaduto",
+          "timeout": "Timeout di verifica. Riprova.",
+          "verificationError": "Impossibile verificare il codice sconto. Riprova.",
+          "helperText": "Inserisci il tuo codice sconto e clicca Applica per aggiungerlo al tuo ordine"
+        }
       }
     },
     "thankYou": {

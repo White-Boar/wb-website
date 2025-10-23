@@ -12,8 +12,6 @@ const BASE_PACKAGE_PRICE_ID = process.env.STRIPE_BASE_PACKAGE_PRICE_ID!
  */
 export async function POST(request: NextRequest) {
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(7)}`
-  console.log(`[${requestId}] === CREATE CHECKOUT SESSION START ===`)
-  console.log(`[${requestId}] Timestamp: ${new Date().toISOString()}`)
 
   try {
     const body = await request.json()
@@ -25,17 +23,8 @@ export async function POST(request: NextRequest) {
       cancelUrl
     } = body
 
-    console.log(`[${requestId}] Request body:`, {
-      submission_id,
-      additionalLanguages,
-      discountCode,
-      hasSuccessUrl: !!successUrl,
-      hasCancelUrl: !!cancelUrl
-    })
-
     // Validate required fields
     if (!submission_id) {
-      console.log(`[${requestId}] ❌ Missing submission_id`)
       return NextResponse.json(
         {
           success: false,
@@ -52,7 +41,6 @@ export async function POST(request: NextRequest) {
     const supabase = createServiceClient()
 
     // Fetch submission from database
-    console.log(`[${requestId}] Fetching submission: ${submission_id}`)
     const { data: submission, error: fetchError } = await supabase
       .from('onboarding_submissions')
       .select('*')
@@ -60,7 +48,6 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (fetchError || !submission) {
-      console.log(`[${requestId}] ❌ Submission not found:`, fetchError)
       return NextResponse.json(
         {
           success: false,
@@ -73,16 +60,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log(`[${requestId}] Submission found:`, {
-      id: submission.id,
-      session_id: submission.session_id,
-      has_stripe_subscription_id: !!submission.stripe_subscription_id,
-      stripe_subscription_id: submission.stripe_subscription_id
-    })
-
     // Check if payment already exists
     if (submission.stripe_subscription_id) {
-      console.log(`[${requestId}] ⚠️  DUPLICATE DETECTED: Submission already has subscription: ${submission.stripe_subscription_id}`)
       return NextResponse.json(
         {
           success: false,
@@ -158,13 +137,6 @@ export async function POST(request: NextRequest) {
                         submission.business_name
 
     if (!customerEmail) {
-      console.error('Missing customer email. Submission data:', {
-        hasFormData: !!submission.form_data,
-        formDataEmail: submission.form_data?.email,
-        formDataBusinessEmail: submission.form_data?.businessEmail,
-        topLevelEmail: submission.email
-      })
-
       return NextResponse.json(
         {
           success: false,
@@ -229,7 +201,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Create subscription schedule with 12-month commitment FIRST
-    console.log(`[${requestId}] Creating subscription schedule for customer ${customer.id}`)
     const now = Math.floor(Date.now() / 1000)
     // Calculate 12 months from now (approximately 365 days)
     const twelveMonthsLater = now + (12 * 30 * 24 * 60 * 60) // 12 months in seconds
@@ -261,17 +232,10 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    console.log(`[${requestId}] ✓ Subscription schedule created:`, {
-      schedule_id: schedule.id,
-      subscription_id: schedule.subscription
-    })
-
     // Get the subscription created by the schedule
     const subscription = await stripe.subscriptions.retrieve(schedule.subscription as string, {
       expand: ['latest_invoice']
     })
-
-    console.log(`[${requestId}] ✓ Subscription retrieved: ${subscription.id}`)
 
     // Add language add-ons as invoice items to the first invoice
     let invoiceId: string
@@ -362,15 +326,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log(`[${requestId}] === CREATE CHECKOUT SESSION SUCCESS ===`)
-    console.log(`[${requestId}] Created resources:`, {
-      schedule_id: schedule.id,
-      subscription_id: subscription.id,
-      customer_id: customer.id,
-      payment_intent_id: paymentIntent.id,
-      total_amount: finalInvoice.amount_due
-    })
-
     // Return client secret and session details
     return NextResponse.json({
       success: true,
@@ -386,9 +341,6 @@ export async function POST(request: NextRequest) {
       }
     })
   } catch (error) {
-    console.error(`[${requestId}] === CREATE CHECKOUT SESSION ERROR ===`)
-    console.error(`[${requestId}] Error:`, error)
-
     return NextResponse.json(
       {
         success: false,
