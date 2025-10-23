@@ -323,8 +323,7 @@ export default function OnboardingStep() {
         }
 
         // Find the first error message
-        for (const key in errors) {
-          const error = errors[key as keyof typeof errors]
+        for (const [, error] of Object.entries(errors)) {
           const message = getErrorMessage(error)
           if (message) {
             errorMessage = message

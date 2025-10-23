@@ -112,17 +112,6 @@ export function AddressAutocomplete({
   }, [])
 
   // Debounced search function
-  const debouncedSearch = useMemo(() => {
-    let timeoutId: NodeJS.Timeout
-    
-    return (searchQuery: string) => {
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
-        searchPlaces(searchQuery)
-      }, 300)
-    }
-  }, [searchPlaces])
-
   // Search for place suggestions
   const searchPlaces = useCallback(async (searchQuery: string) => {
     if (!searchQuery.trim() || !autocompleteService.current) {
@@ -145,7 +134,7 @@ export function AddressAutocomplete({
         request,
         (predictions: any, status: any) => {
           setIsLoading(false)
-          
+
           if (status === 'OK' && predictions) {
             setSuggestions(predictions)
             setIsOpen(true)
@@ -167,6 +156,17 @@ export function AddressAutocomplete({
       setIsOpen(false)
     }
   }, [])
+
+  const debouncedSearch = useMemo(() => {
+    let timeoutId: NodeJS.Timeout
+
+    return (searchQuery: string) => {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        searchPlaces(searchQuery)
+      }, 300)
+    }
+  }, [searchPlaces])
 
   // Get place details
   const getPlaceDetails = async (placeId: string): Promise<AddressDetails | null> => {

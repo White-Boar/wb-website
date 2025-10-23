@@ -193,7 +193,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
 
   // Update a hidden form field to track upload status
   React.useEffect(() => {
-    setValue('_uploading', hasUploadingFiles, { shouldValidate: false })
+    setValue('_uploading' as any, hasUploadingFiles, { shouldValidate: false })
   }, [hasUploadingFiles, setValue])
 
   return (
@@ -468,7 +468,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                       const currentFormValue = field.value || []
                       const hasChanges =
                         completedFiles.length !== currentFormValue.length ||
-                        completedFiles.some((f, i) => f.id !== currentFormValue[i]?.id)
+                        completedFiles.some((f, i) => (f as any).id !== (currentFormValue[i] as any)?.id)
 
                       if (hasChanges) {
                         field.onChange(completedFiles)

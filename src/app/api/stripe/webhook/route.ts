@@ -158,10 +158,16 @@ async function handleInvoicePaid(
   event: Stripe.Event,
   supabase: any
 ): Promise<void> {
-  const invoice = event.data.object as Stripe.Invoice
-  const subscriptionId = invoice.subscription as string
-  const customerId = invoice.customer as string
-  const paymentIntentId = invoice.payment_intent as string
+  const invoice = event.data.object as any // Use any to handle different Stripe API versions
+  const subscriptionId = typeof invoice.subscription === 'string'
+    ? invoice.subscription
+    : invoice.subscription?.id
+  const customerId = typeof invoice.customer === 'string'
+    ? invoice.customer
+    : invoice.customer?.id
+  const paymentIntentId = typeof invoice.payment_intent === 'string'
+    ? invoice.payment_intent
+    : invoice.payment_intent?.id
 
   // Retrieve subscription to get schedule ID and metadata
   let scheduleId: string | null = null
