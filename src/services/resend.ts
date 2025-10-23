@@ -15,9 +15,12 @@ const ADMIN_EMAIL = process.env.NOTIFICATION_ADMIN_EMAIL || 'admin@whiteboar.it'
 const SUPPORT_EMAIL = process.env.NOTIFICATION_SUPPORT_EMAIL || 'info@whiteboar.it'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'
 
-// Validate Resend API key
-if (!process.env.RESEND_API_KEY && !process.env.RESEND_KEY) {
-  console.error('WARNING: RESEND_API_KEY or RESEND_KEY environment variable is not set')
+// Test mode configuration - skip sending real emails in test/dev
+const IS_TEST_MODE = process.env.NODE_ENV === 'test' || process.env.CI === 'true' || process.env.SKIP_EMAILS === 'true'
+
+// Validate Resend API key (only warn in production)
+if (!process.env.RESEND_API_KEY && !process.env.RESEND_KEY && process.env.NODE_ENV === 'production') {
+  console.error('ERROR: RESEND_API_KEY or RESEND_KEY environment variable is not set in production')
 }
 
 // =============================================================================
@@ -55,6 +58,22 @@ export class EmailService {
         verificationCode,
         locale
       )
+
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping verification email send:', {
+          to: email,
+          subject,
+          verificationCode
+        })
+        return {
+          success: true,
+          data: {
+            sent: true,
+            attemptsRemaining: 5
+          }
+        }
+      }
 
       const { data, error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
@@ -131,6 +150,16 @@ export class EmailService {
       const htmlContent = this.generateCompletionEmailHTML(businessName, locale)
       const textContent = this.generateCompletionEmailText(businessName, locale)
 
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping completion confirmation email:', {
+          to: email,
+          subject,
+          businessName
+        })
+        return true
+      }
+
       const { data, error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
         to: [email],
@@ -165,9 +194,19 @@ export class EmailService {
   ): Promise<boolean> {
     try {
       const subject = `New Onboarding Submission: ${formData.businessName}`
-      
+
       const htmlContent = this.generateAdminNotificationHTML(formData, submissionId)
       const textContent = this.generateAdminNotificationText(formData, submissionId)
+
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping admin notification email:', {
+          to: ADMIN_EMAIL,
+          subject,
+          submissionId
+        })
+        return true
+      }
 
       const { data, error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
@@ -211,6 +250,17 @@ export class EmailService {
       const htmlContent = this.generatePreviewEmailHTML(businessName, previewUrl, locale)
       const textContent = this.generatePreviewEmailText(businessName, previewUrl, locale)
 
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping preview notification email:', {
+          to: email,
+          subject,
+          businessName,
+          previewUrl
+        })
+        return true
+      }
+
       const { data, error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
         to: [email],
@@ -252,9 +302,20 @@ export class EmailService {
         : "Don't lose your WhiteBoar creation"
 
       const recoveryUrl = `${APP_URL}/onboarding?session=${sessionId}`
-      
+
       const htmlContent = this.generateRecoveryEmailHTML(name, recoveryUrl, currentStep, locale)
       const textContent = this.generateRecoveryEmailText(name, recoveryUrl, currentStep, locale)
+
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping abandonment recovery email:', {
+          to: email,
+          subject,
+          sessionId,
+          currentStep
+        })
+        return true
+      }
 
       const { data, error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
@@ -708,6 +769,18 @@ export class EmailService {
         additionalLanguages
       )
 
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping payment notification email:', {
+          to: ADMIN_EMAIL,
+          subject,
+          submissionId,
+          businessName,
+          amount
+        })
+        return true
+      }
+
       const { data, error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
         to: [ADMIN_EMAIL],
@@ -748,6 +821,16 @@ export class EmailService {
 
       const htmlContent = this.generateCustomSoftwareInquiryHTML(formData, locale)
       const textContent = this.generateCustomSoftwareInquiryText(formData, locale)
+
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping custom software inquiry email:', {
+          to: ADMIN_EMAIL,
+          subject,
+          customerName: formData.name
+        })
+        return true
+      }
 
       const { data, error } = await resend.emails.send({
         from: `${FROM_NAME} <${FROM_EMAIL}>`,
