@@ -512,7 +512,7 @@ export default function OnboardingStep() {
       stepNumber={stepNumber}
       title={t(`${stepNumber}.title`)}
       description={t(`${stepNumber}.description`)}
-      onNext={handleSubmit(handleNext)}
+      onNext={stepNumber === 14 ? undefined : handleSubmit(handleNext)}
       onPrevious={handlePrevious}
       canGoNext={(stepNumber === 3 ? isStep3Valid : stepNumber === 6 ? isStep6Valid : stepNumber === 11 ? isStep11Valid : stepNumber === 12 ? isStep12Valid : isValid) && !isLoading}
       canGoPrevious={stepNumber > 1}
@@ -520,6 +520,7 @@ export default function OnboardingStep() {
       error={error}
       nextLabel={stepNumber === 14 ? t('finish') : undefined}
       previousLabel={stepNumber === 1 ? t('back') : undefined}
+      hideNavigation={stepNumber === 14}
     >
       <StepComponent
         form={form}
