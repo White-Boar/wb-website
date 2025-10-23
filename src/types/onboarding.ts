@@ -24,6 +24,7 @@ export interface OnboardingFormData {
   businessCountry: string
   businessPlaceId?: string // Google Places ID
   industry: string
+  customIndustry?: string // Temporary field when "Other" is selected
   vatNumber?: string
 
   // Legacy compatibility - will be transformed to flat fields
@@ -228,6 +229,11 @@ export type AnalyticsEventType =
   | 'manual_save'
   | 'session_expired'
   | 'session_recovered'
+  | 'payment_initiated'
+  | 'payment_completed'
+  | 'payment_failed'
+  | 'payment_processing'
+  | 'drop_off'
 
 export type AnalyticsCategory = 
   | 'user_action'
@@ -294,6 +300,7 @@ export interface OnboardingStore {
   lastSaved: Date | null
   isLoading: boolean
   error: string | null
+  autoSaveStatus: 'idle' | 'saving' | 'saved' | 'error'
   
   // Validation state
   stepErrors: Record<number, ValidationError[]>
@@ -323,7 +330,11 @@ export interface OnboardingStore {
   recoverSession: () => Promise<boolean>
   refreshSession: () => Promise<void>
   checkSessionExpired: () => void
-  
+
+  // Email verification (Step 2)
+  verifyEmail: (email: string, code: string) => Promise<boolean>
+  resendVerificationCode: (email: string, locale?: 'en' | 'it') => Promise<void>
+
   // Session helper functions for components
   initializeSession: (locale?: 'en' | 'it') => Promise<OnboardingSession>
   loadExistingSession: () => OnboardingSession | null

@@ -124,7 +124,6 @@ export function Step8DesignStyle({ form, errors, isLoading }: StepComponentProps
                   showTitles
                   showDescriptions
                   showCategories={false}
-                  disabled={isLoading}
                 />
               )}
             />

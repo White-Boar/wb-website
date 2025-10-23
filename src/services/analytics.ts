@@ -19,7 +19,7 @@ export class AnalyticsService {
   /**
    * Track analytics event via API route (uses service role on server)
    */
-  private static async trackEventViaAPI(
+  static async trackEventViaAPI(
     sessionId: string,
     eventType: AnalyticsEventType,
     metadata: Record<string, any> = {},
@@ -347,7 +347,7 @@ export class AnalyticsService {
       primary_goal: formData.primaryGoal,
       has_logo_upload: !!formData.logoUpload,
       has_business_photos: (formData.businessPhotos?.length || 0) > 0,
-      offering_type: formData.offeringType,
+      ...(formData.offeringType && { offering_type: formData.offeringType }),
       locale: 'it' // Assume Italian for now
     }
 
@@ -402,7 +402,7 @@ export class AnalyticsService {
       operation,
       duration_ms: duration,
       success,
-      error_code: errorCode,
+      ...(errorCode && { error_code: errorCode }),
       performance_grade: this.getPerformanceGrade(duration)
     }
 
@@ -499,7 +499,7 @@ export class AnalyticsService {
     const autoSaveData = {
       save_time_ms: saveTime,
       success,
-      data_size_bytes: dataSize,
+      ...(dataSize !== undefined && { data_size_bytes: dataSize }),
       performance_grade: this.getPerformanceGrade(saveTime)
     }
 

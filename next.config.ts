@@ -9,9 +9,8 @@ const withNextIntl = createNextIntlPlugin({
 
 const nextConfig: NextConfig = {
   typescript: {
-    // Temporarily ignore type errors during build
-    // TODO: Fix all TypeScript errors from package upgrades (Steps 13, 14, and store types)
-    ignoreBuildErrors: true,
+    // TypeScript strict checking enabled after Option A implementation
+    ignoreBuildErrors: false,
   },
   images: {
     formats: ['image/webp', 'image/avif'],

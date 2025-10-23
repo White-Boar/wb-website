@@ -98,6 +98,7 @@ export const step3Schema = z.object({
   businessCountry: z.string().default('Italy'),
   businessPlaceId: z.string().optional(),
   industry: z.string().min(1, 'Please select an industry'),
+  customIndustry: z.string().optional(),
   vatNumber: italianVatSchema
 })
 
@@ -156,15 +157,12 @@ export const step7Schema = z.object({
 export const step8Schema = z.object({
   designStyle: z.enum([
     'minimalist',
-    'corporate', 
+    'corporate',
     'playful',
     'bold',
     'editorial',
     'retro'
-  ], {
-    required_error: 'Please select a design style',
-    invalid_type_error: 'Please select a valid design style'
-  })
+  ], 'Please select a design style')
 })
 
 // =============================================================================
@@ -178,20 +176,14 @@ export const step9Schema = z.object({
     'sketch',
     'collage',
     '3d'
-  ], {
-    required_error: 'Please select an image style',
-    invalid_type_error: 'Please select a valid image style'
-  })
+  ], 'Please select an image style')
 })
 
 // =============================================================================
 // STEP 10: COLOR PALETTE
 // =============================================================================
 export const step10Schema = z.object({
-  colorPalette: z.string({
-    required_error: 'Please select a color palette',
-    invalid_type_error: 'Please select a valid color palette'
-  }).min(1, 'Please select a color palette')
+  colorPalette: z.string('Please select a color palette').min(1, 'Please select a color palette')
 })
 
 // =============================================================================
@@ -285,98 +277,6 @@ export const step12Schema = z.object({
   }
 })
 
-
-// =============================================================================
-// COMPLETE FORM SCHEMA (for final validation)
-// =============================================================================
-export const completeFormSchema = z.object({
-  // Step 1
-  firstName: step1Schema.shape.firstName,
-  lastName: step1Schema.shape.lastName,
-  email: step1Schema.shape.email,
-  
-  // Step 2
-  emailVerified: step2Schema.shape.emailVerified,
-  
-  // Step 3
-  businessName: step3Schema.shape.businessName,
-  businessEmail: step3Schema.shape.businessEmail,
-  businessPhone: step3Schema.shape.businessPhone,
-  physicalAddress: step3Schema.shape.physicalAddress,
-  industry: step3Schema.shape.industry,
-  vatNumber: step3Schema.shape.vatNumber,
-  
-  // Step 4
-  businessDescription: step4Schema.shape.businessDescription,
-  competitorUrls: step4Schema.shape.competitorUrls,
-  competitorAnalysis: step4Schema.shape.competitorAnalysis,
-  
-  // Step 5
-  customerProfile: step5Schema.shape.customerProfile,
-  
-  // Step 6
-  customerProblems: step6Schema.shape.customerProblems,
-  customerDelight: step6Schema.shape.customerDelight,
-  
-  // Step 7
-  websiteReferences: step7Schema.shape.websiteReferences,
-  
-  // Step 8
-  designStyle: step8Schema.shape.designStyle,
-  
-  // Step 9
-  imageStyle: step9Schema.shape.imageStyle,
-  
-  // Step 10
-  colorPalette: step10Schema.shape.colorPalette,
-  
-  // Step 11
-  websiteSections: step11Schema.shape.websiteSections,
-  primaryGoal: step11Schema.shape.primaryGoal,
-  offeringType: step11Schema.shape.offeringType,
-  offerings: step11Schema.shape.offerings,
-  
-  // Step 12
-  logoUpload: step12Schema.shape.logoUpload,
-  businessPhotos: step12Schema.shape.businessPhotos,
-  
-})
-
-// =============================================================================
-// TYPE DEFINITIONS
-// =============================================================================
-
-// Step form data types (inferred from schemas)
-export type Step1FormData = z.infer<typeof step1Schema>
-export type Step2FormData = z.infer<typeof step2Schema>
-export type Step3FormData = z.infer<typeof step3Schema>
-export type Step4FormData = z.infer<typeof step4Schema>
-export type Step5FormData = z.infer<typeof step5Schema>
-export type Step6FormData = z.infer<typeof step6Schema>
-export type Step7FormData = z.infer<typeof step7Schema>
-export type Step8FormData = z.infer<typeof step8Schema>
-export type Step9FormData = z.infer<typeof step9Schema>
-export type Step10FormData = z.infer<typeof step10Schema>
-export type Step11FormData = z.infer<typeof step11Schema>
-export type Step12FormData = z.infer<typeof step12Schema>
-// Union type for all step data
-export type StepFormData =
-  | Step1FormData
-  | Step2FormData
-  | Step3FormData
-  | Step4FormData
-  | Step5FormData
-  | Step6FormData
-  | Step7FormData
-  | Step8FormData
-  | Step9FormData
-  | Step10FormData
-  | Step11FormData
-  | Step12FormData
-
-// Complete onboarding data type
-export type OnboardingFormData = z.infer<typeof completeFormSchema>
-
 // =============================================================================
 // UTILITY FUNCTIONS
 // =============================================================================
@@ -420,10 +320,10 @@ export function validateCompleteForm(data: any) {
 
 // Get field-specific error messages
 export function getFieldError(errors: z.ZodError, fieldPath: string): string | null {
-  const fieldError = errors.errors.find(err => 
+  const fieldError = errors.issues.find(err =>
     err.path.join('.') === fieldPath
   )
-  
+
   return fieldError?.message || null
 }
 
@@ -522,8 +422,6 @@ export const step13Schema = z.object({
     .default([])
 })
 
-export type Step13FormData = z.infer<typeof step13Schema>
-
 // =============================================================================
 // STEP 14: STRIPE CHECKOUT
 // =============================================================================
@@ -543,4 +441,112 @@ export const step14Schema = z.object({
   })
 })
 
+// =============================================================================
+// COMPLETE FORM SCHEMA (for final validation)
+// =============================================================================
+export const completeFormSchema = z.object({
+  // Step 1
+  firstName: step1Schema.shape.firstName,
+  lastName: step1Schema.shape.lastName,
+  email: step1Schema.shape.email,
+
+  // Step 2
+  emailVerified: step2Schema.shape.emailVerified,
+
+  // Step 3
+  businessName: step3Schema.shape.businessName,
+  businessEmail: step3Schema.shape.businessEmail,
+  businessPhone: step3Schema.shape.businessPhone,
+  businessStreet: step3Schema.shape.businessStreet,
+  businessCity: step3Schema.shape.businessCity,
+  businessProvince: step3Schema.shape.businessProvince,
+  businessPostalCode: step3Schema.shape.businessPostalCode,
+  businessCountry: step3Schema.shape.businessCountry,
+  businessPlaceId: step3Schema.shape.businessPlaceId,
+  industry: step3Schema.shape.industry,
+  customIndustry: step3Schema.shape.customIndustry,
+  vatNumber: step3Schema.shape.vatNumber,
+
+  // Step 4
+  businessDescription: step4Schema.shape.businessDescription,
+  competitorUrls: step4Schema.shape.competitorUrls,
+  competitorAnalysis: step4Schema.shape.competitorAnalysis,
+
+  // Step 5
+  customerProfile: step5Schema.shape.customerProfile,
+
+  // Step 6
+  customerProblems: step6Schema.shape.customerProblems,
+  customerDelight: step6Schema.shape.customerDelight,
+
+  // Step 7
+  websiteReferences: step7Schema.shape.websiteReferences,
+
+  // Step 8
+  designStyle: step8Schema.shape.designStyle,
+
+  // Step 9
+  imageStyle: step9Schema.shape.imageStyle,
+
+  // Step 10
+  colorPalette: step10Schema.shape.colorPalette,
+
+  // Step 11
+  websiteSections: step11Schema.shape.websiteSections,
+  primaryGoal: step11Schema.shape.primaryGoal,
+  offeringType: step11Schema.shape.offeringType,
+  offerings: step11Schema.shape.offerings,
+
+  // Step 12
+  logoUpload: step12Schema.shape.logoUpload,
+  businessPhotos: step12Schema.shape.businessPhotos,
+
+  // Step 13
+  additionalLanguages: step13Schema.shape.additionalLanguages,
+
+  // Step 14
+  discountCode: step14Schema.shape.discountCode,
+  acceptTerms: step14Schema.shape.acceptTerms,
+})
+
+// =============================================================================
+// TYPE DEFINITIONS
+// =============================================================================
+
+// Step form data types (inferred from schemas)
+export type Step1FormData = z.infer<typeof step1Schema>
+export type Step2FormData = z.infer<typeof step2Schema>
+export type Step3FormData = z.infer<typeof step3Schema>
+export type Step4FormData = z.infer<typeof step4Schema>
+export type Step5FormData = z.infer<typeof step5Schema>
+export type Step6FormData = z.infer<typeof step6Schema>
+export type Step7FormData = z.infer<typeof step7Schema>
+export type Step8FormData = z.infer<typeof step8Schema>
+export type Step9FormData = z.infer<typeof step9Schema>
+export type Step10FormData = z.infer<typeof step10Schema>
+export type Step11FormData = z.infer<typeof step11Schema>
+export type Step12FormData = z.infer<typeof step12Schema>
+export type Step13FormData = z.infer<typeof step13Schema>
 export type Step14FormData = z.infer<typeof step14Schema>
+
+// Flat type containing all fields from all steps (Option A)
+// All fields are optional to allow progressive form filling
+export type StepFormData = Partial<
+  Step1FormData &
+  Step2FormData &
+  Step3FormData &
+  Step4FormData &
+  Step5FormData &
+  Step6FormData &
+  Step7FormData &
+  Step8FormData &
+  Step9FormData &
+  Step10FormData &
+  Step11FormData &
+  Step12FormData &
+  Step13FormData &
+  Step14FormData
+>
+
+// Complete onboarding data type
+export type OnboardingFormData = z.infer<typeof completeFormSchema>

@@ -69,9 +69,9 @@ function CheckoutForm({
   } | null>(null)
 
   // Watch form values for reactive updates
-  const acceptTerms = (watch('acceptTerms' as any) as boolean) || false
-  const selectedLanguages = (watch('additionalLanguages' as any) as string[]) || []
-  const discountCode = (watch('discountCode' as any) as string) || ''
+  const acceptTerms = watch('acceptTerms') || false
+  const selectedLanguages = watch('additionalLanguages') || []
+  const discountCode = watch('discountCode') || ''
 
   // Calculate pricing
   const basePackagePrice = 35 // €35/month
@@ -127,7 +127,7 @@ function CheckoutForm({
 
   // Handle discount code verification
   const handleVerifyDiscount = async () => {
-    const code = (form.getValues('discountCode' as any) as string)?.trim()
+    const code = form.getValues('discountCode')?.trim()
 
     if (!code) {
       setDiscountValidation({
@@ -326,7 +326,7 @@ function CheckoutForm({
           </CardHeader>
           <CardContent className="space-y-4">
             <Controller
-              name={"discountCode" as any}
+              name="discountCode"
               control={control}
               render={({ field }) => (
                 <div className="space-y-2">
@@ -367,9 +367,9 @@ function CheckoutForm({
                       )}
                     </Button>
                   </div>
-                  {(errors as any).discountCode && (
+                  {errors.discountCode && (
                     <p className="text-sm text-destructive">
-                      {((errors as any).discountCode?.message as string) || 'Invalid discount code'}
+                      {errors.discountCode.message || 'Invalid discount code'}
                     </p>
                   )}
                 </div>
@@ -448,7 +448,7 @@ function CheckoutForm({
         transition={{ delay: 0.3 }}
       >
         <Controller
-          name={"acceptTerms" as any}
+          name="acceptTerms"
           control={control}
           render={({ field }) => (
             <div className="flex items-start gap-3 p-4 rounded-lg border bg-muted/50">
@@ -474,9 +474,9 @@ function CheckoutForm({
                     ),
                   })}
                 </Label>
-                {(errors as any).acceptTerms && (
+                {errors.acceptTerms && (
                   <p className="text-sm text-destructive mt-1">
-                    {((errors as any).acceptTerms?.message as string) || 'Please accept terms'}
+                    {errors.acceptTerms.message || 'Please accept terms'}
                   </p>
                 )}
               </div>
@@ -649,8 +649,8 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
         setError(null)
 
         // Get form values inside the effect to avoid stale closures
-        const selectedLanguages = (form.getValues('additionalLanguages' as any) as string[]) || []
-        const discountCode = (form.getValues('discountCode' as any) as string) || ''
+        const selectedLanguages = form.getValues('additionalLanguages') || []
+        const discountCode = form.getValues('discountCode') || ''
 
         const response = await fetch('/api/stripe/create-checkout-session', {
           method: 'POST',
