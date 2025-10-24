@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import path from 'path'
+import { seedStep14TestSession, cleanupTestSession } from './helpers/seed-step14-session'
 
 /**
  * Step 12 Bug Fix Validation Test
@@ -22,68 +23,38 @@ test.describe('Step 12 - File Upload Persistence Bug', () => {
     console.log('\n🧪 TESTING STEP 12 FILE UPLOAD PERSISTENCE BUG')
     console.log('=' .repeat(80))
 
-    // Capture all console logs from the browser
-    page.on('console', msg => {
-      const text = msg.text()
-      // Filter for our debug logs
-      if (text.includes('[updateFormData]') || text.includes('[Step12BusinessAssets]') || text.includes('[Form Reset Effect]') || text.includes('[getStepDefaultValues]')) {
-        console.log(`   [BROWSER] ${text}`)
-      }
-    })
+    let sessionId: string | null = null
+    let submissionId: string | null = null
 
-    // ========== SETUP: Seed localStorage with mock session ==========
-    console.log('\n📦 STEP 1: Seeding localStorage with mock session...')
+    try {
+      // Capture all console logs from the browser
+      page.on('console', msg => {
+        const text = msg.text()
+        // Filter for our debug logs
+        if (text.includes('[updateFormData]') || text.includes('[Step12BusinessAssets]') || text.includes('[Form Reset Effect]') || text.includes('[getStepDefaultValues]')) {
+          console.log(`   [BROWSER] ${text}`)
+        }
+      })
 
-    const sessionId = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      // ========== SETUP: Seed real session in database ==========
+      console.log('\n📦 STEP 1: Creating real test session...')
 
-    const mockSessionData = {
-      state: {
-        sessionId: sessionId,
-        currentStep: 14, // Set to 14 so we can navigate to step 12 without redirect
-        completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-        sessionExpiresAt: expiresAt,
-        isSessionExpired: false,
-        formData: {
-          // Step 1 data
-          firstName: 'Test',
-          lastName: 'User',
-          email: 'test@example.com',
-          emailVerified: true,
-          // Step 3 data
-          businessName: 'Test Business',
-          businessEmail: 'business@example.com',
-          businessPhone: '+39 123 456 7890',
-          industry: 'Technology',
-          // Step 4 data
-          businessDescription: 'A test business description',
-          // Step 8 data
-          designStyle: 'modern',
-          // Step 9 data
-          imageStyle: 'photography',
-          // Step 10 data
-          colorPalette: 'blue',
-          // Step 11 data
-          primaryGoal: 'generate_leads',
-          // Step 12 will be empty initially - we'll upload files via UI
-          logoUpload: undefined,
-          businessPhotos: [],
-          _uploading: false
-        },
-        isLoading: false,
-        error: null
-      },
-      version: 1
-    }
+      const seed = await seedStep14TestSession({
+        email: `step12-test-${Date.now()}@example.com`
+      })
 
-    // Use addInitScript to inject localStorage BEFORE page loads
-    await page.addInitScript((data) => {
-      localStorage.setItem('wb-onboarding-store', JSON.stringify(data))
-    }, mockSessionData)
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
 
-    console.log('✅ localStorage seed script added')
-    console.log(`   Session ID: ${sessionId}`)
-    console.log(`   Current Step: 14 (can navigate to any previous step)`)
+      // Inject the real session into localStorage
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
+      console.log('✅ Real test session created')
+      console.log(`   Session ID: ${sessionId}`)
+      console.log(`   Submission ID: ${submissionId}`)
+      console.log(`   Current Step: 14 (can navigate to any previous step)`)
 
     // ========== NAVIGATE TO STEP 12 ==========
     console.log('\n📍 STEP 2: Navigating to Step 12...')
@@ -97,7 +68,6 @@ test.describe('Step 12 - File Upload Persistence Bug', () => {
 
     // Debug: Check what URL we ended up at
     const actualUrl = page.url()
-    console.log(`   Current URL: ${actualUrl}`)
 
     if (!actualUrl.includes('/step/12')) {
       // Debug: Check localStorage to see if it was read correctly
@@ -332,5 +302,13 @@ test.describe('Step 12 - File Upload Persistence Bug', () => {
     console.log('\n' + '='.repeat(80))
     console.log('✅ TEST PASSED: Files persist in UI and localStorage after navigation')
     console.log('='.repeat(80) + '\n')
+
+    } finally {
+      // Cleanup: Delete test session and submission
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+        console.log('🧹 Test session cleaned up')
+      }
+    }
   })
 })

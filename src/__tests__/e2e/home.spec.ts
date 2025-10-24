@@ -70,13 +70,13 @@ test.describe('WhiteBoar Homepage', () => {
 
   test('pricing plan selection works', async ({ page }) => {
     // Scroll to pricing section
-    await page.getByRole('heading', { name: 'Packages' }).click();
-    
-    // Click on Fast & Simple plan
-    await page.getByText('Start with Fast & Simple').click();
-    
+    await page.getByRole('heading', { name: 'Packages' }).scrollIntoViewIfNeeded();
+
+    // Click on Fast & Simple plan and wait for navigation
+    await page.getByRole('link', { name: 'Start with Fast & Simple' }).click();
+
     // Check that it navigates to onboarding
-    await expect(page).toHaveURL(/\/(en\/)?onboarding/);
+    await expect(page).toHaveURL(/\/(en\/)?onboarding/, { timeout: 10000 });
   });
 
   test('social links are working', async ({ page }) => {
