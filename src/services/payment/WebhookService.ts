@@ -92,13 +92,16 @@ export class WebhookService {
         try {
           const paymentIntent = await this.stripe.paymentIntents.retrieve(eventData.id, {
             expand: ['invoice']
-          })
+          }) as Stripe.Response<Stripe.PaymentIntent> & { invoice?: Stripe.Invoice | string }
 
-          if (paymentIntent.invoice) {
-            const invoice = paymentIntent.invoice as Stripe.Invoice
-            subscriptionId = typeof invoice.subscription === 'string'
-              ? invoice.subscription
-              : invoice.subscription?.id || null
+          // Check if invoice is expanded (not just a string ID)
+          if (paymentIntent.invoice && typeof paymentIntent.invoice !== 'string') {
+            const invoice = paymentIntent.invoice
+            // Invoice.subscription can be string | Subscription | null
+            const invoiceSubscription = (invoice as any).subscription as string | Stripe.Subscription | null
+            subscriptionId = typeof invoiceSubscription === 'string'
+              ? invoiceSubscription
+              : invoiceSubscription?.id || null
 
             if (subscriptionId) {
               const subscription = await this.stripe.subscriptions.retrieve(subscriptionId)

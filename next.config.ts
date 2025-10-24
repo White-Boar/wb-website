@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
-  serverExternalPackages: ['@react-email/render'],
+  serverExternalPackages: ['@react-email/render', 'prettier'],
   async headers() {
     return [
       {
