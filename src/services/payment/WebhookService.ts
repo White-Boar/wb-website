@@ -563,7 +563,8 @@ export class WebhookService {
         event_type: 'payment_failed',
         metadata: {
           payment_intent_id: paymentIntent.id,
-          last_payment_error: paymentIntent.last_payment_error?.message
+          error_code: paymentIntent.last_payment_error?.code,
+          error_message: paymentIntent.last_payment_error?.message
         }
       })
 

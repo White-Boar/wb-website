@@ -289,7 +289,9 @@ export class CheckoutSessionService {
 
       return {
         success: true,
-        ...result
+        ...result,
+        customerId: customer.id,
+        subscriptionId: subscription.id
       }
     } catch (error) {
       console.error('Checkout session creation error:', error)

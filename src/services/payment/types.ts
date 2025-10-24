@@ -36,6 +36,8 @@ export interface CheckoutSessionResult {
   success: boolean
   sessionUrl?: string
   sessionId?: string
+  customerId?: string
+  subscriptionId?: string
   error?: {
     code: string
     message: string

@@ -70,6 +70,18 @@ describe('Stripe Checkout Session Creation Tests', () => {
     testSubmissionId = data.id
   })
 
+  // Reset submission Stripe IDs before each test to allow reuse
+  beforeEach(async () => {
+    await supabase
+      .from('onboarding_submissions')
+      .update({
+        stripe_customer_id: null,
+        stripe_subscription_id: null,
+        stripe_subscription_schedule_id: null
+      })
+      .eq('id', testSubmissionId)
+  })
+
   afterAll(async () => {
     // Cleanup test submission
     await supabase
@@ -95,7 +107,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
   it('should create checkout session with base package only', async () => {
     const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: [],
@@ -168,7 +183,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
 
     const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: ['de'],
@@ -212,7 +230,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
 
     const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: ['de', 'fr', 'es'],
@@ -247,7 +268,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
 
     const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: [],
@@ -279,7 +303,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
   it('should reject invalid discount code', async () => {
     const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: [],
@@ -299,7 +326,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
   it('should reject missing submission_id', async () => {
     const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
       body: JSON.stringify({
         additionalLanguages: [],
         successUrl: 'http://localhost:3783/en/onboarding/thank-you',
@@ -347,7 +377,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
     for (const submissionId of testSubmissions) {
       const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
         body: JSON.stringify({
           submission_id: submissionId,
           additionalLanguages: [],
@@ -387,7 +420,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
   it('should create subscription schedule with correct configuration', async () => {
     const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: [],

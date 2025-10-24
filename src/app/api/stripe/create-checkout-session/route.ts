@@ -85,7 +85,9 @@ export async function POST(request: NextRequest) {
       success: true,
       data: {
         clientSecret: result.sessionUrl,
-        sessionId: result.sessionId
+        sessionId: result.sessionId,
+        customerId: result.customerId,
+        subscriptionId: result.subscriptionId
       }
     })
   } catch (error) {

@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: {
           code: 'INVALID_DISCOUNT_CODE',
-          message: `Discount code '${discountCode}' is not valid or has expired`
+          message: 'Discount code is not valid or has expired'
         }
       }, { status: 400 })
     }
