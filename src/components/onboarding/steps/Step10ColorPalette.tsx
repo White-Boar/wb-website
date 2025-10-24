@@ -1,23 +1,66 @@
 'use client'
 
+import { useState, useMemo } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
-import { Palette, Sparkles, Eye } from 'lucide-react'
+import { Palette, Sparkles, Eye, Search, X } from 'lucide-react'
 
 import { ColorPalette } from '@/components/onboarding/ColorPalette'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { StepComponentProps } from './index'
 import { getColorPalettes } from '@/lib/color-palettes'
+import colorPalettesData from '@/data/color_palettes.json'
 
 export function Step10ColorPalette({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.10')
   const locale = useLocale()
   const { control } = form
+  const [searchQuery, setSearchQuery] = useState('')
 
   // Load color palettes based on current locale
-  const colorPaletteOptions = getColorPalettes(locale)
+  const allColorPalettes = getColorPalettes(locale)
+
+  // Filter palettes based on search query
+  const filteredPalettes = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return allColorPalettes
+    }
+
+    const query = searchQuery.toLowerCase().trim()
+    const isItalian = locale === 'it'
+
+    return allColorPalettes.filter((palette, index) => {
+      const rawPalette = colorPalettesData[index]
+
+      // Search in palette names (both locales)
+      if (rawPalette.palette_name_en.toLowerCase().includes(query) ||
+          rawPalette.palette_name_it.toLowerCase().includes(query)) {
+        return true
+      }
+
+      // Search in descriptions (both locales)
+      if (rawPalette.description_en.toLowerCase().includes(query) ||
+          rawPalette.description_it.toLowerCase().includes(query)) {
+        return true
+      }
+
+      // Search in main colors (both locales)
+      const mainColorsEn = rawPalette.main_colors_en.some(color =>
+        color.toLowerCase().includes(query)
+      )
+      const mainColorsIt = rawPalette.main_colors_it.some(color =>
+        color.toLowerCase().includes(query)
+      )
+
+      return mainColorsEn || mainColorsIt
+    })
+  }, [searchQuery, allColorPalettes, locale])
+
+  const colorPaletteOptions = filteredPalettes
 
   return (
     <div className="space-y-8">
@@ -53,6 +96,40 @@ export function Step10ColorPalette({ form, errors, isLoading }: StepComponentPro
               <Badge variant="secondary" className="ml-auto">
                 {t('selection.required')}
               </Badge>
+            </div>
+
+            {/* Search Bar */}
+            <div className="space-y-2">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder={locale === 'it'
+                    ? 'Cerca palette per nome, colore o descrizione...'
+                    : 'Search palettes by name, color, or description...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-9"
+                />
+                {searchQuery && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                    onClick={() => setSearchQuery('')}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+              {searchQuery && (
+                <p className="text-sm text-muted-foreground">
+                  {locale === 'it'
+                    ? `${filteredPalettes.length} palette ${filteredPalettes.length === 1 ? 'trovata' : 'trovate'}`
+                    : `${filteredPalettes.length} ${filteredPalettes.length === 1 ? 'palette' : 'palettes'} found`}
+                </p>
+              )}
             </div>
 
             <Controller

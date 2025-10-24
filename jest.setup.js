@@ -1,4 +1,15 @@
 import '@testing-library/jest-dom'
+import { TextEncoder, TextDecoder } from 'util'
+import { webcrypto } from 'crypto'
+
+// Polyfill TextEncoder/TextDecoder for Node environment (required by Stripe SDK)
+global.TextEncoder = TextEncoder
+global.TextDecoder = TextDecoder
+
+// Polyfill webcrypto for Stripe SDK async signature generation
+if (!global.crypto) {
+  global.crypto = webcrypto
+}
 
 // Mock next-intl/server
 jest.mock('next-intl/server', () => ({

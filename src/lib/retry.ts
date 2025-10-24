@@ -137,7 +137,7 @@ export const RETRY_CONFIGS = {
     maxDelay: 30000,
     backoffMultiplier: 2,
     jitter: true,
-    shouldRetry: (error) => {
+    shouldRetry: (error: any) => {
       // Don't retry client errors (4xx) for file uploads
       if (error.status >= 400 && error.status < 500) {
         return false

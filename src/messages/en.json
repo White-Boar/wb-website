@@ -88,7 +88,7 @@
     },
     "welcome": {
       "title": "Welcome to WhiteBoar",
-      "subtitle": "Let's create your perfect website in just 12 simple steps. Our AI-driven process ensures a professional result tailored to your business.",
+      "subtitle": "Let's create your perfect website in just 14 simple steps. Our AI-driven process ensures a professional result tailored to your business.",
       "features": {
         "fast": {
           "title": "Lightning Fast",
@@ -282,14 +282,6 @@
             "label": "Street Address",
             "placeholder": "Enter your business address",
             "hint": "Start typing your address for suggestions"
-          },
-          "city": {
-            "label": "City",
-            "placeholder": "Enter city"
-          },
-          "postalCode": {
-            "label": "Postal Code",
-            "placeholder": "58000"
           },
           "city": {
             "label": "City",
@@ -1007,6 +999,75 @@
           "authentic": "Authentic moments",
           "variety": "Show variety"
         }
+      },
+      "13": {
+        "title": "Language Add-ons",
+        "description": "Select additional languages for your website",
+        "heading": "Choose Additional Languages",
+        "includedLanguages": "Included: English & Italian",
+        "availableLanguages": "Available Languages ({count})",
+        "selectedCount": "{count} language selected",
+        "pricePerLanguage": "€75 per language",
+        "searchPlaceholder": "Search languages...",
+        "selectLanguage": "Select {language}",
+        "speakers": "speakers",
+        "clearAll": "Clear all",
+        "noResults": "No languages found matching your search",
+        "clearSearch": "Clear search",
+        "basePackage": "Base Package (Italian and English are included)",
+        "languageAddonsInfo": "Language add-ons are one-time setup fees.",
+        "totalFirstMonth": "Total First Month"
+      },
+      "14": {
+        "title": "Payment",
+        "description": "Complete your subscription",
+        "heading": "Complete Your Order",
+        "subtitle": "Secure checkout powered by Stripe",
+        "orderSummary": "Order Summary",
+        "basePackage": "WhiteBoar Base Package",
+        "billedMonthly": "Billed monthly",
+        "annualCommitment": "12-month commitment",
+        "languageAddons": "Language Add-ons",
+        "oneTimeFee": "One-time setup fee",
+        "dueToday": "Due Today",
+        "subscription": "subscription",
+        "setupFees": "setup fees",
+        "thenMonthly": "Then €{amount}/month",
+        "discountCode": "Discount Code",
+        "enterCode": "Have a discount code?",
+        "codePlaceholder": "Enter code",
+        "paymentMethod": "Payment Method",
+        "securePayment": "Your payment information is secure and encrypted",
+        "termsText": "I agree to the <termsLink>Terms and Conditions</termsLink> and <privacyLink>Privacy Policy</privacyLink>",
+        "paymentError": "Payment Error",
+        "paymentFailed": "Payment failed. Please try again.",
+        "unexpectedError": "An unexpected error occurred. Please try again.",
+        "paymentSuccess": "Payment Successful",
+        "redirecting": "Redirecting to confirmation...",
+        "commitmentNotice": "You are committing to 12 monthly payments of €35. After 12 months, you can cancel anytime.",
+        "processing": "Processing...",
+        "payNow": "Pay €{amount}",
+        "preparingCheckout": "Preparing your checkout session...",
+        "checkoutError": "Checkout Error",
+        "noClientSecret": "Unable to initialize payment form",
+        "goBack": "Go Back",
+        "stripeNotLoaded": "Payment system is loading. Please try again.",
+        "sessionCreationFailed": "Failed to create checkout session",
+        "loadingCheckout": "Loading checkout session...",
+        "discount": {
+          "title": "Discount Code",
+          "label": "discount",
+          "placeholder": "Enter discount code",
+          "verify": "Apply",
+          "verifying": "Applying...",
+          "applied": "Discount Applied",
+          "validMessage": "Discount code {code} applied! You save €{amount}.",
+          "emptyCode": "Please enter a discount code",
+          "invalidCode": "Invalid or expired discount code",
+          "timeout": "Verification timed out. Please try again.",
+          "verificationError": "Failed to verify discount code. Please try again.",
+          "helperText": "Enter your discount code and click Apply to add it to your order"
+        }
       }
     },
     "thankYou": {
@@ -1031,6 +1092,18 @@
         "step3": "Review the preview and only pay if you're completely satisfied"
       },
       "backHome": "Back to Homepage"
+    },
+    "restart": {
+      "button": "Restart",
+      "dialogTitle": "Start Over?",
+      "dialogDescription": "This will clear all your progress and return you to the beginning of the onboarding process. Are you sure you want to restart?",
+      "cancel": "Cancel",
+      "confirm": "Start Over",
+      "confirming": "Restarting...",
+      "successTitle": "Onboarding restarted",
+      "successDescription": "You've been taken back to the beginning.",
+      "errorTitle": "Error",
+      "errorDescription": "Failed to restart onboarding. Please try again."
     }
   },
   "forms": {

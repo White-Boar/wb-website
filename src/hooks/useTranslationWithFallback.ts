@@ -13,7 +13,9 @@ export function useTranslationWithFallback(
   fallbackNamespace?: string
 ) {
   const t = useTranslations(namespace)
-  const fallbackT = fallbackNamespace ? useTranslations(fallbackNamespace) : null
+  // Always call the hook, even if fallbackNamespace is undefined
+  // This ensures hooks are called in the same order every render
+  const fallbackT = useTranslations(fallbackNamespace || namespace)
 
   const translate = useCallback((
     key: string,
@@ -29,8 +31,8 @@ export function useTranslationWithFallback(
         return translation
       }
 
-      // Try fallback namespace if provided
-      if (fallbackT) {
+      // Try fallback namespace if provided and different from main namespace
+      if (fallbackNamespace && fallbackNamespace !== namespace) {
         try {
           const fallbackTranslation = fallbackT(fallbackKey || key, values)
           if (fallbackTranslation && fallbackTranslation !== (fallbackKey || key)) {

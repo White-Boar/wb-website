@@ -78,7 +78,7 @@ export function SliderInput({
 
   // Use ref to track if this is the initial render
   const isInitialRender = useRef(true)
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
 
   // Update internal values when external values change
   useEffect(() => {

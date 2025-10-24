@@ -22,13 +22,37 @@ export default function OnboardingWelcome() {
   useEffect(() => {
     setMounted(true)
 
-    // Check for existing session after mount
-    const existingSession = loadExistingSession()
-    // Only redirect if there's a valid session with an ID (not just default state)
-    if (existingSession && existingSession.id && existingSession.currentStep && existingSession.currentStep > 1) {
-      // Redirect to appropriate step
-      router.push(`/${locale}/onboarding/step/${existingSession.currentStep}`)
+    const checkSessionAndPayment = async () => {
+      // Check for existing session after mount
+      const existingSession = loadExistingSession()
+
+      if (existingSession && existingSession.id) {
+        // Check if payment has been completed for this session
+        try {
+          const response = await fetch(`/api/onboarding/status?session_id=${existingSession.id}`)
+          if (response.ok) {
+            const data = await response.json()
+
+            // If payment is completed, redirect to thank-you page
+            if (data.status === 'paid') {
+              router.push(`/${locale}/onboarding/thank-you`)
+              return
+            }
+          }
+        } catch (error) {
+          console.error('Failed to check payment status:', error)
+          // Continue with normal flow if status check fails
+        }
+
+        // Only redirect if there's a valid session with an ID (not just default state)
+        if (existingSession.currentStep && existingSession.currentStep > 1) {
+          // Redirect to appropriate step
+          router.push(`/${locale}/onboarding/step/${existingSession.currentStep}`)
+        }
+      }
     }
+
+    checkSessionAndPayment()
   }, [loadExistingSession, router, locale])
 
   const handleStart = async () => {

@@ -21,7 +21,7 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
   const locale = params.locale as string
 
   // Get email from Step 1 (with fallback for testing)
-  const email = formData[1]?.email || formData.email || 'john.doe@test.com'
+  const email = formData.email || 'john.doe@test.com'
 
   // Auto-send verification email when component mounts
   useEffect(() => {
@@ -30,16 +30,13 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
       hasAutoSentRef.current = true
 
       // Send verification email automatically
-      resendVerificationCode(email)
-        .then(() => {
-          console.log('✓ Verification email sent automatically to:', email)
-        })
+      resendVerificationCode(email, locale as 'en' | 'it')
         .catch((err) => {
           console.error('Failed to auto-send verification email:', err)
           // Don't show error to user - they can manually resend
         })
     }
-  }, [email, resendVerificationCode])
+  }, [email, locale, resendVerificationCode])
 
   const handleVerificationComplete = async (code: string) => {
     setIsVerifying(true)
@@ -50,7 +47,6 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
       if (isValid) {
         // Update form data to mark email as verified
         form.setValue('emailVerified', true)
-        form.setValue('verificationCode', code)
         // Trigger validation to enable Next button
         await form.trigger('emailVerified')
 
@@ -80,7 +76,7 @@ export function Step2EmailVerification({ form, data, isLoading, error }: StepCom
 
   const handleResendCode = async () => {
     try {
-      await resendVerificationCode(email)
+      await resendVerificationCode(email, locale as 'en' | 'it')
     } catch (error) {
       console.error('Failed to resend verification code:', error)
       throw error // Let EmailVerification component handle the error

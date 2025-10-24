@@ -19,7 +19,7 @@ export class AnalyticsService {
   /**
    * Track analytics event via API route (uses service role on server)
    */
-  private static async trackEventViaAPI(
+  static async trackEventViaAPI(
     sessionId: string,
     eventType: AnalyticsEventType,
     metadata: Record<string, any> = {},
@@ -347,7 +347,7 @@ export class AnalyticsService {
       primary_goal: formData.primaryGoal,
       has_logo_upload: !!formData.logoUpload,
       has_business_photos: (formData.businessPhotos?.length || 0) > 0,
-      offering_type: formData.offeringType,
+      ...(formData.offeringType && { offering_type: formData.offeringType }),
       locale: 'it' // Assume Italian for now
     }
 
@@ -402,7 +402,7 @@ export class AnalyticsService {
       operation,
       duration_ms: duration,
       success,
-      error_code: errorCode,
+      ...(errorCode && { error_code: errorCode }),
       performance_grade: this.getPerformanceGrade(duration)
     }
 
@@ -499,7 +499,7 @@ export class AnalyticsService {
     const autoSaveData = {
       save_time_ms: saveTime,
       success,
-      data_size_bytes: dataSize,
+      ...(dataSize !== undefined && { data_size_bytes: dataSize }),
       performance_grade: this.getPerformanceGrade(saveTime)
     }
 
@@ -558,7 +558,9 @@ export class AnalyticsService {
       9: ['imageStyle'],
       10: ['colorPalette'],
       11: ['websiteSections', 'primaryGoal'],
-      12: [] // Optional uploads
+      12: [], // Optional uploads
+      13: [], // Optional language add-ons
+      14: ['acceptTerms'] // Payment completion
     }
 
     return fieldMap[stepNumber] || []
@@ -715,7 +717,394 @@ export function trackCompletionSuccess(
  */
 export function initializeAnalytics(): void {
   AnalyticsService.initializeAutoFlush()
-  console.log('WhiteBoar Analytics initialized with auto-flush')
+}
+
+// =============================================================================
+// CONVERSION METRICS TRACKING FOR STEPS 13-14
+// =============================================================================
+
+/**
+ * Track Step 13 completion with language add-ons
+ * Target: ≥25% completion rate
+ */
+export function trackStep13Completion(
+  sessionId: string,
+  selectedLanguages: string[],
+  timeSpentSeconds: number
+): void {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
+  track('step_13_completed', {
+    session_id: sessionId,
+    languages_selected: selectedLanguages.length,
+    languages: selectedLanguages.join(','),
+    time_spent_seconds: timeSpentSeconds,
+    is_mobile: isMobile,
+    has_addons: selectedLanguages.length > 0
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    'step_complete',
+    {
+      languages_selected: selectedLanguages.length,
+      languages: selectedLanguages,
+      time_spent_seconds: timeSpentSeconds,
+      is_mobile: isMobile,
+      has_addons: selectedLanguages.length > 0
+    },
+    13,
+    undefined,
+    'conversion'
+  )
+}
+
+/**
+ * Track Step 14 payment initiation
+ * Target: ≥25% completion rate, ≤15min time-to-complete
+ */
+export function trackStep14PaymentInitiated(
+  sessionId: string,
+  totalAmount: number,
+  languageCount: number,
+  discountApplied: boolean
+): void {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
+  track('step_14_payment_initiated', {
+    session_id: sessionId,
+    total_amount: totalAmount,
+    language_count: languageCount,
+    discount_applied: discountApplied,
+    is_mobile: isMobile
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    'payment_initiated',
+    {
+      total_amount: totalAmount,
+      language_count: languageCount,
+      discount_applied: discountApplied,
+      is_mobile: isMobile
+    },
+    14,
+    undefined,
+    'conversion'
+  )
+}
+
+/**
+ * Track Step 14 payment completion
+ * Target: ≥40% mobile completion rate
+ */
+export function trackStep14PaymentCompleted(
+  sessionId: string,
+  totalAmount: number,
+  languageCount: number,
+  timeToCompleteMinutes: number
+): void {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+  const meetsTimeTarget = timeToCompleteMinutes <= 15
+
+  track('step_14_payment_completed', {
+    session_id: sessionId,
+    total_amount: totalAmount,
+    language_count: languageCount,
+    time_to_complete_minutes: timeToCompleteMinutes,
+    is_mobile: isMobile,
+    meets_time_target: meetsTimeTarget
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    'payment_completed',
+    {
+      total_amount: totalAmount,
+      language_count: languageCount,
+      time_to_complete_minutes: timeToCompleteMinutes,
+      is_mobile: isMobile,
+      meets_time_target: meetsTimeTarget
+    },
+    14,
+    undefined,
+    'conversion'
+  )
+}
+
+/**
+ * Track Step 14 payment failure
+ * For drop-off analysis
+ */
+export function trackStep14PaymentFailed(
+  sessionId: string,
+  errorCode: string,
+  errorMessage: string
+): void {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
+  track('step_14_payment_failed', {
+    session_id: sessionId,
+    error_code: errorCode,
+    error_message: errorMessage,
+    is_mobile: isMobile
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    'payment_failed',
+    {
+      error_code: errorCode,
+      error_message: errorMessage,
+      is_mobile: isMobile
+    },
+    14,
+    undefined,
+    'error'
+  )
+}
+
+/**
+ * Track drop-off at specific step
+ * For analyzing where users abandon the flow
+ */
+export function trackDropOff(
+  sessionId: string,
+  stepNumber: number,
+  reason?: string
+): void {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
+  track('onboarding_drop_off', {
+    session_id: sessionId,
+    step_number: stepNumber,
+    reason: reason || 'unknown',
+    is_mobile: isMobile
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    'drop_off',
+    {
+      reason: reason || 'unknown',
+      is_mobile: isMobile
+    },
+    stepNumber,
+    undefined,
+    'conversion'
+  )
+}
+
+/**
+ * Calculate and track conversion rate for Steps 13-14
+ * Call this periodically to monitor performance
+ */
+export async function calculateConversionMetrics(): Promise<{
+  step13CompletionRate: number
+  step14CompletionRate: number
+  avgTimeToComplete: number
+  mobileCompletionRate: number
+  dropOffRate: number
+}> {
+  try {
+    const response = await fetch('/api/onboarding/analytics/conversion-metrics')
+    if (!response.ok) throw new Error('Failed to fetch conversion metrics')
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('Failed to calculate conversion metrics:', error)
+    return {
+      step13CompletionRate: 0,
+      step14CompletionRate: 0,
+      avgTimeToComplete: 0,
+      mobileCompletionRate: 0,
+      dropOffRate: 0
+    }
+  }
+}
+
+// =============================================================================
+// PERFORMANCE MONITORING FOR STEPS 13-14
+// =============================================================================
+
+/**
+ * Track Step 13 load performance
+ * Target: Component interactive in <300ms
+ */
+export function trackStep13Performance(
+  sessionId: string,
+  loadTimeMs: number,
+  languageCount: number
+): void {
+  const performanceGrade = loadTimeMs < 300 ? 'excellent' : loadTimeMs < 500 ? 'good' : 'poor'
+
+  track('step_13_performance', {
+    session_id: sessionId,
+    load_time_ms: loadTimeMs,
+    language_count: languageCount,
+    performance_grade: performanceGrade,
+    meets_target: loadTimeMs < 300
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    'step_view',
+    {
+      load_time_ms: loadTimeMs,
+      language_count: languageCount,
+      performance_grade: performanceGrade,
+      meets_target: loadTimeMs < 300
+    },
+    13,
+    undefined,
+    'performance',
+    loadTimeMs
+  )
+}
+
+/**
+ * Track Step 13 price calculation performance
+ * Target: Updates <200ms
+ */
+export function trackStep13PriceCalculation(
+  sessionId: string,
+  calculationTimeMs: number,
+  languageCount: number
+): void {
+  const performanceGrade = calculationTimeMs < 200 ? 'excellent' : calculationTimeMs < 500 ? 'good' : 'poor'
+
+  if (calculationTimeMs > 200) {
+    track('step_13_price_calculation_slow', {
+      session_id: sessionId,
+      calculation_time_ms: calculationTimeMs,
+      language_count: languageCount,
+      performance_grade: performanceGrade
+    })
+
+    AnalyticsService.trackEventViaAPI(
+      sessionId,
+      'performance_warning',
+      {
+        component: 'price_calculation',
+        calculation_time_ms: calculationTimeMs,
+        language_count: languageCount,
+        performance_grade: performanceGrade
+      },
+      13,
+      undefined,
+      'performance',
+      calculationTimeMs
+    )
+  }
+}
+
+/**
+ * Track Step 14 load performance
+ * Target: Stripe Elements loaded and interactive in <1.5s
+ */
+export function trackStep14Performance(
+  sessionId: string,
+  loadTimeMs: number,
+  stripeElementsLoadTimeMs: number
+): void {
+  const totalLoadTime = loadTimeMs + stripeElementsLoadTimeMs
+  const performanceGrade = totalLoadTime < 1500 ? 'excellent' : totalLoadTime < 3000 ? 'good' : 'poor'
+
+  track('step_14_performance', {
+    session_id: sessionId,
+    load_time_ms: loadTimeMs,
+    stripe_elements_load_time_ms: stripeElementsLoadTimeMs,
+    total_load_time_ms: totalLoadTime,
+    performance_grade: performanceGrade,
+    meets_target: totalLoadTime < 1500
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    'step_view',
+    {
+      load_time_ms: loadTimeMs,
+      stripe_elements_load_time_ms: stripeElementsLoadTimeMs,
+      total_load_time_ms: totalLoadTime,
+      performance_grade: performanceGrade,
+      meets_target: totalLoadTime < 1500
+    },
+    14,
+    undefined,
+    'performance',
+    totalLoadTime
+  )
+}
+
+/**
+ * Track Stripe checkout session creation performance
+ * Target: Session created in <1.5s
+ */
+export function trackStripeSessionCreation(
+  sessionId: string,
+  creationTimeMs: number,
+  success: boolean
+): void {
+  const performanceGrade = creationTimeMs < 1500 ? 'excellent' : creationTimeMs < 3000 ? 'good' : 'poor'
+
+  track('stripe_session_creation', {
+    session_id: sessionId,
+    creation_time_ms: creationTimeMs,
+    performance_grade: performanceGrade,
+    success: success,
+    meets_target: creationTimeMs < 1500
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    success ? 'stripe_session_created' : 'stripe_session_failed',
+    {
+      creation_time_ms: creationTimeMs,
+      performance_grade: performanceGrade,
+      meets_target: creationTimeMs < 1500
+    },
+    14,
+    undefined,
+    'performance',
+    creationTimeMs
+  )
+}
+
+/**
+ * Track payment processing performance
+ * Target: Payment confirmed in <5s (excluding 3DS)
+ */
+export function trackPaymentProcessing(
+  sessionId: string,
+  processingTimeMs: number,
+  required3DS: boolean
+): void {
+  const targetTime = required3DS ? 10000 : 5000
+  const performanceGrade = processingTimeMs < targetTime ? 'excellent' : processingTimeMs < targetTime * 2 ? 'good' : 'poor'
+
+  track('payment_processing', {
+    session_id: sessionId,
+    processing_time_ms: processingTimeMs,
+    required_3ds: required3DS,
+    performance_grade: performanceGrade,
+    meets_target: processingTimeMs < targetTime
+  })
+
+  AnalyticsService.trackEventViaAPI(
+    sessionId,
+    'payment_processing',
+    {
+      processing_time_ms: processingTimeMs,
+      required_3ds: required3DS,
+      performance_grade: performanceGrade,
+      meets_target: processingTimeMs < targetTime
+    },
+    14,
+    undefined,
+    'performance',
+    processingTimeMs
+  )
 }
 
 // Export the main service

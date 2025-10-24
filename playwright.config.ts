@@ -15,10 +15,14 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
+  /* Global setup/teardown for Stripe webhook listener */
+  globalSetup: './global-setup.ts',
+  globalTeardown: './global-teardown.ts',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3783',
+    // Use BASE_URL from environment (for CI deployments) or fallback to localhost
+    baseURL: process.env.BASE_URL || 'http://localhost:3783',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -34,7 +38,14 @@ export default defineConfig({
   },
 
   /* Configure projects for major browsers */
-  projects: [
+  projects: process.env.CI ? [
+    // In CI, only run chromium to save time and resources
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ] : [
+    // Locally, test all browsers
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
@@ -62,7 +73,8 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: {
+  // Only start local server if BASE_URL is not provided (i.e., not testing against Vercel deployment)
+  webServer: process.env.BASE_URL ? undefined : {
     command: 'PORT=3783 pnpm dev',
     url: 'http://localhost:3783',
     reuseExistingServer: !process.env.CI,

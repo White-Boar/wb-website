@@ -26,6 +26,7 @@ interface StepTemplateProps {
   isLoading?: boolean
   error?: string
   className?: string
+  hideNavigation?: boolean
 }
 
 export function StepTemplate({
@@ -41,7 +42,8 @@ export function StepTemplate({
   canGoPrevious = true,
   isLoading = false,
   error,
-  className
+  className,
+  hideNavigation = false
 }: StepTemplateProps) {
   const t = useTranslations('onboarding')
   const router = useRouter()
@@ -82,7 +84,7 @@ export function StepTemplate({
   }
 
   // Progress calculation
-  const progressPercentage = (stepNumber / 12) * 100
+  const progressPercentage = (stepNumber / 14) * 100
 
   // Auto-save indicator
   const renderAutoSaveIndicator = () => {
@@ -146,7 +148,7 @@ export function StepTemplate({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <span className="text-sm font-medium text-muted-foreground">
-                {t('step')} {stepNumber} {t('of')} 12
+                {t('step')} {stepNumber} {t('of')} 14
               </span>
               {renderAutoSaveIndicator()}
             </div>
@@ -154,10 +156,10 @@ export function StepTemplate({
               {Math.round(progressPercentage)}%
             </div>
           </div>
-          <Progress 
-            value={progressPercentage} 
+          <Progress
+            value={progressPercentage}
             className="h-2"
-            aria-label={t('progressLabel', { step: stepNumber, total: 12 })}
+            aria-label={t('progressLabel', { step: stepNumber, total: 14 })}
           />
         </div>
       </div>
@@ -224,73 +226,75 @@ export function StepTemplate({
           )}
 
           {/* Navigation */}
-          <motion.div
-            className="flex items-center justify-between mt-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            {/* Previous Button */}
-            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={onPrevious}
-                disabled={!canGoPrevious || isLoading}
-                className="gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                {previousLabel || t('previous')}
-              </Button>
-            </motion.div>
+          {!hideNavigation && (
+            <motion.div
+              className="flex items-center justify-between mt-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              {/* Previous Button */}
+              <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={onPrevious}
+                  disabled={!canGoPrevious || isLoading}
+                  className="gap-2"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  {previousLabel || t('previous')}
+                </Button>
+              </motion.div>
 
-            {/* Step Indicators */}
-            <div className="hidden md:flex items-center gap-2">
-              {Array.from({ length: 12 }, (_, i) => (
-                <div
-                  key={i}
-                  role="img"
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-colors",
-                    i < stepNumber
-                      ? "bg-primary"
-                      : i === stepNumber - 1
-                        ? "bg-primary/60"
-                        : "bg-muted-foreground/20"
+              {/* Step Indicators */}
+              <div className="hidden md:flex items-center gap-2">
+                {Array.from({ length: 14 }, (_, i) => (
+                  <div
+                    key={i}
+                    role="img"
+                    className={cn(
+                      "w-2 h-2 rounded-full transition-colors",
+                      i < stepNumber
+                        ? "bg-primary"
+                        : i === stepNumber - 1
+                          ? "bg-primary/60"
+                          : "bg-muted-foreground/20"
+                    )}
+                    aria-label={
+                      i < stepNumber
+                        ? t('stepCompleted', { step: i + 1 })
+                        : i === stepNumber - 1
+                          ? t('stepCurrent', { step: i + 1 })
+                          : t('stepUpcoming', { step: i + 1 })
+                    }
+                  />
+                ))}
+              </div>
+
+              {/* Next Button */}
+              <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
+                <Button
+                  size="lg"
+                  onClick={onNext}
+                  disabled={!canGoNext || isLoading}
+                  className="gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      {t('loading')}
+                    </>
+                  ) : (
+                    <>
+                      {nextLabel || t('next')}
+                      {stepNumber < 14 && <ArrowRight className="h-4 w-4" />}
+                    </>
                   )}
-                  aria-label={
-                    i < stepNumber
-                      ? t('stepCompleted', { step: i + 1 })
-                      : i === stepNumber - 1
-                        ? t('stepCurrent', { step: i + 1 })
-                        : t('stepUpcoming', { step: i + 1 })
-                  }
-                />
-              ))}
-            </div>
-
-            {/* Next Button */}
-            <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-              <Button
-                size="lg"
-                onClick={onNext}
-                disabled={!canGoNext || isLoading}
-                className="gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    {t('loading')}
-                  </>
-                ) : (
-                  <>
-                    {nextLabel || (stepNumber === 12 ? t('complete') : t('next'))}
-                    {stepNumber < 12 && <ArrowRight className="h-4 w-4" />}
-                  </>
-                )}
-              </Button>
+                </Button>
+              </motion.div>
             </motion.div>
-          </motion.div>
+          )}
         </motion.div>
       </AnimatePresence>
     </div>
@@ -298,12 +302,12 @@ export function StepTemplate({
 }
 
 // Mobile-specific progress component
-export function MobileProgressBar({ 
-  currentStep, 
-  totalSteps = 12 
-}: { 
+export function MobileProgressBar({
+  currentStep,
+  totalSteps = 14
+}: {
   currentStep: number
-  totalSteps?: number 
+  totalSteps?: number
 }) {
   const progressPercentage = (currentStep / totalSteps) * 100
   

@@ -24,6 +24,7 @@ export interface OnboardingFormData {
   businessCountry: string
   businessPlaceId?: string // Google Places ID
   industry: string
+  customIndustry?: string // Temporary field when "Other" is selected
   vatNumber?: string
 
   // Legacy compatibility - will be transformed to flat fields
@@ -75,8 +76,15 @@ export interface OnboardingFormData {
   // Step 12: Business Assets
   logoUpload?: UploadedFile
   businessPhotos?: UploadedFile[]
-  
-  // Step 12: Completion (metadata)
+
+  // Step 13: Language Add-ons
+  additionalLanguages?: string[]
+
+  // Step 14: Payment
+  discountCode?: string
+  acceptTerms?: boolean
+
+  // Completion (metadata)
   completedAt?: string
   totalTimeSeconds?: number
 }
@@ -221,6 +229,14 @@ export type AnalyticsEventType =
   | 'manual_save'
   | 'session_expired'
   | 'session_recovered'
+  | 'payment_initiated'
+  | 'payment_completed'
+  | 'payment_failed'
+  | 'payment_processing'
+  | 'drop_off'
+  | 'performance_warning'
+  | 'stripe_session_created'
+  | 'stripe_session_failed'
 
 export type AnalyticsCategory = 
   | 'user_action'
@@ -287,6 +303,7 @@ export interface OnboardingStore {
   lastSaved: Date | null
   isLoading: boolean
   error: string | null
+  autoSaveStatus: 'idle' | 'saving' | 'saved' | 'error'
   
   // Validation state
   stepErrors: Record<number, ValidationError[]>
@@ -316,10 +333,21 @@ export interface OnboardingStore {
   recoverSession: () => Promise<boolean>
   refreshSession: () => Promise<void>
   checkSessionExpired: () => void
-  
+
+  // Email verification (Step 2)
+  verifyEmail: (email: string, code: string) => Promise<boolean>
+  resendVerificationCode: (email: string, locale?: 'en' | 'it') => Promise<void>
+
   // Session helper functions for components
   initializeSession: (locale?: 'en' | 'it') => Promise<OnboardingSession>
-  loadExistingSession: () => OnboardingSession | null
+  loadExistingSession: () => {
+    id: string
+    currentStep: number
+    formData: Partial<OnboardingFormData>
+    completedSteps: number[]
+    expiresAt: string | null
+    lastSaved: Date | null
+  } | null
   hasExistingSession: () => boolean
   updateCurrentStep: (stepNumber: number) => void
 }
@@ -350,7 +378,7 @@ export interface FormFieldProps {
 // UTILITY TYPES
 // =============================================================================
 
-export type StepNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+export type StepNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14
 
 export interface StepConfig {
   number: StepNumber
@@ -363,7 +391,7 @@ export interface StepConfig {
 }
 
 // Helper type for form data at specific steps
-export type FormDataAtStep<T extends StepNumber> = 
+export type FormDataAtStep<T extends StepNumber> =
   T extends 1 ? Pick<OnboardingFormData, 'firstName' | 'lastName' | 'email'> :
   T extends 2 ? Pick<OnboardingFormData, 'emailVerified'> :
   T extends 3 ? Pick<OnboardingFormData, 'businessName' | 'businessEmail' | 'businessPhone' | 'businessStreet' | 'businessCity' | 'businessProvince' | 'businessPostalCode' | 'businessCountry' | 'businessPlaceId' | 'industry' | 'vatNumber'> :
@@ -376,14 +404,75 @@ export type FormDataAtStep<T extends StepNumber> =
   T extends 10 ? Pick<OnboardingFormData, 'colorPalette'> :
   T extends 11 ? Pick<OnboardingFormData, 'websiteSections' | 'primaryGoal' | 'offeringType' | 'offerings'> :
   T extends 12 ? Pick<OnboardingFormData, 'logoUpload' | 'businessPhotos'> :
+  T extends 13 ? { additionalLanguages: string[] } :
+  T extends 14 ? { discountCode?: string; acceptTerms: boolean } :
   never
+
+// =============================================================================
+// PAYMENT TYPES - For Steps 13 & 14
+// =============================================================================
+
+/**
+ * Payment details stored in onboarding_submissions
+ * Feature: 001-two-new-steps
+ */
+export interface PaymentDetails {
+  stripe_payment_id: string
+  stripe_customer_id: string
+  stripe_subscription_id: string
+  stripe_subscription_schedule_id: string // Schedule enforcing 12-month commitment
+  payment_amount: number // in cents
+  currency: string // always 'EUR'
+  discount_code?: string
+  discount_amount?: number // in cents
+  payment_method: string // 'card', 'sepa_debit', etc.
+  payment_status: 'succeeded' | 'pending' | 'failed'
+  payment_completed_at?: string // ISO timestamp
+  refunded_at?: string // ISO timestamp
+  payment_metadata?: Record<string, any> // Additional Stripe metadata
+}
+
+/**
+ * Stripe Checkout Session data for Step 14
+ * Feature: 001-two-new-steps
+ */
+export interface CheckoutSession {
+  clientSecret: string // Stripe client secret for Stripe Elements
+  subscriptionId: string // Stripe subscription ID
+  subscriptionScheduleId: string // Stripe subscription schedule ID (12-month commitment)
+  customerId: string // Stripe customer ID
+  totalAmount: number // Total amount in cents (after discount)
+  currency: string // Always 'EUR'
+  lineItems: CheckoutLineItem[]
+  discountApplied?: {
+    code: string
+    amount: number // in cents
+    percentage?: number
+  }
+}
+
+/**
+ * Individual line item in checkout
+ */
+export interface CheckoutLineItem {
+  description: string
+  amount: number // in cents
+  quantity: number
+  type: 'subscription' | 'one_time'
+}
 
 // =============================================================================
 // CONSTANTS
 // =============================================================================
 
-export const TOTAL_STEPS = 12 as const
+export const TOTAL_STEPS = 14 as const // Updated from 12 to 14
 export const VERIFICATION_CODE_LENGTH = 6 as const
 export const MAX_VERIFICATION_ATTEMPTS = 5 as const
 export const VERIFICATION_LOCKOUT_MINUTES = 15 as const
 export const SESSION_DURATION_DAYS = 7 as const
+
+// Payment constants
+export const BASE_PACKAGE_PRICE = 35 // €35/month
+export const LANGUAGE_ADDON_PRICE = 75 // €75 one-time per language
+export const MAX_PAYMENT_ATTEMPTS = 5
+export const PAYMENT_ATTEMPT_WINDOW_HOURS = 1

@@ -45,6 +45,8 @@ interface DynamicListProps {
   itemPrefix?: string
   itemSuffix?: string
   className?: string
+  validator?: (value: string) => { isValid: boolean; errorMessage?: string }
+  disabled?: boolean
   onItemsChange?: (items: ListItem[]) => void
   onItemAdd?: (item: ListItem) => void
   onItemRemove?: (itemId: string) => void
@@ -69,6 +71,8 @@ export function DynamicList({
   itemPrefix,
   itemSuffix,
   className,
+  validator,
+  disabled = false,
   onItemsChange,
   onItemAdd,
   onItemRemove,
@@ -80,6 +84,7 @@ export function DynamicList({
     items || defaultItems
   )
   const [newItemValue, setNewItemValue] = useState('')
+  const [validationError, setValidationError] = useState<string>('')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editingValue, setEditingValue] = useState('')
   const [draggedItem, setDraggedItem] = useState<string | null>(null)
@@ -104,6 +109,18 @@ export function DynamicList({
   const handleAddItem = () => {
     if (!newItemValue.trim() || !canAddMore) return
 
+    // Clear previous validation error
+    setValidationError('')
+
+    // Validate input if validator is provided
+    if (validator) {
+      const validation = validator(newItemValue.trim())
+      if (!validation.isValid) {
+        setValidationError(validation.errorMessage || 'Invalid value')
+        return
+      }
+    }
+
     const newItem: ListItem = {
       id: generateId(),
       value: newItemValue.trim(),
@@ -113,7 +130,7 @@ export function DynamicList({
     const updatedItems = [...internalItems, newItem]
     setInternalItems(updatedItems)
     setNewItemValue('')
-    
+
     onItemsChange?.(updatedItems)
     onItemAdd?.(newItem)
   }
@@ -276,24 +293,39 @@ export function DynamicList({
       {canAddMore && (
         <Card className="border-dashed">
           <CardContent className="p-4">
-            <div className="flex gap-2">
-              <Input
-                value={newItemValue}
-                onChange={(e) => setNewItemValue(e.target.value)}
-                onKeyPress={handleAddKeyPress}
-                placeholder={placeholder || t('placeholder')}
-                className="flex-1"
-              />
-              <Button
-                type="button"
-                onClick={handleAddItem}
-                disabled={!newItemValue.trim()}
-                size="sm"
-                className="gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                {addButtonText || t('add')}
-              </Button>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  value={newItemValue}
+                  onChange={(e) => {
+                    setNewItemValue(e.target.value)
+                    setValidationError('') // Clear error when user types
+                  }}
+                  onKeyPress={handleAddKeyPress}
+                  placeholder={placeholder || t('placeholder')}
+                  className={cn(
+                    "flex-1",
+                    validationError && "border-destructive focus-visible:ring-destructive"
+                  )}
+                  disabled={disabled}
+                />
+                <Button
+                  type="button"
+                  onClick={handleAddItem}
+                  disabled={!newItemValue.trim() || disabled}
+                  size="sm"
+                  className="gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  {addButtonText || t('add')}
+                </Button>
+              </div>
+              {validationError && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="w-3 h-3" />
+                  {validationError}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

@@ -162,7 +162,7 @@ export class OnboardingClientService {
    */
   static async saveProgress(
     sessionId: string,
-    formData: OnboardingFormData,
+    formData: Partial<OnboardingFormData>,
     currentStep: number
   ): Promise<OnboardingSession> {
     const { data, error } = await supabase

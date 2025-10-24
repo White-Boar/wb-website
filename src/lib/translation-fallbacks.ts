@@ -3,12 +3,13 @@
  */
 
 export function createTranslationFallback(baseKey: string) {
+  const lastPart = baseKey.split('.').pop() || 'Unknown'
   return {
-    title: `${baseKey.split('.').pop()} (Translation Missing)`,
-    label: `${baseKey.split('.').pop()} Label`,
-    placeholder: `Enter ${baseKey.split('.').pop().toLowerCase()}`,
-    description: `${baseKey.split('.').pop()} description`,
-    hint: `Help text for ${baseKey.split('.').pop().toLowerCase()}`,
+    title: `${lastPart} (Translation Missing)`,
+    label: `${lastPart} Label`,
+    placeholder: `Enter ${lastPart.toLowerCase()}`,
+    description: `${lastPart} description`,
+    hint: `Help text for ${lastPart.toLowerCase()}`,
     required: 'Required',
     optional: 'Optional'
   }

@@ -18,7 +18,6 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
   const handleEmailValidation = (isValid: boolean, email: string) => {
     if (isValid) {
       // Auto-generate session data or perform additional validation if needed
-      console.log('Valid email entered:', email)
     }
   }
 

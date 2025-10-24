@@ -105,6 +105,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
           lastSaved: null,
           isLoading: false,
           error: null,
+          autoSaveStatus: 'idle' as const,
           stepErrors: {},
           isDirty: false,
           isSessionExpired: false,
@@ -162,10 +163,10 @@ export const useOnboardingStore = create<OnboardingStore>()(
           updateFormData: (stepData: Partial<OnboardingFormData>) => {
             const currentData = get().formData
             const updatedData = { ...currentData, ...stepData }
-            
-            set({ 
+
+            set({
               formData: updatedData,
-              isDirty: true 
+              isDirty: true
             })
 
             // Trigger auto-save
@@ -293,7 +294,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
                 return { isValid: true, errors: [] }
               } else {
                 // Convert Zod errors to our format
-                const errors: ValidationError[] = (result.error?.errors || []).map(err => ({
+                const errors: ValidationError[] = (result.error?.issues || []).map(err => ({
                   field: err.path?.join('.') || '',
                   message: err.message || 'Validation error',
                   code: err.code || 'validation_error'
@@ -463,7 +464,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
             }
           },
 
-          resendVerificationCode: async (email: string): Promise<void> => {
+          resendVerificationCode: async (email: string, locale: 'en' | 'it' = 'en'): Promise<void> => {
             const { sessionId, formData } = get()
             if (!sessionId) {
               throw new Error('No active session')
@@ -479,7 +480,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
                   sessionId,
                   email,
                   name: `${formData.firstName} ${formData.lastName}`.trim() || 'User',
-                  locale: 'en' // TODO: Get from context
+                  locale
                 })
               })
 
@@ -506,6 +507,21 @@ export const useOnboardingStore = create<OnboardingStore>()(
           formData: state.formData, // Persist form data to prevent loss on refresh
           isSessionExpired: state.isSessionExpired
         }),
+        // CRITICAL: Custom merge to properly handle formData with file uploads
+        // Default shallow merge would overwrite formData, losing uploaded files
+        merge: (persistedState, currentState) => {
+          // Deep merge formData to preserve all fields including file uploads
+          const mergedFormData = {
+            ...currentState.formData,
+            ...(persistedState as any)?.formData
+          }
+
+          return {
+            ...currentState,
+            ...(persistedState as any),
+            formData: mergedFormData
+          }
+        },
         // Version for breaking changes
         version: 1,
       }

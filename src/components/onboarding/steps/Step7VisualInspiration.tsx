@@ -15,7 +15,28 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
   const t = useTranslations('onboarding.steps.7')
   const { control, setValue, watch } = form
 
+  // URL validator function
+  const validateUrl = (value: string): { isValid: boolean; errorMessage?: string } => {
+    if (!value || value.trim() === '') {
+      return { isValid: false, errorMessage: 'URL cannot be empty' }
+    }
 
+    try {
+      const url = new URL(value)
+      if (!['http:', 'https:'].includes(url.protocol)) {
+        return {
+          isValid: false,
+          errorMessage: 'URL must start with http:// or https://'
+        }
+      }
+      return { isValid: true }
+    } catch {
+      return {
+        isValid: false,
+        errorMessage: 'Please enter a valid URL (e.g., https://example.com)'
+      }
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -112,6 +133,7 @@ export function Step7VisualInspiration({ form, errors, isLoading }: StepComponen
                     allowReorder
                     allowEdit
                     disabled={isLoading}
+                    validator={validateUrl}
                     onItemsChange={(items) => {
                       const urls = items.map(item => item.value)
                       field.onChange(urls)

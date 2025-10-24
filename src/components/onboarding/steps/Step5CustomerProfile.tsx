@@ -14,7 +14,13 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
   const t = useTranslations('onboarding.steps.5')
   const { control, setValue, watch } = form
 
-  const customerProfile = watch('customerProfile') || {}
+  const customerProfile = watch('customerProfile') || {
+    budget: 50,
+    style: 50,
+    motivation: 50,
+    decisionMaking: 50,
+    loyalty: 50
+  }
 
   // Customer profiling sliders configuration
   const sliderOptions = [
@@ -76,10 +82,10 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
       }
     },
     {
-      key: 'decision',
+      key: 'decisionMaking',
       leftLabel: t('profile.decision.left'),
       rightLabel: t('profile.decision.right'),
-      value: customerProfile.decision || 50,
+      value: customerProfile.decisionMaking || 50,
       description: t('profile.decision.description'),
       examples: {
         left: [
@@ -116,7 +122,13 @@ export function Step5CustomerProfile({ form, errors, isLoading }: StepComponentP
   ]
 
   const handleSliderValuesChange = (values: Record<string, number>) => {
-    setValue('customerProfile', values)
+    setValue('customerProfile', values as {
+      budget: number
+      style: number
+      motivation: number
+      decisionMaking: number
+      loyalty: number
+    })
   }
 
   const getProfileIcon = (key: string) => {

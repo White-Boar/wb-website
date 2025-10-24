@@ -95,6 +95,19 @@ export const STEP_CONFIGS: Record<StepNumber, StepConfig> = {
     description: 'Upload logo and photos',
     isOptional: true,
     estimatedMinutes: 3
+  },
+  13: {
+    number: 13,
+    title: 'Language Add-ons',
+    description: 'Select additional languages for your website',
+    isOptional: true,
+    estimatedMinutes: 2
+  },
+  14: {
+    number: 14,
+    title: 'Payment',
+    description: 'Complete your subscription',
+    estimatedMinutes: 3
   }
 }
 
@@ -126,11 +139,11 @@ export function getNextStep(
   let nextStep = (currentStep + 1) as StepNumber
 
   // Keep incrementing until we find a non-skippable step or reach the end
-  while (nextStep <= 12 && skippableSteps.includes(nextStep)) {
+  while (nextStep <= 14 && skippableSteps.includes(nextStep)) {
     nextStep = (nextStep + 1) as StepNumber
   }
 
-  return nextStep <= 12 ? nextStep : null
+  return nextStep <= 14 ? nextStep : null
 }
 
 /**

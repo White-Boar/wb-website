@@ -124,7 +124,6 @@ export function Step9ImageStyle({ form, errors, isLoading }: StepComponentProps)
                   showTitles
                   showDescriptions
                   showCategories={false}
-                  disabled={isLoading}
                 />
               )}
             />

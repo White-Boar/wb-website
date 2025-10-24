@@ -53,7 +53,7 @@ export class FileUploadService {
     const config = UPLOAD_CONFIG[type]
 
     // Check file type
-    if (!config.supportedTypes.includes(file.type)) {
+    if (!config.supportedTypes.includes(file.type as any)) {
       return {
         isValid: false,
         error: `Invalid file type. Supported types: ${config.supportedTypes.join(', ')}`
@@ -454,7 +454,7 @@ export class FileUploadService {
    * Check if file type is supported
    */
   static isSupportedFileType(file: File, type: 'logo' | 'photo'): boolean {
-    return UPLOAD_CONFIG[type].supportedTypes.includes(file.type)
+    return UPLOAD_CONFIG[type].supportedTypes.includes(file.type as any)
   }
 
   /**
@@ -462,7 +462,7 @@ export class FileUploadService {
    */
   static getUploadConfig(type: 'logo' | 'photo'): {
     maxSizeMB: number
-    supportedTypes: string[]
+    supportedTypes: readonly string[]
     maxFiles: number
   } {
     const config = UPLOAD_CONFIG[type]
@@ -625,5 +625,3 @@ export function isFileUploadConfigured(): boolean {
   // Check if Supabase storage is available
   return !!supabase && typeof window !== 'undefined'
 }
-
-export { FileUploadService }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
@@ -73,7 +73,7 @@ export default function OnboardingStep() {
 
       // If we have a session but current step is behind the step number,
       // update current step to allow access to this step
-      else if (sessionId && currentStep < stepNumber && stepNumber <= 12) {
+      else if (sessionId && currentStep < stepNumber && stepNumber <= 14) {
         // This handles cases where user bookmarked a step or has progressed beyond the stored current step
         const { updateCurrentStep } = useOnboardingStore.getState()
         updateCurrentStep(stepNumber)
@@ -91,6 +91,9 @@ export default function OnboardingStep() {
       router.push(`/${locale}/onboarding/step/${currentStep}`)
     }
   }, [stepNumber, currentStep, router, sessionId, locale])
+
+  // Track if we're currently resetting form from store to prevent auto-save loop
+  const isResettingRef = useRef(false)
 
   // Get step schema and form setup - must be called before any early returns
   const schema = getStepSchema(stepNumber)
@@ -172,9 +175,27 @@ export default function OnboardingStep() {
           offerings: formData?.offerings || []
         }
       case 12:
+        // CRITICAL FIX: Don't include logoUpload/businessPhotos if undefined or empty
+        // This allows keepDefaultValues to preserve existing form values
+        const step12Values: any = {}
+        if (formData?.logoUpload !== undefined && formData.logoUpload !== null) {
+          step12Values.logoUpload = formData.logoUpload
+        }
+        // CRITICAL: Treat empty array same as undefined - don't include in reset values
+        // This allows keepDefaultValues to preserve existing form data
+        if (formData?.businessPhotos !== undefined && Array.isArray(formData.businessPhotos) && formData.businessPhotos.length > 0) {
+          step12Values.businessPhotos = formData.businessPhotos
+        }
+        return step12Values
+      case 13:
         return {
-          logoUpload: formData?.logoUpload || null,
-          businessPhotos: formData?.businessPhotos || []
+          additionalLanguages: formData?.additionalLanguages || []
+        }
+      case 14:
+        return {
+          discountCode: formData?.discountCode || '',
+          acceptTerms: formData?.acceptTerms || false,
+          additionalLanguages: formData?.additionalLanguages || []
         }
       default:
         return {}
@@ -199,8 +220,8 @@ export default function OnboardingStep() {
        watchedValues?.businessStreet &&
        watchedValues?.businessCity &&
        watchedValues?.businessPostalCode &&
-       watchedValues?.businessProvince &&
-       watchedValues?.businessCountry) : isValid
+       watchedValues?.businessProvince) : isValid
+       // Note: businessCountry is always 'Italy' (disabled field) so not checked here
 
   const isStep6Valid = stepNumber === 6 ?
     !!(watchedValues?.customerProblems &&
@@ -230,22 +251,39 @@ export default function OnboardingStep() {
 
   // Reset form values when formData changes (e.g., loaded from localStorage)
   useEffect(() => {
+    isResettingRef.current = true
     const currentValues = getStepDefaultValues(stepNumber)
-    form.reset(currentValues)
+    // Use keepDefaultValues to preserve other form fields not in currentValues
+    form.reset(currentValues, { keepDefaultValues: true })
+    // Use setTimeout to ensure the reset completes before allowing auto-save
+    setTimeout(() => {
+      isResettingRef.current = false
+    }, 0)
   }, [formData, stepNumber, form, getStepDefaultValues])
 
   // Auto-save functionality
   useEffect(() => {
     const subscription = form.watch((data) => {
-      if (isDirty && data) {
-        updateFormData(data as any)
+      // Save if form is dirty OR if we're not currently resetting (to catch programmatic changes like file uploads)
+      if (!isResettingRef.current && data && (isDirty || (data as any).logoUpload || (data as any).businessPhotos)) {
+        // CRITICAL FIX: Filter out undefined values AND empty arrays to prevent overwriting existing data
+        // Only include fields that have actual values (not undefined or empty arrays)
+        const cleanedData = Object.fromEntries(
+          Object.entries(data).filter(([key, value]) => {
+            if (value === undefined) return false
+            // Special handling for array fields - don't save empty arrays
+            if (key === 'businessPhotos' && Array.isArray(value) && value.length === 0) return false
+            return true
+          })
+        )
+        updateFormData(cleanedData as any)
       }
     })
     return () => subscription.unsubscribe()
-  }, [form, updateFormData, isDirty])
+  }, [form, updateFormData, isDirty, stepNumber])
 
-  // Validate step number (Step 12 is now the final step)
-  if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 12) {
+  // Validate step number (Step 14 is now the final step)
+  if (isNaN(stepNumber) || stepNumber < 1 || stepNumber > 14) {
     router.push(`/${locale}/onboarding`)
     return null
   }
@@ -285,8 +323,7 @@ export default function OnboardingStep() {
         }
 
         // Find the first error message
-        for (const key in errors) {
-          const error = errors[key as keyof typeof errors]
+        for (const [, error] of Object.entries(errors)) {
           const message = getErrorMessage(error)
           if (message) {
             errorMessage = message
@@ -300,7 +337,11 @@ export default function OnboardingStep() {
       }
 
       // Update form data
-      updateFormData(data as any)
+      // Special handling for Step 3: ensure businessCountry is always set to 'Italy'
+      const dataToSave = stepNumber === 3
+        ? { ...data, businessCountry: 'Italy' }
+        : data
+      updateFormData(dataToSave as any)
 
       // Validate current step
       const isStepValid = await validateStep(stepNumber)
@@ -309,8 +350,8 @@ export default function OnboardingStep() {
         return
       }
 
-      // For Step 12 (final step), validate all previous steps using schemas
-      if (stepNumber === 12) {
+      // For Step 14 (final step), validate all previous steps using schemas
+      if (stepNumber === 14) {
         const allFormData = { ...formData, ...data } as OnboardingFormData
         const failedSteps: { step: number; title: string; errors: string[] }[] = []
 
@@ -384,19 +425,12 @@ export default function OnboardingStep() {
       const mergedData = { ...formData, ...data } as any
       const nextStepNumber = getNextStep(stepNumber as StepNumber, mergedData)
       console.log(`🔍 Navigation logic: stepNumber=${stepNumber}, nextStepNumber=${nextStepNumber}`)
-      console.log(`🔍 Step number check: stepNumber === 12? ${stepNumber === 12}`)
-      console.log(`🔍 NextStep check: nextStepNumber=${nextStepNumber}, nextStepNumber && nextStepNumber <= 12? ${nextStepNumber && nextStepNumber <= 12}`)
 
-      if (nextStepNumber && nextStepNumber <= 12) {
-        console.log('Moving to next step:', nextStepNumber)
-        await nextStep()
-        router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
-      } else {
-        // Complete onboarding - Step 12 is the final step
+      // Special case: When transitioning from Step 13 to Step 14, create submission first
+      if (stepNumber === 13 && nextStepNumber === 14) {
         try {
-          console.log('🎯 Step 12 completion triggered')
+          console.log('🎯 Creating submission before navigating to Step 14 (Checkout)')
           console.log('Session ID:', sessionId)
-          console.log('Form data keys:', Object.keys(formData))
 
           // Calculate completion time if we have session start time
           const startTime = sessionId ? localStorage.getItem(`wb-onboarding-start-${sessionId}`) : null
@@ -406,23 +440,35 @@ export default function OnboardingStep() {
 
           console.log('Completion time:', completionTimeSeconds, 'seconds')
 
-          // Submit all onboarding data to Supabase
+          // Submit all onboarding data to Supabase (Step 14 will load this submission)
           console.log('Calling submitOnboarding...')
           const submission = await submitOnboarding(
             sessionId!,
-            { ...formData, ...data } as OnboardingFormData, // Merge current step data with all form data
+            { ...formData, ...data } as OnboardingFormData,
             completionTimeSeconds
           )
 
-          console.log('Onboarding submitted successfully:', submission.id)
+          console.log('✅ Submission created successfully:', submission.id)
 
-          // Navigate to thank you page
-          router.push(`/${locale}/onboarding/thank-you`)
+          // Now navigate to Step 14 (checkout)
+          await nextStep()
+          router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
         } catch (submitError) {
-          console.error('Failed to submit onboarding:', submitError)
-          setError(t('submissionError') || 'Failed to submit onboarding. Please try again.')
+          console.error('Failed to create submission:', submitError)
+          setError(t('submissionError') || 'Failed to create submission. Please try again.')
           return
         }
+      }
+      // Regular step transitions (not 13→14)
+      else if (nextStepNumber && nextStepNumber <= 14) {
+        console.log('Moving to next step:', nextStepNumber)
+        await nextStep()
+        router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
+      }
+      // Step 14 completion - navigate to thank you page
+      else {
+        console.log('🎯 Step 14 complete - navigating to thank you page')
+        router.push(`/${locale}/onboarding/thank-you`)
       }
     } catch (error) {
       console.error('Error proceeding to next step:', error)
@@ -465,14 +511,15 @@ export default function OnboardingStep() {
       stepNumber={stepNumber}
       title={t(`${stepNumber}.title`)}
       description={t(`${stepNumber}.description`)}
-      onNext={handleSubmit(handleNext)}
+      onNext={stepNumber === 14 ? undefined : handleSubmit(handleNext)}
       onPrevious={handlePrevious}
       canGoNext={(stepNumber === 3 ? isStep3Valid : stepNumber === 6 ? isStep6Valid : stepNumber === 11 ? isStep11Valid : stepNumber === 12 ? isStep12Valid : isValid) && !isLoading}
       canGoPrevious={stepNumber > 1}
       isLoading={isLoading}
       error={error}
-      nextLabel={stepNumber === 12 ? t('finish') : undefined}
+      nextLabel={stepNumber === 14 ? t('finish') : undefined}
       previousLabel={stepNumber === 1 ? t('back') : undefined}
+      hideNavigation={stepNumber === 14}
     >
       <StepComponent
         form={form}

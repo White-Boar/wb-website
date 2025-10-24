@@ -24,13 +24,15 @@ export class OnboardingService {
    * Create a new empty onboarding session (for welcome page)
    */
   static async createSession(
+    email: string,
+    name: string,
     locale: 'en' | 'it' = 'en'
   ): Promise<OnboardingSession> {
     try {
       const sessionData = {
-        email: null,
+        email,
         current_step: 1,
-        form_data: {},
+        form_data: { firstName: name.split(' ')[0], lastName: name.split(' ')[1] || '' },
         email_verified: false,
         locale,
         expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
