@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv'
 import path from 'path'
 import { spawn, ChildProcess } from 'child_process'
 import { execSync } from 'child_process'
+import { seedStep14TestSession, cleanupTestSession } from './helpers/seed-step14-session'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
@@ -898,23 +899,41 @@ test.describe('Step 14: Payment Flow E2E', () => {
   })
 
   test('payment failure handling', async ({ page }) => {
-    test.setTimeout(180000) // 3 minutes for full flow navigation
+    test.setTimeout(60000) // 1 minute (no full navigation needed)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
 
     try {
-      // 1. Navigate through all steps to Step 14
-      const result = await navigateToStep14(page)
-      console.log('✓ Session ID:', result.sessionId)
-      console.log('✓ Test Email:', result.testEmail)
+      // 1. Seed pre-filled Step 14 session (FAST!)
+      const seed = await seedStep14TestSession()
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+      console.log('✓ Session ID:', seed.sessionId)
+      console.log('✓ Test Email:', seed.email)
 
-      // 2. Use declined test card
+      // 2. Inject Zustand store into localStorage BEFORE navigating
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+      console.log('✓ localStorage injected')
+
+      // 3. Navigate to Step 14 - Zustand loads from localStorage
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/step\/14/, { timeout: 10000 })
+      console.log('✓ Navigated to Step 14')
+
+      // 4. Wait for Stripe Elements to load
       console.log('⏳ Waiting for Stripe Elements to load...')
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(3000)
       console.log('✓ Stripe Elements loaded')
 
+      // 5. Accept terms
       await page.locator('#acceptTerms').click()
       console.log('✓ Terms accepted')
 
+      // 6. Fill declined test card details
       console.log('⏳ Filling declined test card details...')
 
       // Get the Stripe iframe locator
@@ -959,15 +978,35 @@ test.describe('Step 14: Payment Flow E2E', () => {
     } catch (error) {
       console.error('❌ Payment failure test failed:', error)
       throw error
+    } finally {
+      // Cleanup test data
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+        console.log('🧹 Test session deleted')
+      }
     }
   })
 
   test('discount code validation - valid code', async ({ page }) => {
-    test.setTimeout(120000)
+    test.setTimeout(60000) // 1 minute (no full navigation needed)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
 
     try {
+      // Seed pre-filled Step 14 session (FAST!)
+      const seed = await seedStep14TestSession()
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+
+      // Inject Zustand store into localStorage
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
       // Navigate to Step 14
-      const result = await navigateToStep14(page)
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/step\/14/, { timeout: 10000 })
       console.log('✓ Navigated to Step 14')
 
       // Wait for checkout to load
@@ -1010,15 +1049,35 @@ test.describe('Step 14: Payment Flow E2E', () => {
     } catch (error) {
       console.error('❌ Valid discount code test failed:', error)
       throw error
+    } finally {
+      // Cleanup test data
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+        console.log('🧹 Test session deleted')
+      }
     }
   })
 
   test('discount code validation - invalid code', async ({ page }) => {
-    test.setTimeout(120000)
+    test.setTimeout(60000) // 1 minute (no full navigation needed)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
 
     try {
+      // Seed pre-filled Step 14 session (FAST!)
+      const seed = await seedStep14TestSession()
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+
+      // Inject Zustand store into localStorage
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
       // Navigate to Step 14
-      const result = await navigateToStep14(page)
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/step\/14/, { timeout: 10000 })
       console.log('✓ Navigated to Step 14')
 
       // Wait for checkout to load
@@ -1052,15 +1111,35 @@ test.describe('Step 14: Payment Flow E2E', () => {
     } catch (error) {
       console.error('❌ Invalid discount code test failed:', error)
       throw error
+    } finally {
+      // Cleanup test data
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+        console.log('🧹 Test session deleted')
+      }
     }
   })
 
   test('discount code validation - empty code', async ({ page }) => {
-    test.setTimeout(120000)
+    test.setTimeout(60000) // 1 minute (no full navigation needed)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
 
     try {
+      // Seed pre-filled Step 14 session (FAST!)
+      const seed = await seedStep14TestSession()
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+
+      // Inject Zustand store into localStorage
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
       // Navigate to Step 14
-      const result = await navigateToStep14(page)
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/step\/14/, { timeout: 10000 })
       console.log('✓ Navigated to Step 14')
 
       // Wait for checkout to load
@@ -1080,6 +1159,12 @@ test.describe('Step 14: Payment Flow E2E', () => {
     } catch (error) {
       console.error('❌ Empty discount code test failed:', error)
       throw error
+    } finally {
+      // Cleanup test data
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+        console.log('🧹 Test session deleted')
+      }
     }
   })
 
