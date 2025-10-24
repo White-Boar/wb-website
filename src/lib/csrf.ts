@@ -7,7 +7,7 @@ import { createHmac, randomBytes } from 'crypto'
 import { NextRequest } from 'next/server'
 
 // CSRF secret configuration
-// CSRF_SECRET environment variable is required in all environments except test
+// CSRF_SECRET environment variable is required in production
 const getCSRFSecret = () => {
   // Allow bypass in test environment
   if (process.env.NODE_ENV === 'test') {
@@ -16,7 +16,11 @@ const getCSRFSecret = () => {
 
   const secret = process.env.CSRF_SECRET
   if (!secret) {
-    throw new Error('CSRF_SECRET environment variable is required')
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('CSRF_SECRET environment variable is required in production')
+    }
+    // Development fallback
+    return 'development-csrf-secret-change-in-production'
   }
   return secret
 }
