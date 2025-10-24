@@ -50,8 +50,10 @@ interface CheckoutFormProps extends StepComponentProps {
 function CheckoutForm({
   form,
   errors,
-  isLoading
-}: StepComponentProps) {
+  isLoading,
+  sessionId,
+  submissionId
+}: CheckoutFormProps) {
   const t = useTranslations('onboarding.steps.14')
   const locale = useLocale() as 'en' | 'it'
   const stripe = useStripe()
@@ -141,14 +143,28 @@ function CheckoutForm({
       setIsVerifyingDiscount(true)
       setDiscountValidation(null)
 
+      // Fetch CSRF token first
+      const csrfResponse = await fetch(`/api/csrf-token?sessionId=${sessionId}`)
+      const csrfData = await csrfResponse.json()
+
+      if (!csrfResponse.ok || !csrfData.success) {
+        throw new Error('Failed to get CSRF token')
+      }
+
       // Create AbortController with 10-minute timeout (600000ms)
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 600000)
 
       const response = await fetch('/api/stripe/validate-discount', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ discountCode: code }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': csrfData.token
+        },
+        body: JSON.stringify({
+          discountCode: code,
+          sessionId: sessionId
+        }),
         signal: controller.signal
       })
 
@@ -428,8 +444,12 @@ function CheckoutForm({
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Stripe Payment Element */}
-            <div className="min-h-[200px]">
-              <PaymentElement />
+            <div className="min-h-[200px]" data-testid="stripe-payment-element">
+              <PaymentElement
+                options={{
+                  layout: 'tabs',
+                }}
+              />
             </div>
 
             {/* Security Notice */}
@@ -652,9 +672,20 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
         const selectedLanguages = form.getValues('additionalLanguages') || []
         const discountCode = form.getValues('discountCode') || ''
 
+        // Fetch CSRF token first
+        const csrfResponse = await fetch(`/api/csrf-token?sessionId=${submissionId}`)
+        const csrfData = await csrfResponse.json()
+
+        if (!csrfResponse.ok || !csrfData.success) {
+          throw new Error('Failed to get CSRF token')
+        }
+
         const response = await fetch('/api/stripe/create-checkout-session', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfData.token
+          },
           body: JSON.stringify({
             submission_id: submissionId,
             additionalLanguages: selectedLanguages,
@@ -732,6 +763,7 @@ function CheckoutFormWrapper(props: CheckoutFormProps) {
             borderRadius: '0.5rem',
           },
         },
+        loader: 'always', // Ensure loader is always shown for better test reliability
       }}
     >
       <CheckoutForm {...props} />

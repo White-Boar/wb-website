@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Stripe from 'stripe'
 import { requireCSRFToken } from '@/lib/csrf'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover'
-})
+import { StripePaymentService } from '@/services/payment/StripePaymentService'
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,57 +38,41 @@ export async function POST(request: NextRequest) {
       }, { status: 403 })
     }
 
-    // Validate the discount code with Stripe
-    try {
-      const coupon = await stripe.coupons.retrieve(discountCode.trim())
+    // Use service to validate discount code
+    const stripeService = new StripePaymentService()
+    const coupon = await stripeService.validateCoupon(discountCode)
 
-      // Check if the coupon is valid
-      if (!coupon.valid) {
-        return NextResponse.json({
-          success: false,
-          error: {
-            code: 'INVALID_DISCOUNT_CODE',
-            message: `Discount code '${discountCode}' is not valid or has expired`
-          }
-        }, { status: 400 })
-      }
-
-      // Calculate discount amount (for base package €35)
-      const baseAmount = 3500 // €35 in cents
-      let discountAmount = 0
-
-      if (coupon.amount_off) {
-        // Fixed amount discount
-        discountAmount = coupon.amount_off
-      } else if (coupon.percent_off) {
-        // Percentage discount
-        discountAmount = Math.round((baseAmount * coupon.percent_off) / 100)
-      }
-
+    if (!coupon) {
       return NextResponse.json({
-        success: true,
-        data: {
-          code: coupon.id,
-          amount: discountAmount,
-          type: coupon.amount_off ? 'fixed' : 'percentage',
-          value: coupon.amount_off || coupon.percent_off
+        success: false,
+        error: {
+          code: 'INVALID_DISCOUNT_CODE',
+          message: `Discount code '${discountCode}' is not valid or has expired`
         }
-      })
-
-    } catch (error) {
-      // Coupon doesn't exist or other Stripe error
-      if (error instanceof Stripe.errors.StripeError) {
-        return NextResponse.json({
-          success: false,
-          error: {
-            code: 'INVALID_DISCOUNT_CODE',
-            message: `Discount code '${discountCode}' does not exist`
-          }
-        }, { status: 400 })
-      }
-      throw error
+      }, { status: 400 })
     }
 
+    // Calculate discount amount (for base package €35)
+    const baseAmount = 3500 // €35 in cents
+    let discountAmount = 0
+
+    if (coupon.amount_off) {
+      // Fixed amount discount
+      discountAmount = coupon.amount_off
+    } else if (coupon.percent_off) {
+      // Percentage discount
+      discountAmount = Math.round((baseAmount * coupon.percent_off) / 100)
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        code: coupon.id,
+        amount: discountAmount,
+        type: coupon.amount_off ? 'fixed' : 'percentage',
+        value: coupon.amount_off || coupon.percent_off
+      }
+    })
   } catch (error) {
     console.error('Validate discount error:', error)
     return NextResponse.json({
