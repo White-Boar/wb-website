@@ -3,6 +3,7 @@ import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { headers } from 'next/headers';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -23,10 +24,14 @@ export default async function LocaleLayout({
 
   const messages = await getMessages({ locale });
 
+  // Get nonce from headers for CSP
+  const nonce = (await headers()).get('x-nonce');
+
   return (
     <html lang={locale} className="scroll-smooth light">
       <head>
         <script
+          nonce={nonce || undefined}
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
