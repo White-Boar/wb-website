@@ -59,6 +59,18 @@ export function Footer() {
               >
                 {navT('start')}
               </Link>
+              <Link
+                href="/terms"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+              >
+                Terms & Conditions
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+              >
+                Privacy Policy
+              </Link>
             </nav>
           </div>
 
