@@ -12,12 +12,14 @@
       "env": {}
     },
     "shadcn-ui": {
+      "type": "stdio",
       "command": "npx",
       "args": [
         "@jpisnice/shadcn-ui-mcp-server"
       ]
     },
     "supabase": {
+      "type": "stdio",
       "command": "npx",
       "args": [
         "-y",

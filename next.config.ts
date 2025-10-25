@@ -22,7 +22,27 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ['@react-email/render', 'prettier'],
   async headers() {
-    return [
+    // CSP configuration - only applied in production to avoid breaking Next.js dev mode
+    const isDev = process.env.NODE_ENV === 'development';
+
+    const cspHeader = isDev
+      ? ''
+      : `
+        default-src 'self';
+        script-src 'self' https://*.js.stripe.com https://js.stripe.com https://m.stripe.network 'sha256-7PZaH7TzFg4JdT5xJguN7Och6VcMcP1LW4N3fQ936Fs=' 'sha256-MqH8JJslY2fF2bGYY1rZlpCNrRCnWKRzrrDefixUJTI=' 'sha256-ZswfTY7H35rbv8WC7NXBoiC7WNu86vSzCDChNWwZZDM=';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+        img-src 'self' blob: data: https://*.stripe.com;
+        font-src 'self' data: https://fonts.gstatic.com;
+        connect-src 'self' https://api.stripe.com https://m.stripe.network;
+        frame-src 'self' https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com;
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+        frame-ancestors 'none';
+        upgrade-insecure-requests;
+      `.replace(/\s{2,}/g, ' ').trim();
+
+    const headers = [
       {
         source: '/api/stripe/:path*',
         headers: [
@@ -69,7 +89,22 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-    ]
+    ];
+
+    // Add CSP header for all routes in production only
+    if (!isDev && cspHeader) {
+      headers.unshift({
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: cspHeader,
+          },
+        ],
+      });
+    }
+
+    return headers;
   },
 };
 

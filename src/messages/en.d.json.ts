@@ -1264,6 +1264,241 @@ declare const messages: {
       "title": "Our Work",
       "subtitle": "See what we've built for businesses like yours"
     }
+  },
+  "terms": {
+    "meta": {
+      "title": "Terms and Conditions - WhiteBoar",
+      "description": "Terms and conditions for using WhiteBoar's AI-driven website creation and hosting services."
+    },
+    "title": "Terms and Conditions",
+    "lastUpdated": "Last updated: January 2025",
+    "sections": {
+      "acceptance": {
+        "title": "1. Acceptance of Terms",
+        "content": "By accessing and using WhiteBoar's services, you accept and agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services."
+      },
+      "serviceProvider": {
+        "title": "2. Service Provider",
+        "content": "WhiteBoar services are provided by Conscious Digital MTÜ, a registered Estonian non-profit organization (registration number 80600079), with registered address at Harju maakond, Tallinn, Sakala tn 7-2, 10141, Estonia. Contact: info@consciousdigital.org"
+      },
+      "services": {
+        "title": "3. Services Description",
+        "intro": "WhiteBoar provides AI-driven website creation, branding, and hosting services including:",
+        "items": {
+          "branding": "Automated brand identity creation (logo, colors, typography)",
+          "design": "AI-generated website design and development",
+          "hosting": "Managed website hosting with global CDN",
+          "seo": "Search engine optimization and metadata",
+          "multilingual": "Multi-language website support",
+          "support": "Technical support and maintenance"
+        }
+      },
+      "subscription": {
+        "title": "4. Subscription Terms",
+        "monthly": "Monthly subscription with recurring billing",
+        "included": "Base subscription includes website hosting and up to 10,000 monthly page views",
+        "addons": "Optional one-time add-ons available for additional features",
+        "renewal": "Subscriptions automatically renew unless cancelled",
+        "cancellation": "You may cancel your subscription at any time through your account settings"
+      },
+      "guarantee": {
+        "title": "5. Money-Back Guarantee",
+        "content": "We offer a 30-day money-back guarantee from the date of your first payment. If you are not satisfied with our service within the first 30 days, you may request a full refund by contacting info@consciousdigital.org. After 30 days, no refunds will be provided for subscription fees already paid."
+      },
+      "domain": {
+        "title": "6. Domain and Website Transfer",
+        "ownership": "You retain ownership of all content you provide to WhiteBoar",
+        "transfer": "Domain transfer to your ownership is available upon request after 1 year of active subscription",
+        "process": "Transfer requests should be sent to info@consciousdigital.org and will be processed within 14 business days",
+        "requirements": "Account must be in good standing with no outstanding payments"
+      },
+      "intellectualProperty": {
+        "title": "7. Intellectual Property",
+        "yourContent": "You retain all rights to content you provide (text, images, logos)",
+        "generatedContent": "AI-generated designs and code created for your website become your property upon full payment",
+        "platform": "WhiteBoar retains all rights to its platform, software, and AI technology",
+        "license": "You grant WhiteBoar a license to use your content solely to provide services to you"
+      },
+      "userResponsibilities": {
+        "title": "8. User Responsibilities",
+        "intro": "You agree to:",
+        "items": {
+          "accurate": "Provide accurate business information during onboarding",
+          "legal": "Ensure all content you provide is legal and does not infringe third-party rights",
+          "compliance": "Use the service in compliance with all applicable laws",
+          "prohibited": "Not use the service for illegal activities, spam, or malicious purposes",
+          "security": "Maintain the security of your account credentials"
+        }
+      },
+      "serviceLevel": {
+        "title": "9. Service Level and Availability",
+        "effort": "WhiteBoar provides hosting on a best-effort basis",
+        "uptime": "While we strive for maximum uptime, we do not guarantee uninterrupted service",
+        "maintenance": "Scheduled maintenance will be performed with advance notice when possible",
+        "support": "Technical support is provided via email at info@consciousdigital.org"
+      },
+      "limitation": {
+        "title": "10. Limitation of Liability",
+        "content": "To the maximum extent permitted by law, WhiteBoar and Conscious Digital MTÜ shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses resulting from your use of our services."
+      },
+      "termination": {
+        "title": "11. Termination",
+        "byUser": "You may terminate your subscription at any time through your account settings",
+        "byUs": "We reserve the right to suspend or terminate accounts that violate these terms",
+        "effect": "Upon termination, your access to the service will cease at the end of the current billing period",
+        "data": "We will retain your website and data for 30 days after termination, after which it may be permanently deleted"
+      },
+      "modifications": {
+        "title": "12. Modifications to Terms",
+        "content": "We reserve the right to modify these terms at any time. Changes will be posted on this page with an updated revision date. Continued use of the service after changes constitutes acceptance of the modified terms."
+      },
+      "governingLaw": {
+        "title": "13. Governing Law and Disputes",
+        "content": "These terms shall be governed by and construed in accordance with applicable international commercial law principles. Any disputes shall be resolved through good faith negotiation or, if necessary, through arbitration."
+      },
+      "contact": {
+        "title": "14. Contact Information",
+        "content": "For questions about these Terms and Conditions, please contact us at info@consciousdigital.org"
+      }
+    }
+  },
+  "privacy": {
+    "meta": {
+      "title": "Privacy Policy - WhiteBoar",
+      "description": "Privacy policy and data protection information for WhiteBoar services."
+    },
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: January 2025",
+    "sections": {
+      "introduction": {
+        "title": "1. Introduction",
+        "content": "This Privacy Policy describes how Conscious Digital MTÜ (\"we\", \"us\", or \"WhiteBoar\") collects, uses, and protects your personal information when you use our AI-driven website creation and hosting services. We are committed to protecting your privacy and complying with the General Data Protection Regulation (GDPR) and other applicable data protection laws."
+      },
+      "controller": {
+        "title": "2. Data Controller",
+        "name": "Conscious Digital MTÜ",
+        "registration": "Registration number: 80600079",
+        "address": "Harju maakond, Tallinn, Sakala tn 7-2, 10141, Estonia",
+        "email": "info@consciousdigital.org"
+      },
+      "dataCollection": {
+        "title": "3. Information We Collect",
+        "intro": "We collect the following types of information:",
+        "personal": {
+          "title": "Personal Information",
+          "items": {
+            "contact": "Name, email address, phone number",
+            "business": "Business name, address, VAT number",
+            "payment": "Payment information (processed securely by Stripe)"
+          }
+        },
+        "business": {
+          "title": "Business Information",
+          "items": {
+            "description": "Business description, industry, target audience",
+            "assets": "Logos, photos, and other materials you upload",
+            "preferences": "Design preferences, color choices, content requirements"
+          }
+        },
+        "technical": {
+          "title": "Technical Information",
+          "items": {
+            "analytics": "Website usage data via Google Analytics (anonymous)",
+            "logs": "Server logs, IP addresses, browser information",
+            "performance": "Performance metrics for service optimization"
+          }
+        }
+      },
+      "dataUse": {
+        "title": "4. How We Use Your Information",
+        "intro": "We use your information for:",
+        "items": {
+          "service": "Providing and delivering our AI-driven website creation services",
+          "branding": "Generating custom brand identities and website designs",
+          "hosting": "Hosting and maintaining your website",
+          "communication": "Communicating with you about your service and account",
+          "improvement": "Improving our AI algorithms and service quality",
+          "legal": "Complying with legal obligations and protecting our rights",
+          "analytics": "Understanding how our services are used (anonymized data only)"
+        }
+      },
+      "legalBasis": {
+        "title": "5. Legal Basis for Processing (GDPR)",
+        "intro": "We process your personal data based on:",
+        "items": {
+          "contract": "Contract performance - to provide the services you requested",
+          "consent": "Your explicit consent for specific processing activities",
+          "legitimate": "Legitimate interests - to improve our services and prevent fraud",
+          "legal": "Legal obligations - to comply with tax and regulatory requirements"
+        }
+      },
+      "dataSharing": {
+        "title": "6. Data Sharing and Third Parties",
+        "intro": "We share your information only with:",
+        "items": {
+          "vercel": "Vercel - for website hosting and deployment (servers located in EU)",
+          "stripe": "Stripe - for secure payment processing",
+          "analytics": "Google Analytics - for anonymous usage statistics",
+          "email": "Email service providers - for service communications"
+        },
+        "location": "All data processing occurs within the European Union. We do not transfer data outside the EU.",
+        "noSale": "We never sell your personal information to third parties."
+      },
+      "dataRetention": {
+        "title": "7. Data Retention",
+        "active": "We retain your personal data for as long as your account is active",
+        "terminated": "After account termination, data is retained for 30 days then permanently deleted",
+        "legal": "Some information may be retained longer where required by law (e.g., tax records for 7 years)",
+        "backups": "Backup copies are automatically deleted within 90 days"
+      },
+      "yourRights": {
+        "title": "8. Your Rights (GDPR)",
+        "intro": "Under GDPR, you have the right to:",
+        "items": {
+          "access": "Access - request a copy of your personal data",
+          "rectification": "Rectification - correct inaccurate or incomplete data",
+          "erasure": "Erasure - request deletion of your data (\"right to be forgotten\")",
+          "restriction": "Restriction - limit how we use your data",
+          "portability": "Data portability - receive your data in a portable format",
+          "object": "Object - object to certain types of processing",
+          "withdraw": "Withdraw consent - withdraw consent at any time"
+        },
+        "exercise": "To exercise any of these rights, contact us at info@consciousdigital.org",
+        "complaint": "You also have the right to lodge a complaint with your local data protection authority"
+      },
+      "cookies": {
+        "title": "9. Cookies and Tracking",
+        "analytics": "We use Google Analytics cookies to understand website usage (anonymous)",
+        "essential": "Essential cookies for website functionality and user preferences (theme, language)",
+        "noMarketing": "We do not use marketing or advertising cookies",
+        "control": "You can control cookies through your browser settings"
+      },
+      "security": {
+        "title": "10. Data Security",
+        "intro": "We implement appropriate technical and organizational measures to protect your data:",
+        "items": {
+          "encryption": "SSL/TLS encryption for all data transmission",
+          "secure": "Secure server infrastructure with regular security updates",
+          "access": "Limited access to personal data on a need-to-know basis",
+          "monitoring": "Regular security monitoring and vulnerability assessments"
+        },
+        "breach": "In case of a data breach, we will notify affected users and authorities as required by law"
+      },
+      "children": {
+        "title": "11. Children's Privacy",
+        "content": "Our services are not directed to individuals under 16 years of age. We do not knowingly collect personal information from children. If you believe we have collected information from a child, please contact us immediately."
+      },
+      "changes": {
+        "title": "12. Changes to This Policy",
+        "content": "We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated revision date. We encourage you to review this policy periodically."
+      },
+      "contact": {
+        "title": "13. Contact Us",
+        "content": "For questions about this Privacy Policy or to exercise your data protection rights, please contact us at:",
+        "email": "Email: info@consciousdigital.org",
+        "address": "Address: Harju maakond, Tallinn, Sakala tn 7-2, 10141, Estonia"
+      }
+    }
   }
 };
 export default messages;
