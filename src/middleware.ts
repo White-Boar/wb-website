@@ -13,10 +13,10 @@ export default function middleware(request: NextRequest) {
     // Generate nonce for CSP
     const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
 
-    // Build CSP header with nonce and strict-dynamic
+    // Build CSP header with nonce, strict-dynamic, and unsafe-eval (required by Stripe)
     const cspHeader = `
       default-src 'self';
-      script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://*.js.stripe.com https://js.stripe.com https://m.stripe.network;
+      script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' https://*.js.stripe.com https://js.stripe.com https://m.stripe.network;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       img-src 'self' blob: data: https://*.stripe.com;
       font-src 'self' data: https://fonts.gstatic.com;
