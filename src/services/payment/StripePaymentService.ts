@@ -59,15 +59,42 @@ export class StripePaymentService {
   }
 
   /**
-   * Validate a discount coupon code
+   * Validate a discount coupon code or promotion code
    *
-   * @param discountCode - Coupon code to validate
+   * @param discountCode - Coupon ID or Promotion Code to validate
    * @returns Validated coupon or null if invalid
-   * @throws Error if coupon doesn't exist
+   * @throws Error if validation fails
    */
   async validateCoupon(discountCode: string): Promise<Stripe.Coupon | null> {
     try {
-      const coupon = await this.stripe.coupons.retrieve(discountCode.trim())
+      const code = discountCode.trim()
+
+      // First, try as a promotion code (customer-facing codes like "SUMMER10")
+      const promotionCodes = await this.stripe.promotionCodes.list({
+        code,
+        active: true,
+        limit: 1
+      })
+
+      if (promotionCodes.data.length > 0) {
+        const promotionCode = promotionCodes.data[0] as any
+        // PromotionCode.coupon can be a string ID or expanded Coupon object
+        const couponId = typeof promotionCode.coupon === 'string'
+          ? promotionCode.coupon
+          : promotionCode.coupon.id
+
+        // Retrieve the full coupon object
+        const coupon = await this.stripe.coupons.retrieve(couponId)
+
+        if (!coupon.valid) {
+          return null
+        }
+
+        return coupon
+      }
+
+      // Fallback: try as a direct coupon ID (for backwards compatibility)
+      const coupon = await this.stripe.coupons.retrieve(code)
 
       if (!coupon.valid) {
         return null
