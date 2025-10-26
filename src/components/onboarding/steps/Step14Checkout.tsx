@@ -38,9 +38,9 @@ import {
 import { CheckoutSession } from '@/types/onboarding'
 
 // Initialize Stripe
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-)
+const STRIPE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+console.log('[DEBUG] Stripe key prefix:', STRIPE_KEY.substring(0, 15))
+const stripePromise = loadStripe(STRIPE_KEY)
 
 interface CheckoutFormProps extends StepComponentProps {
   sessionId: string
