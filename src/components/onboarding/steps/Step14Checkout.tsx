@@ -353,14 +353,14 @@ function CheckoutForm({
                       placeholder={t('discount.placeholder')}
                       value={field.value || ''}
                       onChange={(e) => {
-                        field.onChange(e.target.value.toUpperCase())
+                        field.onChange(e.target.value)
                         // Reset validation when user changes the code
                         if (discountValidation) {
                           setDiscountValidation(null)
                         }
                       }}
                       disabled={isVerifyingDiscount || isProcessing}
-                      className="flex-1 uppercase"
+                      className="flex-1"
                     />
                     <Button
                       type="button"
