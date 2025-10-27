@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Globe } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { useRouter, usePathname } from "next/navigation"
+import { useRouter, usePathname } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import {
   Popover,
@@ -19,15 +19,8 @@ export function LanguageSelector() {
   const pathname = usePathname()
 
   const switchLocale = (newLocale: Locale) => {
-    const segments = pathname.split('/')
-    if (locales.includes(segments[1] as Locale)) {
-      segments[1] = newLocale
-    } else {
-      segments.unshift('', newLocale)
-    }
-    
-    const newPath = segments.join('/')
-    router.push(newPath)
+    // Use localized router which handles "as-needed" locale prefix strategy
+    router.replace(pathname, { locale: newLocale })
   }
 
   const getLocaleName = (locale: Locale) => {

@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { Check } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
@@ -14,12 +13,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import Link from "next/link"
+import { Link } from "@/i18n/navigation"
 import { fadeInUp, staggerChildren, scaleIn } from "../../context/design-system/motion/variants"
 
 export function PricingTable() {
-  const params = useParams()
-  const locale = (params.locale as string) || 'en'
   const t = useTranslations('pricing')
   const shouldReduce = useReducedMotion()
 
@@ -45,7 +42,7 @@ export function PricingTable() {
         t('fast.feature7')
       ],
       popular: true,
-      href: `/${locale}/onboarding`
+      href: '/onboarding'
     },
     {
       id: 'custom',
@@ -60,7 +57,7 @@ export function PricingTable() {
         t('custom.feature5')
       ],
       popular: false,
-      href: `/${locale}/custom-software`
+      href: '/custom-software'
     }
   ]
 
