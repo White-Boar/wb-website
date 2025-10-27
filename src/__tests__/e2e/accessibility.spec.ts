@@ -188,17 +188,23 @@ test.describe('Accessibility Tests', () => {
     }
   });
   
-  test('should announce content changes to screen readers', async ({ page }) => {
+  test('should announce content changes to screen readers', async ({ page, isMobile }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    
+
     // Check for live regions that might announce changes
     const liveRegions = await page.locator('[aria-live], [role="status"], [role="alert"]').count();
-    
+
+    // On mobile, open the mobile menu first
+    if (isMobile) {
+      await page.getByLabel('Toggle mobile menu').click();
+    }
+
     // For theme switching and language switching, check if changes are announced
-    await page.getByRole('button', { name: /toggle theme/i }).click();
-    await page.getByText('Dark').click();
-    
+    const themeToggle = page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') });
+    await themeToggle.click();
+    await page.getByRole('menuitem').filter({ hasText: /dark/i }).click();
+
     // Check that theme change is reflected
     const html = page.locator('html');
     await expect(html).toHaveClass(/dark/);

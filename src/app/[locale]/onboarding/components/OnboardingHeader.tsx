@@ -98,6 +98,7 @@ export function OnboardingHeader() {
                 disabled={isRestarting}
                 data-testid="restart-onboarding"
                 className="text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-accent"
+                aria-label={t('button')}
               >
                 <RotateCcw className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">{t('button')}</span>

@@ -67,6 +67,8 @@ function CheckoutForm({
     status: 'valid' | 'invalid'
     code?: string
     amount?: number
+    duration?: 'once' | 'forever' | 'repeating'
+    durationInMonths?: number
     error?: string
   } | null>(null)
 
@@ -80,6 +82,12 @@ function CheckoutForm({
   const languageAddOnsTotal = calculateAddOnsTotal(selectedLanguages)
   const discountAmount = discountValidation?.status === 'valid' ? (discountValidation.amount || 0) / 100 : 0
   const totalDueToday = basePackagePrice + languageAddOnsTotal - discountAmount
+
+  // Calculate recurring monthly price based on coupon duration
+  const recurringMonthlyPrice =
+    discountValidation?.status === 'valid' && discountValidation.duration === 'forever' && discountAmount > 0
+      ? basePackagePrice - discountAmount
+      : basePackagePrice
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,7 +192,9 @@ function CheckoutForm({
       setDiscountValidation({
         status: 'valid',
         code: data.data.code,
-        amount: data.data.amount
+        amount: data.data.amount,
+        duration: data.data.duration,
+        durationInMonths: data.data.durationInMonths
       })
 
     } catch (error) {
@@ -312,7 +322,7 @@ function CheckoutForm({
                 </p>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
-                {t('thenMonthly', { amount: basePackagePrice })}
+                {t('thenMonthly', { amount: recurringMonthlyPrice })}
               </p>
             </div>
 
@@ -565,10 +575,24 @@ export function Step14Checkout(props: StepComponentProps) {
   const [isLoadingIds, setIsLoadingIds] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Get sessionId from onboarding store
+  // Get sessionId from URL params or onboarding store
   useEffect(() => {
     const loadIds = async () => {
       try {
+        // PRIORITY 1: Check URL parameters first (for cross-device, tests, bookmarks)
+        const urlParams = new URLSearchParams(window.location.search)
+        const urlSessionId = urlParams.get('sessionId')
+        const urlSubmissionId = urlParams.get('submissionId')
+
+        if (urlSessionId && urlSubmissionId) {
+          // Direct URL parameters provided - use them
+          setSessionId(urlSessionId)
+          setSubmissionId(urlSubmissionId)
+          setIsLoadingIds(false)
+          return
+        }
+
+        // PRIORITY 2: Fall back to Zustand store (normal onboarding flow)
         // Import store dynamically to avoid SSR issues
         const { useOnboardingStore } = await import('@/stores/onboarding')
         const store = useOnboardingStore.getState()

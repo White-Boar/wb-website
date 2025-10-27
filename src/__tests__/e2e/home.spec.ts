@@ -18,52 +18,74 @@ test.describe('WhiteBoar Homepage', () => {
     await expect(page.locator('#portfolio')).toBeVisible();
   });
 
-  test('navigation works correctly', async ({ page }) => {
+  test('navigation works correctly', async ({ page, isMobile }) => {
+    // On mobile, open the mobile menu first
+    if (isMobile) {
+      await page.getByLabel('Toggle mobile menu').click();
+    }
+
     // Test navigation to pricing section using navigation menu
     await page.getByLabel('Main navigation').getByRole('button', { name: 'Packages' }).click();
     await expect(page.locator('#pricing')).toBeInViewport();
+
+    // On mobile, re-open the menu for the next test
+    if (isMobile) {
+      await page.getByLabel('Toggle mobile menu').click();
+    }
 
     // Test navigation to portfolio section using navigation menu
     await page.getByLabel('Main navigation').getByRole('button', { name: 'Clients' }).click();
     await expect(page.locator('#portfolio')).toBeInViewport();
   });
 
-  test('language switching works', async ({ page }) => {
+  test('language switching works', async ({ page, isMobile }) => {
     // Check initial language (English)
     await expect(page.getByText('Brand. Build. Boom.')).toBeVisible();
-    
+
+    // On mobile, open the mobile menu first
+    if (isMobile) {
+      await page.getByLabel('Toggle mobile menu').click();
+    }
+
     // Click language selector using screen reader text
     const languageSelector = page.getByRole('button').filter({ has: page.locator('span:has-text("Select language")') });
     await languageSelector.click();
 
     // Switch to Italian from the dropdown
     await page.getByRole('button').filter({ hasText: /italian/i }).click();
-    
+
     // Check URL changes to /it
     await expect(page).toHaveURL('/it');
-    
+
     // Check content switches to Italian
     await expect(page.getByText('Siti web guidati dall\'AI online in giorni, non mesi.')).toBeVisible();
   });
 
-  test('theme toggle works', async ({ page }) => {
+  test('theme toggle works', async ({ page, isMobile }) => {
     // Check initial theme (should be light or system)
     const html = page.locator('html');
-    
+
+    // On mobile, open the mobile menu first
+    if (isMobile) {
+      await page.getByLabel('Toggle mobile menu').click();
+    }
+
     // Click theme toggle using screen reader text
-    const themeToggle = page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') });
+    let themeToggle = page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') });
     await themeToggle.click();
 
     // Click Dark theme option from dropdown
     await page.getByRole('menuitem').filter({ hasText: /dark/i }).click();
-    
+
     // Check that dark class is applied
     await expect(html).toHaveClass(/dark/);
-    
-    // Switch back to light
+
+    // On mobile, the menu stays open, so we can directly access theme toggle again
+    // On desktop, we need to click theme toggle button again
+    themeToggle = page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') });
     await themeToggle.click();
     await page.getByRole('menuitem').filter({ hasText: /light/i }).click();
-    
+
     // Check that dark class is removed
     await expect(html).not.toHaveClass(/dark/);
   });
@@ -146,14 +168,23 @@ test.describe('WhiteBoar Homepage', () => {
 
   test('mobile responsiveness', async ({ page, isMobile }) => {
     if (isMobile) {
-      // Check that mobile navigation is present
-      await expect(page.getByLabel('Select language')).toBeVisible();
-      await expect(page.getByLabel('Toggle theme')).toBeVisible();
-      
+      // Check that mobile menu toggle is present
+      await expect(page.getByLabel('Toggle mobile menu')).toBeVisible();
+
+      // Open mobile menu
+      await page.getByLabel('Toggle mobile menu').click();
+
+      // Check that mobile navigation controls are present
+      await expect(page.getByRole('button').filter({ has: page.locator('span:has-text("Select language")') })).toBeVisible();
+      await expect(page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') })).toBeVisible();
+
+      // Close mobile menu
+      await page.getByLabel('Toggle mobile menu').click();
+
       // Check that content is readable on mobile
       const mainHeading = page.getByRole('heading', { name: 'Brand. Build. Boom.' });
       await expect(mainHeading).toBeVisible();
-      
+
       // Check that buttons are accessible on mobile
       const ctaButton = page.getByText('Start now!');
       await expect(ctaButton).toBeVisible();

@@ -16,6 +16,9 @@ describe('StripePaymentService', () => {
         list: jest.fn(),
         create: jest.fn()
       },
+      promotionCodes: {
+        list: jest.fn()
+      },
       coupons: {
         retrieve: jest.fn()
       },
@@ -112,11 +115,18 @@ describe('StripePaymentService', () => {
         percent_off: 20
       } as Stripe.Coupon
 
+      // Mock promotion codes list returning empty (will fall back to direct coupon lookup)
+      mockStripe.promotionCodes.list.mockResolvedValue({ data: [] } as any)
       mockStripe.coupons.retrieve.mockResolvedValue(validCoupon as any)
 
       const result = await service.validateCoupon('TESTCODE')
 
       expect(result).toEqual(validCoupon)
+      expect(mockStripe.promotionCodes.list).toHaveBeenCalledWith({
+        code: 'TESTCODE',
+        active: true,
+        limit: 1
+      })
       expect(mockStripe.coupons.retrieve).toHaveBeenCalledWith('TESTCODE')
     })
 
@@ -126,6 +136,8 @@ describe('StripePaymentService', () => {
         valid: false
       } as Stripe.Coupon
 
+      // Mock promotion codes list returning empty (will fall back to direct coupon lookup)
+      mockStripe.promotionCodes.list.mockResolvedValue({ data: [] } as any)
       mockStripe.coupons.retrieve.mockResolvedValue(invalidCoupon as any)
 
       const result = await service.validateCoupon('INVALID')
@@ -140,6 +152,8 @@ describe('StripePaymentService', () => {
         code: 'resource_missing'
       } as any)
 
+      // Mock promotion codes list returning empty (will fall back to direct coupon lookup)
+      mockStripe.promotionCodes.list.mockResolvedValue({ data: [] } as any)
       mockStripe.coupons.retrieve.mockRejectedValue(error)
 
       const result = await service.validateCoupon('NOTFOUND')
@@ -148,6 +162,8 @@ describe('StripePaymentService', () => {
     })
 
     it('should throw error for non-resource_missing errors', async () => {
+      // Mock promotion codes list returning empty (will fall back to direct coupon lookup)
+      mockStripe.promotionCodes.list.mockResolvedValue({ data: [] } as any)
       mockStripe.coupons.retrieve.mockRejectedValue(
         new Error('Network error')
       )

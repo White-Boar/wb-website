@@ -111,10 +111,15 @@ test.describe('Custom Software Page', () => {
     await expect(page.getByText(/Please provide more details.*at least 20 characters/i)).toBeVisible();
   });
 
-  test('navigation component works on custom software page', async ({ page }) => {
+  test('navigation component works on custom software page', async ({ page, isMobile }) => {
     // Check that navigation is present
     const nav = page.getByLabel('Main navigation');
     await expect(nav).toBeVisible();
+
+    // On mobile, open the mobile menu first
+    if (isMobile) {
+      await page.getByLabel('Toggle mobile menu').click();
+    }
 
     // Check language selector
     await expect(page.getByRole('button').filter({ has: page.locator('span:has-text("Select language")') })).toBeVisible();
@@ -133,9 +138,14 @@ test.describe('Custom Software Page', () => {
     await expect(page.getByText(/Follow Us/i)).toBeVisible();
   });
 
-  test('language switching works (EN ↔ IT)', async ({ page }) => {
+  test('language switching works (EN ↔ IT)', async ({ page, isMobile }) => {
     // Check initial language (English) - use heading role to avoid strict mode violation
     await expect(page.getByRole('heading', { name: 'Custom Software Development' })).toBeVisible();
+
+    // On mobile, open the mobile menu first
+    if (isMobile) {
+      await page.getByLabel('Toggle mobile menu').click();
+    }
 
     // Click language selector
     const languageSelector = page.getByRole('button').filter({ has: page.locator('span:has-text("Select language")') });
@@ -152,11 +162,16 @@ test.describe('Custom Software Page', () => {
     await expect(page.getByText(/Dal concetto al lancio/i)).toBeVisible();
   });
 
-  test('theme toggle works', async ({ page }) => {
+  test('theme toggle works', async ({ page, isMobile }) => {
     const html = page.locator('html');
 
+    // On mobile, open the mobile menu first
+    if (isMobile) {
+      await page.getByLabel('Toggle mobile menu').click();
+    }
+
     // Click theme toggle
-    const themeToggle = page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') });
+    let themeToggle = page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') });
     await themeToggle.click();
 
     // Click Dark theme
@@ -165,7 +180,9 @@ test.describe('Custom Software Page', () => {
     // Check that dark class is applied
     await expect(html).toHaveClass(/dark/);
 
-    // Switch back to light
+    // On mobile, the menu stays open, so we can directly access theme toggle again
+    // On desktop, we need to click theme toggle button again
+    themeToggle = page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') });
     await themeToggle.click();
     await page.getByRole('menuitem').filter({ hasText: /light/i }).click();
 
@@ -195,9 +212,18 @@ test.describe('Custom Software Page', () => {
 
   test('mobile responsiveness', async ({ page, isMobile }) => {
     if (isMobile) {
-      // Check that mobile navigation is present
-      await expect(page.getByLabel('Select language')).toBeVisible();
-      await expect(page.getByLabel('Toggle theme')).toBeVisible();
+      // Check that mobile menu toggle is present
+      await expect(page.getByLabel('Toggle mobile menu')).toBeVisible();
+
+      // Open mobile menu
+      await page.getByLabel('Toggle mobile menu').click();
+
+      // Check that mobile navigation controls are present
+      await expect(page.getByRole('button').filter({ has: page.locator('span:has-text("Select language")') })).toBeVisible();
+      await expect(page.getByRole('button').filter({ has: page.locator('span:has-text("Toggle theme")') })).toBeVisible();
+
+      // Close mobile menu
+      await page.getByLabel('Toggle mobile menu').click();
 
       // Check that content is readable on mobile
       const heading = page.getByRole('heading', { name: /Custom Software Development/i });

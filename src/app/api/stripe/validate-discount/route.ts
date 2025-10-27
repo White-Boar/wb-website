@@ -70,7 +70,9 @@ export async function POST(request: NextRequest) {
         code: coupon.id,
         amount: discountAmount,
         type: coupon.amount_off ? 'fixed' : 'percentage',
-        value: coupon.amount_off || coupon.percent_off
+        value: coupon.amount_off || coupon.percent_off,
+        duration: coupon.duration,
+        durationInMonths: coupon.duration_in_months
       }
     })
   } catch (error) {

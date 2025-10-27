@@ -359,34 +359,47 @@ export class CheckoutSessionService {
 
     await Promise.all(languageAddOnPromises)
 
-    // Retrieve the updated invoice
-    const invoice = await stripe.invoices.retrieve(invoiceId)
-
-    // Create a payment intent for the total amount
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: invoice.amount_due,
-      currency: 'eur',
-      customer: customerId,
-      setup_future_usage: 'off_session',
-      automatic_payment_methods: {
-        enabled: true
-      },
-      metadata: {
-        invoice_id: invoice.id,
-        subscription_id: subscription.id,
-        subscription_schedule_id: subscription.schedule as string,
-        submission_id: submissionId,
-        session_id: sessionId
-      }
+    // Finalize the invoice to create the Payment Intent with discounts automatically applied
+    const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoiceId, {
+      expand: ['confirmation_secret']
     })
 
-    if (!paymentIntent.client_secret) {
-      throw new Error('Payment intent client secret not available')
+    console.log('[DEBUG addLanguageAddOns] Invoice finalized:', {
+      id: finalizedInvoice.id,
+      status: finalizedInvoice.status,
+      amount_due: finalizedInvoice.amount_due,
+      subtotal: finalizedInvoice.subtotal,
+      total: finalizedInvoice.total,
+      total_discount_amounts: finalizedInvoice.total_discount_amounts
+    })
+
+    // Handle zero-amount invoices (discount >= total)
+    if (finalizedInvoice.amount_due <= 0) {
+      console.log('[DEBUG addLanguageAddOns] Amount is zero or negative, invoice marked as paid by Stripe')
+      // Stripe automatically marks zero-amount invoices as paid
+      return {
+        sessionUrl: undefined,
+        sessionId: undefined
+      }
     }
 
+    // Use the invoice's confirmation_secret which contains the PaymentIntent client_secret
+    // Stripe automatically creates this during finalization with discounts applied
+    const confirmationSecret = finalizedInvoice.confirmation_secret
+
+    if (!confirmationSecret?.client_secret) {
+      throw new Error('Invoice confirmation secret not available')
+    }
+
+    console.log('[DEBUG addLanguageAddOns] Using invoice Payment Intent:', {
+      invoice_id: finalizedInvoice.id,
+      amount_due: finalizedInvoice.amount_due,
+      has_confirmation_secret: !!confirmationSecret
+    })
+
     return {
-      sessionUrl: paymentIntent.client_secret,
-      sessionId: paymentIntent.id
+      sessionUrl: confirmationSecret.client_secret,
+      sessionId: finalizedInvoice.id
     }
   }
 }

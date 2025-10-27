@@ -78,10 +78,27 @@ export class StripePaymentService {
 
       if (promotionCodes.data.length > 0) {
         const promotionCode = promotionCodes.data[0] as any
-        // PromotionCode.coupon can be a string ID or expanded Coupon object
-        const couponId = typeof promotionCode.coupon === 'string'
-          ? promotionCode.coupon
-          : promotionCode.coupon.id
+
+        // Extract coupon ID from promotion code
+        // The structure is: promotionCode.promotion.coupon (string ID)
+        // OR for older API versions: promotionCode.coupon (string ID or expanded object)
+        let couponId: string | undefined;
+
+        if (promotionCode.promotion?.coupon) {
+          // New structure: promotion.coupon is a string ID
+          couponId = typeof promotionCode.promotion.coupon === 'string'
+            ? promotionCode.promotion.coupon
+            : promotionCode.promotion.coupon?.id;
+        } else if (promotionCode.coupon) {
+          // Old structure: coupon can be string ID or expanded object
+          couponId = typeof promotionCode.coupon === 'string'
+            ? promotionCode.coupon
+            : promotionCode.coupon?.id;
+        }
+
+        if (!couponId) {
+          return null
+        }
 
         // Retrieve the full coupon object
         const coupon = await this.stripe.coupons.retrieve(couponId)

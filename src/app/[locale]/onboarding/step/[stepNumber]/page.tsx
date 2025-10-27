@@ -87,7 +87,6 @@ export default function OnboardingStep() {
   useEffect(() => {
     // Only redirect if we have a valid session and user is trying to skip ahead
     if (sessionId && currentStep > 0 && stepNumber > currentStep + 1) {
-      console.log(`Redirecting from step ${stepNumber} to current step ${currentStep}`)
       router.push(`/${locale}/onboarding/step/${currentStep}`)
     }
   }, [stepNumber, currentStep, router, sessionId, locale])
@@ -231,18 +230,7 @@ export default function OnboardingStep() {
     (() => {
       const hasWebsiteSections = watchedValues?.websiteSections && watchedValues?.websiteSections.length >= 1;
       const hasPrimaryGoal = !!watchedValues?.primaryGoal;
-
-      console.log('Step 11 Validation Debug:', {
-        websiteSections: watchedValues?.websiteSections,
-        hasWebsiteSections,
-        primaryGoal: watchedValues?.primaryGoal,
-        hasPrimaryGoal
-      });
-
-      const result = !!(hasWebsiteSections && hasPrimaryGoal);
-
-      console.log('Step 11 validation result:', result);
-      return result;
+      return !!(hasWebsiteSections && hasPrimaryGoal);
     })() : isValid
 
   // Step 12: Check if any files are uploading
@@ -296,7 +284,6 @@ export default function OnboardingStep() {
 
   // Handle next step
   const handleNext = async (data: StepFormData) => {
-    console.log(`🚀 handleNext called for step ${stepNumber}`)
     setIsLoading(true)
     setError('')
 
@@ -391,7 +378,6 @@ export default function OnboardingStep() {
                 (Array.isArray(fieldValue) && fieldValue.length === 0) ||
                 (field === 'emailVerified' && !fieldValue) ||
                 (field === 'businessDescription' && fieldValue.length < 50)) {
-              console.log(`Missing field: ${field}, value:`, fieldValue)
               stepErrors.push(field)
             }
           }
@@ -407,8 +393,6 @@ export default function OnboardingStep() {
 
         if (failedSteps.length > 0) {
           const firstFailedStep = failedSteps[0]
-          console.log('Final validation failed. Missing fields:', failedSteps)
-          console.log('Current form data:', allFormData)
           const errorMsg = `Please complete missing information in Step ${firstFailedStep.step} (${firstFailedStep.title}) before finishing.`
           setError(errorMsg)
 
@@ -424,31 +408,22 @@ export default function OnboardingStep() {
       // Move to next step or complete using smart navigation
       const mergedData = { ...formData, ...data } as any
       const nextStepNumber = getNextStep(stepNumber as StepNumber, mergedData)
-      console.log(`🔍 Navigation logic: stepNumber=${stepNumber}, nextStepNumber=${nextStepNumber}`)
 
       // Special case: When transitioning from Step 13 to Step 14, create submission first
       if (stepNumber === 13 && nextStepNumber === 14) {
         try {
-          console.log('🎯 Creating submission before navigating to Step 14 (Checkout)')
-          console.log('Session ID:', sessionId)
-
           // Calculate completion time if we have session start time
           const startTime = sessionId ? localStorage.getItem(`wb-onboarding-start-${sessionId}`) : null
           const completionTimeSeconds = startTime
             ? Math.round((Date.now() - parseInt(startTime)) / 1000)
             : undefined
 
-          console.log('Completion time:', completionTimeSeconds, 'seconds')
-
           // Submit all onboarding data to Supabase (Step 14 will load this submission)
-          console.log('Calling submitOnboarding...')
-          const submission = await submitOnboarding(
+          await submitOnboarding(
             sessionId!,
             { ...formData, ...data } as OnboardingFormData,
             completionTimeSeconds
           )
-
-          console.log('✅ Submission created successfully:', submission.id)
 
           // Now navigate to Step 14 (checkout)
           await nextStep()
@@ -461,13 +436,11 @@ export default function OnboardingStep() {
       }
       // Regular step transitions (not 13→14)
       else if (nextStepNumber && nextStepNumber <= 14) {
-        console.log('Moving to next step:', nextStepNumber)
         await nextStep()
         router.push(`/${locale}/onboarding/step/${nextStepNumber}`)
       }
       // Step 14 completion - navigate to thank you page
       else {
-        console.log('🎯 Step 14 complete - navigating to thank you page')
         router.push(`/${locale}/onboarding/thank-you`)
       }
     } catch (error) {
