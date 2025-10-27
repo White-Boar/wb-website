@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "playwrite": {
+    "playwright": {
       "type": "stdio",
       "command": "npx",
       "args": [
@@ -17,7 +17,7 @@
       "args": [
         "@jpisnice/shadcn-ui-mcp-server"
       ]
-    },
+    },        
     "supabase": {
       "type": "stdio",
       "command": "npx",
@@ -27,8 +27,8 @@
         "--project-ref=zgvoltfnxrdenjhbhgze"
       ],
       "env": {
-        "SUPABASE_ACCESS_TOKEN": "sbp_42422fdca823c791ba2dd4643dfcefb8014ff4e0"
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_KEY}"
       }
-    }
+    }    
   }
 }
