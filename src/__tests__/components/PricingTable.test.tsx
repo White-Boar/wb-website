@@ -58,8 +58,8 @@ describe('PricingTable', () => {
     const fastLink = screen.getByRole('link', { name: 'Start with Fast & Simple' })
     const customLink = screen.getByRole('link', { name: 'Start with Custom-made' })
 
-    expect(fastLink).toHaveAttribute('href', '/en/onboarding')
-    expect(customLink).toHaveAttribute('href', '/en/custom-software')
+    expect(fastLink).toHaveAttribute('href', '/onboarding')
+    expect(customLink).toHaveAttribute('href', '/custom-software')
   })
 
   it('shows popular badge on fast plan', () => {

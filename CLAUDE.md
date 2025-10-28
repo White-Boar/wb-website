@@ -7,10 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **WhiteBoar** is an AI-driven digital agency homepage built with Next.js 15+, featuring modern web standards and multilingual support. This is a production-ready website implementing the business requirements outlined in `context/CONTEXT.md`.
 
 ## **CRITICAL** rules that must always be followed:
-- **Always** Follow User Instructions Precisely. 
-- **Always** Create full and complete implementation, 
-- **Never** create partial implementations. Take your time. 
-- **NEVER deviate** from explicit user requests without asking for permission. 
+- **Always** Follow User Instructions Precisely.
+- **Always** Create full and complete implementation,
+- **Never** create partial implementations. Take your time.
+- **NEVER deviate** from explicit user requests without asking for permission.
 - **ALWAYS ask for confirmation** before changing scope or approach
 - **Never** commit code without permission.
 - **Never** implement a fix without validating your assumptios first.
@@ -18,11 +18,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Always use port 3783 for the development server
 - **Always** - run playright MCP after making changes to the UI to ensure that the changes are as intended. Check both light and dark themes. Check mobile and desktop layouts.
 - **NEVER edit .env files** - Environment variables are managed by Vercel. Never modify `.env` or `.env.development.locsl`. If environment variables need to be changed, inform the user to update them manually or through Vercel dashboard.
-- **NEVER** skip tests. 
+- **NEVER** skip tests.
 - **BREAK DOWN** complex requests and confirm each part before proceeding
 - **FOCUS ONLY** on the specific task requested - ignore distracting background processes
 - **SEQUENTIAL EXECUTION** - when asked to validate "ALL steps", go through each step 1→2→3→4... systematically, never skip or jump around
 - **Don't** use emoticons.
+- **IMPORTANT**: Multiple people work on this codebase. All changes in git diff are relevant - never assume changes are unrelated or suggest reverting them without understanding their purpose first. Always check with the user before reverting any changes.
 
 ## Development Commands
 - `PORT=3783 pnpm dev` - Start development server (**ALWAYS use port 3783**)
