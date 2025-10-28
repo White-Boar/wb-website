@@ -1045,7 +1045,7 @@
         "unexpectedError": "Si è verificato un errore imprevisto. Riprova.",
         "paymentSuccess": "Pagamento Riuscito",
         "redirecting": "Reindirizzamento alla conferma...",
-        "commitmentNotice": "Ti impegni a 12 pagamenti mensili di €35. Dopo 12 mesi, puoi annullare in qualsiasi momento.",
+        "commitmentNotice": "Ti impegni a 12 pagamenti mensili di €{amount}. Dopo 12 mesi, puoi annullare in qualsiasi momento.",
         "processing": "Elaborazione...",
         "payNow": "Paga €{amount}",
         "preparingCheckout": "Preparazione della sessione di pagamento...",

@@ -130,6 +130,122 @@ export class StripePaymentService {
   }
 
   /**
+   * Preview an invoice with subscription and invoice items
+   * Returns the exact amounts Stripe will charge including discounts
+   *
+   * @param customerId - Stripe customer ID (null to create temporary)
+   * @param priceId - Subscription price ID
+   * @param couponId - Optional coupon ID
+   * @param languageAddOns - Number of language add-ons
+   * @returns Preview invoice with all calculations from Stripe
+   */
+  async previewInvoiceWithDiscount(
+    customerId: string | null,
+    priceId: string,
+    couponId: string | null,
+    languageAddOns: number
+  ): Promise<{
+    subtotal: number           // Before discount (cents)
+    discountAmount: number     // Total discount applied (cents)
+    total: number              // After discount (cents)
+    subscriptionAmount: number // Recurring amount (cents)
+    subscriptionDiscount: number // Discount on recurring (cents)
+  }> {
+    // Create a temporary customer if needed
+    let customer = customerId
+    let tempCustomer: Stripe.Customer | null = null
+
+    if (!customer) {
+      tempCustomer = await this.stripe.customers.create({
+        email: 'preview@whiteboar.com',
+        metadata: { temporary: 'true' }
+      })
+      customer = tempCustomer.id
+    }
+
+    // Add invoice items (language add-ons) to customer
+    const createdItems: Stripe.InvoiceItem[] = []
+
+    try {
+      for (let i = 0; i < languageAddOns; i++) {
+        const item = await this.stripe.invoiceItems.create({
+          customer,
+          amount: 7500, // €75 in cents
+          currency: 'eur',
+          description: 'Language Add-on Preview'
+        })
+        createdItems.push(item)
+      }
+
+      // Preview the upcoming invoice with subscription
+      const preview = await this.stripe.invoices.createPreview({
+        customer,
+        schedule: undefined,
+        subscription_details: {
+          items: [{
+            price: priceId,
+            quantity: 1
+          }]
+        },
+        ...(couponId && { discounts: [{ coupon: couponId }] })
+      })
+
+      // Calculate subscription recurring amount with discount from line items
+      const baseSubscriptionAmount = 3500 // €35 in cents
+      let subscriptionAmount = baseSubscriptionAmount
+      let subscriptionDiscount = 0
+
+      // Find the subscription line item (not language add-ons)
+      const subscriptionLine = preview.lines?.data?.find((line: any) =>
+        line.price?.id === priceId ||
+        line.description?.includes('WhiteBoar Base Package') ||
+        line.description?.includes('Base Package')
+      )
+
+      if (subscriptionLine && subscriptionLine.discount_amounts && subscriptionLine.discount_amounts.length > 0) {
+        // Calculate total discount on subscription from all discount_amounts
+        subscriptionDiscount = subscriptionLine.discount_amounts.reduce(
+          (sum: number, discount: any) => sum + discount.amount,
+          0
+        )
+        subscriptionAmount = subscriptionLine.amount - subscriptionDiscount
+      }
+
+      // Extract discount amount from preview
+      const discountAmount = preview.total_discount_amounts?.reduce(
+        (sum, discount) => sum + discount.amount,
+        0
+      ) || 0
+
+      return {
+        subtotal: preview.subtotal,
+        discountAmount,
+        total: preview.total,
+        subscriptionAmount,
+        subscriptionDiscount
+      }
+    } finally {
+      // Clean up: delete temporary invoice items
+      for (const item of createdItems) {
+        try {
+          await this.stripe.invoiceItems.del(item.id)
+        } catch (err) {
+          console.error('Failed to delete preview invoice item:', err)
+        }
+      }
+
+      // Clean up temporary customer if created
+      if (tempCustomer) {
+        try {
+          await this.stripe.customers.del(tempCustomer.id)
+        } catch (err) {
+          console.error('Failed to delete temporary customer:', err)
+        }
+      }
+    }
+  }
+
+  /**
    * Create a subscription schedule with 12-month commitment
    *
    * @param params - Schedule creation parameters

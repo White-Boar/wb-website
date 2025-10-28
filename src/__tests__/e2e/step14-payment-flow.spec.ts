@@ -78,7 +78,6 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
     if (await techOption.isVisible()) {
       await techOption.click()
     } else {
-      console.log('⚠️ Could not find Technology option, selecting first available')
       const firstOption = page.getByRole('option').first()
       if (await firstOption.isVisible()) {
         await firstOption.click()
@@ -166,7 +165,6 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
   // Wait for Next button to be enabled and click it
   await expect(step3Next).toBeEnabled({ timeout: 15000 })
   await step3Next.click()
-  console.log('✓ Step 3 completed successfully')
 
   // =============================================================================
   // STEP 4: Brand Definition
@@ -247,29 +245,23 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
   // Continue
   const step6Next = page.locator('button').filter({ hasText: 'Next' }).and(page.locator(':not([data-next-mark])')).first()
   await expect(step6Next).toBeEnabled({ timeout: 15000 })
-  console.log('  ✓ Step 6 Next button is enabled')
 
   // Add retry logic for Step 6 -> Step 7 navigation
   let navigationSuccess = false
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       await step6Next.click()
-      console.log(`  📍 Clicked Step 6 Next button (attempt ${attempt})`)
 
       // Wait for navigation with timeout
       await page.waitForURL(/\/onboarding\/step\/7/, { timeout: 5000 })
       navigationSuccess = true
-      console.log('  ✓ Successfully navigated to Step 7')
       break
     } catch (e) {
-      console.log(`  ⚠️ Navigation to Step 7 failed (attempt ${attempt}), retrying...`)
       await page.waitForTimeout(2000) // Wait for debounced save to complete
     }
   }
 
   if (!navigationSuccess) {
-    const currentUrl = page.url()
-    console.log(`  ❌ Failed to navigate to Step 7. Current URL: ${currentUrl}`)
     throw new Error('Failed to navigate from Step 6 to Step 7')
   }
 
@@ -281,9 +273,7 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
 
   // Step 7 is optional - Next button should be enabled without website references
   const step7Next = page.locator('button').filter({ hasText: /Next|Skip/ }).and(page.locator(':not([data-next-mark])')).first()
-  console.log('⏳ Validating Step 7 optional behavior - Next button should be enabled...')
   await expect(step7Next).toBeEnabled({ timeout: 5000 })
-  console.log('✓ Step 7 validation passed - Next button enabled without website references!')
   await step7Next.click()
   await page.waitForTimeout(1000)
 
@@ -298,7 +288,6 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
   // Select a design style from ImageGrid
   const designCards = page.locator('.grid .group.cursor-pointer')
   const designCardCount = await designCards.count()
-  console.log(`  Found ${designCardCount} design style cards`)
 
   if (designCardCount > 0) {
     const firstCard = designCards.first()
@@ -326,7 +315,6 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
   // Select an image style from ImageGrid
   const imageCards = page.locator('.grid .group.cursor-pointer')
   const imageCount = await imageCards.count()
-  console.log(`  Found ${imageCount} image style cards`)
 
   if (imageCount > 0) {
     const firstCard = imageCards.first()
@@ -353,7 +341,6 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
   // Select a color palette from ImageGrid
   const colorCards = page.locator('.grid .group.cursor-pointer')
   const colorCount = await colorCards.count()
-  console.log(`  Found ${colorCount} color palette cards`)
 
   if (colorCount > 0) {
     const firstCard = colorCards.first()
@@ -388,28 +375,22 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
     // Click the first 3 checkboxes by finding their labels
     const labels = page.locator('label[for]')
     const labelCount = await labels.count()
-    console.log(`Found ${labelCount} checkbox labels`)
 
     for (let i = 0; i < Math.min(3, labelCount); i++) {
       const label = labels.nth(i)
-      const labelText = await label.textContent()
       const htmlFor = await label.getAttribute('for')
       const checkbox = page.locator(`#${htmlFor}`)
       const state = await checkbox.getAttribute('data-state').catch(() => null)
 
-      console.log(`  Label ${i}: "${labelText?.substring(0, 30)}" (for=${htmlFor}), state=${state}`)
-
       if (state !== 'checked') {
         await label.click()
         await page.waitForTimeout(300)
-        const newState = await checkbox.getAttribute('data-state').catch(() => null)
       }
     }
   }
   await page.waitForTimeout(1000)
 
   // CRITICAL: Add primary goal selection using DropdownInput component
-  console.log('🎯 CRITICAL: Selecting primary goal for Step 11 validation...')
   const goalDropdown = page.locator('button[role="combobox"]').filter({ hasNotText: 'Industry' }).first()
   if (await goalDropdown.isVisible()) {
     await goalDropdown.click()
@@ -452,7 +433,6 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
   // Continue
   const step11Next = page.locator('button').filter({ hasText: 'Next' }).and(page.locator(':not([data-next-mark])')).first()
   await expect(step11Next).toBeEnabled({ timeout: 15000 })
-  console.log('✓ Step 11 Next button is enabled, clicking...')
   await step11Next.click()
   await page.waitForTimeout(3000)
 
@@ -460,15 +440,7 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
   // STEP 12: Business Assets (File Uploads) - SKIP UPLOADS
   // =============================================================================
 
-  // Check current URL before waiting
-  const currentUrl = page.url()
-
-  try {
-    await page.waitForURL(/\/onboarding\/step\/12/, { timeout: 10000 })
-  } catch (e) {
-    console.log(`❌ Failed to navigate to Step 12. Still on: ${page.url()}`)
-    throw e
-  }
+  await page.waitForURL(/\/onboarding\/step\/12/, { timeout: 10000 })
   await expect(page.locator('text=Step 12 of 14')).toBeVisible()
 
 
@@ -526,8 +498,6 @@ async function navigateToStep14(page: any, additionalLanguages: string[] = []) {
   await expect(step13Next).toBeEnabled({ timeout: 10000 })
   await step13Next.click()
   await page.waitForTimeout(2000)
-
-  console.log('✅ Successfully navigated to Step 14')
 
   // Get session ID from localStorage
   const sessionId = await page.evaluate(() => {
@@ -605,7 +575,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.waitForTimeout(3000)
 
       // 3. Verify pricing breakdown displays
-      console.log('⏳ Verifying pricing display...')
       await expect(page.locator('text=/Base Package/i')).toBeVisible({ timeout: 10000 })
       // Pricing is shown in order summary card
       await expect(page.locator('text=/Order Summary/i')).toBeVisible()
@@ -614,8 +583,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.locator('#acceptTerms').click()
 
       // 5. Fill payment details with test card
-      console.log('⏳ Filling payment card details...')
-
       // Wait for Stripe PaymentElement iframe to load
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
 
@@ -641,7 +608,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
 
       // 6. Submit payment
-      console.log('⏳ Submitting payment...')
       const payButton = page.locator('button:has-text("Pay €")')
       await payButton.click()
 
@@ -678,8 +644,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       expect(submissions.stripe_subscription_id).toBeTruthy()
       expect(submissions.payment_completed_at).toBeTruthy()
 
-      console.log('✅ Payment flow test PASSED')
-
     } finally {
       // Cleanup: Delete test submission
       if (submissionId) {
@@ -707,7 +671,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       expect(sessionId).toBeTruthy()
 
       // 2. Verify total pricing with language add-ons
-      console.log('⏳ Verifying total pricing...')
       await expect(page.locator('text=/Base Package/i')).toBeVisible({ timeout: 10000 })
       await expect(page.locator('p:has-text("Language add-ons")').first()).toBeVisible()
 
@@ -716,8 +679,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.waitForTimeout(3000)
 
       await page.locator('#acceptTerms').click()
-
-      console.log('⏳ Filling payment card details...')
 
       // Wait for Stripe PaymentElement iframe to load
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
@@ -742,8 +703,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // Fill CVC
       await stripeFrame2.getByRole('textbox', { name: 'Security code' }).fill('123')
 
-
-      console.log('⏳ Submitting payment...')
       const payButton = page.locator('button:has-text("Pay €")')
       await payButton.click()
 
@@ -782,8 +741,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       expect(submission.status).toBe('paid')
       expect(submission.stripe_subscription_id).toBeTruthy()
       expect(submission.payment_completed_at).toBeTruthy()
-
-      console.log('✅ Payment with add-ons test PASSED')
 
     } finally {
       if (submissionId) {
@@ -824,8 +781,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.locator('#acceptTerms').click()
 
       // 6. Fill declined test card details
-      console.log('⏳ Filling declined test card details...')
-
       // Get the Stripe iframe locator
       const stripeFrame3 = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
 
@@ -834,7 +789,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // Fill declined card number
       await stripeFrame3.getByRole('textbox', { name: 'Card number' }).fill('4000000000000002')
-      console.log('✓ Declined card number filled')
       await page.waitForTimeout(500)
 
       // Fill expiry date
@@ -844,10 +798,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // Fill CVC
       await stripeFrame3.getByRole('textbox', { name: 'Security code' }).fill('123')
 
-      console.log('✓ Declined card details filled')
-
       // 3. Submit payment
-      console.log('⏳ Submitting payment...')
       const payButton = page.locator('button:has-text("Pay €")')
       await payButton.click()
 
@@ -857,10 +808,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // 5. Verify still on Step 14 (not redirected)
       await expect(page).toHaveURL(/\/step\/14/)
 
-      console.log('✅ Payment failure test PASSED')
-
     } catch (error) {
-      console.error('❌ Payment failure test failed:', error)
       throw error
     } finally {
       // Cleanup test data
@@ -920,10 +868,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // Verify price reduction (original €35, with 10% discount = €31.50)
       await expect(page.locator('button:has-text("Pay €31.5")')).toBeVisible()
 
-      console.log('✅ Valid discount code test PASSED')
-
     } catch (error) {
-      console.error('❌ Valid discount code test failed:', error)
       throw error
     } finally {
       // Cleanup test data
@@ -976,10 +921,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // Verify price remains unchanged (€35)
       await expect(page.locator('text=/Pay €35/i')).toBeVisible()
 
-      console.log('✅ Invalid discount code test PASSED')
-
     } catch (error) {
-      console.error('❌ Invalid discount code test failed:', error)
       throw error
     } finally {
       // Cleanup test data
@@ -1021,10 +963,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await expect(discountInput).toBeEmpty()
       await expect(applyButton).toBeDisabled()
 
-      console.log('✅ Empty discount code test PASSED')
-
     } catch (error) {
-      console.error('❌ Empty discount code test failed:', error)
       throw error
     } finally {
       // Cleanup test data
@@ -1059,10 +998,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // Check for €28 in the Pay button
       await expect(page.locator('button:has-text("Pay €28")')).toBeVisible()
 
-      console.log('✅ Discount with payment completion test PASSED')
-
     } catch (error) {
-      console.error('❌ Discount with payment completion test failed:', error)
       throw error
     }
   })

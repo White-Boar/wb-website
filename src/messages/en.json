@@ -1044,7 +1044,7 @@
         "unexpectedError": "An unexpected error occurred. Please try again.",
         "paymentSuccess": "Payment Successful",
         "redirecting": "Redirecting to confirmation...",
-        "commitmentNotice": "You are committing to 12 monthly payments of €35. After 12 months, you can cancel anytime.",
+        "commitmentNotice": "You are committing to 12 monthly payments of €{amount}. After 12 months, you can cancel anytime.",
         "processing": "Processing...",
         "payNow": "Pay €{amount}",
         "preparingCheckout": "Preparing your checkout session...",

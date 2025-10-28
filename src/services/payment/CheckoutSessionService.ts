@@ -364,18 +364,8 @@ export class CheckoutSessionService {
       expand: ['confirmation_secret']
     })
 
-    console.log('[DEBUG addLanguageAddOns] Invoice finalized:', {
-      id: finalizedInvoice.id,
-      status: finalizedInvoice.status,
-      amount_due: finalizedInvoice.amount_due,
-      subtotal: finalizedInvoice.subtotal,
-      total: finalizedInvoice.total,
-      total_discount_amounts: finalizedInvoice.total_discount_amounts
-    })
-
     // Handle zero-amount invoices (discount >= total)
     if (finalizedInvoice.amount_due <= 0) {
-      console.log('[DEBUG addLanguageAddOns] Amount is zero or negative, invoice marked as paid by Stripe')
       // Stripe automatically marks zero-amount invoices as paid
       return {
         sessionUrl: undefined,
@@ -390,12 +380,6 @@ export class CheckoutSessionService {
     if (!confirmationSecret?.client_secret) {
       throw new Error('Invoice confirmation secret not available')
     }
-
-    console.log('[DEBUG addLanguageAddOns] Using invoice Payment Intent:', {
-      invoice_id: finalizedInvoice.id,
-      amount_due: finalizedInvoice.amount_due,
-      has_confirmation_secret: !!confirmationSecret
-    })
 
     return {
       sessionUrl: confirmationSecret.client_secret,

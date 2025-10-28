@@ -56,12 +56,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    debugLog(`[${webhookId}] Event verified:`, {
-      event_id: event.id,
-      event_type: event.type,
-      created: event.created
-    })
-
     // Initialize services
     const supabase = await createServiceClient()
     const webhookService = new WebhookService()

@@ -4,7 +4,7 @@ import { StripePaymentService } from '@/services/payment/StripePaymentService'
 
 export async function POST(request: NextRequest) {
   try {
-    const { discountCode, sessionId } = await request.json()
+    const { discountCode, sessionId, additionalLanguages = [] } = await request.json()
 
     if (!discountCode || typeof discountCode !== 'string') {
       return NextResponse.json({
@@ -52,27 +52,39 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Calculate discount amount (for base package €35)
-    const baseAmount = 3500 // €35 in cents
-    let discountAmount = 0
-
-    if (coupon.amount_off) {
-      // Fixed amount discount
-      discountAmount = coupon.amount_off
-    } else if (coupon.percent_off) {
-      // Percentage discount
-      discountAmount = Math.round((baseAmount * coupon.percent_off) / 100)
+    // Get base package price ID
+    const baseProductId = process.env.STRIPE_BASE_PACKAGE_PRICE_ID!
+    if (!baseProductId) {
+      throw new Error('STRIPE_BASE_PACKAGE_PRICE_ID not configured')
     }
+
+    // Calculate number of language add-ons
+    const languageAddOnCount = Array.isArray(additionalLanguages) ? additionalLanguages.length : 0
+
+    // Preview invoice with Stripe to get exact amounts
+    const preview = await stripeService.previewInvoiceWithDiscount(
+      null, // No customer yet (will create temporary)
+      baseProductId,
+      coupon.id,
+      languageAddOnCount
+    )
 
     return NextResponse.json({
       success: true,
       data: {
         code: coupon.id,
-        amount: discountAmount,
+        amount: coupon.amount_off || coupon.percent_off,
         type: coupon.amount_off ? 'fixed' : 'percentage',
-        value: coupon.amount_off || coupon.percent_off,
         duration: coupon.duration,
-        durationInMonths: coupon.duration_in_months
+        durationInMonths: coupon.duration_in_months,
+        // Stripe-calculated preview values
+        preview: {
+          subtotal: preview.subtotal,
+          discountAmount: preview.discountAmount,
+          total: preview.total,
+          recurringAmount: preview.subscriptionAmount,
+          recurringDiscount: preview.subscriptionDiscount
+        }
       }
     })
   } catch (error) {
