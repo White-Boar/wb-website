@@ -62,12 +62,47 @@ function CheckoutForm({
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isVerifyingDiscount, setIsVerifyingDiscount] = useState(false)
+
+  // Stripe prices from API
+  const [prices, setPrices] = useState<{
+    basePackage: number   // euros
+    languageAddOn: number // euros
+  } | null>(null)
+
+  // Base invoice preview (without discount)
+  interface LineItem {
+    id: string
+    description: string
+    amount: number          // cents
+    originalAmount: number  // cents
+    quantity: number
+    discountAmount: number  // cents
+    isRecurring: boolean
+  }
+
+  const [pricePreview, setPricePreview] = useState<{
+    subtotal: number
+    total: number
+    discountAmount: number
+    recurringAmount: number
+    recurringDiscount: number
+    lineItems: LineItem[]
+  } | null>(null)
+
+  // Discount validation state
   const [discountValidation, setDiscountValidation] = useState<{
     status: 'valid' | 'invalid'
     code?: string
-    amount?: number
     duration?: 'once' | 'forever' | 'repeating'
     durationInMonths?: number
+    preview?: {
+      subtotal: number
+      discountAmount: number
+      total: number
+      recurringAmount: number
+      recurringDiscount: number
+      lineItems: LineItem[]
+    }
     error?: string
   } | null>(null)
 
@@ -76,17 +111,21 @@ function CheckoutForm({
   const selectedLanguages = watch('additionalLanguages') || []
   const discountCode = watch('discountCode') || ''
 
-  // Calculate pricing
-  const basePackagePrice = 35 // €35/month
-  const languageAddOnsTotal = calculateAddOnsTotal(selectedLanguages)
-  const discountAmount = discountValidation?.status === 'valid' ? (discountValidation.amount || 0) / 100 : 0
-  const totalDueToday = basePackagePrice + languageAddOnsTotal - discountAmount
+  // Use active preview (with discount if valid, otherwise base preview)
+  const activePreview = discountValidation?.status === 'valid' && discountValidation.preview
+    ? discountValidation.preview
+    : pricePreview
 
-  // Calculate recurring monthly price based on coupon duration
-  const recurringMonthlyPrice =
-    discountValidation?.status === 'valid' && discountValidation.duration === 'forever' && discountAmount > 0
-      ? basePackagePrice - discountAmount
-      : basePackagePrice
+  // ALL pricing from Stripe - ZERO calculations
+  const totalDueToday = activePreview ? activePreview.total / 100 : 0
+  const discountAmount = activePreview ? activePreview.discountAmount / 100 : 0
+  const recurringMonthlyPrice = activePreview ? activePreview.recurringAmount / 100 : 0
+  const subtotal = activePreview ? activePreview.subtotal / 100 : 0
+  const lineItems = activePreview?.lineItems || []
+
+  // Fallback prices (only for display before API loads)
+  const basePackageFallback = prices?.basePackage || 0
+  const languageAddonFallback = prices?.languageAddOn || 0
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,11 +151,12 @@ function CheckoutForm({
         throw new Error(submitError.message)
       }
 
-      const { error } = await stripe.confirmPayment({
+      const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
           return_url: `${window.location.origin}/${locale}/onboarding/thank-you`,
         },
+        redirect: 'if_required' // Only redirect if payment method requires it
       })
 
       if (error) {
@@ -124,7 +164,13 @@ function CheckoutForm({
         throw new Error(error.message)
       }
 
-      // Payment succeeded - redirect happens automatically
+      // Payment succeeded - redirect manually if not already redirected
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        window.location.href = `/${locale}/onboarding/thank-you`
+        return
+      }
+
+      // If payment is processing, Stripe will handle the redirect
     } catch (error) {
       console.error('Payment error:', error)
       setPaymentError(
@@ -187,13 +233,13 @@ function CheckoutForm({
         return
       }
 
-      // Valid discount code
+      // Valid discount code - store preview data
       setDiscountValidation({
         status: 'valid',
         code: data.data.code,
-        amount: data.data.amount,
         duration: data.data.duration,
-        durationInMonths: data.data.durationInMonths
+        durationInMonths: data.data.durationInMonths,
+        preview: data.data.preview
       })
 
     } catch (error) {
@@ -212,6 +258,70 @@ function CheckoutForm({
       setIsVerifyingDiscount(false)
     }
   }
+
+  // Fetch prices from Stripe on mount
+  useEffect(() => {
+    async function fetchPrices() {
+      try {
+        const response = await fetch('/api/stripe/prices')
+        const data = await response.json()
+        if (data.success) {
+          setPrices({
+            basePackage: data.data.basePackage.amount / 100,
+            languageAddOn: data.data.languageAddOn.amount / 100
+          })
+        }
+      } catch (error) {
+        console.error('Failed to fetch prices:', error)
+        // Fallback to hardcoded prices
+        setPrices({
+          basePackage: 35,
+          languageAddOn: 75
+        })
+      }
+    }
+    fetchPrices()
+  }, [])
+
+  // Fetch invoice preview from Stripe when prices load or languages change
+  useEffect(() => {
+    async function fetchPreview() {
+      try {
+        const csrfResponse = await fetch(`/api/csrf-token?sessionId=${sessionId}`)
+        const csrfData = await csrfResponse.json()
+
+        if (!csrfResponse.ok || !csrfData.success) {
+          console.error('Failed to get CSRF token')
+          return
+        }
+
+        const response = await fetch('/api/stripe/preview-invoice', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfData.token
+          },
+          body: JSON.stringify({
+            sessionId,
+            additionalLanguages: selectedLanguages,
+            discountCode: null
+          })
+        })
+
+        const data = await response.json()
+        if (data.success) {
+          setPricePreview(data.data.preview)
+        }
+      } catch (error) {
+        console.error('Failed to fetch preview:', error)
+      }
+    }
+
+    // Only fetch preview after prices loaded
+    if (prices) {
+      fetchPreview()
+    }
+  }, [sessionId, selectedLanguages, prices])
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
@@ -262,7 +372,9 @@ function CheckoutForm({
                   </Badge>
                 </div>
               </div>
-              <p className="font-semibold">€{basePackagePrice}</p>
+              <p className="font-semibold">
+                €{recurringMonthlyPrice > 0 ? recurringMonthlyPrice.toFixed(2) : basePackageFallback}
+              </p>
             </div>
 
             {/* Language Add-ons */}
@@ -271,17 +383,33 @@ function CheckoutForm({
                 <div className="border-t pt-4">
                   <p className="font-medium mb-2">{t('languageAddons')}</p>
                   <div className="space-y-2">
-                    {selectedLanguages.map((code) => (
-                      <div
-                        key={code}
-                        className="flex justify-between items-center text-sm"
-                      >
-                        <span className="text-muted-foreground">
-                          {getLanguageName(code, locale)}
-                        </span>
-                        <span>€75</span>
-                      </div>
-                    ))}
+                    {lineItems.filter(item => !item.isRecurring).length > 0 ? (
+                      // Display from Stripe line items
+                      lineItems.filter(item => !item.isRecurring).map((lineItem) => (
+                        <div
+                          key={lineItem.id}
+                          className="flex justify-between items-center text-sm"
+                        >
+                          <span className="text-muted-foreground">
+                            {lineItem.description}
+                          </span>
+                          <span>€{(lineItem.amount / 100).toFixed(2)}</span>
+                        </div>
+                      ))
+                    ) : (
+                      // Fallback display before Stripe data loads
+                      selectedLanguages.map((code) => (
+                        <div
+                          key={code}
+                          className="flex justify-between items-center text-sm"
+                        >
+                          <span className="text-muted-foreground">
+                            {getLanguageName(code, locale)}
+                          </span>
+                          <span>€{languageAddonFallback}</span>
+                        </div>
+                      ))
+                    )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">
                     {t('oneTimeFee')}
@@ -312,12 +440,12 @@ function CheckoutForm({
                 <div>
                   <p className="font-semibold text-lg">{t('dueToday')}</p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    €{basePackagePrice} {t('subscription')} + €{languageAddOnsTotal} {t('setupFees')}
+                    {subtotal > 0 && `€${subtotal.toFixed(2)} ${t('subscription')}`}
                     {discountAmount > 0 && ` - €${discountAmount.toFixed(2)} ${t('discount.label')}`}
                   </p>
                 </div>
                 <p className="text-2xl font-bold text-primary">
-                  €{totalDueToday}
+                  €{totalDueToday > 0 ? totalDueToday.toFixed(2) : '0.00'}
                 </p>
               </div>
               <p className="text-sm text-muted-foreground mt-2">
@@ -329,7 +457,7 @@ function CheckoutForm({
             <Alert>
               <AlertCircle className="w-4 h-4" />
               <AlertDescription className="text-xs">
-                {t('commitmentNotice')}
+                {t('commitmentNotice', { amount: recurringMonthlyPrice.toFixed(2) })}
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -413,7 +541,7 @@ function CheckoutForm({
                     <AlertDescription className="text-green-800 dark:text-green-200">
                       {t('discount.validMessage', {
                         code: discountValidation.code || '',
-                        amount: (discountValidation.amount || 0) / 100
+                        amount: (discountValidation.preview?.discountAmount || 0) / 100
                       })}
                     </AlertDescription>
                   </Alert>
@@ -587,6 +715,25 @@ export function Step14Checkout(props: StepComponentProps) {
           // Direct URL parameters provided - use them
           setSessionId(urlSessionId)
           setSubmissionId(urlSubmissionId)
+
+          // Load submission data to populate form (especially additionalLanguages)
+          try {
+            const { useOnboardingStore } = await import('@/stores/onboarding')
+            const response = await fetch(`/api/onboarding/get-submission?sessionId=${urlSessionId}&submissionId=${urlSubmissionId}&includeFormData=true`)
+            if (response.ok) {
+              const data = await response.json()
+              if (data.formData?.additionalLanguages) {
+                // Update Zustand store with additionalLanguages from database
+                useOnboardingStore.getState().updateFormData({
+                  additionalLanguages: data.formData.additionalLanguages
+                })
+              }
+            }
+          } catch (error) {
+            console.warn('Failed to load submission form data:', error)
+            // Non-critical error - continue with checkout
+          }
+
           setIsLoadingIds(false)
           return
         }

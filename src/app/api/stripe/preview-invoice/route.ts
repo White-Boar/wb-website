@@ -4,17 +4,7 @@ import { StripePaymentService } from '@/services/payment/StripePaymentService'
 
 export async function POST(request: NextRequest) {
   try {
-    const { discountCode, sessionId, additionalLanguages = [] } = await request.json()
-
-    if (!discountCode || typeof discountCode !== 'string') {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: 'INVALID_REQUEST',
-          message: 'Discount code is required'
-        }
-      }, { status: 400 })
-    }
+    const { sessionId, additionalLanguages = [], discountCode = null } = await request.json()
 
     if (!sessionId) {
       return NextResponse.json({
@@ -38,24 +28,28 @@ export async function POST(request: NextRequest) {
       }, { status: 403 })
     }
 
-    // Use service to validate discount code
-    const stripeService = new StripePaymentService()
-    const coupon = await stripeService.validateCoupon(discountCode)
-
-    if (!coupon) {
-      return NextResponse.json({
-        success: false,
-        error: {
-          code: 'INVALID_DISCOUNT_CODE',
-          message: 'Discount code is not valid or has expired'
-        }
-      }, { status: 400 })
-    }
-
     // Get base package price ID
     const baseProductId = process.env.STRIPE_BASE_PACKAGE_PRICE_ID!
     if (!baseProductId) {
       throw new Error('STRIPE_BASE_PACKAGE_PRICE_ID not configured')
+    }
+
+    const stripeService = new StripePaymentService()
+
+    // Validate discount code if provided
+    let validatedCoupon = null
+    let discountError = null
+    let couponDuration = null
+    let couponDurationInMonths = null
+
+    if (discountCode) {
+      validatedCoupon = await stripeService.validateCoupon(discountCode)
+      if (!validatedCoupon) {
+        discountError = 'Discount code is not valid or has expired'
+      } else {
+        couponDuration = validatedCoupon.duration
+        couponDurationInMonths = validatedCoupon.duration_in_months
+      }
     }
 
     // Calculate number of language add-ons
@@ -65,19 +59,13 @@ export async function POST(request: NextRequest) {
     const preview = await stripeService.previewInvoiceWithDiscount(
       null, // No customer yet (will create temporary)
       baseProductId,
-      coupon.id,
+      validatedCoupon?.id || null,
       languageAddOnCount
     )
 
     return NextResponse.json({
       success: true,
       data: {
-        code: coupon.id,
-        amount: preview.discountAmount, // Use Stripe's calculated discount in cents
-        type: coupon.amount_off ? 'fixed' : 'percentage',
-        duration: coupon.duration,
-        durationInMonths: coupon.duration_in_months,
-        // Stripe-calculated preview values
         preview: {
           subtotal: preview.subtotal,
           discountAmount: preview.discountAmount,
@@ -85,16 +73,22 @@ export async function POST(request: NextRequest) {
           recurringAmount: preview.subscriptionAmount,
           recurringDiscount: preview.subscriptionDiscount,
           lineItems: preview.lineItems
-        }
+        },
+        ...(discountCode && {
+          code: validatedCoupon?.id,
+          duration: couponDuration,
+          durationInMonths: couponDurationInMonths
+        }),
+        ...(discountError && { discountError })
       }
     })
   } catch (error) {
-    console.error('Validate discount error:', error)
+    console.error('Preview invoice error:', error)
     return NextResponse.json({
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: 'Failed to validate discount code'
+        message: 'Failed to preview invoice'
       }
     }, { status: 500 })
   }

@@ -20,6 +20,7 @@ export interface CreateSessionParams {
 export interface SubmissionValidationResult {
   valid: boolean
   submission?: any
+  existingSubscription?: boolean
   error?: {
     code: string
     message: string

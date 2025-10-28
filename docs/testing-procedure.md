@@ -10,3 +10,9 @@
 4. Once a fix has been implemented, run only the sepcific text to validate that the fix worked. If it did not repeat steps 2 to 4. 
 5. Run the whole test suit and continue.
 6. Don't stop until all test pass.
+
+
+
+## Running Playwrite MCP
+1. Seed the session
+2. Inject local storage BEGORE navigation

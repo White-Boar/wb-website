@@ -68,10 +68,11 @@ describe('CheckoutSessionService', () => {
       expect(result.error?.code).toBe('INVALID_SUBMISSION_ID')
     })
 
-    it('should return invalid when submission already has subscription', async () => {
+    it('should return valid with existingSubscription flag when submission already has subscription', async () => {
       const submission = {
         id: 'sub_123',
-        stripe_subscription_id: 'sub_stripe_123'
+        stripe_subscription_id: 'sub_stripe_123',
+        form_data: {}
       }
 
       mockSupabase.single.mockResolvedValue({
@@ -81,8 +82,9 @@ describe('CheckoutSessionService', () => {
 
       const result = await service.validateSubmission('sub_123', mockSupabase)
 
-      expect(result.valid).toBe(false)
-      expect(result.error?.code).toBe('PAYMENT_ALREADY_COMPLETED')
+      expect(result.valid).toBe(true)
+      expect(result.existingSubscription).toBe(true)
+      expect(result.submission).toEqual(submission)
     })
   })
 

@@ -5,7 +5,7 @@
  * List of European languages with >1 million speakers available as add-ons.
  * English and Italian are excluded as they are included in the base package.
  *
- * Total: 27 languages available as add-ons at €75 each
+ * Total: 27 languages available as add-ons (price fetched from Stripe API)
  */
 
 export interface EuropeanLanguage {
@@ -13,7 +13,7 @@ export interface EuropeanLanguage {
   nameEn: string; // English name (e.g., 'French')
   nameIt: string; // Italian name (e.g., 'Francese')
   speakers: number; // Number of speakers in millions
-  price: number; // Price in euros (always 75)
+  price: number; // @deprecated Display only - fetch actual price from Stripe API
 }
 
 export const EUROPEAN_LANGUAGES: EuropeanLanguage[] = [
@@ -68,6 +68,7 @@ export function getLanguageName(code: string, locale: 'en' | 'it'): string {
 
 /**
  * Calculate total price for selected languages
+ * @deprecated Use Stripe Invoice Preview API instead for accurate pricing
  * @param selectedLanguages Array of language codes
  * @returns Total price in euros
  */

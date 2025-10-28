@@ -51,21 +51,22 @@ export class CheckoutSessionService {
       }
     }
 
-    // Check if payment already exists
+    // Check if subscription already exists
     if (submission.stripe_subscription_id) {
+      // Subscription exists - need to check if payment is pending or completed
+      // We'll return the submission and let createCheckoutSession handle retrieving
+      // the existing client secret if payment is still pending
       return {
-        valid: false,
-        error: {
-          code: 'PAYMENT_ALREADY_COMPLETED',
-          message: 'This submission has already been paid',
-          status: 409
-        }
+        valid: true,
+        submission,
+        existingSubscription: true
       }
     }
 
     return {
       valid: true,
-      submission
+      submission,
+      existingSubscription: false
     }
   }
 
@@ -189,8 +190,63 @@ export class CheckoutSessionService {
       }
       const submission = validationResult.submission
 
+      // 1b. Extract additionalLanguages from submission's form_data (source of truth)
+      // The frontend may pass additionalLanguages, but we should trust the database
+      const submissionLanguages = submission.form_data?.additionalLanguages || []
+      const languagesToUse = submissionLanguages.length > 0 ? submissionLanguages : additionalLanguages
+
+      // 1a. Handle existing subscription - retrieve existing client secret
+      if (validationResult.existingSubscription && submission.stripe_subscription_id) {
+        try {
+          const stripe = this.stripeService.getStripeInstance()
+          const subscription = await stripe.subscriptions.retrieve(submission.stripe_subscription_id, {
+            expand: ['latest_invoice']
+          })
+
+          // Get the latest invoice
+          const latestInvoice = subscription.latest_invoice
+          if (typeof latestInvoice === 'string' || !latestInvoice) {
+            throw new Error('Unable to retrieve invoice details')
+          }
+
+          // Check if invoice is already paid
+          if (latestInvoice.status === 'paid') {
+            return {
+              success: false,
+              error: {
+                code: 'PAYMENT_ALREADY_COMPLETED',
+                message: 'This submission has already been paid'
+              }
+            }
+          }
+
+          // Invoice is still pending - get the confirmation secret
+          const confirmationSecret = (latestInvoice as any).confirmation_secret
+          if (confirmationSecret?.client_secret) {
+            return {
+              success: true,
+              sessionUrl: confirmationSecret.client_secret,
+              sessionId: latestInvoice.id,
+              customerId: submission.stripe_customer_id,
+              subscriptionId: submission.stripe_subscription_id
+            }
+          }
+
+          throw new Error('No confirmation secret found for pending invoice')
+        } catch (error) {
+          console.error('Error retrieving existing subscription:', error)
+          return {
+            success: false,
+            error: {
+              code: 'STRIPE_API_ERROR',
+              message: 'Failed to retrieve existing checkout session'
+            }
+          }
+        }
+      }
+
       // 2. Validate language codes
-      const invalidLanguages = this.validateLanguageCodes(additionalLanguages)
+      const invalidLanguages = this.validateLanguageCodes(languagesToUse)
       if (invalidLanguages.length > 0) {
         return {
           success: false,
@@ -217,7 +273,7 @@ export class CheckoutSessionService {
       await this.logPaymentAttempt(
         submission.session_id,
         submissionId,
-        additionalLanguages.length,
+        languagesToUse.length,
         supabase
       )
 
@@ -267,11 +323,11 @@ export class CheckoutSessionService {
         throw new Error('Subscription not created by schedule')
       }
 
-      // 9. Add language add-ons as invoice items
+      // 9. Add language add-ons as invoice items (use database value)
       const result = await this.addLanguageAddOns(
         customer.id,
         subscription,
-        additionalLanguages,
+        languagesToUse,
         submissionId,
         submission.session_id
       )
@@ -341,13 +397,18 @@ export class CheckoutSessionService {
       throw new Error('No invoice found for subscription')
     }
 
+    // Fetch language add-on price from Stripe
+    const languageAddonPriceId = process.env.STRIPE_LANGUAGE_ADDON_PRICE_ID!
+    const addonPrice = await stripe.prices.retrieve(languageAddonPriceId)
+    const addonAmount = addonPrice.unit_amount || 7500 // Fallback to 7500 if not set
+
     // Add language add-ons as invoice items
     const languageAddOnPromises = languageCodes.map((code: string) => {
       const language = EUROPEAN_LANGUAGES.find(l => l.code === code)
       return stripe.invoiceItems.create({
         customer: customerId,
         invoice: invoiceId,
-        amount: 7500, // €75.00 in cents
+        amount: addonAmount, // Fetch from Stripe Price
         currency: 'eur',
         description: `${language?.nameEn} Language Add-on`,
         metadata: {
@@ -361,7 +422,7 @@ export class CheckoutSessionService {
 
     // Finalize the invoice to create the Payment Intent with discounts automatically applied
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoiceId, {
-      expand: ['confirmation_secret']
+      expand: ['confirmation_secret', 'payment_intent']
     })
 
     // Handle zero-amount invoices (discount >= total)
@@ -371,6 +432,22 @@ export class CheckoutSessionService {
         sessionUrl: undefined,
         sessionId: undefined
       }
+    }
+
+    // Update PaymentIntent metadata with submission_id to ensure webhook can find it
+    // This is critical for webhook processing to work reliably
+    const invoiceWithPaymentIntent = finalizedInvoice as any
+    const paymentIntentId = typeof invoiceWithPaymentIntent.payment_intent === 'string'
+      ? invoiceWithPaymentIntent.payment_intent
+      : invoiceWithPaymentIntent.payment_intent?.id
+
+    if (paymentIntentId) {
+      await stripe.paymentIntents.update(paymentIntentId, {
+        metadata: {
+          submission_id: submissionId,
+          session_id: sessionId
+        }
+      })
     }
 
     // Use the invoice's confirmation_secret which contains the PaymentIntent client_secret

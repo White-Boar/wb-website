@@ -24,6 +24,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **SEQUENTIAL EXECUTION** - when asked to validate "ALL steps", go through each step 1→2→3→4... systematically, never skip or jump around
 - **Don't** use emoticons.
 - **IMPORTANT**: Multiple people work on this codebase. All changes in git diff are relevant - never assume changes are unrelated or suggest reverting them without understanding their purpose first. Always check with the user before reverting any changes.
+## Rules:
+- **Never** INCREASE TEST TIMEOUTS!
+- **Never** ASSUME TESTS ARE FAILING DUE TO TIMEING ISSUES!
+- **Alwyas** Commit all changes.
+- **Alwyas** Never git reset without permission.
+
 
 ## Development Commands
 - `PORT=3783 pnpm dev` - Start development server (**ALWAYS use port 3783**)

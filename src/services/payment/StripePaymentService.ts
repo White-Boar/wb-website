@@ -59,6 +59,52 @@ export class StripePaymentService {
   }
 
   /**
+   * Retrieve product prices from Stripe
+   * Fetches base package and language add-on prices dynamically
+   *
+   * @returns Object containing base package and language add-on pricing information
+   */
+  async getPrices(): Promise<{
+    basePackage: {
+      priceId: string
+      amount: number
+      currency: string
+      interval: string
+    }
+    languageAddOn: {
+      priceId: string
+      amount: number
+      currency: string
+    }
+  }> {
+    const basePackagePriceId = process.env.STRIPE_BASE_PACKAGE_PRICE_ID
+    const languageAddonPriceId = process.env.STRIPE_LANGUAGE_ADDON_PRICE_ID
+
+    if (!basePackagePriceId || !languageAddonPriceId) {
+      throw new Error('STRIPE_BASE_PACKAGE_PRICE_ID and STRIPE_LANGUAGE_ADDON_PRICE_ID must be configured')
+    }
+
+    const [basePrice, addonPrice] = await Promise.all([
+      this.stripe.prices.retrieve(basePackagePriceId),
+      this.stripe.prices.retrieve(languageAddonPriceId)
+    ])
+
+    return {
+      basePackage: {
+        priceId: basePrice.id,
+        amount: basePrice.unit_amount || 0,
+        currency: basePrice.currency,
+        interval: basePrice.recurring?.interval || 'month'
+      },
+      languageAddOn: {
+        priceId: addonPrice.id,
+        amount: addonPrice.unit_amount || 0,
+        currency: addonPrice.currency
+      }
+    }
+  }
+
+  /**
    * Validate a discount coupon code or promotion code
    *
    * @param discountCode - Coupon ID or Promotion Code to validate
@@ -150,6 +196,15 @@ export class StripePaymentService {
     total: number              // After discount (cents)
     subscriptionAmount: number // Recurring amount (cents)
     subscriptionDiscount: number // Discount on recurring (cents)
+    lineItems: Array<{
+      id: string
+      description: string
+      amount: number           // Final amount in cents
+      originalAmount: number   // Before discount in cents
+      quantity: number
+      discountAmount: number   // Discount on this line in cents
+      isRecurring: boolean
+    }>
   }> {
     // Create a temporary customer if needed
     let customer = customerId
@@ -163,6 +218,11 @@ export class StripePaymentService {
       customer = tempCustomer.id
     }
 
+    // Get language add-on price from Stripe
+    const languageAddonPriceId = process.env.STRIPE_LANGUAGE_ADDON_PRICE_ID!
+    const addonPrice = await this.stripe.prices.retrieve(languageAddonPriceId)
+    const addonAmount = addonPrice.unit_amount || 7500 // Fallback to 7500 if not set
+
     // Add invoice items (language add-ons) to customer
     const createdItems: Stripe.InvoiceItem[] = []
 
@@ -170,7 +230,7 @@ export class StripePaymentService {
       for (let i = 0; i < languageAddOns; i++) {
         const item = await this.stripe.invoiceItems.create({
           customer,
-          amount: 7500, // €75 in cents
+          amount: addonAmount, // Fetch from Stripe Price
           currency: 'eur',
           description: 'Language Add-on Preview'
         })
@@ -190,9 +250,9 @@ export class StripePaymentService {
         ...(couponId && { discounts: [{ coupon: couponId }] })
       })
 
-      // Calculate subscription recurring amount with discount from line items
-      const baseSubscriptionAmount = 3500 // €35 in cents
-      let subscriptionAmount = baseSubscriptionAmount
+      // Get subscription recurring amount with discount from Stripe's line items
+      // Stripe calculates everything - we just extract the values
+      let subscriptionAmount = 0
       let subscriptionDiscount = 0
 
       // Find the subscription line item (not language add-ons)
@@ -202,13 +262,17 @@ export class StripePaymentService {
         line.description?.includes('Base Package')
       )
 
-      if (subscriptionLine && subscriptionLine.discount_amounts && subscriptionLine.discount_amounts.length > 0) {
-        // Calculate total discount on subscription from all discount_amounts
-        subscriptionDiscount = subscriptionLine.discount_amounts.reduce(
-          (sum: number, discount: any) => sum + discount.amount,
-          0
-        )
-        subscriptionAmount = subscriptionLine.amount - subscriptionDiscount
+      if (subscriptionLine) {
+        // Stripe's line.amount is AFTER discount is applied
+        subscriptionAmount = subscriptionLine.amount
+
+        // Extract discount amount from discount_amounts array
+        if (subscriptionLine.discount_amounts && subscriptionLine.discount_amounts.length > 0) {
+          subscriptionDiscount = subscriptionLine.discount_amounts.reduce(
+            (sum: number, discount: any) => sum + discount.amount,
+            0
+          )
+        }
       }
 
       // Extract discount amount from preview
@@ -217,12 +281,35 @@ export class StripePaymentService {
         0
       ) || 0
 
+      // Parse line items from preview
+      const lineItems = preview.lines.data.map((line: any) => {
+        const lineDiscountAmount = line.discount_amounts?.reduce(
+          (sum: number, d: any) => sum + d.amount,
+          0
+        ) || 0
+
+        const isRecurring = line.price?.id === priceId ||
+          line.description?.includes('WhiteBoar Base Package') ||
+          line.description?.includes('Base Package')
+
+        return {
+          id: line.id,
+          description: line.description || '',
+          amount: line.amount,  // Final amount in cents after discount
+          originalAmount: line.price?.unit_amount || line.amount,  // Before discount
+          quantity: line.quantity || 1,
+          discountAmount: lineDiscountAmount,
+          isRecurring
+        }
+      })
+
       return {
         subtotal: preview.subtotal,
         discountAmount,
         total: preview.total,
         subscriptionAmount,
-        subscriptionDiscount
+        subscriptionDiscount,
+        lineItems
       }
     } finally {
       // Clean up: delete temporary invoice items

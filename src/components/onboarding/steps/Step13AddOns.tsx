@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -24,9 +24,37 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
   const { control, watch } = form
 
   const [searchQuery, setSearchQuery] = useState('')
+  const [prices, setPrices] = useState<{
+    basePackage: number   // euros
+    languageAddOn: number // euros
+  } | null>(null)
 
   // Watch selected languages
   const selectedLanguages = watch('additionalLanguages') || []
+
+  // Fetch prices from Stripe on mount
+  useEffect(() => {
+    async function fetchPrices() {
+      try {
+        const response = await fetch('/api/stripe/prices')
+        const data = await response.json()
+        if (data.success) {
+          setPrices({
+            basePackage: data.data.basePackage.amount / 100,
+            languageAddOn: data.data.languageAddOn.amount / 100
+          })
+        }
+      } catch (error) {
+        console.error('Failed to fetch prices:', error)
+        // Fallback to hardcoded prices
+        setPrices({
+          basePackage: 35,
+          languageAddOn: 75
+        })
+      }
+    }
+    fetchPrices()
+  }, [])
 
   // Filter languages based on search query
   const filteredLanguages = useMemo(() => {
@@ -47,9 +75,10 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
     })
   }, [searchQuery])
 
-  // Calculate pricing
-  const totalAddOnsPrice = calculateAddOnsTotal(selectedLanguages)
-  const basePackagePrice = 35
+  // Calculate pricing using Stripe prices
+  const basePackagePrice = prices?.basePackage || 35
+  const languageAddOnPrice = prices?.languageAddOn || 75
+  const totalAddOnsPrice = selectedLanguages.length * languageAddOnPrice
 
   // Toggle language selection
   const toggleLanguage = (
