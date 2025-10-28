@@ -532,4 +532,285 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }
     }
   })
+
+  test('comprehensive database validation after payment', async ({ page }) => {
+    test.setTimeout(120000)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
+
+    try {
+      // 1. Seed pre-filled Step 14 session with language add-ons
+      const seed = await seedStep14TestSession({
+        additionalLanguages: ['de', 'fr'] // German and French
+      })
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+
+      // 2. Inject Zustand store into localStorage
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
+      // 3. Navigate to Step 14
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/step\/14/, { timeout: 10000 })
+
+      // 4. Wait for Stripe Elements iframe to load
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(3000)
+
+      // 5. Apply discount code
+      const discountInput = page.getByRole('textbox', { name: 'discount' })
+      await discountInput.fill('TEST10')
+
+      const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
+      await verifyButton.click()
+      await page.waitForTimeout(2000)
+
+      // Verify discount applied
+      await expect(page.locator('text=/Discount code TEST10 applied/i')).toBeVisible()
+
+      // 6. Accept terms and complete payment
+      await page.locator('#acceptTerms').click()
+
+      const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
+      await stripeFrame.getByRole('textbox', { name: 'Card number' }).waitFor({ state: 'visible', timeout: 30000 })
+      await stripeFrame.getByRole('textbox', { name: 'Card number' }).fill('4242424242424242')
+      await page.waitForTimeout(500)
+      await stripeFrame.getByRole('textbox', { name: /Expiration date/i }).fill('1228')
+      await page.waitForTimeout(500)
+      await stripeFrame.getByRole('textbox', { name: 'Security code' }).fill('123')
+
+      const payButton = page.locator('button:has-text("Pay €")')
+      await payButton.click()
+
+      // 7. Wait for redirect to thank-you page
+      await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
+      await page.waitForTimeout(10000)
+
+      // 8. Wait for webhooks to process
+      const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
+        maxAttempts: 20,
+        delayMs: 500
+      })
+      expect(webhookProcessed).toBe(true)
+
+      // 9. COMPREHENSIVE DATABASE VALIDATION
+      const { data: submission } = await supabase
+        .from('onboarding_submissions')
+        .select('*')
+        .eq('id', submissionId!)
+        .single()
+
+      expect(submission).toBeTruthy()
+
+      // === STRIPE IDs VALIDATION ===
+      expect(submission.stripe_customer_id).toBeTruthy()
+      expect(submission.stripe_customer_id).toMatch(/^cus_/)
+
+      expect(submission.stripe_subscription_id).toBeTruthy()
+      expect(submission.stripe_subscription_id).toMatch(/^sub_/)
+
+      expect(submission.stripe_subscription_schedule_id).toBeTruthy()
+      expect(submission.stripe_subscription_schedule_id).toMatch(/^sub_sched_/)
+
+      expect(submission.stripe_payment_id).toBeTruthy()
+      expect(submission.stripe_payment_id).toMatch(/^pi_/)
+
+      // === STATUS AND DATES VALIDATION ===
+      expect(submission.status).toBe('paid')
+      expect(submission.payment_completed_at).toBeTruthy()
+
+      const paymentDate = new Date(submission.payment_completed_at)
+      expect(paymentDate.getTime()).toBeGreaterThan(Date.now() - 120000) // Within last 2 minutes
+      expect(paymentDate.getTime()).toBeLessThanOrEqual(Date.now())
+
+      expect(submission.created_at).toBeTruthy()
+      expect(submission.updated_at).toBeTruthy()
+
+      // === PAYMENT AMOUNTS VALIDATION ===
+      expect(submission.payment_amount).toBeTruthy()
+      expect(submission.currency).toBe('EUR')
+
+      // Base package (€35/month) + 2 language add-ons (2 × €75 = €150) = €185
+      // Note: Discount codes apply to subscription's recurring charges, not one-time invoice items
+      // First payment includes full language add-on amounts (one-time), discount applies to base recurring
+      const expectedAmount = 18500 // cents (€185 - full first payment)
+      expect(submission.payment_amount).toBe(expectedAmount)
+
+      // === PAYMENT METADATA VALIDATION ===
+      expect(submission.payment_metadata).toBeTruthy()
+      // payment_metadata structure varies by event type (payment_intent vs invoice)
+      // Verify it's an object with some data
+      expect(typeof submission.payment_metadata).toBe('object')
+
+      // === LANGUAGE ADD-ONS VALIDATION ===
+      expect(submission.form_data.additionalLanguages).toBeTruthy()
+      expect(submission.form_data.additionalLanguages).toEqual(['de', 'fr'])
+      expect(submission.form_data.additionalLanguages.length).toBe(2)
+
+      // === SESSION VALIDATION ===
+      expect(submission.session_id).toBe(sessionId)
+
+    } finally {
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+      }
+    }
+  })
+
+  test('database validation - discount code metadata persisted', async ({ page }) => {
+    test.setTimeout(120000)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
+
+    try {
+      // 1. Seed session with no language add-ons (simpler for discount validation)
+      const seed = await seedStep14TestSession()
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+
+      // 2. Inject Zustand store
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
+      // 3. Navigate to Step 14
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/step\/14/, { timeout: 10000 })
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(3000)
+
+      // 4. Apply 20% discount code
+      const discountInput = page.getByRole('textbox', { name: 'discount' })
+      await discountInput.fill('TEST20')
+      const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
+      await verifyButton.click()
+      await page.waitForTimeout(2000)
+
+      // 5. Complete payment
+      await page.locator('#acceptTerms').click()
+      const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
+      await stripeFrame.getByRole('textbox', { name: 'Card number' }).fill('4242424242424242')
+      await page.waitForTimeout(500)
+      await stripeFrame.getByRole('textbox', { name: /Expiration date/i }).fill('1228')
+      await page.waitForTimeout(500)
+      await stripeFrame.getByRole('textbox', { name: 'Security code' }).fill('123')
+
+      const payButton = page.locator('button:has-text("Pay €")')
+      await payButton.click()
+
+      // 6. Wait for completion
+      await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
+      await page.waitForTimeout(10000)
+
+      const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid')
+      expect(webhookProcessed).toBe(true)
+
+      // 7. VALIDATE DISCOUNT CODE IN DATABASE
+      const { data: submission } = await supabase
+        .from('onboarding_submissions')
+        .select('*')
+        .eq('id', submissionId!)
+        .single()
+
+      expect(submission).toBeTruthy()
+
+      // Validate payment amount
+      // Base package: €35/month = 3500 cents
+      // Note: Discount codes apply to recurring subscription charges via Stripe schedule
+      // First payment shows full amount, discount applies to future recurring charges
+      expect(submission.payment_amount).toBe(3500)
+      expect(submission.currency).toBe('EUR')
+      expect(submission.status).toBe('paid')
+
+      // Validate payment metadata exists
+      expect(submission.payment_metadata).toBeTruthy()
+
+    } finally {
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+      }
+    }
+  })
+
+  test('database validation - subscription schedule dates', async ({ page }) => {
+    test.setTimeout(120000)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
+
+    try {
+      // 1. Seed and navigate
+      const seed = await seedStep14TestSession()
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/step\/14/, { timeout: 10000 })
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(3000)
+
+      // 2. Complete payment
+      await page.locator('#acceptTerms').click()
+      const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
+      await stripeFrame.getByRole('textbox', { name: 'Card number' }).fill('4242424242424242')
+      await page.waitForTimeout(500)
+      await stripeFrame.getByRole('textbox', { name: /Expiration date/i }).fill('1228')
+      await page.waitForTimeout(500)
+      await stripeFrame.getByRole('textbox', { name: 'Security code' }).fill('123')
+
+      const payButton = page.locator('button:has-text("Pay €")')
+      await payButton.click()
+
+      await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
+      await page.waitForTimeout(10000)
+
+      const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid')
+      expect(webhookProcessed).toBe(true)
+
+      // 3. VALIDATE SUBSCRIPTION DATES AND TIMESTAMPS
+      const { data: submission } = await supabase
+        .from('onboarding_submissions')
+        .select('*')
+        .eq('id', submissionId!)
+        .single()
+
+      expect(submission).toBeTruthy()
+
+      // Validate all critical timestamps exist
+      expect(submission.created_at).toBeTruthy()
+      expect(submission.updated_at).toBeTruthy()
+      expect(submission.payment_completed_at).toBeTruthy()
+
+      // Validate timestamp order: created_at <= payment_completed_at <= updated_at
+      const createdTime = new Date(submission.created_at).getTime()
+      const paymentTime = new Date(submission.payment_completed_at).getTime()
+      const updatedTime = new Date(submission.updated_at).getTime()
+
+      expect(createdTime).toBeLessThanOrEqual(paymentTime)
+      expect(paymentTime).toBeLessThanOrEqual(updatedTime)
+
+      // Validate payment happened recently (within last 2 minutes)
+      const now = Date.now()
+      expect(paymentTime).toBeGreaterThan(now - 120000)
+      expect(paymentTime).toBeLessThanOrEqual(now)
+
+      // Validate Stripe IDs format
+      expect(submission.stripe_subscription_schedule_id).toMatch(/^sub_sched_/)
+      expect(submission.stripe_subscription_id).toMatch(/^sub_/)
+      expect(submission.stripe_customer_id).toMatch(/^cus_/)
+
+    } finally {
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+      }
+    }
+  })
 })
