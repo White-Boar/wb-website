@@ -273,6 +273,17 @@ export class StripePaymentService {
             0
           )
         }
+
+        // DEBUG: Log what we extracted
+        console.log('[StripeService] Preview with discount:', {
+          couponId,
+          subscriptionAmount,
+          subscriptionDiscount,
+          lineAmount: subscriptionLine.amount,
+          hasDiscountAmounts: !!subscriptionLine.discount_amounts?.length
+        })
+      } else {
+        console.log('[StripeService] WARNING: Subscription line not found in preview!')
       }
 
       // Extract discount amount from preview
