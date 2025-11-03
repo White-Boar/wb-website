@@ -8,7 +8,7 @@ import { createClient } from '@supabase/supabase-js'
 import * as dotenv from 'dotenv'
 import path from 'path'
 import { seedStep14TestSession, cleanupTestSession } from './helpers/seed-step14-session'
-import { ensureTestCouponsExist, getStripePrices } from './fixtures/stripe-setup'
+import { ensureTestCouponsExist, getStripePrices, getTestCouponIds, type CouponIdSet } from './fixtures/stripe-setup'
 import { validateStripePaymentComplete } from './helpers/stripe-validation'
 import { getUIPaymentAmount, getUIRecurringAmount, fillStripePaymentForm } from './helpers/ui-parser'
 import { StripePaymentService } from '@/services/payment/StripePaymentService'
@@ -68,17 +68,31 @@ async function getSubmission(submissionId: string) {
   return data
 }
 
-test.describe.parallel('Step 14: Stripe Validation (Comprehensive)', () => {
+function deriveCouponSuffix(testInfo: import('@playwright/test').TestInfo): string {
+  if (process.env.PW_COUPON_SUFFIX) {
+    return process.env.PW_COUPON_SUFFIX
+  }
+  const index = typeof testInfo.parallelIndex === 'number' ? testInfo.parallelIndex : 0
+  return `w${index}`
+}
 
-  test.beforeAll(async () => {
+test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
+  test.describe.configure({ mode: 'serial' })
+
+  let couponIds: CouponIdSet
+  let stripePrices: Awaited<ReturnType<typeof getStripePrices>>
+
+  test.beforeAll(async ({}, testInfo) => {
     console.log('\n=== STRIPE VALIDATION TESTS ===')
     console.log('Setting up test coupons...')
-    await ensureTestCouponsExist()
+    const couponSuffix = deriveCouponSuffix(testInfo)
+    couponIds = getTestCouponIds(couponSuffix)
+    await ensureTestCouponsExist(couponIds)
 
-    const prices = await getStripePrices()
+    stripePrices = await getStripePrices()
     console.log('✓ Stripe connected')
-    console.log('✓ Base price: €' + (prices.base / 100))
-    console.log('✓ Add-on price: €' + (prices.addon / 100))
+    console.log('✓ Base price: €' + (stripePrices.base / 100))
+    console.log('✓ Add-on price: €' + (stripePrices.addon / 100))
     console.log('')
   })
 
@@ -94,7 +108,7 @@ test.describe.parallel('Step 14: Stripe Validation (Comprehensive)', () => {
 
     try {
       // SETUP: Get actual Stripe prices
-      const prices = await getStripePrices()
+      const prices = stripePrices
       console.log('Testing with Stripe base price:', prices.base, 'cents (€' + (prices.base / 100) + ')')
 
       // Seed session
@@ -176,11 +190,11 @@ test.describe.parallel('Step 14: Stripe Validation (Comprehensive)', () => {
 
     try {
       // Get prices
-      const prices = await getStripePrices()
+      const prices = stripePrices
       const previewTotals = await stripePaymentService.previewInvoiceWithDiscount(
         null,
         process.env.STRIPE_BASE_PACKAGE_PRICE_ID!,
-        'E2E_TEST_20',
+        couponIds.twentyPercent,
         0
       )
       const discountedRecurring = previewTotals.subscriptionAmount
@@ -202,9 +216,9 @@ test.describe.parallel('Step 14: Stripe Validation (Comprehensive)', () => {
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
 
       // Apply discount code
-      console.log('Applying E2E_TEST_20 discount code...')
+      console.log(`Applying ${couponIds.twentyPercent} discount code...`)
       const discountInput = page.getByRole('textbox', { name: /discount/i })
-      await discountInput.fill('E2E_TEST_20')
+      await discountInput.fill(couponIds.twentyPercent)
 
       const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
@@ -227,7 +241,7 @@ test.describe.parallel('Step 14: Stripe Validation (Comprehensive)', () => {
 
       await page.waitForFunction((expectedCode) => {
         return (window as any).__wb_lastCheckoutSession?.requestedDiscountCode === expectedCode
-      }, 'E2E_TEST_20', { timeout: 15000 })
+      }, couponIds.twentyPercent, { timeout: 15000 })
 
       const checkoutDebug = await page.evaluate(() => (window as any).__wb_lastCheckoutDebug)
       console.log('Checkout debug invoice:', checkoutDebug)
@@ -265,7 +279,7 @@ test.describe.parallel('Step 14: Stripe Validation (Comprehensive)', () => {
       }
 
       expect(submission.payment_amount).toBe(previewTotals.total)
-      expect(submission.form_data.discountCode).toBe('E2E_TEST_20')
+      expect(submission.form_data.discountCode).toBe(couponIds.twentyPercent)
       console.log('✓ Database records discount code')
 
       // CRITICAL VALIDATION 3: Stripe has discount
@@ -273,7 +287,7 @@ test.describe.parallel('Step 14: Stripe Validation (Comprehensive)', () => {
       await validateStripePaymentComplete(submission, {
         totalAmount: previewTotals.total,
         hasDiscount: true,
-        discountCode: 'E2E_TEST_20',
+        discountCode: couponIds.twentyPercent,
         discountPercent: 20,
         recurringAmount: discountedRecurring
       })

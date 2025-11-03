@@ -104,20 +104,20 @@
       "description": "Begin your journey with WhiteBoar. Choose between Fast & Simple or Custom solutions for your business needs."
     },
     "welcome": {
-      "title": "Welcome to WhiteBoar",
-      "subtitle": "Let's create your perfect website in just 14 simple steps. Our AI-driven process ensures a professional result tailored to your business.",
+      "title": "Get Your Business Online",
+      "subtitle": "Create your perfect website in 15 minutes. Our unique process captures the essence of your brand to build a custom website ready to impress your customers.",
       "features": {
         "fast": {
-          "title": "Lightning Fast",
-          "description": "Complete setup in minutes, live website in 2 business days."
+          "title": "Fast & effortless",
+          "description": "Our process is simple, guided, and respects your time."
         },
         "secure": {
-          "title": "Secure & Reliable",
-          "description": "SSL encryption, managed hosting, and automatic backups included."
+          "title": "Big results",
+          "description": "Get a complete, multilingual website ready to launch in days."
         },
         "smart": {
-          "title": "AI-Powered",
-          "description": "Smart recommendations and automated optimizations for your business."
+          "title": "Focus on what matters",
+          "description": "You bring your business vision; we handle the tech."
         }
       },
       "process": {
@@ -208,7 +208,7 @@
       "1": {
         "title": "Welcome",
         "description": "Let's get started with your business information",
-        "welcome": "Welcome to WhiteBoar",
+        "welcome": "Get Your Business Online",
         "subtitle": "Let's create your perfect website in just a few simple steps.",
         "stats": {
           "steps": "Simple Steps",

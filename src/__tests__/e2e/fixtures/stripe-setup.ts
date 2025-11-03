@@ -29,26 +29,48 @@ const stripe = createStripeClient()
  * Ensures test coupons exist in Stripe test mode
  * Creates them if missing, skips if already exist
  */
-export async function ensureTestCouponsExist() {
+export type CouponIdSet = {
+  tenPercent: string
+  twentyPercent: string
+  fiftyPercentThreeMonths: string
+}
+
+function sanitizeSuffix(suffix?: string): string {
+  if (!suffix) return ''
+  const trimmed = suffix.trim()
+  if (!trimmed) return ''
+  return '_' + trimmed.replace(/[^A-Za-z0-9_]/g, '_')
+}
+
+export function getTestCouponIds(suffix?: string): CouponIdSet {
+  const normalized = sanitizeSuffix(suffix)
+  return {
+    tenPercent: `E2E_TEST_10${normalized}`,
+    twentyPercent: `E2E_TEST_20${normalized}`,
+    fiftyPercentThreeMonths: `E2E_TEST_50_3MO${normalized}`
+  }
+}
+
+export async function ensureTestCouponsExist(ids: CouponIdSet = getTestCouponIds()) {
   const coupons = [
     {
-      id: 'E2E_TEST_10',
+      id: ids.tenPercent,
       percent_off: 10,
       duration: 'forever' as const,
-      name: 'E2E Test 10% Forever'
+      name: `E2E Test 10% Forever ${ids.tenPercent}`.slice(0, 40)
     },
     {
-      id: 'E2E_TEST_20',
+      id: ids.twentyPercent,
       percent_off: 20,
       duration: 'forever' as const,
-      name: 'E2E Test 20% Forever'
+      name: `E2E Test 20% Forever ${ids.twentyPercent}`.slice(0, 40)
     },
     {
-      id: 'E2E_TEST_50_3MO',
+      id: ids.fiftyPercentThreeMonths,
       percent_off: 50,
       duration: 'repeating' as const,
       duration_in_months: 3,
-      name: 'E2E Test 50% for 3 Months'
+      name: `E2E Test 50% for 3 Months ${ids.fiftyPercentThreeMonths}`.slice(0, 40)
     }
   ]
 

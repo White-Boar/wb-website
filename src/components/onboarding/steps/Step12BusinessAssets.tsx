@@ -251,6 +251,7 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                     maxFiles={1}
                     maxFileSize={2 * 1024 * 1024} // 2MB
                     sessionId={sessionId || undefined}
+                    uploadType="logo"
                     existingFiles={mergedLogoState}
                     onFilesChange={(files: FileUploadProgress[]) => {
                       /**
@@ -281,13 +282,29 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                       const completedFile = files.find(f => f.status === 'completed')
 
                       if (completedFile) {
+                        const meta = completedFile.uploadedFileMeta
+                        const resolvedFileName = meta?.fileName || completedFile.file.name
+                        const resolvedFileSize = typeof meta?.fileSize === 'number'
+                          ? meta.fileSize
+                          : completedFile.file.size
+                        const resolvedMimeType = meta?.mimeType || completedFile.file.type
+                        const resolvedUrl = meta?.url || completedFile.url
+
+                        if (!resolvedFileName || !resolvedUrl) {
+                          console.warn('[Step12BusinessAssets] Missing logo upload metadata', {
+                            meta,
+                            fileId: completedFile.id
+                          })
+                          return
+                        }
+
                         // New upload completed → save to form
                         const newValue = {
-                          id: completedFile.id,
-                          fileName: completedFile.file.name,
-                          fileSize: completedFile.file.size,
-                          mimeType: completedFile.file.type,
-                          url: completedFile.url!,
+                          id: meta?.id || completedFile.id,
+                          fileName: resolvedFileName,
+                          fileSize: resolvedFileSize,
+                          mimeType: resolvedMimeType,
+                          url: resolvedUrl,
                           uploadedAt: new Date().toISOString()
                         }
                         field.onChange(newValue)
@@ -455,14 +472,40 @@ export function Step12BusinessAssets({ form, errors, isLoading }: StepComponentP
                       // Extract completed files
                       const completedFiles = files
                         .filter(f => f.status === 'completed')
-                        .map(f => ({
-                          id: f.id,
-                          fileName: f.file.name,
-                          fileSize: f.file.size,
-                          mimeType: f.file.type,
-                          url: f.url!,
-                          uploadedAt: new Date().toISOString()
-                        }))
+                        .map(f => {
+                          const meta = f.uploadedFileMeta
+                          const resolvedFileName = meta?.fileName || f.file.name
+                          const resolvedFileSize = typeof meta?.fileSize === 'number'
+                            ? meta.fileSize
+                            : f.file.size
+                          const resolvedMimeType = meta?.mimeType || f.file.type
+                          const resolvedUrl = meta?.url || f.url
+
+                          if (!resolvedFileName || !resolvedUrl) {
+                            console.warn('[Step12BusinessAssets] Missing metadata for business photo upload', {
+                              meta,
+                              fileId: f.id
+                            })
+                            return null
+                          }
+
+                          return {
+                            id: meta?.id || f.id,
+                            fileName: resolvedFileName,
+                            fileSize: resolvedFileSize,
+                            mimeType: resolvedMimeType,
+                            url: resolvedUrl,
+                            uploadedAt: new Date().toISOString()
+                          }
+                        })
+                        .filter((value): value is {
+                          id: string
+                          fileName: string
+                          fileSize: number
+                          mimeType: string
+                          url: string
+                          uploadedAt: string
+                        } => value !== null)
 
                       // Check if there are actual changes before updating form
                       const currentFormValue = field.value || []

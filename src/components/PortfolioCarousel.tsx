@@ -21,39 +21,38 @@ import { fadeInUp, slideUp } from "../../context/design-system/motion/variants"
 const portfolioItems = [
   {
     id: 1,
-    title: "TechCorp Solutions",
-    subtitle: "SaaS Platform",
-    image: "/portfolio/project-1.png"
+    title: "Tritem",
+    subtitle: "Technology Solutions",
+    image: "/portfolio/tritem.png",
+    url: "https://tritem.eu/"
   },
   {
     id: 2,
-    title: "Green Energy Co",
-    subtitle: "Corporate Website",
-    image: "/portfolio/project-2.png"
+    title: "Stackmine",
+    subtitle: "IT Services",
+    image: "/portfolio/stackmine.png",
+    url: "https://www.stackmine.pl/en/home/"
   },
   {
     id: 3,
-    title: "Fashion Boutique",
-    subtitle: "E-commerce Store",
-    image: "/portfolio/project-3.png"
+    title: "Testspring",
+    subtitle: "Quality Assurance",
+    image: "/portfolio/testspring.png",
+    url: "https://testspring.pl/en"
   },
   {
     id: 4,
-    title: "Local Restaurant",
-    subtitle: "Online Presence",
-    image: "/portfolio/project-4.png"
+    title: "Alta",
+    subtitle: "Healthcare Technology",
+    image: "/portfolio/alta.png",
+    url: "https://alta.pl/en/"
   },
   {
     id: 5,
-    title: "Fitness Studio",
-    subtitle: "Booking Platform",
-    image: "/portfolio/project-5.png"
-  },
-  {
-    id: 6,
-    title: "Creative Agency",
-    subtitle: "Portfolio Site",
-    image: "/portfolio/project-6.png"
+    title: "Drukarnia Graffiti",
+    subtitle: "Manufacturing & Printing",
+    image: "/portfolio/drukarnia-graffiti.png",
+    url: "https://drukarniagraffiti.pl/en/home-english/"
   }
 ]
 

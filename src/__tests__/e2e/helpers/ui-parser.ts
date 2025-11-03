@@ -98,11 +98,13 @@ export async function fillStripePaymentForm(
 
   // Ensure card tab is active
   const cardTab = stripeFrame.getByRole('tab', { name: /card/i })
-  await cardTab.waitFor({ state: 'visible', timeout: 10000 })
-  const isCardSelected = await cardTab.getAttribute('aria-selected')
-  if (isCardSelected !== 'true') {
-    await cardTab.click({ force: true })
-    await page.waitForTimeout(200)
+  if (await cardTab.count()) {
+    await cardTab.first().waitFor({ state: 'visible', timeout: 10000 }).catch(() => {})
+    const isCardSelected = await cardTab.first().getAttribute('aria-selected')
+    if (isCardSelected !== 'true') {
+      await cardTab.first().click({ force: true })
+      await page.waitForTimeout(200)
+    }
   }
 
   // Wait for the card input fields to be visible

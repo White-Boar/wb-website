@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { randomUUID } from 'crypto'
 
 /**
  * Test-only API endpoint to seed a pre-filled onboarding session
@@ -14,6 +15,14 @@ export async function POST(request: NextRequest) {
       { error: 'Test endpoints disabled in production' },
       { status: 403 }
     )
+  }
+
+  const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+  const shouldRetry = (error: any) => {
+    if (!error) return false
+    const message = typeof error.message === 'string' ? error.message : ''
+    const details = typeof error.details === 'string' ? error.details : ''
+    return message.includes('fetch failed') || details.includes('fetch failed') || error.status === 502
   }
 
   try {
@@ -39,7 +48,7 @@ export async function POST(request: NextRequest) {
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
     // Generate test email if not provided
-    const testEmail = email || `test-step14-${Date.now()}@example.com`
+    const testEmail = email || `test-step14-${Date.now()}-${randomUUID()}@example.com`
 
     // Create session with pre-filled data
     const expiresAt = new Date()
@@ -117,19 +126,40 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Create session
-    const { data: session, error: sessionError } = await supabase
-      .from('onboarding_sessions')
-      .insert({
-        email: testEmail,
-        current_step: currentStep,
-        form_data: formData,
-        expires_at: expiresAt.toISOString(),
-        locale,
-        email_verified: true,
-        verification_attempts: 0
+    let session = null
+    let sessionError = null
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const { data, error } = await supabase
+        .from('onboarding_sessions')
+        .insert({
+          email: testEmail,
+          current_step: currentStep,
+          form_data: formData,
+          expires_at: expiresAt.toISOString(),
+          locale,
+          email_verified: true,
+          verification_attempts: 0
+        })
+        .select()
+        .single()
+
+      session = data
+      sessionError = error
+
+      if (!sessionError && session) {
+        break
+      }
+
+      if (!shouldRetry(sessionError) || attempt === 3) {
+        break
+      }
+
+      console.warn(`Session creation attempt ${attempt} failed, retrying...`, {
+        message: sessionError?.message,
+        details: sessionError?.details
       })
-      .select()
-      .single()
+      await wait(200 * attempt)
+    }
 
     if (sessionError || !session) {
       console.error('Session creation error:', sessionError)
@@ -140,18 +170,40 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Create submission (required for Step 14)
-    const { data: submission, error: submissionError} = await supabase
-      .from('onboarding_submissions')
-      .insert({
-        session_id: session.id,
-        email: testEmail,
-        business_name: formData.businessName || 'Test Business Inc',
-        form_data: formData,
-        completion_time_seconds: 60, // Mock completion time
-        status: 'submitted'
+    let submission = null
+    let submissionError = null
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      const { data, error } = await supabase
+        .from('onboarding_submissions')
+        .insert({
+          session_id: session.id,
+          email: testEmail,
+          business_name: formData.businessName || 'Test Business Inc',
+          form_data: formData,
+          completion_time_seconds: 60, // Mock completion time
+          status: 'submitted'
+        })
+        .select()
+        .single()
+
+      submission = data
+      submissionError = error
+
+      if (!submissionError && submission) {
+        break
+      }
+
+      if (!shouldRetry(submissionError) || attempt === 3) {
+        break
+      }
+
+      console.warn(`Submission creation attempt ${attempt} failed, retrying...`, {
+        message: submissionError?.message,
+        details: submissionError?.details
       })
-      .select()
-      .single()
+      await wait(200 * attempt)
+    }
 
     if (submissionError || !submission) {
       console.error('Submission creation error:', submissionError)
@@ -168,7 +220,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Return session details
-    const localePath = locale === 'en' ? 'en' : 'it'
+    const localePrefix = locale === 'en' ? '' : `/${locale}`
 
     return NextResponse.json({
       success: true,
@@ -176,7 +228,7 @@ export async function POST(request: NextRequest) {
       submissionId: submission.id,
       email: testEmail,
       formData: formData, // For localStorage injection
-      url: `/${localePath}/onboarding/step/${currentStep}`
+      url: `${localePrefix}/onboarding/step/${currentStep}`
     })
 
   } catch (error) {

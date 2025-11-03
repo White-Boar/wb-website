@@ -14,6 +14,15 @@ export interface FileUploadProgress {
   error?: string
   url?: string
   preview?: string
+  uploadedFileMeta?: {
+    id?: string
+    storagePath?: string
+    fullPath?: string
+    fileName?: string
+    fileSize?: number
+    mimeType?: string
+    url?: string
+  }
 }
 
 interface FileUploadWithProgressProps {
@@ -27,6 +36,7 @@ interface FileUploadWithProgressProps {
   disabled?: boolean
   existingFiles?: FileUploadProgress[]
   sessionId?: string
+  uploadType?: 'logo' | 'business-asset'
 }
 
 export function FileUploadWithProgress({
@@ -39,7 +49,8 @@ export function FileUploadWithProgress({
   className,
   disabled = false,
   existingFiles = [],
-  sessionId
+  sessionId,
+  uploadType = 'business-asset'
 }: FileUploadWithProgressProps) {
   const [uploadQueue, setUploadQueue] = useState<FileUploadProgress[]>(existingFiles)
   const [isDragActive, setIsDragActive] = useState(false)
@@ -80,6 +91,16 @@ export function FileUploadWithProgress({
     })
   }
 
+  type UploadResponse = {
+    id?: string
+    path?: string
+    fullPath?: string
+    url: string
+    fileName?: string
+    fileSize?: number
+    mimeType?: string
+  }
+
   const uploadFile = async (fileProgress: FileUploadProgress): Promise<FileUploadProgress> => {
     const controller = new AbortController()
     abortControllersRef.current.set(fileProgress.id, controller)
@@ -88,7 +109,7 @@ export function FileUploadWithProgress({
       const result = await retry.fileUpload(async () => {
         const formData = new FormData()
         formData.append('file', fileProgress.file)
-        formData.append('type', 'business-asset')
+        formData.append('type', uploadType)
         if (sessionId) {
           formData.append('sessionId', sessionId)
         }
@@ -116,13 +137,27 @@ export function FileUploadWithProgress({
         throw result.error || new Error('Upload failed after retries')
       }
 
-      const uploadResult = result.data!
+      const uploadResult = result.data as UploadResponse
+      const resolvedFileName = uploadResult?.fileName || fileProgress.file.name
+      const resolvedFileSize = typeof uploadResult?.fileSize === 'number'
+        ? uploadResult.fileSize
+        : fileProgress.file.size
+      const resolvedMimeType = uploadResult?.mimeType || fileProgress.file.type
 
       return {
         ...fileProgress,
         status: 'completed',
         progress: 100,
-        url: uploadResult.url
+        url: uploadResult.url,
+        uploadedFileMeta: {
+          id: uploadResult?.id,
+          storagePath: uploadResult?.path,
+          fullPath: uploadResult?.fullPath,
+          fileName: resolvedFileName,
+          fileSize: resolvedFileSize,
+          mimeType: resolvedMimeType,
+          url: uploadResult?.url
+        }
       }
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {

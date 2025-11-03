@@ -222,7 +222,7 @@ test.describe('Complete Onboarding Flow', () => {
 
     // Should navigate to onboarding start page
     await page.waitForURL(/\/onboarding/);
-    await expect(page.locator('h1')).toContainText(/Welcome to WhiteBoar|get started|onboarding/i);
+    await expect(page.locator('h1')).toContainText(/Get Your Business Online|get started|onboarding/i);
 
     // Click the main start button on onboarding page
     const onboardingStartButton = page.getByRole('button', { name: 'Start Your Website' });

@@ -4,8 +4,7 @@ import Stripe from 'stripe'
 import * as dotenv from 'dotenv'
 import path from 'path'
 import { seedStep14TestSession, cleanupTestSession } from './helpers/seed-step14-session'
-import { ensureTestCouponsExist, getStripePrices } from './fixtures/stripe-setup'
-import { validateStripePaymentComplete } from './helpers/stripe-validation'
+import { ensureTestCouponsExist, getStripePrices, getTestCouponIds, type CouponIdSet } from './fixtures/stripe-setup'
 import { getUIPaymentAmount, getUIRecurringAmount, fillStripePaymentForm } from './helpers/ui-parser'
 import { StripePaymentService } from '@/services/payment/StripePaymentService'
 
@@ -27,6 +26,19 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 })
 
 const stripePaymentService = new StripePaymentService()
+
+const formatEuroDisplay = (amountCents: number): string => {
+  const euros = amountCents / 100
+  return euros % 1 === 0 ? euros.toString() : euros.toFixed(2).replace(/0+$/, '').replace(/\.$/, '')
+}
+
+function deriveCouponSuffix(testInfo: import('@playwright/test').TestInfo): string {
+  if (process.env.PW_COUPON_SUFFIX) {
+    return process.env.PW_COUPON_SUFFIX
+  }
+  const index = typeof testInfo.parallelIndex === 'number' ? testInfo.parallelIndex : 0
+  return `w${index}`
+}
 
 
 // Helper: Wait for webhook processing with retries
@@ -57,18 +69,24 @@ async function waitForWebhookProcessing(
   return false
 }
 
-test.describe.parallel('Step 14: Payment Flow E2E', () => {
+test.describe('Step 14: Payment Flow E2E', () => {
+  test.describe.configure({ mode: 'serial' })
   // Allow tests to run in parallel while each scenario seeds its own session/coupon context
 
-  // Setup test coupons before all tests
-  test.beforeAll(async () => {
-    console.log('Setting up test environment...')
-    await ensureTestCouponsExist()
+  let couponIds: CouponIdSet
+  let stripePrices: Awaited<ReturnType<typeof getStripePrices>>
 
-    const prices = await getStripePrices()
+  // Setup test coupons before all tests
+  test.beforeAll(async ({}, testInfo) => {
+    console.log('Setting up test environment...')
+    const couponSuffix = deriveCouponSuffix(testInfo)
+    couponIds = getTestCouponIds(couponSuffix)
+    await ensureTestCouponsExist(couponIds)
+
+    stripePrices = await getStripePrices()
     console.log('✓ Stripe test mode connected')
-    console.log('✓ Base package price:', prices.base, 'cents (€' + (prices.base / 100) + ')')
-    console.log('✓ Language add-on price:', prices.addon, 'cents (€' + (prices.addon / 100) + ')')
+    console.log('✓ Base package price:', stripePrices.base, 'cents (€' + (stripePrices.base / 100) + ')')
+    console.log('✓ Language add-on price:', stripePrices.addon, 'cents (€' + (stripePrices.addon / 100) + ')')
   })
 
   // Add delay between tests to let webhooks settle
@@ -301,7 +319,7 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
     const previewTotals = await stripePaymentService.previewInvoiceWithDiscount(
       null,
       process.env.STRIPE_BASE_PACKAGE_PRICE_ID!,
-      'E2E_TEST_20',
+      couponIds.twentyPercent,
       languageCount
     )
     const expectedTotal = previewTotals.total
@@ -331,7 +349,7 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       await page.waitForTimeout(2000)
 
       const discountInput = page.getByRole('textbox', { name: /discount/i })
-      await discountInput.fill('E2E_TEST_20')
+      await discountInput.fill(couponIds.twentyPercent)
       const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
 
@@ -388,7 +406,7 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       await page.goto(`http://localhost:3783${seed.url}`)
-      await page.waitForURL(/\/(en|it)\/onboarding\/step\/14/, { timeout: 10000 })
+      await page.waitForURL(/\/(?:en\/|it\/)?onboarding\/step\/14/, { timeout: 10000 })
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(2000)
 
@@ -396,7 +414,17 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       await discountInput.fill(couponId)
       await page.getByRole('button', { name: /Apply|Verify/i }).click()
 
-      await expect(page.locator(`text=/Discount code ${couponId} applied/i`)).toBeVisible()
+      await Promise.race([
+        page.waitForFunction((code: string) => {
+          const meta = (window as any).__wb_lastDiscountMeta
+          return meta?.code === code
+        }, couponId, { timeout: 15000 }),
+        page.waitForFunction(() => {
+          return Boolean((window as any).__wb_lastDiscountValidation?.status === 'valid')
+        }, { timeout: 15000 })
+      ])
+
+      await expect(page.locator(`text=/Discount code ${couponId} applied/i`)).toBeVisible({ timeout: 15000 })
 
       // Payment element should be hidden when no payment required
       await expect(page.locator('[data-testid="stripe-payment-element"]')).toHaveCount(0)
@@ -448,26 +476,35 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       await expect(page.locator('text=/Discount Code/i').first()).toBeVisible()
 
       // Find and fill discount code input
+      const discountCode = couponIds.tenPercent
       const discountInput = page.getByRole('textbox', { name: 'discount' })
       await expect(discountInput).toBeVisible()
-      await discountInput.fill('TEST10')
+      await discountInput.fill(discountCode)
 
       // Click Apply button
       const applyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await expect(applyButton).toBeEnabled()
       await applyButton.click()
 
-      // Wait for validation
-      await page.waitForTimeout(2000)
+      await Promise.race([
+        page.waitForFunction((code: string) => {
+          const meta = (window as any).__wb_lastDiscountMeta
+          return meta?.code === code
+        }, discountCode, { timeout: 15000 }),
+        page.waitForFunction(() => {
+          return Boolean((window as any).__wb_lastDiscountValidation?.status === 'valid')
+        }, { timeout: 15000 })
+      ])
 
       // Verify success message appears
-      await expect(page.locator('text=/Discount code TEST10 applied/i')).toBeVisible({ timeout: 10000 })
+      await expect(page.locator(`text=Discount code ${discountCode} applied`)).toBeVisible({ timeout: 15000 })
 
       // Verify discount badge in order summary
       await expect(page.locator('text=/Discount Applied/i')).toBeVisible()
 
       // Verify price reduction (original €35, with 10% discount = €31.50)
-      await expect(page.locator('button:has-text("Pay €31.5")')).toBeVisible()
+      const expectedPayDisplay = formatEuroDisplay(Math.round(stripePrices.base * 0.9))
+      await expect(page.locator(`button:has-text("Pay €${expectedPayDisplay}")`)).toBeVisible()
 
     } catch (error) {
       throw error
@@ -520,7 +557,8 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       await expect(errorLocator).toBeVisible({ timeout: 10000 })
 
       // Verify price remains unchanged (€35)
-      await expect(page.locator('text=/Pay €35/i')).toBeVisible()
+      const baseDisplay = formatEuroDisplay(stripePrices.base)
+      await expect(page.locator(`text=/Pay €${baseDisplay.replace('.', '\\.')}/i`)).toBeVisible()
 
     } catch (error) {
       throw error
@@ -601,17 +639,27 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
 
       // Apply discount code
       const discountInput = page.getByRole('textbox', { name: 'discount' })
-      await discountInput.fill('TEST20')
+      const discountCode = couponIds.twentyPercent
+      await discountInput.fill(discountCode)
 
       const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
 
-      await page.waitForTimeout(2000)
+      await Promise.race([
+        page.waitForFunction((code: string) => {
+          const meta = (window as any).__wb_lastDiscountMeta
+          return meta?.code === code
+        }, discountCode, { timeout: 15000 }),
+        page.waitForFunction(() => {
+          return Boolean((window as any).__wb_lastDiscountValidation?.status === 'valid')
+        }, { timeout: 15000 })
+      ])
 
       // Verify discount applied (20% off €35 = €7, final price €28)
-      await expect(page.locator('text=/Discount code TEST20 applied/i')).toBeVisible()
+      await expect(page.locator(`text=Discount code ${discountCode} applied`)).toBeVisible({ timeout: 15000 })
       // Check for €28 in the Pay button
-      await expect(page.locator('button:has-text("Pay €28")')).toBeVisible()
+      const expectedPayDisplay = formatEuroDisplay(Math.round(stripePrices.base * 0.8))
+      await expect(page.locator(`button:has-text("Pay €${expectedPayDisplay}")`)).toBeVisible()
 
     } catch (error) {
       throw error
@@ -651,8 +699,9 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       await page.waitForTimeout(3000)
 
       // 5. Apply discount code
+      const discountCode = couponIds.tenPercent
       const discountInput = page.getByRole('textbox', { name: 'discount' })
-      await discountInput.fill('TEST10')
+      await discountInput.fill(discountCode)
 
       const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
@@ -660,10 +709,10 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       await page.waitForFunction((code: string) => {
         const meta = (window as any).__wb_lastDiscountMeta
         return meta?.code === code
-      }, 'TEST10', { timeout: 15000 })
+      }, discountCode, { timeout: 15000 })
 
       // Verify discount applied
-      await expect(page.locator('text=/Discount code TEST10 applied/i')).toBeVisible({ timeout: 15000 })
+      await expect(page.locator(`text=Discount code ${discountCode} applied`)).toBeVisible({ timeout: 15000 })
 
       // 6. Accept terms and complete payment
       await page.locator('#acceptTerms').click()
@@ -771,8 +820,9 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       await page.waitForTimeout(3000)
 
       // 4. Apply 20% discount code
+      const discountCode = couponIds.twentyPercent
       const discountInput = page.getByRole('textbox', { name: 'discount' })
-      await discountInput.fill('TEST20')
+      await discountInput.fill(discountCode)
       const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
       await page.waitForTimeout(2000)
@@ -803,7 +853,7 @@ test.describe.parallel('Step 14: Payment Flow E2E', () => {
       // Base package: €35/month = 3500 cents
       // Note: Discount codes apply to recurring subscription charges via Stripe schedule
       // First payment shows full amount, discount applies to future recurring charges
-      expect(submission.payment_amount).toBe(3500)
+      expect(submission.payment_amount).toBe(stripePrices.base)
       expect(submission.currency).toBe('EUR')
       expect(submission.status).toBe('paid')
 

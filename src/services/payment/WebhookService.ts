@@ -86,23 +86,25 @@ export class WebhookService {
       subscriptionId = eventData.id
       customerId = typeof eventData.customer === 'string'
         ? eventData.customer
-        : eventData.customer?.id
+        : eventData.customer?.id ?? null
       scheduleId = eventData.schedule as string | null
       submissionIdFromMetadata = eventData.metadata?.submission_id
     } else if (event.type.includes('invoice')) {
       const invoice = invoiceFromEvent
 
       if (invoice) {
-        subscriptionId = typeof invoice.subscription === 'string'
-          ? invoice.subscription
-          : invoice.subscription?.id
+        const invoiceSubscriptionRaw = (invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription | null }).subscription
+        const invoiceSubscription = invoiceSubscriptionRaw ?? null
+        subscriptionId = typeof invoiceSubscription === 'string'
+          ? invoiceSubscription
+          : invoiceSubscription?.id ?? null
         customerId = typeof invoice.customer === 'string'
           ? invoice.customer
-          : invoice.customer?.id
+          : invoice.customer?.id ?? null
 
         submissionIdFromMetadata = invoice.metadata?.submission_id
 
-        const invoicePaymentIntent = invoice.payment_intent
+        const invoicePaymentIntent = (invoice as Stripe.Invoice & { payment_intent?: string | Stripe.PaymentIntent | null }).payment_intent ?? null
         if (typeof invoicePaymentIntent === 'string') {
           paymentIntentId = invoicePaymentIntent
         } else if (invoicePaymentIntent?.id) {
@@ -125,7 +127,7 @@ export class WebhookService {
       // For payment_intent events
       customerId = typeof eventData.customer === 'string'
         ? eventData.customer
-        : eventData.customer?.id
+        : eventData.customer?.id ?? null
       submissionIdFromMetadata = eventData.metadata?.submission_id
 
       // Try to get subscription info from metadata or by retrieving the PaymentIntent
@@ -139,10 +141,11 @@ export class WebhookService {
           if (paymentIntent.invoice && typeof paymentIntent.invoice !== 'string') {
             const invoice = paymentIntent.invoice
             // Invoice.subscription can be string | Subscription | null
-            const invoiceSubscription = (invoice as any).subscription as string | Stripe.Subscription | null
+            const invoiceSubscriptionRaw = (invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription | null }).subscription
+            const invoiceSubscription = invoiceSubscriptionRaw ?? null
             subscriptionId = typeof invoiceSubscription === 'string'
               ? invoiceSubscription
-              : invoiceSubscription?.id || null
+              : invoiceSubscription?.id ?? null
 
             if (subscriptionId) {
               const subscription = await this.stripe.subscriptions.retrieve(subscriptionId)
@@ -263,15 +266,18 @@ export class WebhookService {
         return { success: false, error: 'Invoice not found' }
       }
 
-      const subscriptionId = typeof invoice.subscription === 'string'
-        ? invoice.subscription
-        : invoice.subscription?.id
-      const customerId = typeof invoice.customer === 'string'
-        ? invoice.customer
-        : invoice.customer?.id
-      const paymentIntentId = typeof invoice.payment_intent === 'string'
-        ? invoice.payment_intent
-        : invoice.payment_intent?.id
+      const invoiceSubscriptionRaw = (invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription | null }).subscription ?? null
+      const subscriptionId = typeof invoiceSubscriptionRaw === 'string'
+        ? invoiceSubscriptionRaw
+        : invoiceSubscriptionRaw?.id ?? null
+      const invoiceCustomerRaw = (invoice as Stripe.Invoice & { customer?: string | Stripe.Customer | null }).customer ?? null
+      const customerId = typeof invoiceCustomerRaw === 'string'
+        ? invoiceCustomerRaw
+        : invoiceCustomerRaw?.id ?? null
+      const invoicePaymentIntentRaw = (invoice as Stripe.Invoice & { payment_intent?: string | Stripe.PaymentIntent | null }).payment_intent ?? null
+      const paymentIntentId = typeof invoicePaymentIntentRaw === 'string'
+        ? invoicePaymentIntentRaw
+        : invoicePaymentIntentRaw?.id ?? null
 
       // Find submission
       const lookupResult = await this.findSubmissionByEvent(event, supabase)
@@ -298,11 +304,16 @@ export class WebhookService {
       let recurringDiscount = 0
       if (subscriptionId) {
         try {
-          const subscription = await this.stripe.subscriptions.retrieve(subscriptionId)
+          const subscription = await this.stripe.subscriptions.retrieve(subscriptionId) as Stripe.Subscription & { discount?: Stripe.Discount | null }
 
           // Extract discount information from subscription
-          if (subscription.discount) {
-            const coupon = subscription.discount.coupon
+          const subscriptionAny = subscription as any
+          const discount: Stripe.Discount | null = (subscriptionAny.discount
+            ?? subscriptionAny.discounts?.data?.[0]
+            ?? null) as Stripe.Discount | null
+
+          if (discount) {
+            const coupon = (discount as any).coupon as Stripe.Coupon
             discountMetadata = {
               coupon_id: coupon.id,
               duration: coupon.duration,
@@ -386,7 +397,7 @@ export class WebhookService {
             email,
             invoice.amount_paid,
             invoice.currency.toUpperCase(),
-            paymentIntentId,
+            paymentIntentId ?? '',
             additionalLanguages
           )
           debugLog('Payment notification email sent successfully')
@@ -417,6 +428,10 @@ export class WebhookService {
       const paymentIntentId = paymentIntent.id
       const amount = paymentIntent.amount
       const currency = paymentIntent.currency
+      const invoiceRef = paymentIntent.invoice
+      let invoiceId: string | null = null
+      let invoiceSubtotal: number | null = null
+      let invoiceDiscountAmount = 0
 
       // Find submission by customer_id or metadata
       const lookupResult = await this.findSubmissionByEvent(event, supabase)
@@ -427,6 +442,24 @@ export class WebhookService {
 
       const submission = lookupResult.submission
 
+      if (invoiceRef) {
+        try {
+          invoiceId = typeof invoiceRef === 'string' ? invoiceRef : invoiceRef.id
+          if (invoiceId) {
+            const invoice = await this.stripe.invoices.retrieve(invoiceId, {
+              expand: ['total_discount_amounts']
+            })
+            invoiceSubtotal = typeof invoice.subtotal === 'number' ? invoice.subtotal : null
+            invoiceDiscountAmount = (invoice.total_discount_amounts || []).reduce(
+              (sum, discount) => sum + discount.amount,
+              0
+            )
+          }
+        } catch (invoiceError) {
+          debugLog('Failed to retrieve invoice for payment intent:', invoiceError)
+        }
+      }
+
       // Get discount information from subscription if it exists
       let discountMetadata: any = {}
       let recurringDiscount = 0
@@ -435,8 +468,11 @@ export class WebhookService {
         try {
           const subscription = await this.stripe.subscriptions.retrieve(submission.stripe_subscription_id)
 
-          if (subscription.discount) {
-            const coupon = subscription.discount.coupon
+          const subscriptionAny = subscription as any
+          const discount = subscriptionAny.discount ?? subscriptionAny.discounts?.data?.[0] ?? null
+
+          if (discount) {
+            const coupon = (discount as any).coupon as Stripe.Coupon
             discountMetadata = {
               coupon_id: coupon.id,
               duration: coupon.duration,
@@ -462,6 +498,11 @@ export class WebhookService {
         }
       }
 
+      const computedDiscountAmount = invoiceDiscountAmount || recurringDiscount || 0
+      const computedSubtotal = typeof invoiceSubtotal === 'number'
+        ? invoiceSubtotal
+        : amount + computedDiscountAmount
+
       // Update submission with payment details
       await supabase
         .from('onboarding_submissions')
@@ -474,7 +515,12 @@ export class WebhookService {
           payment_completed_at: new Date().toISOString(),
           payment_metadata: {
             payment_intent_id: paymentIntentId,
+            invoice_id: invoiceId,
             payment_method: paymentIntent.payment_method,
+            amount_charged: amount,
+            currency: currency.toUpperCase(),
+            subtotal: computedSubtotal,
+            discount_amount: computedDiscountAmount,
             recurring_discount: recurringDiscount,
             discount_info: discountMetadata
           },

@@ -80,6 +80,22 @@ describe('Stripe Checkout Session Creation Tests', () => {
         stripe_subscription_schedule_id: null
       })
       .eq('id', testSubmissionId)
+
+    // Reset form data to baseline (no additional languages)
+    await supabase
+      .from('onboarding_submissions')
+      .update({
+        form_data: {
+          step3: {
+            businessName: 'Checkout Test Business',
+            email: testEmail
+          },
+          step13: {
+            additionalLanguages: []
+          }
+        }
+      })
+      .eq('id', testSubmissionId)
   })
 
   afterAll(async () => {

@@ -58,7 +58,7 @@ test.describe('WhiteBoar Homepage', () => {
     await expect(page).toHaveURL('/it');
 
     // Check content switches to Italian
-    await expect(page.getByText('Siti web guidati dall\'AI online in giorni, non mesi.')).toBeVisible();
+    await expect(page.getByText('La tua attività. Vendite globali. Tutto l\'anno.')).toBeVisible();
   });
 
   test('theme toggle works', async ({ page, isMobile }) => {

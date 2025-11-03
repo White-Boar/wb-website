@@ -96,20 +96,20 @@
       "description": "Inizia il tuo viaggio con WhiteBoar. Scegli tra soluzioni Veloci e Semplici o Personalizzate per le tue esigenze aziendali."
     },
     "welcome": {
-      "title": "Benvenuti in WhiteBoar",
-      "subtitle": "Creiamo il tuo sito web perfetto in soli 14 semplici passaggi. Il nostro processo basato su AI garantisce un risultato professionale su misura per la tua attività.",
+      "title": "Metti La Tua Attività Online",
+      "subtitle": "Crea il tuo sito web perfetto in 15 minuti. Il nostro processo unico cattura l'essenza del tuo brand per costruire un sito web personalizzato pronto a impressionare i tuoi clienti.",
       "features": {
         "fast": {
-          "title": "Veloce come un Fulmine",
-          "description": "Configurazione completata in minuti, sito web live in 2 giorni lavorativi."
+          "title": "Veloce e senza sforzo",
+          "description": "Il nostro processo è semplice, guidato e rispetta il tuo tempo."
         },
         "secure": {
-          "title": "Sicuro e Affidabile",
-          "description": "Crittografia SSL, hosting gestito e backup automatici inclusi."
+          "title": "Grandi risultati",
+          "description": "Ottieni un sito web completo e multilingue pronto al lancio in pochi giorni."
         },
         "smart": {
-          "title": "Alimentato da AI",
-          "description": "Raccomandazioni intelligenti e ottimizzazioni automatiche per la tua attività."
+          "title": "Concentrati su ciò che conta",
+          "description": "Tu porti la tua visione aziendale; noi ci occupiamo della tecnologia."
         }
       },
       "process": {
@@ -208,7 +208,7 @@
       "1": {
         "title": "Benvenuto",
         "description": "Iniziamo con le informazioni della tua attività",
-        "welcome": "Benvenuto in WhiteBoar",
+        "welcome": "Metti La Tua Attività Online",
         "subtitle": "Creiamo il tuo sito web perfetto in pochi semplici passaggi.",
         "stats": {
           "steps": "Passaggi Semplici",

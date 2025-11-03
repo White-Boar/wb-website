@@ -273,8 +273,9 @@ export class StripePaymentService {
           )
         }
 
-        const subscriptionFinalAmount = typeof subscriptionLine.amount_total === 'number'
-          ? subscriptionLine.amount_total
+        const subscriptionAmountTotal = (subscriptionLine as any).amount_total as number | undefined
+        const subscriptionFinalAmount = typeof subscriptionAmountTotal === 'number'
+          ? subscriptionAmountTotal
           : subscriptionLine.amount - subscriptionDiscount
 
         subscriptionAmount = subscriptionFinalAmount
@@ -308,8 +309,9 @@ export class StripePaymentService {
           line.description?.includes('WhiteBoar Base Package') ||
           line.description?.includes('Base Package')
 
-        const finalAmount = typeof line.amount_total === 'number'
-          ? line.amount_total
+        const lineAmountTotal = (line as any).amount_total as number | undefined
+        const finalAmount = typeof lineAmountTotal === 'number'
+          ? lineAmountTotal
           : line.amount - lineDiscountAmount
 
         return {

@@ -20,8 +20,7 @@ import {
   ElementsConsumer
 } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import type { StripeAppearance } from '@stripe/stripe-js'
-import type { Stripe, StripeElements } from '@stripe/stripe-js'
+import type { Appearance, Stripe, StripeElements } from '@stripe/stripe-js'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -176,6 +175,12 @@ function CheckoutForm({
   const recurringMonthlyPrice = activePreview ? activePreview.recurringAmount / 100 : 0
   const subtotal = activePreview ? activePreview.subtotal / 100 : 0
   const lineItems = activePreview?.lineItems || []
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      ;(window as any).__wb_lastDiscountValidation = discountValidation
+    }
+  }, [discountValidation])
 
   const effectiveNoPayment = noPaymentDue || hasZeroPayment || totalDueToday <= 0
 
@@ -546,7 +551,7 @@ function CheckoutForm({
                 {t('commitmentNotice', { amount: recurringMonthlyPrice.toFixed(2) })}
                 {discountValidation?.status === 'valid' && discountValidation.duration === 'forever' && (
                   <span className="block mt-1 text-green-600 dark:text-green-400 font-medium">
-                    {t('discount.foreverDiscount', { code: discountValidation.code })}
+                    {t('discount.foreverDiscount', { code: discountValidation.code ?? '' })}
                   </span>
                 )}
               </AlertDescription>
@@ -933,7 +938,7 @@ function CheckoutFormWrapper(props: CheckoutWrapperProps) {
   const [hasZeroPayment, setHasZeroPayment] = useState(false)
   const [activeDiscountCode, setActiveDiscountCode] = useState<string | null>(null)
   const [discountValidation, setDiscountValidation] = useState<DiscountValidation | null>(null)
-  const [stripeAppearance, setStripeAppearance] = useState<StripeAppearance>()
+  const [stripeAppearance, setStripeAppearance] = useState<Appearance>()
 
   const languagesRef = useRef<string[]>([])
   const discountCodeRef = useRef<string | null>(null)
@@ -1136,6 +1141,10 @@ function CheckoutFormWrapper(props: CheckoutWrapperProps) {
 
     setActiveDiscountCode(null)
     setHasZeroPayment(false)
+    if (typeof window !== 'undefined') {
+      ;(window as any).__wb_lastDiscountMeta = null
+      ;(window as any).__wb_lastDiscountValidation = null
+    }
     refreshPaymentIntent({ discountCode: null })
   }, [refreshPaymentIntent, activeDiscountCode])
 

@@ -50,7 +50,11 @@ export interface SeedStep14Result {
 export async function seedStep14TestSession(
   options: SeedStep14Options = {}
 ): Promise<SeedStep14Result> {
-  const response = await fetch('http://localhost:3783/api/test/seed-session', {
+  const baseUrl = (process.env.BASE_URL && process.env.BASE_URL.trim().length > 0)
+    ? process.env.BASE_URL.replace(/\/$/, '')
+    : 'http://localhost:3783'
+
+  const response = await fetch(`${baseUrl}/api/test/seed-session`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
@@ -77,12 +81,12 @@ export async function seedStep14TestSession(
   // Ensure submission is readable before proceeding (handles eventual consistency)
   const submissionId = data.submissionId as string
   const sessionId = data.sessionId as string
-  const verificationUrl = `http://localhost:3783/api/onboarding/get-submission?sessionId=${sessionId}&submissionId=${submissionId}&includeFormData=true`
+  const verificationUrl = `${baseUrl}/api/onboarding/get-submission?sessionId=${sessionId}&submissionId=${submissionId}&includeFormData=true`
 
-  for (let attempt = 0; attempt < 5; attempt++) {
+  for (let attempt = 0; attempt < 10; attempt++) {
     try {
       const check = await fetch(verificationUrl)
-      if (attempt === 4 && !check.ok) {
+      if (attempt === 9 && !check.ok) {
         console.warn('Submission not yet available after seeding', {
           sessionId: data.sessionId,
           submissionId,
@@ -93,7 +97,7 @@ export async function seedStep14TestSession(
         break
       }
     } catch (err) {
-      if (attempt === 4) {
+      if (attempt === 9) {
         console.warn('Submission check failed', {
           sessionId: data.sessionId,
           submissionId,
@@ -102,7 +106,7 @@ export async function seedStep14TestSession(
       }
       // ignore and retry
     }
-    await new Promise(resolve => setTimeout(resolve, 200))
+    await new Promise(resolve => setTimeout(resolve, 400))
   }
 
   // Build Zustand store structure matching persist config in onboarding.ts
@@ -142,29 +146,52 @@ export async function seedStep14TestSession(
  * }
  */
 export async function cleanupTestSession(sessionId: string, submissionId?: string): Promise<void> {
-  const { createClient } = await import('@supabase/supabase-js')
+  const baseUrl = (process.env.BASE_URL && process.env.BASE_URL.trim().length > 0)
+    ? process.env.BASE_URL.replace(/\/$/, '')
+    : 'http://localhost:3783'
 
+  try {
+    const response = await fetch(`${baseUrl}/api/test/cleanup-session`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ sessionId, submissionId })
+    })
+
+    if (response.ok) {
+      const result = await response.json().catch(() => null)
+      if (!result?.success) {
+        console.warn('Cleanup API responded without success flag', result)
+      }
+      return
+    }
+
+    console.warn('Cleanup API request failed', {
+      status: response.status,
+      statusText: response.statusText
+    })
+  } catch (error) {
+    console.warn('Cleanup API request error', error)
+  }
+
+  // Fallback: direct Supabase cleanup when service credentials are available
+  const { createClient } = await import('@supabase/supabase-js')
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    console.warn('Cannot cleanup: Missing Supabase credentials')
+    console.warn('Cannot perform Supabase cleanup fallback: Missing Supabase credentials')
     return
   }
 
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-  // Delete submission first (foreign key constraint)
   if (submissionId) {
-    await supabase
-      .from('onboarding_submissions')
-      .delete()
-      .eq('id', submissionId)
+    await supabase.from('onboarding_submissions').delete().eq('id', submissionId)
   }
 
-  // Delete session
-  await supabase
-    .from('onboarding_sessions')
-    .delete()
-    .eq('id', sessionId)
+  await supabase.from('onboarding_uploads').delete().eq('session_id', sessionId)
+  await supabase.from('onboarding_analytics').delete().eq('session_id', sessionId)
+  await supabase.from('onboarding_sessions').delete().eq('id', sessionId)
 }

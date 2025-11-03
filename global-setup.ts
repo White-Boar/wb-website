@@ -2,6 +2,80 @@ import { spawn, ChildProcess, execSync } from 'child_process';
 import { FullConfig } from '@playwright/test';
 
 let stripeListenerProcess: ChildProcess | null = null;
+let nextServerProcess: ChildProcess | null = null;
+
+const NEXT_SERVER_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3783';
+
+function stripeSupportsRequestTimeout(): boolean {
+  try {
+    const helpOutput = execSync('stripe listen --help', { encoding: 'utf-8' });
+    return helpOutput.includes('--request-timeout');
+  } catch {
+    return false;
+  }
+}
+
+async function isServerResponsive(): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
+    const res = await fetch(NEXT_SERVER_URL, { signal: controller.signal });
+    clearTimeout(timeout);
+    return res.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function startNextServer() {
+  if (await isServerResponsive()) {
+    console.log('✓ Next.js server already running');
+    return;
+  }
+
+  if (!process.env.PLAYWRIGHT_SKIP_BUILD) {
+    console.log('🔧 Building Next.js app for tests...');
+    execSync('pnpm build', { stdio: 'inherit' });
+  } else {
+    console.log('⚠️  Skipping Next.js build (PLAYWRIGHT_SKIP_BUILD set)');
+  }
+
+  console.log('🚀 Starting Next.js server on port 3783...');
+  nextServerProcess = spawn('pnpm', ['start', '--', '--hostname', 'localhost', '--port', '3783'], {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: {
+      ...process.env,
+      PORT: '3783'
+    }
+  });
+
+  nextServerProcess.stdout?.on('data', (data) => {
+    console.log(`[Next] ${data.toString().trim()}`);
+  });
+
+  nextServerProcess.stderr?.on('data', (data) => {
+    console.error(`[Next Error] ${data.toString().trim()}`);
+  });
+
+  const started = await waitForServerReady(60000);
+  if (!started) {
+    throw new Error('Next.js server did not become ready in time');
+  }
+
+  (global as any).__NEXT_SERVER_PROCESS__ = nextServerProcess;
+  console.log('✓ Next.js server ready');
+}
+
+async function waitForServerReady(timeoutMs: number): Promise<boolean> {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (await isServerResponsive()) {
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+  return false;
+}
 
 // Helper function to check if stripe listen is already running
 function isStripeListenerRunning(): boolean {
@@ -20,6 +94,8 @@ async function globalSetup(config: FullConfig) {
     return;
   }
 
+  await startNextServer();
+
   if (isStripeListenerRunning()) {
     console.log('✓ Stripe webhook listener already running');
     return;
@@ -27,11 +103,22 @@ async function globalSetup(config: FullConfig) {
 
   console.log('🚀 Starting global Stripe webhook listener...');
 
-  stripeListenerProcess = spawn('stripe', [
+  const forwardTarget = new URL('/api/stripe/webhook', NEXT_SERVER_URL);
+  const forwardTo = `${forwardTarget.host}${forwardTarget.pathname}`;
+
+  const stripeArgs = [
     'listen',
     '--forward-to',
-    'localhost:3783/api/stripe/webhook'
-  ], {
+    forwardTo
+  ];
+
+  if (stripeSupportsRequestTimeout()) {
+    stripeArgs.push('--request-timeout', '120');
+  } else {
+    console.log('ℹ️  Stripe CLI version does not support --request-timeout; using default timeout');
+  }
+
+  stripeListenerProcess = spawn('stripe', stripeArgs, {
     stdio: ['ignore', 'pipe', 'pipe']
   });
 

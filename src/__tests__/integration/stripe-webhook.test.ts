@@ -20,6 +20,32 @@ const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 const stripe = new Stripe(stripeSecretKey, { apiVersion: '2024-12-18.acacia' })
 
+async function waitForSubmission(
+  submissionId: string,
+  predicate: (submission: any) => boolean,
+  options: { timeout?: number; interval?: number } = {}
+): Promise<any> {
+  const timeout = options.timeout ?? 10000
+  const interval = options.interval ?? 250
+  const start = Date.now()
+
+  while (Date.now() - start < timeout) {
+    const { data } = await supabase
+      .from('onboarding_submissions')
+      .select('*')
+      .eq('id', submissionId)
+      .single()
+
+    if (data && predicate(data)) {
+      return data
+    }
+
+    await new Promise(resolve => setTimeout(resolve, interval))
+  }
+
+  throw new Error('Timed out waiting for submission update')
+}
+
 // Helper function to generate webhook signature manually (Node.js compatible)
 function generateWebhookSignature(payload: string, secret: string): string {
   const timestamp = Math.floor(Date.now() / 1000)
@@ -182,11 +208,10 @@ describe('Stripe Webhook Handler Tests', () => {
     expect(response.status).toBe(200)
 
     // 7. Verify database updated
-    const { data: submission } = await supabase
-      .from('onboarding_submissions')
-      .select('status, payment_completed_at, stripe_subscription_id')
-      .eq('id', testSubmissionId)
-      .single()
+    const submission = await waitForSubmission(
+      testSubmissionId,
+      data => data.status === 'paid' && data.stripe_subscription_id === subscription.id
+    )
 
     expect(submission.status).toBe('paid')
     expect(submission.payment_completed_at).toBeTruthy()
@@ -310,6 +335,13 @@ describe('Stripe Webhook Handler Tests', () => {
   })
 
   it('should handle subscription.created event', async () => {
+    await supabase
+      .from('onboarding_submissions')
+      .update({
+        stripe_subscription_id: null
+      })
+      .eq('id', testSubmissionId)
+
     const subscription = {
       id: `sub_test_${Date.now()}`,
       customer: testCustomerId,
@@ -339,11 +371,10 @@ describe('Stripe Webhook Handler Tests', () => {
     expect(response.status).toBe(200)
 
     // Verify subscription ID saved
-    const { data: submission } = await supabase
-      .from('onboarding_submissions')
-      .select('stripe_subscription_id')
-      .eq('id', testSubmissionId)
-      .single()
+    const submission = await waitForSubmission(
+      testSubmissionId,
+      data => data.stripe_subscription_id === subscription.id
+    )
 
     expect(submission.stripe_subscription_id).toBe(subscription.id)
   })

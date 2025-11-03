@@ -40,11 +40,11 @@ describe('PortfolioCarousel', () => {
 
   it('renders portfolio items', () => {
     render(<PortfolioCarousel />)
-    
+
     // Check for some portfolio item titles
-    expect(screen.getByAltText('TechCorp Solutions - SaaS Platform')).toBeInTheDocument()
-    expect(screen.getByAltText('Green Energy Co - Corporate Website')).toBeInTheDocument()
-    expect(screen.getByAltText('Fashion Boutique - E-commerce Store')).toBeInTheDocument()
+    expect(screen.getByAltText('Tritem - Technology Solutions')).toBeInTheDocument()
+    expect(screen.getByAltText('Stackmine - IT Services')).toBeInTheDocument()
+    expect(screen.getByAltText('Testspring - Quality Assurance')).toBeInTheDocument()
   })
 
   it('has navigation controls', () => {

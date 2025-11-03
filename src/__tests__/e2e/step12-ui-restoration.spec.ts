@@ -140,15 +140,22 @@ test.describe('Step 12 - File Upload Persistence Bug', () => {
       }
     })
 
+    const resolveFileName = (file: any | undefined | null) =>
+      file?.fileName || file?.name || file?.file?.name
+
     console.log('   localStorage contents:')
-    console.log('   - Logo:', storageAfterUpload?.logoUpload ? `✅ ${storageAfterUpload.logoUpload.fileName}` : '❌ Missing')
-    console.log('   - Photos:', storageAfterUpload?.businessPhotos?.length > 0 ? `✅ ${storageAfterUpload.businessPhotos.length} photo(s)` : '❌ Empty')
+    console.log('   - Logo:', storageAfterUpload?.logoUpload
+      ? `✅ ${resolveFileName(storageAfterUpload.logoUpload)}`
+      : '❌ Missing')
+    console.log('   - Photos:', storageAfterUpload?.businessPhotos?.length > 0
+      ? `✅ ${storageAfterUpload.businessPhotos.length} photo(s)`
+      : '❌ Empty')
     console.log('   - Current Step:', storageAfterUpload?.currentStep)
 
-    expect(storageAfterUpload?.logoUpload?.fileName).toBe('test-logo.png')
+    expect(resolveFileName(storageAfterUpload?.logoUpload)).toBe('test-logo.png')
     if (fileInputCount >= 2) {
       expect(storageAfterUpload?.businessPhotos?.length).toBeGreaterThan(0)
-      expect(storageAfterUpload?.businessPhotos?.[0]?.fileName).toBe('test-photo.jpg')
+      expect(resolveFileName(storageAfterUpload?.businessPhotos?.[0])).toBe('test-photo.jpg')
     }
 
     // Wait for auto-save
@@ -193,8 +200,12 @@ test.describe('Step 12 - File Upload Persistence Bug', () => {
     })
 
     console.log('   localStorage after return:')
-    console.log('   - Logo:', storageAfterReturn?.logoUpload ? `✅ ${storageAfterReturn.logoUpload.fileName}` : '❌ Missing')
-    console.log('   - Photos:', storageAfterReturn?.businessPhotos?.length > 0 ? `✅ ${storageAfterReturn.businessPhotos.length} photo(s)` : '❌ Empty')
+    console.log('   - Logo:', storageAfterReturn?.logoUpload
+      ? `✅ ${resolveFileName(storageAfterReturn.logoUpload)}`
+      : '❌ Missing')
+    console.log('   - Photos:', storageAfterReturn?.businessPhotos?.length > 0
+      ? `✅ ${storageAfterReturn.businessPhotos.length} photo(s)`
+      : '❌ Empty')
 
     // ========== VERIFY FILES VISIBLE IN UI ==========
     console.log('\n🔍 STEP 10: Verifying files are visible in UI...')

@@ -9,7 +9,22 @@ import { CheckoutSessionService } from '@/services/payment/CheckoutSessionServic
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    let body: any
+    try {
+      body = await request.json()
+    } catch (parseError) {
+      console.error('[api/stripe/create-checkout-session] invalid JSON payload', parseError)
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'INVALID_JSON',
+            message: 'Request body must be valid JSON.'
+          }
+        },
+        { status: 400 }
+      )
+    }
     const {
       submission_id,
       session_id,
