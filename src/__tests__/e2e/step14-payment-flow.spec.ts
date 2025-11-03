@@ -1,8 +1,12 @@
 import { test, expect } from '@playwright/test'
 import { createClient } from '@supabase/supabase-js'
+import Stripe from 'stripe'
 import * as dotenv from 'dotenv'
 import path from 'path'
 import { seedStep14TestSession, cleanupTestSession } from './helpers/seed-step14-session'
+import { ensureTestCouponsExist, getStripePrices } from './fixtures/stripe-setup'
+import { validateStripePaymentComplete } from './helpers/stripe-validation'
+import { getUIPaymentAmount, getUIRecurringAmount, fillStripePaymentForm } from './helpers/ui-parser'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
@@ -17,6 +21,10 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2025-09-30.clover'
+})
+
 
 // Helper: Wait for webhook processing with retries
 async function waitForWebhookProcessing(
@@ -24,7 +32,7 @@ async function waitForWebhookProcessing(
   expectedStatus: 'paid' | 'submitted' = 'paid',
   options: { maxAttempts?: number; delayMs?: number } = {}
 ): Promise<boolean> {
-  const { maxAttempts = 40, delayMs = 500 } = options
+  const { maxAttempts = 60, delayMs = 500 } = options
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     const { data: submission } = await supabase
@@ -49,6 +57,17 @@ async function waitForWebhookProcessing(
 test.describe('Step 14: Payment Flow E2E', () => {
   // Force sequential execution to avoid Stripe listener conflicts
   test.describe.configure({ mode: 'serial' })
+
+  // Setup test coupons before all tests
+  test.beforeAll(async () => {
+    console.log('Setting up test environment...')
+    await ensureTestCouponsExist()
+
+    const prices = await getStripePrices()
+    console.log('✓ Stripe test mode connected')
+    console.log('✓ Base package price:', prices.base, 'cents (€' + (prices.base / 100) + ')')
+    console.log('✓ Language add-on price:', prices.addon, 'cents (€' + (prices.addon / 100) + ')')
+  })
 
   // Add delay between tests to let webhooks settle
   test.afterEach(async () => {
@@ -257,9 +276,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       expect(submission.payment_completed_at).toBeTruthy()
 
     } finally {
-      if (sessionId && submissionId) {
-        await cleanupTestSession(sessionId, submissionId)
-      }
+      // Temporarily skip cleanup for debugging
     }
   })
 
@@ -326,6 +343,114 @@ test.describe('Step 14: Payment Flow E2E', () => {
       if (sessionId && submissionId) {
         await cleanupTestSession(sessionId, submissionId)
       }
+    }
+  })
+
+  test('discount with language add-ons keeps UI total in sync with Stripe', async ({ page }) => {
+    test.setTimeout(90000)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
+
+    const prices = await getStripePrices()
+    const languageCount = 2
+    const discountedBase = Math.round((prices.base * 80) / 100) // 20% off
+    const expectedTotal = discountedBase + prices.addon * languageCount
+
+    try {
+      const seed = await seedStep14TestSession({
+        additionalLanguages: ['de', 'fr']
+      })
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+      console.log('Seeded session', seed)
+
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/(?:en\/|it\/)?onboarding\/step\/14/, { timeout: 10000 })
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(2000)
+
+      const discountInput = page.getByRole('textbox', { name: /discount/i })
+      await discountInput.fill('E2E_TEST_20')
+      const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
+      await verifyButton.click()
+
+      // Wait for totals to refresh then read Pay button amount
+      await page.waitForTimeout(1500)
+      const discountAppliedVisible = await page.locator('text=/Discount Applied/i').isVisible().catch(() => false)
+      const discountErrorVisible = await page.locator('text=/Invalid or expired discount code/i').isVisible().catch(() => false)
+      console.log('Discount applied visible:', discountAppliedVisible, 'error visible:', discountErrorVisible)
+      const preview = await page.evaluate(() => (window as any).__wb_lastDiscountPreview)
+      console.log('UI Preview (discount flow):', preview)
+      const uiAmount = await getUIPaymentAmount(page)
+      expect(uiAmount).toBe(expectedTotal)
+
+      // Ensure recurring commitment text also reflects discounted base
+      const recurring = await getUIRecurringAmount(page)
+      expect(recurring).toBe(discountedBase)
+    } finally {
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+      }
+    }
+  })
+
+  test('100% discount completes without requiring card entry', async ({ page }) => {
+    test.setTimeout(90000)
+
+    let sessionId: string | null = null
+    let submissionId: string | null = null
+    const couponId = `E2E_FREE_${Date.now()}`
+
+    try {
+      await stripe.coupons.create({
+        id: couponId,
+        percent_off: 100,
+        duration: 'once',
+        name: 'E2E Test 100% Once'
+      })
+
+      const seed = await seedStep14TestSession()
+      sessionId = seed.sessionId
+      submissionId = seed.submissionId
+
+      await page.addInitScript((store) => {
+        localStorage.setItem('wb-onboarding-store', store)
+      }, seed.zustandStore)
+
+      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.waitForURL(/\/(en|it)\/onboarding\/step\/14/, { timeout: 10000 })
+      await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
+      await page.waitForTimeout(2000)
+
+      const discountInput = page.getByRole('textbox', { name: /discount/i })
+      await discountInput.fill(couponId)
+      await page.getByRole('button', { name: /Apply|Verify/i }).click()
+
+      await expect(page.locator(`text=/Discount code ${couponId} applied/i`)).toBeVisible()
+
+      // Payment element should be hidden when no payment required
+      await expect(page.locator('[data-testid="stripe-payment-element"]')).toHaveCount(0)
+
+      await page.locator('#acceptTerms').click()
+
+      const completeButton = page.getByRole('button', { name: /Complete without payment/i })
+      await expect(completeButton).toBeEnabled()
+      await completeButton.click()
+
+      await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 30000 })
+
+      const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid')
+      expect(webhookProcessed).toBe(true)
+    } finally {
+      if (sessionId && submissionId) {
+        await cleanupTestSession(sessionId, submissionId)
+      }
+      await stripe.coupons.del(couponId).catch(() => {})
     }
   })
 
