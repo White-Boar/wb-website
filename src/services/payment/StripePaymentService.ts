@@ -221,7 +221,6 @@ export class StripePaymentService {
     // Get language add-on price from Stripe
     const languageAddonPriceId = process.env.STRIPE_LANGUAGE_ADDON_PRICE_ID!
     const addonPrice = await this.stripe.prices.retrieve(languageAddonPriceId)
-    const addonAmount = addonPrice.unit_amount || 7500 // Fallback to 7500 if not set
 
     // Add invoice items (language add-ons) to customer
     const createdItems: Stripe.InvoiceItem[] = []
@@ -230,8 +229,9 @@ export class StripePaymentService {
       for (let i = 0; i < languageAddOns; i++) {
         const item = await this.stripe.invoiceItems.create({
           customer,
-          amount: addonAmount, // Fetch from Stripe Price
-          currency: 'eur',
+          pricing: {
+            price: addonPrice.id
+          },
           description: 'Language Add-on Preview'
         })
         createdItems.push(item)
@@ -263,10 +263,9 @@ export class StripePaymentService {
       )
 
       if (subscriptionLine) {
-        // Stripe's line.amount is AFTER discount is applied
-        subscriptionAmount = subscriptionLine.amount
-
         // Extract discount amount from discount_amounts array
+        // Stripe returns line.amount as the pre-discount value; discount_amounts
+        // describe the reduction that should be applied.
         if (subscriptionLine.discount_amounts && subscriptionLine.discount_amounts.length > 0) {
           subscriptionDiscount = subscriptionLine.discount_amounts.reduce(
             (sum: number, discount: any) => sum + discount.amount,
@@ -274,12 +273,18 @@ export class StripePaymentService {
           )
         }
 
-        // DEBUG: Log what we extracted
+        const subscriptionFinalAmount = typeof subscriptionLine.amount_total === 'number'
+          ? subscriptionLine.amount_total
+          : subscriptionLine.amount - subscriptionDiscount
+
+        subscriptionAmount = subscriptionFinalAmount
+
+        // DEBUG: Log what we calculated
         console.log('[StripeService] Preview with discount:', {
           couponId,
-          subscriptionAmount,
+          originalAmount: subscriptionLine.amount,
           subscriptionDiscount,
-          lineAmount: subscriptionLine.amount,
+          subscriptionAmount,
           hasDiscountAmounts: !!subscriptionLine.discount_amounts?.length
         })
       } else {
@@ -303,10 +308,14 @@ export class StripePaymentService {
           line.description?.includes('WhiteBoar Base Package') ||
           line.description?.includes('Base Package')
 
+        const finalAmount = typeof line.amount_total === 'number'
+          ? line.amount_total
+          : line.amount - lineDiscountAmount
+
         return {
           id: line.id,
           description: line.description || '',
-          amount: line.amount,  // Final amount in cents after discount
+          amount: finalAmount,
           originalAmount: line.price?.unit_amount || line.amount,  // Before discount
           quantity: line.quantity || 1,
           discountAmount: lineDiscountAmount,

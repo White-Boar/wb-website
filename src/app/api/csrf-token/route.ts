@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateCSRFToken } from '@/lib/csrf'
+import { createServiceClient } from '@/lib/supabase'
 
 /**
  * GET /api/csrf-token?sessionId=xxx
@@ -17,6 +18,33 @@ export async function GET(request: NextRequest) {
           error: 'Session ID is required'
         },
         { status: 400 }
+      )
+    }
+
+    const supabase = await createServiceClient()
+    const { data: session, error } = await supabase
+      .from('onboarding_sessions')
+      .select('id, expires_at')
+      .eq('id', sessionId)
+      .single()
+
+    if (error || !session) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Session not found'
+        },
+        { status: 404 }
+      )
+    }
+
+    if (session.expires_at && new Date(session.expires_at).getTime() < Date.now()) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Session has expired'
+        },
+        { status: 403 }
       )
     }
 

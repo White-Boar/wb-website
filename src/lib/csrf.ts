@@ -3,7 +3,7 @@
  * Provides CSRF token generation and validation for payment endpoints
  */
 
-import { createHmac, randomBytes } from 'crypto'
+import { createHmac, createHash, randomBytes } from 'crypto'
 import { NextRequest } from 'next/server'
 
 // CSRF secret configuration
@@ -26,6 +26,47 @@ const getCSRFSecret = () => {
 }
 
 const CSRF_TOKEN_EXPIRY = 3600000 // 1 hour in milliseconds
+interface StoredCSRFToken {
+  hash: string
+  expiresAt: number
+}
+
+const csrfTokenStore = new Map<string, StoredCSRFToken[]>()
+
+function storeToken(sessionId: string, token: string, expiresAt: number) {
+  const hash = createHash('sha256').update(token).digest('hex')
+  const now = Date.now()
+
+  // Clean out expired tokens for this session
+  const existing = (csrfTokenStore.get(sessionId) || []).filter(entry => entry.expiresAt > now)
+  existing.push({ hash, expiresAt })
+  csrfTokenStore.set(sessionId, existing)
+}
+
+function consumeToken(sessionId: string, token: string): boolean {
+  const hash = createHash('sha256').update(token).digest('hex')
+  const entries = csrfTokenStore.get(sessionId)
+
+  if (!entries || entries.length === 0) {
+    return false
+  }
+
+  const now = Date.now()
+  const matchIndex = entries.findIndex(entry => entry.hash === hash && entry.expiresAt > now)
+
+  if (matchIndex === -1) {
+    return false
+  }
+
+  entries.splice(matchIndex, 1)
+  if (entries.length > 0) {
+    csrfTokenStore.set(sessionId, entries)
+  } else {
+    csrfTokenStore.delete(sessionId)
+  }
+
+  return true
+}
 
 export interface CSRFToken {
   token: string
@@ -50,6 +91,8 @@ export function generateCSRFToken(sessionId: string): CSRFToken {
 
   // Token format: payload.signature (Base64 encoded)
   const token = Buffer.from(`${payload}.${signature}`).toString('base64')
+
+  storeToken(sessionId, token, expiresAt)
 
   return {
     token,
@@ -93,7 +136,7 @@ export function validateCSRFToken(token: string, sessionId: string): boolean {
       return false
     }
 
-    return true
+    return consumeToken(sessionId, token)
   } catch (error) {
     console.error('CSRF token validation error:', error)
     return false

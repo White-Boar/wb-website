@@ -36,6 +36,30 @@ export class WebhookService {
     }
   }
 
+  private async getInvoiceFromEvent(event: Stripe.Event): Promise<Stripe.Invoice | null> {
+    const eventData = event.data.object as any
+
+    // Direct invoice object on legacy events
+    if (eventData?.object === 'invoice') {
+      return eventData as Stripe.Invoice
+    }
+
+    // New invoice payment events contain an invoice reference
+    const invoiceId = typeof eventData?.invoice === 'string'
+      ? eventData.invoice
+      : eventData?.invoice?.id
+
+    if (invoiceId) {
+      try {
+        return await this.stripe.invoices.retrieve(invoiceId)
+      } catch (error) {
+        debugLog(`Failed to retrieve invoice ${invoiceId}:`, error)
+      }
+    }
+
+    return null
+  }
+
   /**
    * Find submission by various lookup strategies
    *
@@ -53,6 +77,9 @@ export class WebhookService {
     let customerId: string | null = null
     let subscriptionId: string | null = null
     let submissionIdFromMetadata: string | undefined
+    let paymentIntentId: string | null = null
+
+    const invoiceFromEvent = await this.getInvoiceFromEvent(event)
 
     // Extract IDs based on event type
     if (event.type.includes('subscription')) {
@@ -63,21 +90,35 @@ export class WebhookService {
       scheduleId = eventData.schedule as string | null
       submissionIdFromMetadata = eventData.metadata?.submission_id
     } else if (event.type.includes('invoice')) {
-      subscriptionId = typeof eventData.subscription === 'string'
-        ? eventData.subscription
-        : eventData.subscription?.id
-      customerId = typeof eventData.customer === 'string'
-        ? eventData.customer
-        : eventData.customer?.id
+      const invoice = invoiceFromEvent
 
-      // Try to get schedule ID from subscription
-      if (subscriptionId) {
-        try {
-          const subscription = await this.stripe.subscriptions.retrieve(subscriptionId)
-          scheduleId = subscription.schedule as string | null
-          submissionIdFromMetadata = subscription.metadata?.submission_id
-        } catch (error) {
-          debugLog(`Failed to retrieve subscription ${subscriptionId}:`, error)
+      if (invoice) {
+        subscriptionId = typeof invoice.subscription === 'string'
+          ? invoice.subscription
+          : invoice.subscription?.id
+        customerId = typeof invoice.customer === 'string'
+          ? invoice.customer
+          : invoice.customer?.id
+
+        submissionIdFromMetadata = invoice.metadata?.submission_id
+
+        const invoicePaymentIntent = invoice.payment_intent
+        if (typeof invoicePaymentIntent === 'string') {
+          paymentIntentId = invoicePaymentIntent
+        } else if (invoicePaymentIntent?.id) {
+          paymentIntentId = invoicePaymentIntent.id
+        }
+
+        if (subscriptionId) {
+          try {
+            const subscription = await this.stripe.subscriptions.retrieve(subscriptionId)
+            scheduleId = subscription.schedule as string | null
+            if (!submissionIdFromMetadata) {
+              submissionIdFromMetadata = subscription.metadata?.submission_id
+            }
+          } catch (error) {
+            debugLog(`Failed to retrieve subscription ${subscriptionId}:`, error)
+          }
         }
       }
     } else if (event.type.includes('payment_intent')) {
@@ -166,6 +207,44 @@ export class WebhookService {
       }
     }
 
+    // Strategy 5: Lookup via payment intent metadata (added for invoice_payment events)
+    if (paymentIntentId) {
+      try {
+        const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentIntentId)
+
+        const piSubmissionId = paymentIntent.metadata?.submission_id
+        const piCustomerId = typeof paymentIntent.customer === 'string'
+          ? paymentIntent.customer
+          : paymentIntent.customer?.id
+
+        if (!customerId && piCustomerId) {
+          const { data } = await supabase
+            .from('onboarding_submissions')
+            .select('*')
+            .eq('stripe_customer_id', piCustomerId)
+            .single()
+
+          if (data) {
+            return { submission: data, foundBy: 'customer_id' }
+          }
+        }
+
+        if (piSubmissionId) {
+          const { data } = await supabase
+            .from('onboarding_submissions')
+            .select('*')
+            .eq('id', piSubmissionId)
+            .single()
+
+          if (data) {
+            return { submission: data, foundBy: 'metadata' }
+          }
+        }
+      } catch (error) {
+        debugLog('Failed to retrieve payment intent during lookup:', error)
+      }
+    }
+
     return { submission: null }
   }
 
@@ -177,7 +256,13 @@ export class WebhookService {
     supabase: SupabaseClient
   ): Promise<WebhookHandlerResult> {
     try {
-      const invoice = event.data.object as any
+      const invoice = await this.getInvoiceFromEvent(event)
+
+      if (!invoice) {
+        console.error('Invoice details not found for event', event.id)
+        return { success: false, error: 'Invoice not found' }
+      }
+
       const subscriptionId = typeof invoice.subscription === 'string'
         ? invoice.subscription
         : invoice.subscription?.id
@@ -198,7 +283,52 @@ export class WebhookService {
       const submission = lookupResult.submission
       const scheduleId = submission.stripe_subscription_schedule_id
 
-      // Update submission with payment details
+      // Extract discount information from invoice
+      let discountAmount = 0
+      let discountMetadata: any = {}
+
+      if (invoice.total_discount_amounts && invoice.total_discount_amounts.length > 0) {
+        discountAmount = invoice.total_discount_amounts.reduce(
+          (sum: number, discount: any) => sum + discount.amount,
+          0
+        )
+      }
+
+      // Get discount details from subscription to determine recurring discount
+      let recurringDiscount = 0
+      if (subscriptionId) {
+        try {
+          const subscription = await this.stripe.subscriptions.retrieve(subscriptionId)
+
+          // Extract discount information from subscription
+          if (subscription.discount) {
+            const coupon = subscription.discount.coupon
+            discountMetadata = {
+              coupon_id: coupon.id,
+              duration: coupon.duration,
+              duration_in_months: coupon.duration_in_months,
+              percent_off: coupon.percent_off,
+              amount_off: coupon.amount_off
+            }
+
+            // Calculate recurring discount from subscription items
+            if (subscription.items.data.length > 0) {
+              const baseItem = subscription.items.data[0]
+              const baseAmount = baseItem.price.unit_amount || 0
+
+              if (coupon.percent_off) {
+                recurringDiscount = Math.round(baseAmount * (coupon.percent_off / 100))
+              } else if (coupon.amount_off) {
+                recurringDiscount = coupon.amount_off
+              }
+            }
+          }
+        } catch (error) {
+          debugLog('Failed to retrieve subscription for discount info:', error)
+        }
+      }
+
+      // Update submission with payment details including discount information
       await supabase
         .from('onboarding_submissions')
         .update({
@@ -207,14 +337,20 @@ export class WebhookService {
           stripe_customer_id: customerId,
           stripe_subscription_id: subscriptionId,
           stripe_subscription_schedule_id: scheduleId,
-          payment_amount: invoice.amount_paid,
+          payment_amount: invoice.total,
           currency: invoice.currency.toUpperCase(),
-          payment_completed_at: new Date(invoice.status_transitions.paid_at! * 1000).toISOString(),
+          payment_completed_at: invoice.status_transitions?.paid_at
+            ? new Date(invoice.status_transitions.paid_at * 1000).toISOString()
+            : new Date().toISOString(),
           payment_metadata: {
             invoice_id: invoice.id,
             payment_method: invoice.default_payment_method,
             billing_reason: invoice.billing_reason,
-            schedule_id: scheduleId
+            schedule_id: scheduleId,
+            subtotal: invoice.subtotal,
+            discount_amount: discountAmount,
+            recurring_discount: recurringDiscount,
+            discount_info: discountMetadata
           },
           updated_at: new Date().toISOString()
         })
@@ -291,6 +427,41 @@ export class WebhookService {
 
       const submission = lookupResult.submission
 
+      // Get discount information from subscription if it exists
+      let discountMetadata: any = {}
+      let recurringDiscount = 0
+
+      if (submission.stripe_subscription_id) {
+        try {
+          const subscription = await this.stripe.subscriptions.retrieve(submission.stripe_subscription_id)
+
+          if (subscription.discount) {
+            const coupon = subscription.discount.coupon
+            discountMetadata = {
+              coupon_id: coupon.id,
+              duration: coupon.duration,
+              duration_in_months: coupon.duration_in_months,
+              percent_off: coupon.percent_off,
+              amount_off: coupon.amount_off
+            }
+
+            // Calculate recurring discount from subscription items
+            if (subscription.items.data.length > 0) {
+              const baseItem = subscription.items.data[0]
+              const baseAmount = baseItem.price.unit_amount || 0
+
+              if (coupon.percent_off) {
+                recurringDiscount = Math.round(baseAmount * (coupon.percent_off / 100))
+              } else if (coupon.amount_off) {
+                recurringDiscount = coupon.amount_off
+              }
+            }
+          }
+        } catch (error) {
+          debugLog('Failed to retrieve subscription for discount info:', error)
+        }
+      }
+
       // Update submission with payment details
       await supabase
         .from('onboarding_submissions')
@@ -303,7 +474,9 @@ export class WebhookService {
           payment_completed_at: new Date().toISOString(),
           payment_metadata: {
             payment_intent_id: paymentIntentId,
-            payment_method: paymentIntent.payment_method
+            payment_method: paymentIntent.payment_method,
+            recurring_discount: recurringDiscount,
+            discount_info: discountMetadata
           },
           updated_at: new Date().toISOString()
         })

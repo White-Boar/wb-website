@@ -80,91 +80,110 @@ export async function POST(request: NextRequest) {
       throw insertError
     }
 
-    debugLog(`[${webhookId}] Event record created, processing...`)
+    debugLog(`[${webhookId}] Event record created, scheduling async processing...`)
 
-    // Handle different event types using the service
-    try {
-      let result
+    processWebhookEvent({
+      event,
+      supabase,
+      webhookService,
+      webhookId
+    }).catch(error => {
+      console.error(`[${webhookId}] ❌ Async webhook processing error:`, error)
+    })
 
-      switch (event.type) {
-        case 'invoice.paid':
-        case 'invoice.payment_succeeded':
-          result = await webhookService.handleInvoicePaid(event, supabase)
-          break
-
-        case 'payment_intent.succeeded':
-          result = await webhookService.handlePaymentIntentSucceeded(event, supabase)
-          break
-
-        case 'customer.subscription.created':
-          result = await webhookService.handleSubscriptionCreated(event, supabase)
-          break
-
-        case 'customer.subscription.updated':
-          result = await webhookService.handleSubscriptionUpdated(event, supabase)
-          break
-
-        case 'customer.subscription.deleted':
-          result = await webhookService.handleSubscriptionDeleted(event, supabase)
-          break
-
-        case 'subscription_schedule.completed':
-          result = await webhookService.handleScheduleCompleted(event, supabase)
-          break
-
-        case 'subscription_schedule.canceled':
-          result = await webhookService.handleScheduleCanceled(event, supabase)
-          break
-
-        case 'charge.refunded':
-          result = await webhookService.handleChargeRefunded(event, supabase)
-          break
-
-        case 'payment_intent.payment_failed':
-          result = await webhookService.handlePaymentFailed(event, supabase)
-          break
-
-        default:
-          debugLog(`[${webhookId}] ⚠️  Unhandled event type: ${event.type}`)
-          result = { success: true } // Don't fail on unknown events
-      }
-
-      // Check if handler failed
-      if (result && !result.success) {
-        throw new Error(result.error || 'Handler failed')
-      }
-
-      // Mark event as completed
-      await supabase
-        .from('stripe_webhook_events')
-        .update({
-          status: 'completed',
-          completed_at: new Date().toISOString()
-        })
-        .eq('event_id', event.id)
-
-      debugLog(`[${webhookId}] ✓ Event processed successfully`)
-      return NextResponse.json({ received: true })
-    } catch (error) {
-      console.error(`Error processing event ${event.id}:`, error)
-
-      // Mark event as failed
-      await supabase
-        .from('stripe_webhook_events')
-        .update({
-          status: 'failed',
-          completed_at: new Date().toISOString(),
-          error_message: error instanceof Error ? error.message : 'Unknown error'
-        })
-        .eq('event_id', event.id)
-
-      throw error
-    }
+    return NextResponse.json({ received: true })
   } catch (error) {
     console.error('Webhook processing error:', error)
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
     )
+  }
+}
+
+async function processWebhookEvent({
+  event,
+  supabase,
+  webhookService,
+  webhookId
+}: {
+  event: Stripe.Event
+  supabase: Awaited<ReturnType<typeof createServiceClient>>
+  webhookService: WebhookService
+  webhookId: string
+}) {
+  try {
+    let result
+
+    switch (event.type) {
+      case 'invoice.paid':
+      case 'invoice.payment_succeeded':
+      case 'invoice_payment.paid':
+        result = await webhookService.handleInvoicePaid(event, supabase)
+        break
+
+      case 'payment_intent.succeeded':
+        result = await webhookService.handlePaymentIntentSucceeded(event, supabase)
+        break
+
+      case 'customer.subscription.created':
+        result = await webhookService.handleSubscriptionCreated(event, supabase)
+        break
+
+      case 'customer.subscription.updated':
+        result = await webhookService.handleSubscriptionUpdated(event, supabase)
+        break
+
+      case 'customer.subscription.deleted':
+        result = await webhookService.handleSubscriptionDeleted(event, supabase)
+        break
+
+      case 'subscription_schedule.completed':
+        result = await webhookService.handleScheduleCompleted(event, supabase)
+        break
+
+      case 'subscription_schedule.canceled':
+        result = await webhookService.handleScheduleCanceled(event, supabase)
+        break
+
+      case 'charge.refunded':
+        result = await webhookService.handleChargeRefunded(event, supabase)
+        break
+
+      case 'payment_intent.payment_failed':
+        result = await webhookService.handlePaymentFailed(event, supabase)
+        break
+
+      default:
+        debugLog(`[${webhookId}] ⚠️  Unhandled event type: ${event.type}`)
+        result = { success: true }
+    }
+
+    if (result && !result.success) {
+      throw new Error(result.error || 'Handler failed')
+    }
+
+    await supabase
+      .from('stripe_webhook_events')
+      .update({
+        status: 'completed',
+        completed_at: new Date().toISOString()
+      })
+      .eq('event_id', event.id)
+
+    debugLog(`[${webhookId}] ✓ Event processed successfully`)
+  } catch (error) {
+    console.error(`Error processing event ${event.id}:`, error)
+
+    await supabase
+      .from('stripe_webhook_events')
+      .update({
+        status: 'failed',
+        completed_at: new Date().toISOString(),
+        error_message: error instanceof Error ? error.message : 'Unknown error'
+      })
+      .eq('event_id', event.id)
+
+    throw error
   }
 }

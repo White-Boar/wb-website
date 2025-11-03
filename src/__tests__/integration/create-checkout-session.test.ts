@@ -123,6 +123,7 @@ describe('Stripe Checkout Session Creation Tests', () => {
 
     const data = await response.json()
     expect(data.success).toBe(true)
+    expect(data.data.paymentRequired).toBe(true)
     expect(data.data.clientSecret).toBeTruthy()
     expect(data.data.customerId).toBeTruthy()
     expect(data.data.subscriptionId).toBeTruthy()
@@ -198,6 +199,7 @@ describe('Stripe Checkout Session Creation Tests', () => {
     expect(response.status).toBe(200)
 
     const data = await response.json()
+    expect(data.data.paymentRequired).toBe(true)
     testCustomerIds.push(data.data.customerId)
     testSubscriptionIds.push(data.data.subscriptionId)
 
@@ -209,6 +211,55 @@ describe('Stripe Checkout Session Creation Tests', () => {
         : subscription.latest_invoice!.id
     )
     expect(latestInvoice.amount_due).toBe(11000) // €110 in cents
+  })
+
+  it('should include submission languages even when request omits them', async () => {
+    await supabase
+      .from('onboarding_submissions')
+      .update({
+        form_data: {
+          step3: {
+            businessName: 'Checkout Test Business',
+            email: 'checkout-test@example.com'
+          },
+          step13: {
+            additionalLanguages: ['de', 'fr']
+          }
+        }
+      })
+      .eq('id', testSubmissionId)
+
+    const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
+      body: JSON.stringify({
+        submission_id: testSubmissionId,
+        additionalLanguages: [], // intentionally empty to ensure server trusts DB
+        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+      })
+    })
+
+    expect(response.status).toBe(200)
+
+    const data = await response.json()
+    expect(data.success).toBe(true)
+    expect(data.data.paymentRequired).toBe(true)
+    testCustomerIds.push(data.data.customerId)
+    testSubscriptionIds.push(data.data.subscriptionId)
+
+    const subscription = await stripe.subscriptions.retrieve(data.data.subscriptionId)
+    const latestInvoice = await stripe.invoices.retrieve(
+      typeof subscription.latest_invoice === 'string'
+        ? subscription.latest_invoice
+        : subscription.latest_invoice!.id
+    )
+
+    // Base €35 + two language add-ons (€75 each) = €185
+    expect(latestInvoice.amount_due).toBe(18500)
   })
 
   it('should create checkout session with 3 language add-ons', async () => {
@@ -245,6 +296,7 @@ describe('Stripe Checkout Session Creation Tests', () => {
     expect(response.status).toBe(200)
 
     const data = await response.json()
+    expect(data.data.paymentRequired).toBe(true)
     testCustomerIds.push(data.data.customerId)
     testSubscriptionIds.push(data.data.subscriptionId)
 
@@ -256,6 +308,55 @@ describe('Stripe Checkout Session Creation Tests', () => {
         : subscription.latest_invoice!.id
     )
     expect(latestInvoice.amount_due).toBe(26000) // €260 in cents
+  })
+
+  it('should handle 100% discount without requiring payment', async () => {
+    const coupon = await stripe.coupons.create({
+      percent_off: 100,
+      duration: 'once',
+      id: `TESTFREE_${Date.now()}`
+    })
+
+    const response = await fetch('http://localhost:3783/api/stripe/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Test-Mode': 'true'
+      },
+      body: JSON.stringify({
+        submission_id: testSubmissionId,
+        additionalLanguages: [],
+        discountCode: coupon.id,
+        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+      })
+    })
+
+    expect(response.status).toBe(200)
+
+    const data = await response.json()
+    expect(data.success).toBe(true)
+    expect(data.data.paymentRequired).toBe(false)
+    expect(data.data.clientSecret).toBeNull()
+    expect(data.data.sessionId).toBeNull()
+    expect(data.data.invoiceId).toBeTruthy()
+    expect(data.data.subscriptionId).toBeTruthy()
+    testCustomerIds.push(data.data.customerId)
+    testSubscriptionIds.push(data.data.subscriptionId)
+
+    const subscription = await stripe.subscriptions.retrieve(data.data.subscriptionId)
+    const invoiceId = typeof subscription.latest_invoice === 'string'
+      ? subscription.latest_invoice
+      : subscription.latest_invoice?.id
+
+    expect(invoiceId).toBeTruthy()
+
+    const invoice = await stripe.invoices.retrieve(invoiceId as string)
+    expect(invoice.amount_due).toBe(0)
+    expect(invoice.amount_paid).toBe(0)
+    expect(invoice.status).toBe('paid')
+
+    await stripe.coupons.del(coupon.id)
   })
 
   it('should apply valid discount code', async () => {
@@ -284,6 +385,7 @@ describe('Stripe Checkout Session Creation Tests', () => {
     expect(response.status).toBe(200)
 
     const data = await response.json()
+    expect(data.data.paymentRequired).toBe(true)
     testCustomerIds.push(data.data.customerId)
     testSubscriptionIds.push(data.data.subscriptionId)
 
@@ -433,6 +535,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
     })
 
     const data = await response.json()
+    expect(data.success).toBe(true)
+    expect(data.data.paymentRequired).toBe(true)
     testCustomerIds.push(data.data.customerId)
     testSubscriptionIds.push(data.data.subscriptionId)
 

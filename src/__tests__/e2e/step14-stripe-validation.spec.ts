@@ -11,6 +11,7 @@ import { seedStep14TestSession, cleanupTestSession } from './helpers/seed-step14
 import { ensureTestCouponsExist, getStripePrices } from './fixtures/stripe-setup'
 import { validateStripePaymentComplete } from './helpers/stripe-validation'
 import { getUIPaymentAmount, getUIRecurringAmount, fillStripePaymentForm } from './helpers/ui-parser'
+import { StripePaymentService } from '@/services/payment/StripePaymentService'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
@@ -24,6 +25,8 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+const stripePaymentService = new StripePaymentService()
 
 // Helper: Wait for webhook processing
 async function waitForPaymentCompletion(submissionId: string): Promise<boolean> {
@@ -65,8 +68,7 @@ async function getSubmission(submissionId: string) {
   return data
 }
 
-test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
-  test.describe.configure({ mode: 'serial' })
+test.describe.parallel('Step 14: Stripe Validation (Comprehensive)', () => {
 
   test.beforeAll(async () => {
     console.log('\n=== STRIPE VALIDATION TESTS ===')
@@ -175,10 +177,16 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
     try {
       // Get prices
       const prices = await getStripePrices()
-      const discountedBase = Math.round(prices.base * 0.8) // 20% off
+      const previewTotals = await stripePaymentService.previewInvoiceWithDiscount(
+        null,
+        process.env.STRIPE_BASE_PACKAGE_PRICE_ID!,
+        'E2E_TEST_20',
+        0
+      )
+      const discountedRecurring = previewTotals.subscriptionAmount
 
       console.log('Base price:', prices.base, 'cents (€' + (prices.base / 100) + ')')
-      console.log('Expected with 20% discount:', discountedBase, 'cents (€' + (discountedBase / 100) + ')')
+      console.log('Stripe preview total with 20% discount:', previewTotals.total, 'cents (€' + (previewTotals.total / 100) + ')')
 
       // Seed session
       const seed = await seedStep14TestSession()
@@ -200,25 +208,35 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
 
       const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
-      await page.waitForTimeout(2000)
 
-      // VALIDATION 1: UI shows discount
-      await expect(page.locator('text=/Discount.*E2E_TEST_20.*applied/i')).toBeVisible()
-      console.log('✓ Discount validation message visible')
+      // VALIDATION 1: UI shows discount using Stripe-calculated totals
+      await expect(page.locator('text=/Discount Applied/i')).toBeVisible({ timeout: 15000 })
+      await page.waitForFunction((expected) => {
+        const preview = (window as any).__wb_lastDiscountPreview
+        return !!preview && preview.total === expected
+      }, previewTotals.total, { timeout: 15000 })
 
       const uiAmount = await getUIPaymentAmount(page)
       console.log('UI Pay button:', uiAmount, 'cents')
-      expect(uiAmount).toBe(discountedBase)
+      expect(uiAmount).toBe(previewTotals.total)
 
       const uiRecurring = await getUIRecurringAmount(page)
       console.log('UI recurring:', uiRecurring, 'cents')
-
-      // DEBUG: Print the actual commitment text
-      const commitmentText = await page.locator('text=/12 monthly payments of €/i').textContent()
-      console.log('  DEBUG - Commitment text:', commitmentText)
-
-      expect(uiRecurring).toBe(discountedBase)
+      expect(uiRecurring).toBe(discountedRecurring)
       console.log('✓ UI shows discounted amounts')
+
+      await page.waitForFunction((expectedCode) => {
+        return (window as any).__wb_lastCheckoutSession?.requestedDiscountCode === expectedCode
+      }, 'E2E_TEST_20', { timeout: 15000 })
+
+      const checkoutDebug = await page.evaluate(() => (window as any).__wb_lastCheckoutDebug)
+      console.log('Checkout debug invoice:', checkoutDebug)
+      const checkoutSession = await page.evaluate(() => (window as any).__wb_lastCheckoutSession)
+      console.log('Checkout session payload:', checkoutSession)
+      const discountMeta = await page.evaluate(() => (window as any).__wb_lastDiscountMeta)
+      console.log('Discount meta:', discountMeta)
+      const refreshPayloads = await page.evaluate(() => (window as any).__wb_refreshPayloads)
+      console.log('Refresh payloads:', refreshPayloads)
 
       // Complete payment
       await fillStripePaymentForm(page)
@@ -235,24 +253,35 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
       console.log('Validating database...')
       const submission = await getSubmission(submissionId!)
       expect(submission.status).toBe('paid')
-      expect(submission.payment_amount).toBe(discountedBase)
+      const stripeClient = stripePaymentService.getStripeInstance()
+      const invoiceId = submission.payment_metadata?.invoice_id as string | undefined
+      if (invoiceId) {
+        const invoice = await stripeClient.invoices.retrieve(invoiceId)
+        expect(invoice.total).toBe(previewTotals.total)
+        const totalDiscount = (invoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0)
+        expect(totalDiscount).toBeGreaterThan(0)
+      } else {
+        console.log('Stripe invoice ID missing on submission metadata')
+      }
+
+      expect(submission.payment_amount).toBe(previewTotals.total)
       expect(submission.form_data.discountCode).toBe('E2E_TEST_20')
       console.log('✓ Database records discount code')
 
       // CRITICAL VALIDATION 3: Stripe has discount
       console.log('Validating Stripe objects...')
       await validateStripePaymentComplete(submission, {
-        totalAmount: discountedBase,
+        totalAmount: previewTotals.total,
         hasDiscount: true,
         discountCode: 'E2E_TEST_20',
         discountPercent: 20,
-        recurringAmount: discountedBase
+        recurringAmount: discountedRecurring
       })
 
       console.log('✓ Payment Intent = discounted amount')
       console.log('✓ Subscription HAS 20% discount')
       console.log('✓ Schedule phase HAS discount')
-      console.log('✓ Future invoices will charge €' + (discountedBase / 100))
+      console.log('✓ Future invoices will charge €' + (discountedRecurring / 100))
       console.log('')
       console.log('=== TEST PASSED: Discount actually applied in Stripe ===')
 

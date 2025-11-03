@@ -74,6 +74,37 @@ export async function seedStep14TestSession(
     throw new Error(`Seed session failed: ${data.error || 'Unknown error'}`)
   }
 
+  // Ensure submission is readable before proceeding (handles eventual consistency)
+  const submissionId = data.submissionId as string
+  const sessionId = data.sessionId as string
+  const verificationUrl = `http://localhost:3783/api/onboarding/get-submission?sessionId=${sessionId}&submissionId=${submissionId}&includeFormData=true`
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const check = await fetch(verificationUrl)
+      if (attempt === 4 && !check.ok) {
+        console.warn('Submission not yet available after seeding', {
+          sessionId: data.sessionId,
+          submissionId,
+          status: check.status
+        })
+      }
+      if (check.ok) {
+        break
+      }
+    } catch (err) {
+      if (attempt === 4) {
+        console.warn('Submission check failed', {
+          sessionId: data.sessionId,
+          submissionId,
+          error: err instanceof Error ? err.message : err
+        })
+      }
+      // ignore and retry
+    }
+    await new Promise(resolve => setTimeout(resolve, 200))
+  }
+
   // Build Zustand store structure matching persist config in onboarding.ts
   const zustandStore = {
     state: {

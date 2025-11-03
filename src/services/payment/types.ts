@@ -35,10 +35,14 @@ export interface CustomerInfo {
 
 export interface CheckoutSessionResult {
   success: boolean
-  sessionUrl?: string
-  sessionId?: string
+  paymentRequired: boolean
+  clientSecret: string | null
+  invoiceId?: string | null
   customerId?: string
   subscriptionId?: string
+  invoiceTotal?: number
+  invoiceDiscount?: number
+  couponId?: string | null
   error?: {
     code: string
     message: string

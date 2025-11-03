@@ -4,10 +4,26 @@
  */
 
 import Stripe from 'stripe'
+import * as dotenv from 'dotenv'
+import path from 'path'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover'
-})
+function createStripeClient() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    const envPath = path.resolve(process.cwd(), '.env')
+    dotenv.config({ path: envPath })
+  }
+
+  const secretKey = process.env.STRIPE_SECRET_KEY
+  if (!secretKey) {
+    throw new Error('STRIPE_SECRET_KEY is required for Stripe E2E fixtures. Set it in your environment or .env file.')
+  }
+
+  return new Stripe(secretKey, {
+    apiVersion: '2025-09-30.clover'
+  })
+}
+
+const stripe = createStripeClient()
 
 /**
  * Ensures test coupons exist in Stripe test mode

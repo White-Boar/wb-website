@@ -168,13 +168,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Return session details
+    const localePath = locale === 'en' ? 'en' : 'it'
+
     return NextResponse.json({
       success: true,
       sessionId: session.id,
       submissionId: submission.id,
       email: testEmail,
       formData: formData, // For localStorage injection
-      url: `/onboarding/step/${currentStep}`
+      url: `/${localePath}/onboarding/step/${currentStep}`
     })
 
   } catch (error) {

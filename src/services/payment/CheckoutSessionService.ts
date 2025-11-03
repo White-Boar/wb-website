@@ -22,6 +22,65 @@ export class CheckoutSessionService {
     this.stripeService = stripeService || new StripePaymentService()
   }
 
+  private async cancelPendingStripeResources(
+    submission: any,
+    supabase: SupabaseClient
+  ): Promise<void> {
+    const stripe = this.stripeService.getStripeInstance()
+
+    console.log('Cancelling pending Stripe resources for submission', {
+      submissionId: submission.id,
+      stripe_subscription_id: submission.stripe_subscription_id,
+      stripe_subscription_schedule_id: submission.stripe_subscription_schedule_id
+    })
+
+    const scheduleId = submission.stripe_subscription_schedule_id as string | null
+    const subscriptionId = submission.stripe_subscription_id as string | null
+
+    if (scheduleId) {
+      try {
+        await stripe.subscriptionSchedules.cancel(scheduleId, {
+          invoice_now: false,
+          prorate: false
+        })
+      } catch (error) {
+        console.error('Failed to cancel subscription schedule during reset:', error)
+      }
+    }
+
+    if (subscriptionId) {
+      try {
+        await stripe.subscriptions.cancel(subscriptionId, {
+          invoice_now: false,
+          prorate: false
+        })
+      } catch (error) {
+        console.error('Failed to cancel subscription during reset:', error)
+      }
+    }
+
+    const { error: cleanupError } = await supabase
+      .from('onboarding_submissions')
+      .update({
+        stripe_subscription_id: null,
+        stripe_subscription_schedule_id: null,
+        stripe_payment_id: null,
+        payment_amount: null,
+        payment_completed_at: null,
+        payment_metadata: null,
+        status: submission.status === 'paid' ? 'submitted' : submission.status,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', submission.id)
+
+    if (cleanupError) {
+      console.error('Failed to reset submission state during cancel', cleanupError)
+    }
+
+    submission.stripe_subscription_id = null
+    submission.stripe_subscription_schedule_id = null
+  }
+
   /**
    * Validate submission and check if it's eligible for payment
    *
@@ -34,13 +93,35 @@ export class CheckoutSessionService {
     supabase: SupabaseClient
   ): Promise<SubmissionValidationResult> {
     // Fetch submission from database
-    const { data: submission, error: fetchError } = await supabase
-      .from('onboarding_submissions')
-      .select('*')
-      .eq('id', submissionId)
-      .single()
+    let submission: any | null = null
+    let fetchError: any = null
 
-    if (fetchError || !submission) {
+    for (let attempt = 0; attempt < 2 && !submission; attempt++) {
+      const { data, error } = await supabase
+        .from('onboarding_submissions')
+        .select('*')
+        .eq('id', submissionId)
+        .single()
+
+      if (data) {
+        submission = data
+        break
+      }
+
+      fetchError = error
+
+      if (error?.code !== 'PGRST116') {
+        break
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 250))
+    }
+
+    if (!submission) {
+      console.error('CheckoutSessionService.validateSubmission failed', {
+        submissionId,
+        fetchError
+      })
       return {
         valid: false,
         error: {
@@ -56,12 +137,20 @@ export class CheckoutSessionService {
       // Subscription exists - need to check if payment is pending or completed
       // We'll return the submission and let createCheckoutSession handle retrieving
       // the existing client secret if payment is still pending
+      console.log('CheckoutSessionService.validateSubmission existing subscription', {
+        submissionId,
+        stripe_subscription_id: submission.stripe_subscription_id
+      })
       return {
         valid: true,
         submission,
         existingSubscription: true
       }
     }
+
+    console.log('CheckoutSessionService.validateSubmission success', {
+      submissionId
+    })
 
     return {
       valid: true,
@@ -185,6 +274,8 @@ export class CheckoutSessionService {
       if (!validationResult.valid || !validationResult.submission) {
         return {
           success: false,
+          paymentRequired: true,
+          clientSecret: null,
           error: validationResult.error
         }
       }
@@ -192,64 +283,31 @@ export class CheckoutSessionService {
 
       // 1b. Extract additionalLanguages from submission's form_data (source of truth)
       // The frontend may pass additionalLanguages, but we should trust the database
-      const submissionLanguages = submission.form_data?.additionalLanguages || []
-      const languagesToUse = submissionLanguages.length > 0 ? submissionLanguages : additionalLanguages
+      const formLanguages = submission.form_data?.step13?.additionalLanguages || submission.form_data?.additionalLanguages || []
+      const submissionLanguages = Array.isArray(formLanguages)
+        ? [...new Set(formLanguages.filter((code: unknown): code is string => typeof code === 'string'))]
+        : []
+      const fallbackLanguages = Array.isArray(additionalLanguages)
+        ? [...new Set(additionalLanguages.filter((code: unknown): code is string => typeof code === 'string'))]
+        : []
+      const languagesToUse = submissionLanguages.length > 0 ? submissionLanguages : fallbackLanguages
 
       // 1a. Handle existing subscription - retrieve existing client secret
-      if (validationResult.existingSubscription && submission.stripe_subscription_id) {
-        try {
-          const stripe = this.stripeService.getStripeInstance()
-          const subscription = await stripe.subscriptions.retrieve(submission.stripe_subscription_id, {
-            expand: ['latest_invoice']
-          })
-
-          // Get the latest invoice
-          const latestInvoice = subscription.latest_invoice
-          if (typeof latestInvoice === 'string' || !latestInvoice) {
-            throw new Error('Unable to retrieve invoice details')
-          }
-
-          // Check if invoice is already paid
-          if (latestInvoice.status === 'paid') {
-            return {
-              success: false,
-              error: {
-                code: 'PAYMENT_ALREADY_COMPLETED',
-                message: 'This submission has already been paid'
-              }
-            }
-          }
-
-          // Invoice is still pending - get the confirmation secret
-          const confirmationSecret = (latestInvoice as any).confirmation_secret
-          if (confirmationSecret?.client_secret) {
-            return {
-              success: true,
-              sessionUrl: confirmationSecret.client_secret,
-              sessionId: latestInvoice.id,
-              customerId: submission.stripe_customer_id,
-              subscriptionId: submission.stripe_subscription_id
-            }
-          }
-
-          throw new Error('No confirmation secret found for pending invoice')
-        } catch (error) {
-          console.error('Error retrieving existing subscription:', error)
-          return {
-            success: false,
-            error: {
-              code: 'STRIPE_API_ERROR',
-              message: 'Failed to retrieve existing checkout session'
-            }
-          }
-        }
-      }
+    if (validationResult.existingSubscription && submission.stripe_subscription_id) {
+      console.warn('Existing subscription detected – resetting Stripe resources')
+      await this.cancelPendingStripeResources(submission, supabase)
+      submission.stripe_subscription_id = null
+      submission.stripe_subscription_schedule_id = null
+      validationResult.existingSubscription = false
+    }
 
       // 2. Validate language codes
       const invalidLanguages = this.validateLanguageCodes(languagesToUse)
       if (invalidLanguages.length > 0) {
         return {
           success: false,
+          paymentRequired: true,
+          clientSecret: null,
           error: {
             code: 'INVALID_LANGUAGE_CODE',
             message: `Invalid language codes: ${invalidLanguages.join(', ')}`
@@ -262,6 +320,8 @@ export class CheckoutSessionService {
       if (!rateLimitResult.allowed) {
         return {
           success: false,
+          paymentRequired: true,
+          clientSecret: null,
           error: {
             code: 'RATE_LIMIT_EXCEEDED',
             message: 'Too many payment attempts. Please try again in 1 hour.'
@@ -294,15 +354,44 @@ export class CheckoutSessionService {
       let validatedCoupon: Stripe.Coupon | null = null
       if (discountCode) {
         validatedCoupon = await this.stripeService.validateCoupon(discountCode)
+        console.log('[CheckoutSessionService] coupon validation result', {
+          discountCode,
+          validatedCoupon: validatedCoupon ? { id: validatedCoupon.id, valid: validatedCoupon.valid, duration: validatedCoupon.duration } : null
+        })
         if (!validatedCoupon) {
           return {
             success: false,
+            paymentRequired: true,
+            clientSecret: null,
             error: {
               code: 'INVALID_DISCOUNT_CODE',
               message: `Discount code '${discountCode}' is not valid or has expired`
             }
           }
         }
+      }
+
+
+      // Persist discount code in form data for auditing/UI
+      if (validatedCoupon && discountCode) {
+        const updatedFormData = {
+          ...(submission.form_data || {})
+        }
+        updatedFormData.discountCode = discountCode
+        updatedFormData.step14 = {
+          ...(updatedFormData.step14 || {}),
+          discountCode
+        }
+        submission.form_data = updatedFormData
+      } else if (!discountCode && submission.form_data?.discountCode) {
+        const updatedFormData = {
+          ...(submission.form_data || {})
+        }
+        delete updatedFormData.discountCode
+        if (updatedFormData.step14) {
+          delete updatedFormData.step14.discountCode
+        }
+        submission.form_data = updatedFormData
       }
 
       // 8. Create subscription schedule with 12-month commitment
@@ -323,14 +412,40 @@ export class CheckoutSessionService {
         throw new Error('Subscription not created by schedule')
       }
 
+      const stripe = this.stripeService.getStripeInstance()
+      const subscriptionMetadata = {
+        ...(subscription.metadata || {}),
+        submission_id: submissionId,
+        session_id: submission.session_id,
+        ...(validatedCoupon ? { discount_code: validatedCoupon.id } : {})
+      }
+
+      try {
+        await stripe.subscriptions.update(subscription.id, {
+          metadata: subscriptionMetadata
+        })
+      } catch (metadataError) {
+        console.error('Failed to update subscription metadata:', metadataError)
+      }
+
       // 9. Add language add-ons as invoice items (use database value)
-      const result = await this.addLanguageAddOns(
+      const addOnResult = await this.addLanguageAddOns(
         customer.id,
         subscription,
         languagesToUse,
         submissionId,
-        submission.session_id
+        submission.session_id,
+        validatedCoupon?.id ?? null
       )
+
+      console.log('[CheckoutSessionService] addLanguageAddOns result', {
+        submissionId,
+        invoiceId: addOnResult.invoiceId,
+        paymentRequired: addOnResult.paymentRequired,
+        couponId: validatedCoupon?.id || null,
+        invoiceTotal: addOnResult.invoiceTotal,
+        invoiceDiscount: addOnResult.invoiceDiscount
+      })
 
       // 10. Update submission with Stripe IDs
       await supabase
@@ -339,15 +454,28 @@ export class CheckoutSessionService {
           stripe_customer_id: customer.id,
           stripe_subscription_id: subscription.id,
           stripe_subscription_schedule_id: schedule.id,
+          form_data: submission.form_data,
           updated_at: new Date().toISOString()
         })
         .eq('id', submissionId)
 
+      console.log('[CheckoutSessionService] returning session creation result', {
+        submissionId,
+        paymentRequired: addOnResult.paymentRequired,
+        clientSecret: addOnResult.clientSecret ? 'present' : null,
+        invoiceId: addOnResult.invoiceId
+      })
+
       return {
         success: true,
-        ...result,
+        paymentRequired: addOnResult.paymentRequired,
+        clientSecret: addOnResult.clientSecret,
+        invoiceId: addOnResult.invoiceId,
         customerId: customer.id,
-        subscriptionId: subscription.id
+        subscriptionId: subscription.id,
+        invoiceTotal: addOnResult.invoiceTotal,
+        invoiceDiscount: addOnResult.invoiceDiscount,
+        couponId: validatedCoupon?.id ?? null
       }
     } catch (error) {
       console.error('Checkout session creation error:', error)
@@ -356,6 +484,8 @@ export class CheckoutSessionService {
       if (error instanceof Error && error.message.startsWith('MISSING_CUSTOMER_EMAIL')) {
         return {
           success: false,
+          paymentRequired: true,
+          clientSecret: null,
           error: {
             code: 'MISSING_CUSTOMER_EMAIL',
             message: 'Customer email not found in submission'
@@ -365,6 +495,8 @@ export class CheckoutSessionService {
 
       return {
         success: false,
+        paymentRequired: true,
+        clientSecret: null,
         error: {
           code: 'STRIPE_API_ERROR',
           message: 'Failed to create checkout session. Please try again.'
@@ -383,8 +515,15 @@ export class CheckoutSessionService {
     subscription: Stripe.Subscription,
     languageCodes: string[],
     submissionId: string,
-    sessionId: string
-  ): Promise<{ sessionUrl?: string; sessionId?: string; error?: any }> {
+    sessionId: string,
+    couponId?: string | null
+  ): Promise<{
+    paymentRequired: boolean
+    clientSecret: string | null
+    invoiceId: string
+    invoiceTotal: number
+    invoiceDiscount: number
+  }> {
     const stripe = this.stripeService.getStripeInstance()
 
     // Get the invoice ID from the subscription
@@ -400,7 +539,6 @@ export class CheckoutSessionService {
     // Fetch language add-on price from Stripe
     const languageAddonPriceId = process.env.STRIPE_LANGUAGE_ADDON_PRICE_ID!
     const addonPrice = await stripe.prices.retrieve(languageAddonPriceId)
-    const addonAmount = addonPrice.unit_amount || 7500 // Fallback to 7500 if not set
 
     // Add language add-ons as invoice items
     const languageAddOnPromises = languageCodes.map((code: string) => {
@@ -408,8 +546,9 @@ export class CheckoutSessionService {
       return stripe.invoiceItems.create({
         customer: customerId,
         invoice: invoiceId,
-        amount: addonAmount, // Fetch from Stripe Price
-        currency: 'eur',
+        pricing: {
+          price: addonPrice.id
+        },
         description: `${language?.nameEn} Language Add-on`,
         metadata: {
           language_code: code,
@@ -420,17 +559,65 @@ export class CheckoutSessionService {
 
     await Promise.all(languageAddOnPromises)
 
+    if (couponId) {
+      try {
+        await stripe.invoices.update(invoiceId, {
+          discounts: [{ coupon: couponId }]
+        })
+      } catch (discountAttachError) {
+        console.error('Failed to attach coupon discount to invoice:', discountAttachError)
+      }
+    }
+
+    try {
+      const invoicePreview = await stripe.invoices.retrieve(invoiceId, { expand: ['total_discount_amounts'] })
+      console.log('[CheckoutSessionService] invoice before finalize', {
+        invoiceId,
+        total: invoicePreview.total,
+        discountAmounts: invoicePreview.total_discount_amounts,
+        couponId
+      })
+    } catch (previewError) {
+      console.error('Failed to retrieve invoice before finalize:', previewError)
+    }
+
+    // Attach metadata to invoice so webhook events can resolve the submission reliably
+    try {
+      await stripe.invoices.update(invoiceId, {
+        metadata: {
+          submission_id: submissionId,
+          session_id: sessionId
+        }
+      })
+    } catch (invoiceMetadataError) {
+      console.error('Failed to attach metadata to invoice:', invoiceMetadataError)
+    }
+
     // Finalize the invoice to create the Payment Intent with discounts automatically applied
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoiceId, {
-      expand: ['confirmation_secret', 'payment_intent']
+      expand: ['confirmation_secret', 'payment_intent', 'total_discount_amounts']
+    })
+
+    console.log('[CheckoutSessionService] finalized invoice', {
+      invoiceId: finalizedInvoice.id,
+      total: finalizedInvoice.total,
+      subtotal: finalizedInvoice.subtotal,
+      totalDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0),
+      discountAmounts: finalizedInvoice.total_discount_amounts,
+      couponId
     })
 
     // Handle zero-amount invoices (discount >= total)
+    const invoiceIdValue = finalizedInvoice.id
+
     if (finalizedInvoice.amount_due <= 0) {
       // Stripe automatically marks zero-amount invoices as paid
       return {
-        sessionUrl: undefined,
-        sessionId: undefined
+        paymentRequired: false,
+        clientSecret: null,
+        invoiceId: invoiceIdValue,
+        invoiceTotal: finalizedInvoice.total ?? 0,
+        invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0)
       }
     }
 
@@ -459,8 +646,11 @@ export class CheckoutSessionService {
     }
 
     return {
-      sessionUrl: confirmationSecret.client_secret,
-      sessionId: finalizedInvoice.id
+      paymentRequired: true,
+      clientSecret: confirmationSecret.client_secret,
+      invoiceId: invoiceIdValue,
+      invoiceTotal: finalizedInvoice.total ?? 0,
+      invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0)
     }
   }
 }
