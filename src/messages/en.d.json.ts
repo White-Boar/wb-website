@@ -3,7 +3,7 @@
 
 declare const messages: {
   "nav": {
-    "packages": "Packages",
+    "services": "Services",
     "clients": "Clients",
     "start": "Start",
     "theme": {
@@ -17,33 +17,50 @@ declare const messages: {
     }
   },
   "hero": {
-    "title": "Brand. Build. Boom.",
-    "subtitle": "AI-driven websites live in days, not months.",
+    "title": "Your business. Selling globally. All year.",
+    "subtitle": "Sell to international customers even after the holiday season: a multilingual website that keeps you in touch.",
     "cta": "Start now!"
   },
+  "steps": {
+    "title": "Three simple steps",
+    "step1": {
+      "title": "Start now",
+      "subtitle": "Tell us about your vision",
+      "description": "In just 15 minutes, our smart form captures the essence of your business."
+    },
+    "step2": {
+      "title": "Approve your project",
+      "subtitle": "In five days, you'll receive a complete website",
+      "description": "Beautiful, branded, and ready to launch in English and Italian."
+    },
+    "step3": {
+      "title": "Go live & grow",
+      "subtitle": "Launch your business online",
+      "description": "Attract new customers and build lasting loyalty through our platform."
+    }
+  },
   "pricing": {
-    "title": "Packages",
+    "title": "Services",
     "fast": {
       "name": "Fast & Simple",
-      "tagline": "Let the world know you exist.",
-      "price": "€40 / month",
-      "feature1": "Branding",
-      "feature2": "One-page custom design",
-      "feature3": "2 business-day delivery",
-      "feature4": "Copy in EN+IT",
-      "feature5": "SEO meta",
-      "feature6": "1 revision",
-      "feature7": "Managed hosting (10k visits)"
+      "tagline": "Personalized one-page website",
+      "price": "€35 / month",
+      "feature1": "Personalized branding",
+      "feature2": "Delivered in 5 business days",
+      "feature3": "Multilingual: English and Italian included (more on request)",
+      "feature4": "Search engine visibility",
+      "feature5": "Adjustment package included",
+      "feature6": "Hosting included (10k visits per month)"
     },
     "custom": {
       "name": "Custom Made",
-      "tagline": "Custom web apps. No limits. Just results.",
-      "price": "from €5,000 + €40 / month",
-      "feature1": "SaaS platforms",
-      "feature2": "Web portals & dashboards",
-      "feature3": "Auth & admin",
-      "feature4": "API integrations",
-      "feature5": "Scalable infra"
+      "tagline": "Custom software development",
+      "price": "from €3,000",
+      "feature1": "AI integrations and automation",
+      "feature2": "E-commerce solutions",
+      "feature3": "Mobile apps",
+      "feature4": "Web applications & dashboards",
+      "feature5": "SaaS platforms"
     },
     "addons": "Add-ons",
     "addonsDescription": "Enhance your package with additional services"

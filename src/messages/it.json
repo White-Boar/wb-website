@@ -1,6 +1,6 @@
 {
   "nav": {
-    "packages": "Pacchetti",
+    "services": "Servizi",
     "clients": "Clienti",
     "start": "Inizia",
     "theme": {
@@ -14,33 +14,50 @@
     }
   },
   "hero": {
-    "title": "Brand. Build. Boom.",
-    "subtitle": "Siti web guidati dall'AI online in giorni, non mesi.",
+    "title": "La tua attività. Vendite globali. Tutto l'anno.",
+    "subtitle": "Vendi a clienti internazionali anche dopo le feste: un sito web multilingue che ti mantiene in contatto.",
     "cta": "Inizia ora!"
   },
+  "steps": {
+    "title": "Tre semplici passaggi",
+    "step1": {
+      "title": "Inizia ora",
+      "subtitle": "Raccontaci la tua visione",
+      "description": "In soli 15 minuti, il nostro modulo intelligente cattura l'essenza della tua attività."
+    },
+    "step2": {
+      "title": "Approva il tuo progetto",
+      "subtitle": "In cinque giorni riceverai un sito web completo",
+      "description": "Bello, brandizzato e pronto per il lancio in inglese e italiano."
+    },
+    "step3": {
+      "title": "Vai online e cresci",
+      "subtitle": "Lancia la tua attività online",
+      "description": "Attira nuovi clienti e costruisci una fedeltà duratura attraverso la nostra piattaforma."
+    }
+  },
   "pricing": {
-    "title": "Pacchetti",
+    "title": "Servizi",
     "fast": {
       "name": "Veloce e Semplice",
-      "tagline": "Fai sapere al mondo che esisti.",
-      "price": "€40 / mese",
-      "feature1": "Branding",
-      "feature2": "Design personalizzato a pagina singola",
-      "feature3": "Consegna in 2 giorni lavorativi",
-      "feature4": "Copia in EN+IT",
-      "feature5": "Meta SEO",
-      "feature6": "1 revisione",
-      "feature7": "Hosting gestito (10k visite)"
+      "tagline": "Sito web personalizzato di una pagina",
+      "price": "€35 / mese",
+      "feature1": "Branding personalizzato",
+      "feature2": "Consegnato in 5 giorni lavorativi",
+      "feature3": "Multilingue: inglese e italiano inclusi (altri su richiesta)",
+      "feature4": "Visibilità sui motori di ricerca",
+      "feature5": "Pacchetto di modifiche incluso",
+      "feature6": "Hosting incluso (10k visite al mese)"
     },
     "custom": {
       "name": "Su Misura",
-      "tagline": "App web personalizzate. Nessun limite. Solo risultati.",
-      "price": "da €5.000 + €40 / mese",
-      "feature1": "Piattaforme SaaS",
-      "feature2": "Portali web e dashboard",
-      "feature3": "Auth e admin",
-      "feature4": "Integrazioni API",
-      "feature5": "Infrastruttura scalabile"
+      "tagline": "Sviluppo software personalizzato",
+      "price": "da €3.000",
+      "feature1": "Integrazioni AI e automazione",
+      "feature2": "Soluzioni e-commerce",
+      "feature3": "App mobile",
+      "feature4": "Applicazioni web e dashboard",
+      "feature5": "Piattaforme SaaS"
     },
     "addons": "Componenti aggiuntivi",
     "addonsDescription": "Migliora il tuo pacchetto con servizi aggiuntivi"

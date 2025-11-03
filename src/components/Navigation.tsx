@@ -76,7 +76,7 @@ export function Navigation() {
                 onClick={() => scrollToSection('pricing')}
                 className="text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-accent px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
               >
-                {t('packages')}
+                {t('services')}
               </button>
               <button
                 onClick={() => scrollToSection('portfolio')}
@@ -160,7 +160,7 @@ export function Navigation() {
                     }}
                     className="block w-full text-left text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-accent px-3 py-2 text-base font-medium transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
                   >
-                    {t('packages')}
+                    {t('services')}
                   </button>
                   <button
                     onClick={() => {

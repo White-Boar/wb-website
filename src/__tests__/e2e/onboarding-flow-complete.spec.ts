@@ -191,7 +191,7 @@ test.describe('Complete Onboarding Flow', () => {
 
     // Navigate to homepage (uses baseURL from playwright.config.ts)
     await page.goto('/');
-    await expect(page.locator('h1')).toContainText(/Brand. Build. Boom.|WhiteBoar|Digital Agency/i);
+    await expect(page.locator('h1')).toContainText(/Your business. Selling globally. All year.|WhiteBoar|Digital Agency/i);
   });
 
   test.afterEach(async () => {

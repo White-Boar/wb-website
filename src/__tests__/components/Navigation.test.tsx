@@ -16,9 +16,9 @@ describe('Navigation', () => {
 
   it('renders navigation elements', () => {
     render(<Navigation />)
-    
+
     expect(screen.getByText('WhiteBoar')).toBeInTheDocument()
-    expect(screen.getByText('Packages')).toBeInTheDocument()
+    expect(screen.getByText('Services')).toBeInTheDocument()
     expect(screen.getByText('Clients')).toBeInTheDocument()
     expect(screen.getByText('Start')).toBeInTheDocument()
   })
@@ -30,12 +30,12 @@ describe('Navigation', () => {
     expect(logoLink).toHaveAttribute('href', '/')
   })
 
-  it('scrolls to pricing section when packages button is clicked', () => {
+  it('scrolls to pricing section when services button is clicked', () => {
     render(<Navigation />)
-    
-    const packagesButton = screen.getByText('Packages')
-    fireEvent.click(packagesButton)
-    
+
+    const servicesButton = screen.getByText('Services')
+    fireEvent.click(servicesButton)
+
     expect(document.getElementById).toHaveBeenCalledWith('pricing')
     expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' })
   })

@@ -45,7 +45,7 @@ export function Footer() {
                 onClick={() => scrollToSection('pricing')}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
               >
-                {navT('packages')}
+                {navT('services')}
               </button>
               <button
                 onClick={() => scrollToSection('portfolio')}

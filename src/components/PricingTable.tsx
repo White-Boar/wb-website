@@ -38,8 +38,7 @@ export function PricingTable() {
         t('fast.feature3'),
         t('fast.feature4'),
         t('fast.feature5'),
-        t('fast.feature6'),
-        t('fast.feature7')
+        t('fast.feature6')
       ],
       popular: true,
       href: '/onboarding'

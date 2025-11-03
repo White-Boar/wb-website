@@ -4,17 +4,17 @@ import { Hero } from '@/components/Hero'
 describe('Hero', () => {
   it('renders hero content', () => {
     render(<Hero />)
-    
-    expect(screen.getByText('Brand. Build. Boom.')).toBeInTheDocument()
-    expect(screen.getByText('AI-driven websites live in days, not months.')).toBeInTheDocument()
+
+    expect(screen.getByText('Your business. Selling globally. All year.')).toBeInTheDocument()
+    expect(screen.getByText('Sell to international customers even after the holiday season: a multilingual website that keeps you in touch.')).toBeInTheDocument()
     expect(screen.getByText('Start now!')).toBeInTheDocument()
   })
 
   it('has proper heading structure', () => {
     render(<Hero />)
-    
+
     const mainHeading = screen.getByRole('heading', { level: 1 })
-    expect(mainHeading).toHaveTextContent('Brand. Build. Boom.')
+    expect(mainHeading).toHaveTextContent('Your business. Selling globally. All year.')
     expect(mainHeading).toHaveClass('font-heading')
   })
 

@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Navigation } from '@/components/Navigation'
 import { Hero } from '@/components/Hero'
+import { Steps } from '@/components/Steps'
 import { PricingTable } from '@/components/PricingTable'
 import { PortfolioCarousel } from '@/components/PortfolioCarousel'
 import { Footer } from '@/components/Footer'
@@ -51,6 +52,7 @@ export default async function HomePage({
         <Navigation />
         <main className="flex-1">
           <Hero />
+          <Steps />
           <PricingTable />
           <PortfolioCarousel />
         </main>

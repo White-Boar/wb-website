@@ -31,7 +31,7 @@ test.describe('Custom Software Page', () => {
     await page.goto('/');
 
     // Scroll to pricing section
-    await page.getByRole('heading', { name: 'Packages' }).scrollIntoViewIfNeeded();
+    await page.getByRole('heading', { name: 'Services' }).scrollIntoViewIfNeeded();
 
     // Click on Custom Made button and wait for navigation
     await Promise.all([

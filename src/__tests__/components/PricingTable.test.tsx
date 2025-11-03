@@ -16,29 +16,29 @@ describe('PricingTable', () => {
 
   it('renders pricing section', () => {
     render(<PricingTable />)
-    
-    expect(screen.getByText('Packages')).toBeInTheDocument()
+
+    expect(screen.getByText('Services')).toBeInTheDocument()
     expect(screen.getByText('Fast & Simple')).toBeInTheDocument()
-    expect(screen.getByText('Custom-made')).toBeInTheDocument()
+    expect(screen.getByText('Custom Made')).toBeInTheDocument()
   })
 
   it('displays plan details correctly', () => {
     render(<PricingTable />)
-    
+
     // Fast & Simple plan
-    expect(screen.getByText('Let the world know you exist.')).toBeInTheDocument()
-    expect(screen.getByText('€40 / month')).toBeInTheDocument()
-    
-    // Custom-made plan
-    expect(screen.getByText('Custom web apps. No limits. Just results.')).toBeInTheDocument()
-    expect(screen.getByText('from €5,000 + €40 / month')).toBeInTheDocument()
+    expect(screen.getByText('Personalized one-page website')).toBeInTheDocument()
+    expect(screen.getByText('€35 / month')).toBeInTheDocument()
+
+    // Custom Made plan
+    expect(screen.getByText('Custom software development')).toBeInTheDocument()
+    expect(screen.getByText('from €3,000')).toBeInTheDocument()
   })
 
   it('shows features for each plan', () => {
     render(<PricingTable />)
-    
+
     // Check if features are displayed (they come from translation mock)
-    expect(screen.getByText(/Branding/)).toBeInTheDocument()
+    expect(screen.getByText(/Personalized branding/)).toBeInTheDocument()
     expect(screen.getByText(/SaaS platforms/)).toBeInTheDocument()
   })
 
@@ -46,7 +46,7 @@ describe('PricingTable', () => {
     render(<PricingTable />)
 
     const fastLink = screen.getByRole('link', { name: 'Start with Fast & Simple' })
-    const customLink = screen.getByRole('link', { name: 'Start with Custom-made' })
+    const customLink = screen.getByRole('link', { name: 'Start with Custom Made' })
 
     expect(fastLink).toBeInTheDocument()
     expect(customLink).toBeInTheDocument()
@@ -56,7 +56,7 @@ describe('PricingTable', () => {
     render(<PricingTable />)
 
     const fastLink = screen.getByRole('link', { name: 'Start with Fast & Simple' })
-    const customLink = screen.getByRole('link', { name: 'Start with Custom-made' })
+    const customLink = screen.getByRole('link', { name: 'Start with Custom Made' })
 
     expect(fastLink).toHaveAttribute('href', '/onboarding')
     expect(customLink).toHaveAttribute('href', '/custom-software')
@@ -78,7 +78,7 @@ describe('PricingTable', () => {
   it('has accessible structure', () => {
     render(<PricingTable />)
 
-    const heading = screen.getByRole('heading', { name: 'Packages' })
+    const heading = screen.getByRole('heading', { name: 'Services' })
     expect(heading).toBeInTheDocument()
 
     const links = screen.getAllByRole('link')

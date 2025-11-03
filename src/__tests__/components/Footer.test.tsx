@@ -23,9 +23,9 @@ describe('Footer', () => {
 
   it('displays quick links section', () => {
     render(<Footer />)
-    
+
     expect(screen.getByText('Quick Links')).toBeInTheDocument()
-    expect(screen.getByText('Packages')).toBeInTheDocument()
+    expect(screen.getByText('Services')).toBeInTheDocument()
     expect(screen.getByText('Clients')).toBeInTheDocument()
     expect(screen.getByText('Start')).toBeInTheDocument()
   })
@@ -62,10 +62,10 @@ describe('Footer', () => {
 
   it('scrolls to sections when quick links are clicked', () => {
     render(<Footer />)
-    
-    const packagesButton = screen.getByText('Packages')
-    fireEvent.click(packagesButton)
-    
+
+    const servicesButton = screen.getByText('Services')
+    fireEvent.click(servicesButton)
+
     expect(document.getElementById).toHaveBeenCalledWith('pricing')
     expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' })
   })

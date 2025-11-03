@@ -8,11 +8,11 @@ test.describe('WhiteBoar Homepage', () => {
   test('loads homepage successfully', async ({ page }) => {
     // Check that page loads with 200 status
     const response = await page.waitForLoadState('networkidle');
-    
+
     // Check main heading is visible
-    const mainHeading = page.getByRole('heading', { name: 'Brand. Build. Boom.' });
+    const mainHeading = page.getByRole('heading', { name: 'Your business. Selling globally. All year.' });
     await expect(mainHeading).toBeVisible();
-    
+
     // Check that all main sections are present
     await expect(page.locator('#pricing')).toBeVisible();
     await expect(page.locator('#portfolio')).toBeVisible();
@@ -25,7 +25,7 @@ test.describe('WhiteBoar Homepage', () => {
     }
 
     // Test navigation to pricing section using navigation menu
-    await page.getByLabel('Main navigation').getByRole('button', { name: 'Packages' }).click();
+    await page.getByLabel('Main navigation').getByRole('button', { name: 'Services' }).click();
     await expect(page.locator('#pricing')).toBeInViewport();
 
     // On mobile, re-open the menu for the next test
@@ -40,7 +40,7 @@ test.describe('WhiteBoar Homepage', () => {
 
   test('language switching works', async ({ page, isMobile }) => {
     // Check initial language (English)
-    await expect(page.getByText('Brand. Build. Boom.')).toBeVisible();
+    await expect(page.getByText('Your business. Selling globally. All year.')).toBeVisible();
 
     // On mobile, open the mobile menu first
     if (isMobile) {
@@ -92,7 +92,7 @@ test.describe('WhiteBoar Homepage', () => {
 
   test('pricing plan selection works', async ({ page }) => {
     // Scroll to pricing section
-    await page.getByRole('heading', { name: 'Packages' }).scrollIntoViewIfNeeded();
+    await page.getByRole('heading', { name: 'Services' }).scrollIntoViewIfNeeded();
 
     // Click on Fast & Simple plan and wait for navigation
     await page.getByRole('link', { name: 'Start with Fast & Simple' }).click();
@@ -182,7 +182,7 @@ test.describe('WhiteBoar Homepage', () => {
       await page.getByLabel('Toggle mobile menu').click();
 
       // Check that content is readable on mobile
-      const mainHeading = page.getByRole('heading', { name: 'Brand. Build. Boom.' });
+      const mainHeading = page.getByRole('heading', { name: 'Your business. Selling globally. All year.' });
       await expect(mainHeading).toBeVisible();
 
       // Check that buttons are accessible on mobile
