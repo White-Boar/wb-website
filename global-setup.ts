@@ -4,7 +4,8 @@ import { FullConfig } from '@playwright/test';
 let stripeListenerProcess: ChildProcess | null = null;
 let nextServerProcess: ChildProcess | null = null;
 
-const NEXT_SERVER_URL = process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3783';
+// Use BASE_URL from CI/CD or fall back to PLAYWRIGHT_TEST_BASE_URL or localhost
+const NEXT_SERVER_URL = process.env.BASE_URL || process.env.PLAYWRIGHT_TEST_BASE_URL || 'http://localhost:3783';
 
 function stripeSupportsRequestTimeout(): boolean {
   try {
@@ -88,6 +89,13 @@ function isStripeListenerRunning(): boolean {
 }
 
 async function globalSetup(config: FullConfig) {
+  // Skip server startup and Stripe listener when using external deployment (e.g., Vercel in CI)
+  if (process.env.BASE_URL) {
+    console.log('ℹ️  Using external deployment URL:', process.env.BASE_URL);
+    console.log('ℹ️  Skipping local server startup and Stripe webhook listener');
+    return;
+  }
+
   // Skip Stripe listener in CI as it's not available
   if (process.env.CI) {
     console.log('ℹ️  Skipping Stripe webhook listener in CI (not available)');
