@@ -112,7 +112,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // 3. Navigate to Step 14 - Zustand loads from localStorage
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
 
       // 4. Wait for Stripe Elements iframe to load
@@ -191,7 +191,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // 3. Navigate to Step 14 - Zustand loads from localStorage
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
 
       // 4. Wait for Stripe Elements iframe to load
@@ -274,7 +274,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // 3. Navigate to Step 14 - Zustand loads from localStorage
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
 
       // 4. Wait for Stripe Elements to load
@@ -343,7 +343,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
         localStorage.setItem('wb-onboarding-store', store)
       }, seed.zustandStore)
 
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/(?:en\/|it\/)?onboarding\/step\/14/, { timeout: 10000 })
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(2000)
@@ -405,7 +405,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
         localStorage.setItem('wb-onboarding-store', store)
       }, seed.zustandStore)
 
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/(?:en\/|it\/)?onboarding\/step\/14/, { timeout: 10000 })
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(2000)
@@ -465,7 +465,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // Navigate to Step 14
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
 
       // Wait for checkout to load
@@ -534,7 +534,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // Navigate to Step 14
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
 
       // Wait for checkout to load
@@ -588,7 +588,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // Navigate to Step 14
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
 
       // Wait for checkout to load
@@ -630,7 +630,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // 3. Navigate to Step 14
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
 
       // Wait for checkout to load
@@ -691,7 +691,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // 3. Navigate to Step 14
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
 
       // 4. Wait for Stripe Elements iframe to load
@@ -814,7 +814,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       }, seed.zustandStore)
 
       // 3. Navigate to Step 14
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(3000)
@@ -883,7 +883,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
         localStorage.setItem('wb-onboarding-store', store)
       }, seed.zustandStore)
 
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(3000)

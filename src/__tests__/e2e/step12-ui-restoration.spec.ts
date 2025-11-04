@@ -59,7 +59,7 @@ test.describe('Step 12 - File Upload Persistence Bug', () => {
     // ========== NAVIGATE TO STEP 12 ==========
     console.log('\n📍 STEP 2: Navigating to Step 12...')
 
-    await page.goto('http://localhost:3783/onboarding/step/12')
+    await page.goto('/onboarding/step/12')
     await page.waitForLoadState('networkidle')
     await page.waitForTimeout(1500) // Allow component to mount and restore state
 

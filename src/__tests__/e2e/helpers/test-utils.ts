@@ -388,7 +388,8 @@ export async function ensureFreshOnboardingState(page: Page) {
   });
 
   // Navigate directly to onboarding welcome page with cleared storage
-  await page.goto('http://localhost:3783/onboarding', { waitUntil: 'domcontentloaded' });
+  // Use relative URL to respect Playwright's baseURL configuration (works with both localhost and Vercel deployments)
+  await page.goto('/onboarding', { waitUntil: 'domcontentloaded' });
   await page.waitForLoadState('networkidle');
 
   // Verify we're on the welcome page (not redirected to a step)

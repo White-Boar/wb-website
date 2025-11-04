@@ -121,7 +121,7 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
       }, seed.zustandStore)
 
       // Navigate to Step 14
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
 
@@ -211,7 +211,7 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
         localStorage.setItem('wb-onboarding-store', store)
       }, seed.zustandStore)
 
-      await page.goto(`http://localhost:3783${seed.url}`)
+      await page.goto(seed.url)
       await page.waitForURL(/\/step\/14/, { timeout: 10000 })
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
 
