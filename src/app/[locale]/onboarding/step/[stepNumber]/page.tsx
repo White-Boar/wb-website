@@ -252,6 +252,10 @@ export default function OnboardingStep() {
   // Auto-save functionality
   useEffect(() => {
     const subscription = form.watch((data) => {
+      // Skip auto-save for Step 13 (Language Add-ons) - save only on Next button click
+      // This prevents unnecessary network requests during language selection
+      if (stepNumber === 13) return
+
       // Save if form is dirty OR if we're not currently resetting (to catch programmatic changes like file uploads)
       if (!isResettingRef.current && data && (isDirty || (data as any).logoUpload || (data as any).businessPhotos)) {
         // CRITICAL FIX: Filter out undefined values AND empty arrays to prevent overwriting existing data
@@ -453,6 +457,12 @@ export default function OnboardingStep() {
 
   // Handle previous step using smart navigation
   const handlePrevious = () => {
+    // Save current form data before navigating back (especially important for Step 13)
+    const currentData = form.getValues()
+    if (currentData && Object.keys(currentData).length > 0) {
+      updateFormData(currentData as any)
+    }
+
     const prevStepNumber = getPreviousStep(stepNumber as StepNumber, formData)
 
     if (prevStepNumber && prevStepNumber >= 1) {

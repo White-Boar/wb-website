@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Image from "next/image"
+import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { motion, useReducedMotion } from "framer-motion"
 import Autoplay from "embla-carousel-autoplay"
@@ -21,38 +22,38 @@ import { fadeInUp, slideUp } from "../../context/design-system/motion/variants"
 const portfolioItems = [
   {
     id: 1,
-    title: "Tritem",
-    subtitle: "Technology Solutions",
-    image: "/portfolio/tritem.png",
-    url: "https://tritem.eu/"
+    title: "Toscana Olive Oil",
+    subtitle: "Food & Beverage",
+    image: "/portfolio/toscana-olive-oil.png",
+    url: "https://www.toscanaoliveoil.com/"
   },
   {
     id: 2,
-    title: "Stackmine",
-    subtitle: "IT Services",
-    image: "/portfolio/stackmine.png",
-    url: "https://www.stackmine.pl/en/home/"
+    title: "Bazar del Parco",
+    subtitle: "Retail & Artisan Crafts",
+    image: "/portfolio/bazar-del-parco.png",
+    url: "https://bazardelparco.vercel.app/"
   },
   {
     id: 3,
-    title: "Testspring",
-    subtitle: "Quality Assurance",
-    image: "/portfolio/testspring.png",
-    url: "https://testspring.pl/en"
+    title: "Luna Piena",
+    subtitle: "Winery",
+    image: "/portfolio/luna-piena.png",
+    url: "https://lunapiena.vercel.app/"
   },
   {
     id: 4,
-    title: "Alta",
-    subtitle: "Healthcare Technology",
-    image: "/portfolio/alta.png",
-    url: "https://alta.pl/en/"
+    title: "Caseificio della Maremma",
+    subtitle: "Artisan Cheese",
+    image: "/portfolio/formaggio.png",
+    url: "https://formaggio.vercel.app/"
   },
   {
     id: 5,
-    title: "Drukarnia Graffiti",
-    subtitle: "Manufacturing & Printing",
-    image: "/portfolio/drukarnia-graffiti.png",
-    url: "https://drukarniagraffiti.pl/en/home-english/"
+    title: "Songs for One Listener",
+    subtitle: "Music & Entertainment",
+    image: "/portfolio/songs-for-one-listener.png",
+    url: "https://songsforonelistener.vercel.app/"
   }
 ]
 
@@ -113,28 +114,30 @@ export function PortfolioCarousel() {
             <CarouselContent className="-ml-2 md:-ml-4">
               {portfolioItems.map((item) => (
                 <CarouselItem key={item.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                  <Card className="overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
-                    <CardContent className="p-0">
-                      <div className="relative aspect-[4/3] overflow-hidden">
-                        <Image
-                          src={item.image}
-                          alt={`${item.title} - ${item.subtitle}`}
-                          fill
-                          className="object-cover transition-transform group-hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="absolute inset-0 flex flex-col justify-end p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                          <h3 className="font-heading text-xl font-semibold mb-1">
-                            {item.title}
-                          </h3>
-                          <p className="text-gray-200">
-                            {item.subtitle}
-                          </p>
+                  <Link href={item.url} target="_blank" rel="noopener noreferrer" className="block">
+                    <Card className="overflow-hidden group cursor-pointer hover:shadow-lg transition-shadow">
+                      <CardContent className="p-0">
+                        <div className="relative aspect-[2/1] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                          <Image
+                            src={item.image}
+                            alt={`${item.title} - ${item.subtitle}`}
+                            fill
+                            className="object-contain transition-transform group-hover:scale-105"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <div className="absolute inset-0 flex flex-col justify-end p-6 text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                            <h3 className="font-heading text-xl font-semibold mb-1">
+                              {item.title}
+                            </h3>
+                            <p className="text-gray-200">
+                              {item.subtitle}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 </CarouselItem>
               ))}
             </CarouselContent>

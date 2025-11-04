@@ -54,8 +54,10 @@ const initialFormData: Partial<OnboardingFormData> = {
 }
 
 // Create debounced auto-save function
-const createDebouncedSave = (saveFunction: () => Promise<void>) => 
-  debounce(saveFunction, 2000, { leading: false, trailing: true })
+// Increased to 1500ms to significantly reduce network requests
+// maxWait ensures save happens within 3s even if user keeps clicking
+const createDebouncedSave = (saveFunction: () => Promise<void>) =>
+  debounce(saveFunction, 1500, { leading: false, trailing: true, maxWait: 3000 })
 
 export const useOnboardingStore = create<OnboardingStore>()(
   devtools(

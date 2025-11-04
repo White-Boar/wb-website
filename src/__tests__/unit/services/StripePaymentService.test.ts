@@ -107,6 +107,40 @@ describe('StripePaymentService', () => {
     })
   })
 
+  describe('validateDiscountCode', () => {
+    it('should return coupon and promotion code metadata when promotion code is valid', async () => {
+      const promotionCode = {
+        id: 'promo_123',
+        code: 'SUMMER10',
+        promotion: {
+          coupon: 'coupon_123'
+        }
+      } as any
+
+      const validCoupon = {
+        id: 'coupon_123',
+        valid: true,
+        percent_off: 15
+      } as Stripe.Coupon
+
+      mockStripe.promotionCodes.list.mockResolvedValue({ data: [promotionCode] } as any)
+      mockStripe.coupons.retrieve.mockResolvedValue(validCoupon as any)
+
+      const result = await service.validateDiscountCode('SUMMER10')
+
+      expect(result).toEqual({
+        coupon: validCoupon,
+        promotionCode
+      })
+      expect(mockStripe.promotionCodes.list).toHaveBeenCalledWith({
+        code: 'SUMMER10',
+        active: true,
+        limit: 1
+      })
+      expect(mockStripe.coupons.retrieve).toHaveBeenCalledWith('coupon_123')
+    })
+  })
+
   describe('validateCoupon', () => {
     it('should return coupon if valid and active', async () => {
       const validCoupon = {

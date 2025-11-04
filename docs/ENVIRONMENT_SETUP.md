@@ -53,6 +53,7 @@ This guide helps you configure the required environment variables for the WhiteB
 - **From Email**: noreply.notifications@whiteboar.it
 - **Domain**: Ensure whiteboar.it is verified in Resend
 - **Templates**: Will be created programmatically
+- **Development/Test**: Emails are skipped by default; set `ENABLE_EMAILS=true` if you need to send from these environments.
 
 ### 3. Google Maps API
 

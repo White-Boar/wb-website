@@ -1,0 +1,5 @@
+
+> whiteboar-website@0.1.0 test:e2e /Users/Yoav/Projects/wb/wb-website
+> playwright test '--project=Chrome Mobile' --reporter=line
+
+ ELIFECYCLE  Command failed with exit code 1.

@@ -42,9 +42,10 @@ describe('PortfolioCarousel', () => {
     render(<PortfolioCarousel />)
 
     // Check for some portfolio item titles
-    expect(screen.getByAltText('Tritem - Technology Solutions')).toBeInTheDocument()
-    expect(screen.getByAltText('Stackmine - IT Services')).toBeInTheDocument()
-    expect(screen.getByAltText('Testspring - Quality Assurance')).toBeInTheDocument()
+    expect(screen.getByAltText('Toscana Olive Oil - Food & Beverage')).toBeInTheDocument()
+    expect(screen.getByAltText('Bazar del Parco - Retail & Artisan Crafts')).toBeInTheDocument()
+    expect(screen.getByAltText('Luna Piena - Winery')).toBeInTheDocument()
+    expect(screen.getByAltText('Songs for One Listener - Music & Entertainment')).toBeInTheDocument()
   })
 
   it('has navigation controls', () => {

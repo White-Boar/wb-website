@@ -115,7 +115,7 @@ export function Steps() {
                   <div className="hidden md:block absolute top-16 left-[calc(50%+48px)] w-[calc(100%-96px)] h-[2px] bg-accent opacity-20" />
                 )}
 
-                <div className="relative bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-lg p-8 h-full transition-all duration-300 hover:border-accent hover:shadow-lg">
+                <div className="relative bg-white dark:bg-gray-900 border-2 border-gray-300 dark:border-gray-700 rounded-lg px-8 py-4 h-full transition-all duration-300 hover:border-accent hover:shadow-lg">
                   {/* Icon Circle */}
                   <div className="relative mb-6">
                     <div className="w-16 h-16 mx-auto rounded-full bg-accent flex items-center justify-center text-gray-900 transition-transform duration-300 group-hover:scale-110">

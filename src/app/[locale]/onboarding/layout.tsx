@@ -65,9 +65,9 @@ export default async function OnboardingLayout({
 function OnboardingFooter() {
   return (
     <footer className="border-t bg-background/50 backdrop-blur-sm mt-auto">
-      <div className="container px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-4 sm:mr-auto">
+          <div className="flex items-center gap-2">
             <span>© 2025 WhiteBoar</span>
           </div>
 

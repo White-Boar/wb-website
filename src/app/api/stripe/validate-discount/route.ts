@@ -16,6 +16,18 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
+    const normalizedCode = discountCode.trim()
+
+    if (!normalizedCode) {
+      return NextResponse.json({
+        success: false,
+        error: {
+          code: 'INVALID_REQUEST',
+          message: 'Discount code is required'
+        }
+      }, { status: 400 })
+    }
+
     if (!sessionId) {
       return NextResponse.json({
         success: false,
@@ -40,9 +52,9 @@ export async function POST(request: NextRequest) {
 
     // Use service to validate discount code
     const stripeService = new StripePaymentService()
-    const coupon = await stripeService.validateCoupon(discountCode)
+    const validatedDiscount = await stripeService.validateDiscountCode(normalizedCode)
 
-    if (!coupon) {
+    if (!validatedDiscount) {
       return NextResponse.json({
         success: false,
         error: {
@@ -51,6 +63,9 @@ export async function POST(request: NextRequest) {
         }
       }, { status: 400 })
     }
+
+    const { coupon, promotionCode } = validatedDiscount
+    const displayCode = promotionCode?.code ?? normalizedCode
 
     // Get base package price ID
     const baseProductId = process.env.STRIPE_BASE_PACKAGE_PRICE_ID!
@@ -72,7 +87,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        code: coupon.id,
+        code: displayCode,
+        couponId: coupon.id,
+        promotionCodeId: promotionCode?.id ?? null,
+        enteredCode: normalizedCode,
         amount: preview.discountAmount, // Use Stripe's calculated discount in cents
         type: coupon.amount_off ? 'fixed' : 'percentage',
         duration: coupon.duration,

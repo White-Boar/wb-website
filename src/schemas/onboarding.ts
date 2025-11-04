@@ -27,11 +27,14 @@ const optionalUrlSchema = z.string()
   .or(z.literal(''))
 
 const phoneSchema = z.string()
-  .regex(/^\+?[1-9]\d{1,14}$/, 'Please enter a valid phone number')
+  .regex(/^\+?\d{1,15}$/, 'Please enter a valid phone number')
   .min(1, 'Phone number is required')
 
 const italianVatSchema = z.string()
-  .regex(/^IT\d{11}$/, 'Please enter a valid Italian VAT number (IT followed by 11 digits)')
+  .transform((val) => val.toUpperCase())
+  .refine((val) => !val || val === '' || /^IT\d{11}$/.test(val), {
+    message: 'Please enter a valid Italian VAT number (IT followed by 11 digits)'
+  })
   .optional()
   .or(z.literal(''))
 

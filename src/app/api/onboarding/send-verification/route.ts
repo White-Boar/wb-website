@@ -7,7 +7,16 @@ export async function POST(request: NextRequest) {
     try {
       body = await request.json()
     } catch (jsonError) {
-      console.error('Send verification API - invalid JSON:', jsonError)
+      // Only log errors for malformed JSON, not empty/aborted requests
+      // "Unexpected end of JSON input" indicates empty or aborted request body
+      const isEmptyRequest = jsonError instanceof Error &&
+        jsonError.message.includes('Unexpected end of JSON input')
+
+      // Log error only for truly malformed JSON (not empty requests)
+      if (!isEmptyRequest) {
+        console.error('Send verification API - invalid JSON:', jsonError)
+      }
+
       return NextResponse.json(
         { error: 'Invalid request body' },
         { status: 400 }

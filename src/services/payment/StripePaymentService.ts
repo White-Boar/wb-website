@@ -8,6 +8,11 @@ import { SubscriptionScheduleParams, SubscriptionScheduleResult } from './types'
 
 const BASE_PACKAGE_PRICE_ID = process.env.STRIPE_BASE_PACKAGE_PRICE_ID!
 
+export interface ValidatedDiscount {
+  coupon: Stripe.Coupon
+  promotionCode?: Stripe.PromotionCode
+}
+
 export class StripePaymentService {
   private stripe: Stripe
 
@@ -105,13 +110,13 @@ export class StripePaymentService {
   }
 
   /**
-   * Validate a discount coupon code or promotion code
+   * Validate a discount coupon code or promotion code and return detailed metadata
    *
    * @param discountCode - Coupon ID or Promotion Code to validate
-   * @returns Validated coupon or null if invalid
+   * @returns Validated coupon with optional promotion code metadata, or null if invalid
    * @throws Error if validation fails
    */
-  async validateCoupon(discountCode: string): Promise<Stripe.Coupon | null> {
+  async validateDiscountCode(discountCode: string): Promise<ValidatedDiscount | null> {
     try {
       const code = discountCode.trim()
 
@@ -123,7 +128,10 @@ export class StripePaymentService {
       })
 
       if (promotionCodes.data.length > 0) {
-        const promotionCode = promotionCodes.data[0] as any
+        const promotionCode = promotionCodes.data[0] as Stripe.PromotionCode & {
+          coupon?: string | Stripe.Coupon
+          promotion?: { coupon?: string | Stripe.Coupon }
+        }
 
         // Extract coupon ID from promotion code
         // The structure is: promotionCode.promotion.coupon (string ID)
@@ -153,7 +161,10 @@ export class StripePaymentService {
           return null
         }
 
-        return coupon
+        return {
+          coupon,
+          promotionCode
+        }
       }
 
       // Fallback: try as a direct coupon ID (for backwards compatibility)
@@ -163,7 +174,10 @@ export class StripePaymentService {
         return null
       }
 
-      return coupon
+      return {
+        coupon,
+        promotionCode: undefined
+      }
     } catch (error) {
       // Coupon doesn't exist
       if (error instanceof Stripe.errors.StripeError) {
@@ -173,6 +187,18 @@ export class StripePaymentService {
       }
       throw error
     }
+  }
+
+  /**
+   * Validate a discount coupon code or promotion code
+   *
+   * @param discountCode - Coupon ID or Promotion Code to validate
+   * @returns Validated coupon or null if invalid
+   * @throws Error if validation fails
+   */
+  async validateCoupon(discountCode: string): Promise<Stripe.Coupon | null> {
+    const result = await this.validateDiscountCode(discountCode)
+    return result?.coupon ?? null
   }
 
   /**

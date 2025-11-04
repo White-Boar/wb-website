@@ -42,6 +42,9 @@ const stripePromise = loadStripe(STRIPE_KEY)
 
 interface DiscountMeta {
   code: string
+  couponId?: string
+  promotionCodeId?: string
+  enteredCode?: string
   duration?: 'once' | 'forever' | 'repeating'
   durationInMonths?: number
   preview?: DiscountValidation['preview']
@@ -60,6 +63,9 @@ interface CheckoutFormLineItem {
 interface DiscountValidation {
   status: 'valid' | 'invalid'
   code?: string
+  couponId?: string
+  promotionCodeId?: string
+  enteredCode?: string
   duration?: 'once' | 'forever' | 'repeating'
   durationInMonths?: number
   preview?: {
@@ -317,13 +323,21 @@ function CheckoutForm({
       // Valid discount code - store preview data
       const discountMeta: DiscountMeta = {
         code: data.data.code,
+        couponId: data.data.couponId ?? undefined,
+        promotionCodeId: data.data.promotionCodeId ?? undefined,
+        enteredCode: data.data.enteredCode ?? data.data.code,
         duration: data.data.duration,
         durationInMonths: data.data.durationInMonths
       }
 
       setDiscountValidation({
         status: 'valid',
-        ...discountMeta,
+        code: discountMeta.code,
+        couponId: discountMeta.couponId,
+        promotionCodeId: discountMeta.promotionCodeId,
+        enteredCode: discountMeta.enteredCode,
+        duration: discountMeta.duration,
+        durationInMonths: discountMeta.durationInMonths,
         preview: data.data.preview
       })
       setPricePreview(data.data.preview)
@@ -489,7 +503,7 @@ function CheckoutForm({
                       ))
                     ) : (
                       // Fallback display before Stripe data loads
-                      selectedLanguages.map((code) => (
+                      selectedLanguages.map((code: string) => (
                         <div
                           key={code}
                           className="flex justify-between items-center text-sm"
@@ -1119,19 +1133,21 @@ function CheckoutFormWrapper(props: CheckoutWrapperProps) {
     if (typeof window !== 'undefined') {
       ;(window as any).__wb_lastDiscountMeta = discount
     }
-    if (discountCodeRef.current === discount.code) {
-      setActiveDiscountCode(discount.code)
+    const appliedCode = discount.enteredCode ?? discount.code
+
+    if (discountCodeRef.current === appliedCode) {
+      setActiveDiscountCode(appliedCode)
       if (discount.preview) {
         setHasZeroPayment(discount.preview.total <= 0)
       }
       return
     }
 
-    setActiveDiscountCode(discount.code)
+    setActiveDiscountCode(appliedCode)
     if (discount.preview) {
       setHasZeroPayment(discount.preview.total <= 0)
     }
-    refreshPaymentIntent({ discountCode: discount.code })
+    refreshPaymentIntent({ discountCode: appliedCode })
   }, [refreshPaymentIntent])
 
   const handleDiscountCleared = useCallback(() => {

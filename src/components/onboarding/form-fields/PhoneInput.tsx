@@ -31,60 +31,60 @@ interface PhoneInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElemen
 
 // Common countries with their calling codes and validation patterns
 const countries = [
-  { 
-    code: 'IT', 
-    name: 'Italy', 
-    dialCode: '+39', 
-    pattern: /^3\d{8,9}$/, // Italian mobile: 3XX XXXXXXX(X)
-    placeholder: '3XX XXXXXXX',
+  {
+    code: 'IT',
+    name: 'Italy',
+    dialCode: '+39',
+    pattern: /^\d{9,10}$/, // Italian phone: 9-10 digits (mobile or landline)
+    placeholder: 'XXX XXXXXXX',
     format: (num: string) => num.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3')
   },
-  { 
-    code: 'US', 
-    name: 'United States', 
-    dialCode: '+1', 
-    pattern: /^\d{10}$/, 
+  {
+    code: 'US',
+    name: 'United States',
+    dialCode: '+1',
+    pattern: /^\d{10}$/, // US phone: 10 digits
     placeholder: '(XXX) XXX-XXXX',
     format: (num: string) => num.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
   },
-  { 
-    code: 'GB', 
-    name: 'United Kingdom', 
-    dialCode: '+44', 
-    pattern: /^7\d{9}$/, 
-    placeholder: '7XXX XXXXXX',
+  {
+    code: 'GB',
+    name: 'United Kingdom',
+    dialCode: '+44',
+    pattern: /^\d{9,11}$/, // UK phone: 9-11 digits (mobile or landline)
+    placeholder: 'XXXX XXXXXX',
     format: (num: string) => num.replace(/(\d{4})(\d{6})/, '$1 $2')
   },
-  { 
-    code: 'FR', 
-    name: 'France', 
-    dialCode: '+33', 
-    pattern: /^[67]\d{8}$/, 
-    placeholder: '6XX XX XX XX',
+  {
+    code: 'FR',
+    name: 'France',
+    dialCode: '+33',
+    pattern: /^\d{9}$/, // French phone: 9 digits (mobile or landline)
+    placeholder: 'X XX XX XX XX',
     format: (num: string) => num.replace(/(\d{1})(\d{2})(\d{2})(\d{2})(\d{2})/, '$1 $2 $3 $4 $5')
   },
-  { 
-    code: 'DE', 
-    name: 'Germany', 
-    dialCode: '+49', 
-    pattern: /^1[5-7]\d{8,9}$/, 
-    placeholder: '15X XXXXXXXX',
+  {
+    code: 'DE',
+    name: 'Germany',
+    dialCode: '+49',
+    pattern: /^\d{10,11}$/, // German phone: 10-11 digits (mobile or landline)
+    placeholder: 'XXX XXXXXXXX',
     format: (num: string) => num.replace(/(\d{3})(\d{4})(\d{4})/, '$1 $2 $3')
   },
-  { 
-    code: 'ES', 
-    name: 'Spain', 
-    dialCode: '+34', 
-    pattern: /^[67]\d{8}$/, 
-    placeholder: '6XX XXX XXX',
+  {
+    code: 'ES',
+    name: 'Spain',
+    dialCode: '+34',
+    pattern: /^\d{9}$/, // Spanish phone: 9 digits (mobile or landline)
+    placeholder: 'XXX XXX XXX',
     format: (num: string) => num.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3')
   },
-  { 
-    code: 'NL', 
-    name: 'Netherlands', 
-    dialCode: '+31', 
-    pattern: /^6\d{8}$/, 
-    placeholder: '6 XXXX XXXX',
+  {
+    code: 'NL',
+    name: 'Netherlands',
+    dialCode: '+31',
+    pattern: /^\d{9}$/, // Dutch phone: 9 digits (mobile or landline)
+    placeholder: 'X XXXX XXXX',
     format: (num: string) => num.replace(/(\d{1})(\d{4})(\d{4})/, '$1 $2 $3')
   }
 ]
@@ -222,10 +222,10 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
             value={selectedCountry}
             onValueChange={handleCountryChange}
           >
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[100px]">
               <div className="flex items-center gap-2">
                 <Globe className="w-4 h-4" />
-                <SelectValue />
+                <span className="text-sm font-mono">{currentCountryData.dialCode}</span>
               </div>
             </SelectTrigger>
             <SelectContent>

@@ -21,7 +21,7 @@ import {
 export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.13')
   const locale = useLocale() as 'en' | 'it'
-  const { control, watch } = form
+  const { control, watch, getValues } = form
 
   const [searchQuery, setSearchQuery] = useState('')
   const [prices, setPrices] = useState<{
@@ -83,9 +83,10 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
   // Toggle language selection
   const toggleLanguage = (
     languageCode: string,
+    currentValue: string[],
     onChange: (value: string[]) => void
   ) => {
-    const currentSelection = [...selectedLanguages]
+    const currentSelection = [...currentValue]
     const index = currentSelection.indexOf(languageCode)
 
     if (index > -1) {
@@ -151,23 +152,22 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
                     }
                   </span>
                 </div>
-                {selectedLanguages.length > 0 && (
-                  <Controller
-                    name="additionalLanguages"
-                    control={control}
-                    render={({ field }) => (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => clearAll(field.onChange)}
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        {t('clearAll')}
-                      </Button>
-                    )}
-                  />
-                )}
+                <Controller
+                  name="additionalLanguages"
+                  control={control}
+                  render={({ field }) => (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => clearAll(field.onChange)}
+                      disabled={selectedLanguages.length === 0}
+                      className="text-muted-foreground hover:text-foreground disabled:opacity-50"
+                    >
+                      {t('clearAll')}
+                    </Button>
+                  )}
+                />
               </div>
 
               {/* Pricing Breakdown */}
@@ -179,25 +179,21 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
                   <span className="font-medium">€{basePackagePrice}/month</span>
                 </div>
 
-                {selectedLanguages.length > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {selectedLanguages.length} × {t('pricePerLanguage')}
-                    </span>
-                    <span className="font-medium">€{totalAddOnsPrice}</span>
-                  </div>
-                )}
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">
+                    {selectedLanguages.length} × {t('pricePerLanguage')}
+                  </span>
+                  <span className="font-medium">€{totalAddOnsPrice}</span>
+                </div>
               </div>
 
               {/* Total Price (First Month) */}
-              {selectedLanguages.length > 0 && (
-                <div className="flex justify-between pt-4 border-t">
-                  <span className="font-semibold">{t('totalFirstMonth')}</span>
-                  <span className="text-xl font-bold text-primary">
-                    €{basePackagePrice + totalAddOnsPrice}
-                  </span>
-                </div>
-              )}
+              <div className="flex justify-between pt-4 border-t">
+                <span className="font-semibold">{t('totalFirstMonth')}</span>
+                <span className="text-xl font-bold text-primary">
+                  €{basePackagePrice + totalAddOnsPrice}
+                </span>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -258,58 +254,50 @@ export function Step13AddOns({ form, errors, isLoading }: StepComponentProps) {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <AnimatePresence mode="popLayout">
-                  {filteredLanguages.map((language) => {
-                    const isSelected = selectedLanguages.includes(language.code)
+                {filteredLanguages.map((language) => {
+                  const isSelected = selectedLanguages.includes(language.code)
 
-                    return (
-                      <motion.div
-                        key={language.code}
-                        layout
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <Card
-                          className={`cursor-pointer transition-all hover:shadow-md ${
-                            isSelected
-                              ? 'border-2 border-primary bg-primary/5'
-                              : 'border hover:border-primary/50'
-                          }`}
-                          onClick={() => toggleLanguage(language.code, field.onChange)}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between gap-3">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <h3 className="font-medium text-foreground truncate">
-                                    {getLanguageName(language.code, locale)}
-                                  </h3>
-                                  {isSelected && (
-                                    <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                  <Users className="w-3 h-3" />
-                                  <span>{language.speakers}M {t('speakers')}</span>
-                                </div>
-                              </div>
-                              <Checkbox
-                                checked={isSelected}
-                                onCheckedChange={() => toggleLanguage(language.code, field.onChange)}
-                                aria-label={t('selectLanguage', {
-                                  language: getLanguageName(language.code, locale)
-                                })}
-                                className="mt-1"
-                              />
+                  return (
+                    <Card
+                      key={language.code}
+                      className={`cursor-pointer transition-all hover:shadow-md ${
+                        isSelected
+                          ? 'border-2 border-primary bg-primary/5'
+                          : 'border hover:border-primary/50'
+                      }`}
+                      onClick={() => {
+                        const currentValue = getValues('additionalLanguages') || []
+                        toggleLanguage(language.code, currentValue, field.onChange)
+                      }}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-medium text-foreground truncate">
+                                {getLanguageName(language.code, locale)}
+                              </h3>
+                              {isSelected && (
+                                <Check className="w-4 h-4 text-primary flex-shrink-0" />
+                              )}
                             </div>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    )
-                  })}
-                </AnimatePresence>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Users className="w-3 h-3" />
+                              <span>{language.speakers}M {t('speakers')}</span>
+                            </div>
+                          </div>
+                          <Checkbox
+                            checked={isSelected}
+                            aria-label={t('selectLanguage', {
+                              language: getLanguageName(language.code, locale)
+                            })}
+                            className="mt-1 pointer-events-none"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
               </div>
             )}
 

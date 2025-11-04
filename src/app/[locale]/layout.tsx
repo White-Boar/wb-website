@@ -4,6 +4,13 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { headers } from 'next/headers';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  icons: {
+    icon: '/images/favicon.ico',
+  },
+};
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
