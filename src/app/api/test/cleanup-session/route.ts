@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: NextRequest) {
-  if (process.env.NODE_ENV === 'production') {
+  // CRITICAL: Only allow in development and preview environments, block in production
+  // VERCEL_ENV is 'production', 'preview', or 'development'
+  if (process.env.VERCEL_ENV === 'production') {
     return NextResponse.json(
       { success: false, error: 'Test cleanup endpoint disabled in production' },
       { status: 403 }

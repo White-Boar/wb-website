@@ -9,8 +9,10 @@ import { randomUUID } from 'crypto'
  * SECURITY: Only enabled in test/development environments
  */
 export async function POST(request: NextRequest) {
-  // CRITICAL: Only allow in test/development
-  if (process.env.NODE_ENV === 'production') {
+  // CRITICAL: Only allow in development and preview environments, block in production
+  // VERCEL_ENV is 'production', 'preview', or 'development'
+  // NODE_ENV is 'production' for both preview and production on Vercel
+  if (process.env.VERCEL_ENV === 'production') {
     return NextResponse.json(
       { error: 'Test endpoints disabled in production' },
       { status: 403 }
