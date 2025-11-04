@@ -3,6 +3,23 @@
  * Eliminates the need to navigate through all 14 steps in every test
  */
 
+/**
+ * Helper to get headers with Vercel protection bypass if available
+ */
+function getHeaders(additionalHeaders: Record<string, string> = {}): Record<string, string> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...additionalHeaders
+  }
+
+  // Add Vercel protection bypass header if secret is available (for CI testing)
+  if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) {
+    headers['x-vercel-protection-bypass'] = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+  }
+
+  return headers
+}
+
 export interface SeedStep14Options {
   /** Additional languages to include in the session (e.g., ['de', 'fr']) */
   additionalLanguages?: string[]
@@ -56,9 +73,7 @@ export async function seedStep14TestSession(
 
   const response = await fetch(`${baseUrl}/api/test/seed-session`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: getHeaders(),
     body: JSON.stringify({
       email: options.email,
       locale: options.locale || 'en',
@@ -85,7 +100,9 @@ export async function seedStep14TestSession(
 
   for (let attempt = 0; attempt < 10; attempt++) {
     try {
-      const check = await fetch(verificationUrl)
+      const check = await fetch(verificationUrl, {
+        headers: getHeaders()
+      })
       if (attempt === 9 && !check.ok) {
         console.warn('Submission not yet available after seeding', {
           sessionId: data.sessionId,
@@ -153,9 +170,7 @@ export async function cleanupTestSession(sessionId: string, submissionId?: strin
   try {
     const response = await fetch(`${baseUrl}/api/test/cleanup-session`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: getHeaders(),
       body: JSON.stringify({ sessionId, submissionId })
     })
 

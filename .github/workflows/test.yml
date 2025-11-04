@@ -117,6 +117,8 @@ jobs:
         echo "url=$url" >> $GITHUB_OUTPUT
         echo "### 🚀 Deployment URL" >> $GITHUB_STEP_SUMMARY
         echo "$url" >> $GITHUB_STEP_SUMMARY
+      env:
+        VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
     - name: Comment deployment URL on PR
       if: github.event_name == 'pull_request'
@@ -188,10 +190,11 @@ jobs:
         vercel env pull .env --token=${{ secrets.VERCEL_TOKEN }}
 
     - name: Run Playwright E2E tests
-      run: pnpm test:e2e --project=chromium 
+      run: pnpm test:e2e --project=chromium
       env:
         CI: true
         BASE_URL: ${{ needs.build-artifacts.outputs.deployment-url }}
+        VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
     - name: Upload Playwright report
       uses: actions/upload-artifact@v4

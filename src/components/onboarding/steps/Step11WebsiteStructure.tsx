@@ -274,7 +274,15 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                         <button
                           key={option.value}
                           type="button"
-                          onClick={() => field.onChange(option.value)}
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            setValue('offeringType', option.value, {
+                              shouldValidate: true,
+                              shouldDirty: true,
+                              shouldTouch: true
+                            })
+                          }}
                           className={`flex flex-col items-center space-y-2 border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors ${
                             field.value === option.value
                               ? 'border-primary bg-primary/5'

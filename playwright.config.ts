@@ -12,7 +12,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: 'line',
   /* Global setup/teardown for Stripe webhook listener */
   globalSetup: './global-setup.ts',
   globalTeardown: './global-teardown.ts',
@@ -33,6 +33,13 @@ export default defineConfig({
 
     /* Clear local storage and other browser state */
     storageState: undefined,
+
+    /* Add Vercel protection bypass header if secret is provided (for CI testing against protected deployments) */
+    ...(process.env.VERCEL_AUTOMATION_BYPASS_SECRET && {
+      extraHTTPHeaders: {
+        'x-vercel-protection-bypass': process.env.VERCEL_AUTOMATION_BYPASS_SECRET,
+      },
+    }),
   },
 
   /* Configure projects for major browsers */
