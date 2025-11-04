@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
@@ -277,7 +276,7 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                           onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
-                            setValue('offeringType', option.value, {
+                            setValue('offeringType', option.value as 'products' | 'services' | 'both', {
                               shouldValidate: true,
                               shouldDirty: true,
                               shouldTouch: true
