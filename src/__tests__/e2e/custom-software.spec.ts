@@ -236,6 +236,10 @@ test.describe('Custom Software Page', () => {
   });
 
   test('accessibility validation with axe-core', async ({ page }) => {
+    // Wait for Framer Motion animations to complete
+    // Navigation slides in with 250ms duration
+    await page.waitForTimeout(500);
+
     const accessibilityScanResults = await new AxeBuilder({ page })
       .analyze();
 

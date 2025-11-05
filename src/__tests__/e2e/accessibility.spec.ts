@@ -5,9 +5,12 @@ test.describe('Accessibility Tests', () => {
   test('should not have any automatically detectable accessibility issues', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    
+
+    // Wait for Framer Motion animations to complete (250ms duration + buffer)
+    await page.waitForTimeout(500);
+
     const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
-    
+
     expect(accessibilityScanResults.violations).toEqual([]);
   });
   
@@ -126,16 +129,19 @@ test.describe('Accessibility Tests', () => {
   test('should have sufficient color contrast', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    
+
+    // Wait for Framer Motion animations to complete (250ms duration + buffer)
+    await page.waitForTimeout(500);
+
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag21aa'])
       .analyze();
-    
+
     // Filter for color contrast violations
     const contrastViolations = accessibilityScanResults.violations.filter(
       violation => violation.id === 'color-contrast'
     );
-    
+
     expect(contrastViolations).toEqual([]);
   });
   

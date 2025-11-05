@@ -156,6 +156,9 @@ test.describe('Onboarding Accessibility', () => {
   });
 
   test('color contrast meets WCAG AA standards', async ({ page }) => {
+    // Wait for Framer Motion animations to complete (250ms duration + buffer)
+    await page.waitForTimeout(500);
+
     // This test would typically use axe-core to check color contrast
     // Exclude known design system issue with accent color contrast
     const accessibilityScanResults = await new AxeBuilder({ page })
