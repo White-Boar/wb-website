@@ -7,6 +7,7 @@ import { seedStep14TestSession, cleanupTestSession } from './helpers/seed-step14
 import { ensureTestCouponsExist, getStripePrices, getTestCouponIds, type CouponIdSet } from './fixtures/stripe-setup'
 import { getUIPaymentAmount, getUIRecurringAmount, fillStripePaymentForm } from './helpers/ui-parser'
 import { StripePaymentService } from '@/services/payment/StripePaymentService'
+import { triggerMockWebhookForPayment } from './helpers/mock-webhook'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
@@ -137,11 +138,11 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // 8. Submit payment
       await page.locator('form').evaluate(form => (form as HTMLFormElement).requestSubmit())
 
-      // 9. Wait for webhook processing and redirect (Stripe test mode can take 60-90s)
+      // 9. Wait for redirect to thank-you page
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
 
-      // 10. Wait 10 seconds for any in-flight webhooks to arrive and process
-      await page.waitForTimeout(10000)
+      // 10. Trigger mock webhook in CI, or wait for real webhook locally
+      await triggerMockWebhookForPayment(submissionId!)
 
       // 11. Wait for webhooks to process (payment_intent.succeeded webhook updates status to 'paid')
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
@@ -212,11 +213,11 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       await page.locator('form').evaluate(form => (form as HTMLFormElement).requestSubmit())
 
-      // Wait for webhook processing and redirect (Stripe test mode can take 60-90s)
+      // Wait for redirect to thank-you page
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
 
-      // Wait 10 seconds for any in-flight webhooks to arrive and process
-      await page.waitForTimeout(10000)
+      // Trigger mock webhook in CI, or wait for real webhook locally
+      await triggerMockWebhookForPayment(submissionId!)
 
       // 7. Get submission data
       const { data: submissionBeforeWebhook } = await supabase
@@ -436,6 +437,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await completeButton.click()
 
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 30000 })
+
+      // Trigger mock webhook in CI, or wait for real webhook locally
+      await triggerMockWebhookForPayment(submissionId!)
 
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid')
       expect(webhookProcessed).toBe(true)
@@ -723,7 +727,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // 7. Wait for redirect to thank-you page
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
-      await page.waitForTimeout(10000)
+
+      // Trigger mock webhook in CI, or wait for real webhook locally
+      await triggerMockWebhookForPayment(submissionId!)
 
       // 8. Wait for webhooks to process
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
@@ -835,7 +841,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // 6. Wait for completion
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
-      await page.waitForTimeout(10000)
+
+      // Trigger mock webhook in CI, or wait for real webhook locally
+      await triggerMockWebhookForPayment(submissionId!)
 
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid')
       expect(webhookProcessed).toBe(true)
@@ -895,7 +903,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.locator('form').evaluate(form => (form as HTMLFormElement).requestSubmit())
 
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
-      await page.waitForTimeout(10000)
+
+      // Trigger mock webhook in CI, or wait for real webhook locally
+      await triggerMockWebhookForPayment(submissionId!)
 
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid')
       expect(webhookProcessed).toBe(true)

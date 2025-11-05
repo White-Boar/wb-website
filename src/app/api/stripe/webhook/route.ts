@@ -36,24 +36,36 @@ export async function POST(request: NextRequest) {
     const body = await request.text()
     const signature = request.headers.get('stripe-signature')
 
-    if (!signature) {
-      debugLog(`[${webhookId}] ❌ Missing signature`)
-      return NextResponse.json(
-        { error: 'Missing signature' },
-        { status: 400 }
-      )
-    }
+    // In test/CI environments, allow mock webhooks with special header
+    // Mock webhooks bypass signature verification for testing
+    const isMockWebhook = request.headers.get('x-mock-webhook') === 'true'
+    const isNotProduction = process.env.NODE_ENV !== 'production'
 
-    // Verify webhook signature
     let event: Stripe.Event
-    try {
-      event = stripe.webhooks.constructEvent(body, signature, WEBHOOK_SECRET)
-    } catch (error) {
-      console.error(`[${webhookId}] ❌ Webhook signature verification failed:`, error)
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 400 }
-      )
+
+    if (isMockWebhook && isNotProduction) {
+      // Parse mock webhook directly without signature verification (test mode only)
+      debugLog(`[${webhookId}] ℹ️  Processing mock webhook (test mode)`)
+      event = JSON.parse(body) as Stripe.Event
+    } else {
+      // Real webhook - verify signature
+      if (!signature) {
+        debugLog(`[${webhookId}] ❌ Missing signature`)
+        return NextResponse.json(
+          { error: 'Missing signature' },
+          { status: 400 }
+        )
+      }
+
+      try {
+        event = stripe.webhooks.constructEvent(body, signature, WEBHOOK_SECRET)
+      } catch (error) {
+        console.error(`[${webhookId}] ❌ Webhook signature verification failed:`, error)
+        return NextResponse.json(
+          { error: 'Invalid signature' },
+          { status: 400 }
+        )
+      }
     }
 
     // Initialize services

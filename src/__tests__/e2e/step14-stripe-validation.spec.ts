@@ -12,6 +12,7 @@ import { ensureTestCouponsExist, getStripePrices, getTestCouponIds, type CouponI
 import { validateStripePaymentComplete } from './helpers/stripe-validation'
 import { getUIPaymentAmount, getUIRecurringAmount, fillStripePaymentForm } from './helpers/ui-parser'
 import { StripePaymentService } from '@/services/payment/StripePaymentService'
+import { triggerMockWebhookForPayment } from './helpers/mock-webhook'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
@@ -146,7 +147,9 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
 
       // Wait for redirect
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
-      await page.waitForTimeout(10000)
+
+      // Trigger mock webhook in CI, or wait for real webhook locally
+      await triggerMockWebhookForPayment(submissionId!)
 
       // Wait for webhook
       const webhookProcessed = await waitForPaymentCompletion(submissionId!)
@@ -258,7 +261,9 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
       await page.locator('button:has-text("Pay €")').click()
 
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 90000 })
-      await page.waitForTimeout(10000)
+
+      // Trigger mock webhook in CI, or wait for real webhook locally
+      await triggerMockWebhookForPayment(submissionId!)
 
       const webhookProcessed = await waitForPaymentCompletion(submissionId!)
       expect(webhookProcessed).toBe(true)
