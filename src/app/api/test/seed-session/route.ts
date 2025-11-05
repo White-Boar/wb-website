@@ -10,11 +10,11 @@ import { randomUUID } from 'crypto'
  */
 export async function POST(request: NextRequest) {
   // CRITICAL: Only allow in test/CI environments and local development
-  // Block in production unless explicitly enabled for CI testing
+  // Block in production unless bypass secret is present (indicates CI testing)
   const isProduction = process.env.VERCEL_ENV === 'production' || (process.env.NODE_ENV === 'production' && !process.env.CI)
-  const isCITest = process.env.CI === 'true' && process.env.ENABLE_TEST_ENDPOINTS === 'true'
+  const hasBypassSecret = !!process.env.VERCEL_AUTOMATION_BYPASS_SECRET
 
-  if (isProduction && !isCITest) {
+  if (isProduction && !hasBypassSecret) {
     return NextResponse.json(
       { error: 'Test endpoints disabled in production' },
       { status: 403 }
