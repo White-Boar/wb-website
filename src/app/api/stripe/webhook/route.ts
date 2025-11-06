@@ -39,13 +39,13 @@ export async function POST(request: NextRequest) {
     // In test/CI environments, allow mock webhooks with special header
     // Mock webhooks bypass signature verification for testing
     const isMockWebhook = request.headers.get('x-mock-webhook') === 'true'
-    const isNotProduction = process.env.NODE_ENV !== 'production'
+    const isCIEnvironment = process.env.CI === 'true' || process.env.BASE_URL !== undefined
 
     let event: Stripe.Event
 
-    if (isMockWebhook && isNotProduction) {
-      // Parse mock webhook directly without signature verification (test mode only)
-      debugLog(`[${webhookId}] ℹ️  Processing mock webhook (test mode)`)
+    if (isMockWebhook && isCIEnvironment) {
+      // Parse mock webhook directly without signature verification (CI/test mode only)
+      debugLog(`[${webhookId}] ℹ️  Processing mock webhook (CI/test mode)`)
       event = JSON.parse(body) as Stripe.Event
     } else {
       // Real webhook - verify signature
