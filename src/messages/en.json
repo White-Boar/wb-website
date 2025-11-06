@@ -124,43 +124,25 @@
         "title": "How It Works",
         "steps": {
           "1": {
-            "title": "Business Details",
-            "description": "Tell us about your business and goals."
+            "title": "Complete the form",
+            "description": "Tell us about your business and vision."
           },
           "2": {
-            "title": "Design Preferences",
-            "description": "Choose your style and visual preferences."
+            "title": "Subscribe",
+            "description": "Make a {price} payment."
           },
           "3": {
-            "title": "Content & Assets",
-            "description": "Upload your logo and business content."
+            "title": "Review & refine",
+            "description": "See your new website, request adjustments."
           },
           "4": {
-            "title": "Review & Launch",
-            "description": "Final review and your website goes live."
+            "title": "Approve & launch",
+            "description": "Go live and share it with the world."
           }
         }
       },
-      "requirements": {
-        "title": "What You'll Need",
-        "business": {
-          "title": "Business Information",
-          "items": {
-            "name": "Business name and description",
-            "email": "Contact email address",
-            "address": "Business address (optional)",
-            "phone": "Phone number (optional)"
-          }
-        },
-        "optional": {
-          "title": "Optional Assets",
-          "items": {
-            "logo": "Business logo (PNG, JPG, or SVG)",
-            "photos": "Business photos or product images",
-            "competitors": "Examples of websites you like",
-            "content": "Existing content or copy"
-          }
-        }
+      "guarantee": {
+        "text": "30-day money back guarantee"
       },
       "actions": {
         "start": "Start Your Website",

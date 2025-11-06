@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Clock, Shield, CheckCircle } from 'lucide-react'
+import { ArrowRight, Sparkles, Clock, Shield, BadgeCheck } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useOnboardingStore } from '@/stores/onboarding'
+import { usePricing } from '@/hooks/usePricing'
 
 export default function OnboardingWelcome() {
   const t = useTranslations('onboarding.welcome')
@@ -17,6 +18,7 @@ export default function OnboardingWelcome() {
   const locale = params.locale as 'en' | 'it'
   const { initializeSession, loadExistingSession } = useOnboardingStore()
   const [mounted, setMounted] = useState(false)
+  const { basePackagePrice } = usePricing()
 
   // Handle hydration and session check
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function OnboardingWelcome() {
                     {t(`process.steps.${step}.title`)}
                   </h4>
                   <p className="text-xs text-muted-foreground mt-1">
-                    {t(`process.steps.${step}.description`)}
+                    {t(`process.steps.${step}.description`, { price: basePackagePrice })}
                   </p>
                 </div>
               </div>
@@ -165,38 +167,18 @@ export default function OnboardingWelcome() {
           </div>
         </motion.div>
 
-        {/* What You'll Need */}
+        {/* Money Back Guarantee */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6 }}
-          className="bg-muted/50 rounded-lg p-6 text-left"
+          className="bg-accent/10 border border-accent/20 rounded-lg p-6"
         >
-          <h3 className="font-semibold mb-4 text-center text-foreground">{t('requirements.title')}</h3>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm text-foreground">{t('requirements.business.title')}</h4>
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                {['name', 'email', 'address', 'phone'].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-green-600 flex-shrink-0" />
-                    {t(`requirements.business.items.${item}`)}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="space-y-2">
-              <h4 className="font-medium text-sm text-foreground">{t('requirements.optional.title')}</h4>
-              <ul className="space-y-1 text-sm text-muted-foreground">
-                {['logo', 'photos', 'competitors', 'content'].map((item) => (
-                  <li key={item} className="flex items-center gap-2">
-                    <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />
-                    {t(`requirements.optional.items.${item}`)}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="flex items-center justify-center gap-3">
+            <BadgeCheck className="w-6 h-6 text-accent flex-shrink-0" />
+            <p className="text-lg font-semibold text-foreground text-center">
+              {t('guarantee.text')}
+            </p>
           </div>
         </motion.div>
 

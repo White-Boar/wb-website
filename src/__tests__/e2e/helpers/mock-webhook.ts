@@ -181,11 +181,16 @@ export function createMockInvoicePaidEvent(
         object: 'invoice',
         amount_due: amount,
         amount_paid: amount,
+        total: amount,
+        subtotal: amount,
         currency: 'eur',
         customer: customerId,
         subscription: subscriptionId,
         metadata,
         status: 'paid',
+        status_transitions: {
+          paid_at: Math.floor(Date.now() / 1000)
+        },
         // Add other required Invoice fields with mock data
       } as Stripe.Invoice,
     },

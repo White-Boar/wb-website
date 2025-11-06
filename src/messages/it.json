@@ -116,43 +116,25 @@
         "title": "Come Funziona",
         "steps": {
           "1": {
-            "title": "Dettagli Aziendali",
-            "description": "Parlaci della tua attività e dei tuoi obiettivi."
+            "title": "Completa il modulo",
+            "description": "Parlaci della tua attività e visione."
           },
           "2": {
-            "title": "Preferenze di Design",
-            "description": "Scegli il tuo stile e le preferenze visive."
+            "title": "Abbonati",
+            "description": "Effettua un pagamento di {price}."
           },
           "3": {
-            "title": "Contenuti e Risorse",
-            "description": "Carica il tuo logo e i contenuti aziendali."
+            "title": "Rivedi e perfeziona",
+            "description": "Guarda il tuo nuovo sito web, richiedi modifiche."
           },
           "4": {
-            "title": "Revisione e Lancio",
-            "description": "Revisione finale e il tuo sito web va online."
+            "title": "Approva e lancia",
+            "description": "Vai online e condividilo con il mondo."
           }
         }
       },
-      "requirements": {
-        "title": "Cosa Ti Servirà",
-        "business": {
-          "title": "Informazioni Aziendali",
-          "items": {
-            "name": "Nome e descrizione dell'attività",
-            "email": "Indirizzo email di contatto",
-            "address": "Indirizzo dell'attività (opzionale)",
-            "phone": "Numero di telefono (opzionale)"
-          }
-        },
-        "optional": {
-          "title": "Risorse Opzionali",
-          "items": {
-            "logo": "Logo aziendale (PNG, JPG, o SVG)",
-            "photos": "Foto dell'attività o immagini prodotto",
-            "competitors": "Esempi di siti web che ti piacciono",
-            "content": "Contenuti o testi esistenti"
-          }
-        }
+      "guarantee": {
+        "text": "Garanzia soddisfatti o rimborsati 30 giorni"
       },
       "actions": {
         "start": "Crea il Tuo Sito Web",
