@@ -103,7 +103,7 @@ export function Step1Welcome({ form, errors, isLoading }: StepComponentProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8 }}
-          className="text-center text-xs text-muted-foreground"
+          className="text-center text-sm text-muted-foreground"
         >
           <p>{t('privacy.notice')}</p>
         </motion.div>

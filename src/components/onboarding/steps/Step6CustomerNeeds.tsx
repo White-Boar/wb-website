@@ -195,7 +195,7 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
-        className="text-center text-xs text-muted-foreground space-y-2"
+        className="text-center text-sm text-muted-foreground space-y-2"
       >
         <p>{t('tips.title')}</p>
         <div className="flex flex-wrap justify-center gap-4">

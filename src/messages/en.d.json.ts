@@ -310,7 +310,7 @@ declare const messages: {
         "title": "Brand Definition",
         "description": "Define your unique value proposition and competitive positioning",
         "offering": {
-          "title": "What You Offer",
+          "title": "Your story",
           "required": "Required",
           "description": {
             "label": "Business Description",

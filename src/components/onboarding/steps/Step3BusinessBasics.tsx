@@ -467,7 +467,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="text-center text-xs text-muted-foreground"
+        className="text-center text-sm text-muted-foreground"
       >
         <p>{t('dataUsage.notice')}</p>
       </motion.div>

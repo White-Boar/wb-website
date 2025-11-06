@@ -163,6 +163,15 @@ export async function seedStep14TestSession(
  * }
  */
 export async function cleanupTestSession(sessionId: string, submissionId?: string): Promise<void> {
+  // CRITICAL: Wait for any in-flight async webhook processing to complete
+  // Webhooks return HTTP 200 immediately but process asynchronously
+  // Without this delay, cleanup can delete submissions while webhooks are still processing
+  // causing "Submission not found" errors in webhook handlers
+  if (process.env.BASE_URL) {
+    // Only wait in CI/remote environments where async webhooks are used
+    await new Promise(resolve => setTimeout(resolve, 20000)) // 20 second safety buffer
+  }
+
   const baseUrl = (process.env.BASE_URL && process.env.BASE_URL.trim().length > 0)
     ? process.env.BASE_URL.replace(/\/$/, '')
     : 'http://localhost:3783'

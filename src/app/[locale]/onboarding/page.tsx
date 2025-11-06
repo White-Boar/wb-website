@@ -201,7 +201,7 @@ export default function OnboardingWelcome() {
             </Button>
           </div>
           
-          <p className="text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             {t('disclaimer')}
           </p>
         </motion.div>

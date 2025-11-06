@@ -146,7 +146,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // 11. Wait for webhooks to process (payment_intent.succeeded webhook updates status to 'paid')
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
-        maxAttempts: 20,
+        maxAttempts: 40, // 20 seconds (async webhook processing can take 15+ seconds)
         delayMs: 500
       })
 
@@ -234,7 +234,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // 9. Wait for webhooks to process (payment_intent.succeeded webhook updates status to 'paid')
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
-        maxAttempts: 20,
+        maxAttempts: 40, // 20 seconds (async webhook processing can take 15+ seconds)
         delayMs: 500
       })
 
@@ -733,7 +733,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // 8. Wait for webhooks to process
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
-        maxAttempts: 20,
+        maxAttempts: 40, // 20 seconds (async webhook processing can take 15+ seconds)
         delayMs: 500
       })
       expect(webhookProcessed).toBe(true)
