@@ -39,13 +39,15 @@ export async function POST(request: NextRequest) {
     // In test/CI environments, allow mock webhooks with special header
     // Mock webhooks bypass signature verification for testing
     const isMockWebhook = request.headers.get('x-mock-webhook') === 'true'
-    const isCIEnvironment = process.env.CI === 'true' || process.env.BASE_URL !== undefined
+    // Check if this is a Vercel preview deployment (not production)
+    // VERCEL_ENV is set by Vercel to 'production', 'preview', or 'development'
+    const isPreviewDeployment = process.env.VERCEL_ENV !== 'production'
 
     let event: Stripe.Event
 
-    if (isMockWebhook && isCIEnvironment) {
-      // Parse mock webhook directly without signature verification (CI/test mode only)
-      debugLog(`[${webhookId}] ℹ️  Processing mock webhook (CI/test mode)`)
+    if (isMockWebhook && isPreviewDeployment) {
+      // Parse mock webhook directly without signature verification (preview/test deployments only)
+      debugLog(`[${webhookId}] ℹ️  Processing mock webhook (preview deployment)`)
       event = JSON.parse(body) as Stripe.Event
     } else {
       // Real webhook - verify signature
