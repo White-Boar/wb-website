@@ -193,54 +193,6 @@ export function Step8DesignStyle({ form, errors, isLoading }: StepComponentProps
         </Card>
       </motion.div>
 
-      {/* Industry Recommendations */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-      >
-        <Card className="bg-muted/50 border-dashed">
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <Layout className="w-4 h-4 text-muted-foreground" />
-              <h4 className="font-medium text-sm text-foreground">{t('recommendations.title')}</h4>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
-              <div className="space-y-2">
-                <h6 className="font-medium text-muted-foreground">{t('recommendations.restaurant.title')}</h6>
-                <p className="text-muted-foreground">{t('recommendations.restaurant.style')}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <h6 className="font-medium text-muted-foreground">{t('recommendations.professional.title')}</h6>
-                <p className="text-muted-foreground">{t('recommendations.professional.style')}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <h6 className="font-medium text-muted-foreground">{t('recommendations.creative.title')}</h6>
-                <p className="text-muted-foreground">{t('recommendations.creative.style')}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <h6 className="font-medium text-muted-foreground">{t('recommendations.retail.title')}</h6>
-                <p className="text-muted-foreground">{t('recommendations.retail.style')}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <h6 className="font-medium text-muted-foreground">{t('recommendations.health.title')}</h6>
-                <p className="text-muted-foreground">{t('recommendations.health.style')}</p>
-              </div>
-              
-              <div className="space-y-2">
-                <h6 className="font-medium text-muted-foreground">{t('recommendations.luxury.title')}</h6>
-                <p className="text-muted-foreground">{t('recommendations.luxury.style')}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
       {/* Helper Tips */}
       <motion.div
         initial={{ opacity: 0 }}

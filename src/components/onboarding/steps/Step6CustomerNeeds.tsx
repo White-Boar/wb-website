@@ -51,28 +51,6 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
             </div>
 
             <div className="space-y-4">
-              <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                <h4 className="font-medium text-sm text-primary">{t('problems.examples.title')}</h4>
-                <ul className="text-xs text-muted-foreground space-y-1">
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
-                    {t('problems.examples.visibility')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
-                    {t('problems.examples.credibility')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
-                    {t('problems.examples.competition')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-primary mt-2 flex-shrink-0" />
-                    {t('problems.examples.communication')}
-                  </li>
-                </ul>
-              </div>
-
               <Controller
                 name="customerProblems"
                 control={control}
@@ -114,28 +92,6 @@ export function Step6CustomerNeeds({ form, errors, isLoading }: StepComponentPro
             </div>
 
             <div className="space-y-4">
-              <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-lg p-4 space-y-2">
-                <h4 className="font-medium text-sm text-pink-700">{t('delight.examples.title')}</h4>
-                <ul className="text-xs text-pink-600 space-y-1">
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-pink-600 mt-2 flex-shrink-0" />
-                    {t('delight.examples.surprise')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-pink-600 mt-2 flex-shrink-0" />
-                    {t('delight.examples.personal')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-pink-600 mt-2 flex-shrink-0" />
-                    {t('delight.examples.exceed')}
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="w-1 h-1 rounded-full bg-pink-600 mt-2 flex-shrink-0" />
-                    {t('delight.examples.memorable')}
-                  </li>
-                </ul>
-              </div>
-
               <Controller
                 name="customerDelight"
                 control={control}

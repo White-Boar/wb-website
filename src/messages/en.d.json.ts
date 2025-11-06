@@ -501,15 +501,8 @@ declare const messages: {
         "problems": {
           "title": "Customer Problems & Pain Points",
           "required": "Required",
-          "examples": {
-            "title": "Common customer challenges:",
-            "visibility": "Hard to find reliable service providers online",
-            "credibility": "Difficulty assessing business credibility and quality",
-            "competition": "Too many options, unclear differentiation",
-            "communication": "Poor communication or unclear pricing"
-          },
           "input": {
-            "label": "What main problems do your customers face?",
+            "label": "What are the main needs customers have from your business?",
             "placeholder": "Describe the specific challenges your customers experience before they find your business...",
             "hint": "Focus on the problems you solve - this helps us craft compelling website messaging"
           }
@@ -533,13 +526,6 @@ declare const messages: {
         "delight": {
           "title": "Customer Delight Moments",
           "optional": "Optional",
-          "examples": {
-            "title": "Ways to exceed expectations:",
-            "surprise": "Unexpected bonuses or added value",
-            "personal": "Personalized service and attention to detail",
-            "exceed": "Going above and beyond standard service",
-            "memorable": "Creating memorable experiences customers share"
-          },
           "input": {
             "label": "How do you exceed customer expectations?",
             "placeholder": "Describe the special touches or extra value that make customers love working with you...",
@@ -668,33 +654,6 @@ declare const messages: {
             "branding": "Consistency with your brand identity"
           }
         },
-        "recommendations": {
-          "title": "Industry Style Recommendations",
-          "restaurant": {
-            "title": "Restaurant & Food",
-            "style": "Warm & Friendly or Bold & Creative"
-          },
-          "professional": {
-            "title": "Professional Services",
-            "style": "Corporate Professional or Classic Elegant"
-          },
-          "creative": {
-            "title": "Creative Industries",
-            "style": "Bold & Creative or Modern Minimal"
-          },
-          "retail": {
-            "title": "Retail & E-commerce",
-            "style": "Modern Minimal or Warm & Friendly"
-          },
-          "health": {
-            "title": "Health & Wellness",
-            "style": "Classic Elegant or Warm & Friendly"
-          },
-          "luxury": {
-            "title": "Luxury & Premium",
-            "style": "Luxury Premium or Classic Elegant"
-          }
-        },
         "tips": {
           "title": "Choose a style that:",
           "authentic": "Feels authentic to your brand",
@@ -728,33 +687,6 @@ declare const messages: {
             "scalability": "Vector graphics scale perfectly on all devices",
             "responsive": "Professional photos work across all screen sizes",
             "accessibility": "Clear imagery improves accessibility for all users"
-          }
-        },
-        "combinations": {
-          "title": "Industry Style Combinations",
-          "business": {
-            "title": "Business & Professional",
-            "professional": "Professional Photography + Clean Minimalist",
-            "clean": "Clean composition for trust and credibility",
-            "mixed": "Mixed Creative for dynamic presentations"
-          },
-          "creative": {
-            "title": "Creative & Artistic",
-            "handDrawn": "Hand-Drawn Style for unique personality",
-            "lifestyle": "Lifestyle Photography for authentic feel",
-            "modern": "Modern Illustrations for contemporary appeal"
-          },
-          "hospitality": {
-            "title": "Hospitality & Food",
-            "lifestyle": "Lifestyle Photography for appetizing visuals",
-            "professional": "Professional Photography for quality impression",
-            "warm": "Warm tones to create inviting atmosphere"
-          },
-          "tech": {
-            "title": "Technology & SaaS",
-            "modern": "Modern Illustrations for innovation",
-            "minimalist": "Minimalist Clean for focus and clarity",
-            "mixed": "Mixed Creative for engaging presentations"
           }
         },
         "strategy": {

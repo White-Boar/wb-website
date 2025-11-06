@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import Stripe from 'stripe'
 import { createServiceClient } from '@/lib/supabase'
 import { stripe } from '@/lib/stripe'
@@ -96,15 +96,22 @@ export async function POST(request: NextRequest) {
       throw insertError
     }
 
-    debugLog(`[${webhookId}] Event record created, scheduling async processing...`)
+    debugLog(`[${webhookId}] Event record created, scheduling background processing...`)
 
-    processWebhookEvent({
-      event,
-      supabase,
-      webhookService,
-      webhookId
-    }).catch(error => {
-      console.error(`[${webhookId}] ❌ Async webhook processing error:`, error)
+    // Use Next.js 15's after() API to ensure webhook processing completes
+    // This keeps the serverless function alive until background work finishes
+    // Critical for Vercel deployments where functions terminate after response
+    after(async () => {
+      try {
+        await processWebhookEvent({
+          event,
+          supabase,
+          webhookService,
+          webhookId
+        })
+      } catch (error) {
+        console.error(`[${webhookId}] ❌ Background webhook processing error:`, error)
+      }
     })
 
     return NextResponse.json({ received: true })

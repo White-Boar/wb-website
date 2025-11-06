@@ -193,64 +193,6 @@ export function Step9ImageStyle({ form, errors, isLoading }: StepComponentProps)
         </Card>
       </motion.div>
 
-      {/* Style Combinations */}
-      <motion.div
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-      >
-        <Card className="bg-muted/50 border-dashed">
-          <CardContent className="pt-6 space-y-4">
-            <div className="flex items-center gap-2">
-              <Camera className="w-4 h-4 text-muted-foreground" />
-              <h4 className="font-medium text-sm text-foreground">{t('combinations.title')}</h4>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-6 text-xs">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h6 className="font-medium text-muted-foreground">{t('combinations.business.title')}</h6>
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground">• {t('combinations.business.professional')}</p>
-                    <p className="text-muted-foreground">• {t('combinations.business.clean')}</p>
-                    <p className="text-muted-foreground">• {t('combinations.business.mixed')}</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h6 className="font-medium text-muted-foreground">{t('combinations.creative.title')}</h6>
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground">• {t('combinations.creative.handDrawn')}</p>
-                    <p className="text-muted-foreground">• {t('combinations.creative.lifestyle')}</p>
-                    <p className="text-muted-foreground">• {t('combinations.creative.modern')}</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h6 className="font-medium text-muted-foreground">{t('combinations.hospitality.title')}</h6>
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground">• {t('combinations.hospitality.lifestyle')}</p>
-                    <p className="text-muted-foreground">• {t('combinations.hospitality.professional')}</p>
-                    <p className="text-muted-foreground">• {t('combinations.hospitality.warm')}</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <h6 className="font-medium text-muted-foreground">{t('combinations.tech.title')}</h6>
-                  <div className="space-y-1">
-                    <p className="text-muted-foreground">• {t('combinations.tech.modern')}</p>
-                    <p className="text-muted-foreground">• {t('combinations.tech.minimalist')}</p>
-                    <p className="text-muted-foreground">• {t('combinations.tech.mixed')}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
       {/* Content Strategy Note */}
       <motion.div
         initial={{ opacity: 0, y: 60 }}

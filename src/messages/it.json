@@ -499,15 +499,8 @@
         "problems": {
           "title": "Problemi e Punti Dolenti dei Clienti",
           "required": "Richiesto",
-          "examples": {
-            "title": "Sfide comuni dei clienti:",
-            "visibility": "Difficile trovare fornitori di servizi affidabili online",
-            "credibility": "Difficoltà nel valutare credibilità e qualità dell'attività",
-            "competition": "Troppe opzioni, differenziazione poco chiara",
-            "communication": "Comunicazione scarsa o prezzi poco chiari"
-          },
           "input": {
-            "label": "Quali sono i principali problemi che affrontano i tuoi clienti?",
+            "label": "Quali sono le principali esigenze che i clienti hanno dalla tua attività?",
             "placeholder": "Descrivi le sfide specifiche che i tuoi clienti sperimentano prima di trovare la tua attività...",
             "hint": "Concentrati sui problemi che risolvi - questo ci aiuta a creare messaggi convincenti per il sito web"
           }
@@ -531,13 +524,6 @@
         "delight": {
           "title": "Momenti di Delizia del Cliente",
           "optional": "Facoltativo",
-          "examples": {
-            "title": "Modi per superare le aspettative:",
-            "surprise": "Bonus inaspettati o valore aggiunto",
-            "personal": "Servizio personalizzato e attenzione ai dettagli",
-            "exceed": "Andare oltre il servizio standard",
-            "memorable": "Creare esperienze memorabili che i clienti condividono"
-          },
           "input": {
             "label": "Come superi le aspettative dei clienti?",
             "placeholder": "Descrivi i tocchi speciali o il valore extra che fanno amare ai clienti lavorare con te...",
@@ -666,33 +652,6 @@
             "branding": "Coerenza con l'identità del tuo brand"
           }
         },
-        "recommendations": {
-          "title": "Raccomandazioni di Stile per Settore",
-          "restaurant": {
-            "title": "Ristoranti e Cibo",
-            "style": "Caldo e Amichevole o Audace e Creativo"
-          },
-          "professional": {
-            "title": "Servizi Professionali",
-            "style": "Aziendale Professionale o Classico Elegante"
-          },
-          "creative": {
-            "title": "Industrie Creative",
-            "style": "Audace e Creativo o Moderno Minimale"
-          },
-          "retail": {
-            "title": "Vendita al Dettaglio ed E-commerce",
-            "style": "Moderno Minimale o Caldo e Amichevole"
-          },
-          "health": {
-            "title": "Salute e Benessere",
-            "style": "Classico Elegante o Caldo e Amichevole"
-          },
-          "luxury": {
-            "title": "Lusso e Premium",
-            "style": "Lusso Premium o Classico Elegante"
-          }
-        },
         "tips": {
           "title": "Scegli uno stile che:",
           "authentic": "Si senta autentico per il tuo brand",
@@ -726,33 +685,6 @@
             "scalability": "La grafica vettoriale si adatta perfettamente su tutti i dispositivi",
             "responsive": "Le foto professionali funzionano su tutte le dimensioni dello schermo",
             "accessibility": "Le immagini chiare migliorano l'accessibilità per tutti gli utenti"
-          }
-        },
-        "combinations": {
-          "title": "Combinazioni di Stile per Settore",
-          "business": {
-            "title": "Business e Professionale",
-            "professional": "Fotografia Professionale + Minimale Pulito",
-            "clean": "Composizione pulita per fiducia e credibilità",
-            "mixed": "Creativo Misto per presentazioni dinamiche"
-          },
-          "creative": {
-            "title": "Creativo e Artistico",
-            "handDrawn": "Stile Disegnato a Mano per personalità unica",
-            "lifestyle": "Fotografia Lifestyle per sensazione autentica",
-            "modern": "Illustrazioni Moderne per appeal contemporaneo"
-          },
-          "hospitality": {
-            "title": "Ospitalità e Cibo",
-            "lifestyle": "Fotografia Lifestyle per visual appetitosi",
-            "professional": "Fotografia Professionale per impressione di qualità",
-            "warm": "Toni caldi per creare atmosfera invitante"
-          },
-          "tech": {
-            "title": "Tecnologia e SaaS",
-            "modern": "Illustrazioni Moderne per innovazione",
-            "minimalist": "Minimale Pulito per focus e chiarezza",
-            "mixed": "Creativo Misto per presentazioni coinvolgenti"
           }
         },
         "strategy": {
