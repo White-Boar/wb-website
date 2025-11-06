@@ -108,21 +108,14 @@ export function getColorPalettes(locale: string = 'en'): ColorPaletteOption[] {
       hex
     }))
 
-    // Generate preview colors intelligently
-    // Try to find a light color for background
-    const sortedByBrightness = [...hexColors].sort(
-      (a, b) => getPerceivedBrightness(b) - getPerceivedBrightness(a)
-    )
-    const lightestColor = sortedByBrightness[0]
-    const backgroundColor =
-      getPerceivedBrightness(lightestColor) > 200 ? lightestColor : '#f3f4f6'
-
+    // Generate preview colors using curated order
+    // Palettes are pre-ordered: [background, primary, secondary, accent, ...others]
     const preview = {
-      primary: hexColors[0], // First color as primary
-      secondary: hexColors[3] || hexColors[2] || hexColors[1], // Fourth, third, or second color
-      accent: hexColors[1] || hexColors[0], // Second or first color
-      background: backgroundColor,
-      text: getContrastingTextColor(backgroundColor)
+      primary: hexColors[1] || hexColors[0], // Primary text (or fallback to first color)
+      secondary: hexColors[2] || hexColors[1] || hexColors[0], // Secondary text
+      accent: hexColors[3] || hexColors[2] || hexColors[1] || hexColors[0], // Accent
+      background: hexColors[0], // Background
+      text: getContrastingTextColor(hexColors[0])
     }
 
     return {
