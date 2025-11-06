@@ -106,11 +106,16 @@ test.describe('Performance Tests', () => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
 
-    // Filter out Google Fonts CORS errors (not our code's fault - caused by Vercel protection headers)
+    // Filter out external service errors (not our code's fault)
     const relevantErrors = consoleErrors.filter(error => {
-      return !error.includes('fonts.gstatic.com') &&
-             !error.includes('CORS policy') &&
-             !error.includes('Failed to load resource');
+      // Google Fonts CORS errors (caused by Vercel protection headers)
+      if (error.includes('fonts.gstatic.com')) return false;
+      if (error.includes('CORS policy')) return false;
+      if (error.includes('Failed to load resource')) return false;
+      // Vercel Live feedback widget CSP errors
+      if (error.includes('vercel.live')) return false;
+      if (error.includes('Content Security Policy')) return false;
+      return true;
     });
 
     // Check that there are no console errors from our code
