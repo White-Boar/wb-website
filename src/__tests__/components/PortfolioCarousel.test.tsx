@@ -63,9 +63,9 @@ describe('PortfolioCarousel', () => {
 
   it('has proper heading structure', () => {
     render(<PortfolioCarousel />)
-    
+
     const mainHeading = screen.getByRole('heading', { level: 2 })
-    expect(mainHeading).toHaveTextContent('Clients')
+    expect(mainHeading).toHaveTextContent('title')
     expect(mainHeading).toHaveClass('font-heading')
   })
 

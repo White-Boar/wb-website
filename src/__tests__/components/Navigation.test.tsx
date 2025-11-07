@@ -3,7 +3,8 @@ import { Navigation } from '@/components/Navigation'
 
 // Mock next-intl to return translation keys
 jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => key
+  useTranslations: () => (key: string) => key,
+  useLocale: () => 'en'
 }))
 
 // Mock scrollIntoView
