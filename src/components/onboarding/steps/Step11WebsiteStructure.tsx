@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Controller } from 'react-hook-form'
 import { motion } from 'framer-motion'
@@ -13,14 +14,25 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { StepComponentProps } from './index'
 
-// Website section options (ordered alphabetically)
-const websiteSections = [
-  { id: 'about', label: 'About Us', description: 'Company story and values', essential: true },
-  { id: 'contact', label: 'Contact', description: 'Contact information and form', essential: true },
-  { id: 'events', label: 'Events', description: 'Upcoming events and activities', essential: false },
-  { id: 'portfolio', label: 'Portfolio/Gallery', description: 'Showcase your work', essential: false },
-  { id: 'services', label: 'Services/Products', description: 'What you offer', essential: false },
-  { id: 'testimonials', label: 'Testimonials', description: 'Customer reviews and feedback', essential: false }
+// Website section type definition
+type WebsiteSectionOption = {
+  id: string
+  label: string
+  description: string
+  alwaysIncluded?: boolean
+  essential?: boolean
+}
+
+// Website section options (in order of appearance)
+// Hero and Contact are always included and cannot be unchecked
+const websiteSections: WebsiteSectionOption[] = [
+  { id: 'hero', label: 'Hero / Introduction', description: 'A strong headline, short description, and call-to-action', alwaysIncluded: true },
+  { id: 'contact', label: 'Contact us', description: 'Contact information and form', alwaysIncluded: true },
+  { id: 'about', label: 'About / Story', description: 'Who you are, what makes your business unique', essential: false },
+  { id: 'portfolio', label: 'Portfolio / Gallery', description: 'Showcase your work', essential: false },
+  { id: 'services', label: 'Services / Products', description: 'Key offerings or areas of expertise', essential: false },
+  { id: 'testimonials', label: 'Testimonials / Reviews', description: 'Social proof from customers or partners', essential: false },
+  { id: 'events', label: 'Events', description: 'Upcoming events and activities', essential: false }
 ]
 
 // Primary goal options (ordered alphabetically)
@@ -61,6 +73,11 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
   const offerings = watch('offerings') || []
 
   const handleSectionChange = (sectionId: string, checked: boolean) => {
+    // Prevent unchecking hero and contact (they're always included)
+    if (!checked && (sectionId === 'hero' || sectionId === 'contact')) {
+      return
+    }
+
     const current = selectedSections || []
     const updated = checked
       ? [...current, sectionId]
@@ -75,17 +92,31 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
   }
 
   const getRecommendedSections = (goal: string) => {
+    // Exclude hero and contact from recommendations since they're always included
     const recommendations: Record<string, string[]> = {
-      'phone-call': ['contact', 'services', 'about'],
-      'contact-form': ['contact', 'services', 'testimonials', 'about'],
-      'visit-location': ['contact', 'about', 'services', 'events'],
-      'purchase': ['services', 'portfolio', 'testimonials', 'contact'],
-      'other': ['about', 'services', 'contact']
+      'phone-call': ['services', 'about'],
+      'contact-form': ['services', 'testimonials', 'about'],
+      'visit-location': ['about', 'services', 'events'],
+      'purchase': ['services', 'portfolio', 'testimonials'],
+      'other': ['about', 'services']
     }
     return recommendations[goal] || []
   }
 
   const recommendedSections = primaryGoal ? getRecommendedSections(primaryGoal) : []
+
+  // Ensure hero and contact are always selected
+  useEffect(() => {
+    const current = selectedSections || []
+    const alwaysIncluded: string[] = ['hero', 'contact']
+    const missingRequired = alwaysIncluded.filter(id => !(current as string[]).includes(id))
+
+    if (missingRequired.length > 0) {
+      const updated = [...current, ...missingRequired]
+      setValue('websiteSections', updated as any, { shouldValidate: true, shouldDirty: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Only run once on mount
 
   return (
     <div className="space-y-8">
@@ -107,11 +138,49 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
         </div>
       </motion.div>
 
-      {/* Website Sections */}
+      {/* Primary Goal */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
+      >
+        <Card>
+          <CardContent className="pt-6 space-y-6">
+            <div className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
+              <h2 className="text-lg font-semibold text-foreground">{t('goal.title')}</h2>
+              <Badge variant="secondary" className="ml-auto">
+                {t('goal.required')}
+              </Badge>
+            </div>
+
+            <Controller
+              name="primaryGoal"
+              control={control}
+              render={({ field }) => (
+                <DropdownInput
+                  label={t('goal.selection.label')}
+                  placeholder={t('goal.selection.placeholder')}
+                  hint={t('goal.selection.hint')}
+                  options={primaryGoalOptions}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  error={(errors as any).primaryGoal?.message}
+                  required
+                  searchable
+                  disabled={isLoading}
+                />
+              )}
+            />
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      {/* Website Sections */}
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
       >
         <Card>
           <CardContent className="pt-6 space-y-6">
@@ -144,9 +213,10 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
             <div className="space-y-4">
               <div className="grid gap-3">
                 {websiteSections.map((section) => {
-                  const isSelected = selectedSections.includes(section.id as any)
+                  // Hero and contact are always selected
+                  const isSelected = section.alwaysIncluded || selectedSections.includes(section.id as any)
                   const isRecommended = recommendedSections.includes(section.id as any)
-                  const isEssential = section.essential
+                  const isAlwaysIncluded = section.alwaysIncluded
 
                   return (
                     <motion.div
@@ -156,39 +226,39 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                       transition={{ delay: 0.1 * websiteSections.indexOf(section) }}
                       className={`flex items-start space-x-3 p-3 rounded-lg border transition-all ${
                         isSelected ? 'border-primary bg-primary/5' : 'border-muted hover:border-muted-foreground/20'
-                      }`}
+                      } ${isAlwaysIncluded ? 'opacity-75' : ''}`}
                     >
                       <Checkbox
                         id={section.id}
                         checked={isSelected}
                         onCheckedChange={(checked) => handleSectionChange(section.id, checked as boolean)}
-                        disabled={isLoading}
+                        disabled={isLoading || isAlwaysIncluded}
                         className="mt-0.5"
                       />
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <Label 
+                          <Label
                             htmlFor={section.id}
-                            className="font-medium cursor-pointer"
+                            className={`font-medium ${isAlwaysIncluded ? 'cursor-default' : 'cursor-pointer'}`}
                           >
                             {section.label}
                           </Label>
-                          
+
                           <div className="flex gap-1">
-                            {isEssential && (
+                            {isAlwaysIncluded && (
                               <Badge variant="secondary" className="text-xs">
-                                {t('sections.essential')}
+                                {t('sections.alwaysIncluded')}
                               </Badge>
                             )}
-                            {isRecommended && (
+                            {isRecommended && !isAlwaysIncluded && (
                               <Badge variant="outline" className="text-xs text-blue-600 border-blue-200">
                                 {t('sections.recommended.badge')}
                               </Badge>
                             )}
                           </div>
                         </div>
-                        
+
                         <p className="text-sm text-muted-foreground mt-1">
                           {section.description}
                         </p>
@@ -198,44 +268,6 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                 })}
               </div>
             </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-
-      {/* Primary Goal */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-      >
-        <Card>
-          <CardContent className="pt-6 space-y-6">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />
-              <h2 className="text-lg font-semibold text-foreground">{t('goal.title')}</h2>
-              <Badge variant="secondary" className="ml-auto">
-                {t('goal.required')}
-              </Badge>
-            </div>
-
-            <Controller
-              name="primaryGoal"
-              control={control}
-              render={({ field }) => (
-                <DropdownInput
-                  label={t('goal.selection.label')}
-                  placeholder={t('goal.selection.placeholder')}
-                  hint={t('goal.selection.hint')}
-                  options={primaryGoalOptions}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  error={(errors as any).primaryGoal?.message}
-                  required
-                  searchable
-                  disabled={isLoading}
-                />
-              )}
-            />
           </CardContent>
         </Card>
       </motion.div>
@@ -273,16 +305,17 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                         <button
                           key={option.value}
                           type="button"
+                          disabled={isLoading}
                           onClick={(e) => {
                             e.preventDefault()
                             e.stopPropagation()
-                            setValue('offeringType', option.value as 'products' | 'services' | 'both', {
-                              shouldValidate: true,
-                              shouldDirty: true,
-                              shouldTouch: true
-                            })
+                            field.onChange(option.value)
                           }}
-                          className={`flex flex-col items-center space-y-2 border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors ${
+                          className={`flex flex-col items-center space-y-2 border rounded-lg p-3 transition-colors ${
+                            isLoading
+                              ? 'cursor-not-allowed opacity-50'
+                              : 'cursor-pointer hover:bg-muted/50'
+                          } ${
                             field.value === option.value
                               ? 'border-primary bg-primary/5'
                               : 'border-muted'
@@ -297,8 +330,8 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
                               <div className="w-full h-full rounded-full bg-white scale-50" />
                             )}
                           </div>
-                          <Label className="cursor-pointer font-medium">{option.label}</Label>
-                          <span className="text-xs text-muted-foreground text-center">{option.description}</span>
+                          <span className="font-medium pointer-events-none">{option.label}</span>
+                          <span className="text-xs text-muted-foreground text-center pointer-events-none">{option.description}</span>
                         </button>
                       ))}
                     </div>

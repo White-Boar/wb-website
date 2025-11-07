@@ -791,7 +791,7 @@ declare const messages: {
         "sections": {
           "title": "Website Sections",
           "required": "Required",
-          "essential": "Essential",
+          "alwaysIncluded": "Always included",
           "recommended": {
             "title": "Recommended sections for",
             "badge": "Recommended"

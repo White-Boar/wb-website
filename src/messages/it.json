@@ -789,7 +789,7 @@
         "sections": {
           "title": "Sezioni del Sito Web",
           "required": "Richiesto",
-          "essential": "Essenziale",
+          "alwaysIncluded": "Sempre incluso",
           "recommended": {
             "title": "Sezioni raccomandate per",
             "badge": "Raccomandato"

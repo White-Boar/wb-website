@@ -193,12 +193,13 @@ export const step10Schema = z.object({
 // STEP 11: WEBSITE STRUCTURE
 // =============================================================================
 const websiteSectionSchema = z.enum([
-  'about',
+  'hero',
   'contact',
-  'events',
+  'about',
   'portfolio',
   'services',
-  'testimonials'
+  'testimonials',
+  'events'
 ])
 
 const primaryGoalSchema = z.enum([
