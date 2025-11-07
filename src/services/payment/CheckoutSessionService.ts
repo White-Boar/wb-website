@@ -447,13 +447,14 @@ export class CheckoutSessionService {
         invoiceDiscount: addOnResult.invoiceDiscount
       })
 
-      // 10. Update submission with Stripe IDs
+      // 10. Update submission with Stripe IDs (including payment intent ID for mock webhooks)
       await supabase
         .from('onboarding_submissions')
         .update({
           stripe_customer_id: customer.id,
           stripe_subscription_id: subscription.id,
           stripe_subscription_schedule_id: schedule.id,
+          stripe_payment_id: addOnResult.paymentIntentId || null,
           form_data: submission.form_data,
           updated_at: new Date().toISOString()
         })
@@ -523,6 +524,7 @@ export class CheckoutSessionService {
     invoiceId: string
     invoiceTotal: number
     invoiceDiscount: number
+    paymentIntentId?: string | null
   }> {
     const stripe = this.stripeService.getStripeInstance()
 
@@ -617,7 +619,8 @@ export class CheckoutSessionService {
         clientSecret: null,
         invoiceId: invoiceIdValue,
         invoiceTotal: finalizedInvoice.total ?? 0,
-        invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0)
+        invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0),
+        paymentIntentId: null
       }
     }
 
@@ -635,13 +638,6 @@ export class CheckoutSessionService {
           session_id: sessionId
         }
       })
-
-      // Save payment intent ID to database for mock webhooks in CI
-      // This allows triggerMockWebhookForPayment() to find the payment intent ID
-      await supabase
-        .from('onboarding_submissions')
-        .update({ stripe_payment_id: paymentIntentId })
-        .eq('id', submissionId)
     }
 
     // Use the invoice's confirmation_secret which contains the PaymentIntent client_secret
@@ -657,7 +653,8 @@ export class CheckoutSessionService {
       clientSecret: confirmationSecret.client_secret,
       invoiceId: invoiceIdValue,
       invoiceTotal: finalizedInvoice.total ?? 0,
-      invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0)
+      invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0),
+      paymentIntentId: paymentIntentId || null
     }
   }
 }
