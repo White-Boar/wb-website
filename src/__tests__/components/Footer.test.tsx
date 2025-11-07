@@ -1,6 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Footer } from '@/components/Footer'
 
+// Mock next-intl to return translation keys
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key
+}))
+
 // Mock scrollIntoView
 const mockScrollIntoView = jest.fn()
 window.HTMLElement.prototype.scrollIntoView = mockScrollIntoView
@@ -15,30 +20,30 @@ describe('Footer', () => {
 
   it('renders footer content', () => {
     render(<Footer />)
-    
+
     expect(screen.getByText('WhiteBoar')).toBeInTheDocument()
-    expect(screen.getByText('AI-driven digital agency empowering small businesses with professional online presence.')).toBeInTheDocument()
-    expect(screen.getByText('© 2025 WhiteBoar · VAT No. 1234567890')).toBeInTheDocument()
+    expect(screen.getByText('brandDescription')).toBeInTheDocument()
+    expect(screen.getByText('copyright')).toBeInTheDocument()
   })
 
   it('displays quick links section', () => {
     render(<Footer />)
 
-    expect(screen.getByText('Quick Links')).toBeInTheDocument()
-    expect(screen.getByText('Services')).toBeInTheDocument()
-    expect(screen.getByText('Clients')).toBeInTheDocument()
-    expect(screen.getByText('Start')).toBeInTheDocument()
+    expect(screen.getByText('quickLinks')).toBeInTheDocument()
+    expect(screen.getByText('services')).toBeInTheDocument()
+    expect(screen.getByText('clients')).toBeInTheDocument()
+    expect(screen.getByText('start')).toBeInTheDocument()
   })
 
   it('displays social links section', () => {
     render(<Footer />)
-    
-    expect(screen.getByText('Follow Us')).toBeInTheDocument()
-    
+
+    expect(screen.getByText('followUs')).toBeInTheDocument()
+
     const twitterLink = screen.getByLabelText('Twitter')
     const linkedinLink = screen.getByLabelText('LinkedIn')
     const githubLink = screen.getByLabelText('GitHub')
-    
+
     expect(twitterLink).toBeInTheDocument()
     expect(linkedinLink).toBeInTheDocument()
     expect(githubLink).toBeInTheDocument()
@@ -63,7 +68,7 @@ describe('Footer', () => {
   it('scrolls to sections when quick links are clicked', () => {
     render(<Footer />)
 
-    const servicesButton = screen.getByText('Services')
+    const servicesButton = screen.getByText('services')
     fireEvent.click(servicesButton)
 
     expect(document.getElementById).toHaveBeenCalledWith('pricing')
@@ -72,8 +77,8 @@ describe('Footer', () => {
 
   it('has checkout link for start button', () => {
     render(<Footer />)
-    
-    const startLink = screen.getByRole('link', { name: 'Start' })
+
+    const startLink = screen.getByRole('link', { name: 'start' })
     expect(startLink).toHaveAttribute('href', '/checkout')
   })
 
