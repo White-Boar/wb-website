@@ -50,8 +50,9 @@ export async function sendMockWebhook(
  * Fetches the submission data and sends appropriate mock webhook events
  *
  * @param submissionId - The submission ID to trigger webhooks for
+ * @param expectedAmount - Optional expected payment amount (for validation testing)
  */
-export async function triggerMockWebhookForPayment(submissionId: string): Promise<void> {
+export async function triggerMockWebhookForPayment(submissionId: string, expectedAmount?: number): Promise<void> {
   // Only use mock webhooks when BASE_URL is set (CI environment)
   if (!process.env.BASE_URL) {
     // Local environment - real webhooks will arrive via stripe listen
@@ -78,13 +79,35 @@ export async function triggerMockWebhookForPayment(submissionId: string): Promis
   const customerId = submission.stripe_customer_id
   const subscriptionId = submission.stripe_subscription_id
 
+  // Determine payment amount:
+  // 1. Use expectedAmount if provided by test (explicit validation)
+  // 2. Otherwise fetch from Stripe API (payment_amount is NULL until webhook processes)
+  let paymentAmount = 0
+  if (expectedAmount !== undefined) {
+    paymentAmount = expectedAmount
+    console.log(`📊 Using test-provided amount: ${paymentAmount}`)
+  } else if (paymentIntentId) {
+    try {
+      const Stripe = (await import('stripe')).default
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-09-30.clover'
+      })
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+      paymentAmount = paymentIntent.amount
+      console.log(`📊 Fetched amount from Stripe: ${paymentAmount}`)
+    } catch (error) {
+      console.error(`Failed to retrieve payment intent ${paymentIntentId}:`, error)
+      paymentAmount = submission.payment_amount || 0
+    }
+  }
+
   // For 100% discount payments, there's no PaymentIntent (no payment to process)
   // In this case, we only send invoice.paid webhook
   if (paymentIntentId) {
     // Send payment_intent.succeeded event
     const paymentIntentEvent = createMockPaymentIntentSucceededEvent(
       paymentIntentId,
-      submission.payment_amount || 0,
+      paymentAmount,
       customerId || '',
       {
         submission_id: submissionId,
@@ -108,7 +131,7 @@ export async function triggerMockWebhookForPayment(submissionId: string): Promis
       invoiceId,
       subscriptionId,
       customerId || '',
-      submission.payment_amount || 0,
+      paymentAmount,
       {
         submission_id: submissionId,
         session_id: submission.session_id || '',
