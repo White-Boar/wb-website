@@ -51,11 +51,18 @@ export class OnboardingClientService {
           sessionId = crypto.randomUUID()
         } catch (e) {
           // Fallback for browsers that don't support crypto.randomUUID in insecure contexts
-          sessionId = 'xxxx-xxxx-4xxx-yxxx-xxxx'.replace(/[xy]/g, function(c) {
-            const r = Math.random() * 16 | 0
-            const v = c === 'x' ? r : (r & 0x3 | 0x8)
-            return v.toString(16)
-          }) + '-' + Date.now().toString(36)
+          // Use crypto.getRandomValues to securely generate a UUID-like string
+          const array = new Uint8Array(16);
+          crypto.getRandomValues(array);
+          // Format the random bytes as a UUID v4: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+          sessionId = [...array].map((b, i) => {
+            // Set the UUID version (4) and the variant bits properly
+            if (i === 6) return ((b & 0x0f) | 0x40).toString(16); // version 4
+            if (i === 8) return ((b & 0x3f) | 0x80).toString(16); // variant 10
+            return b.toString(16).padStart(2, '0');
+          })
+          .join('')
+          .replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5') + '-' + Date.now().toString(36);
         }
         const tempEmail = `temp-${sessionId}@whiteboar.onboarding`
 
