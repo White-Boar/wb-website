@@ -1,27 +1,32 @@
 import { render, screen } from '@testing-library/react'
 import { Hero } from '@/components/Hero'
 
+// Mock next-intl to return translation keys
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key
+}))
+
 describe('Hero', () => {
   it('renders hero content', () => {
     render(<Hero />)
 
-    expect(screen.getByText('Your business. Selling globally. All year.')).toBeInTheDocument()
-    expect(screen.getByText('Sell to international customers even after the holiday season: a multilingual website that keeps you in touch.')).toBeInTheDocument()
-    expect(screen.getByText('Start now!')).toBeInTheDocument()
+    expect(screen.getByText('title')).toBeInTheDocument()
+    expect(screen.getByText('subtitle')).toBeInTheDocument()
+    expect(screen.getByText('cta')).toBeInTheDocument()
   })
 
   it('has proper heading structure', () => {
     render(<Hero />)
 
     const mainHeading = screen.getByRole('heading', { level: 1 })
-    expect(mainHeading).toHaveTextContent('Your business. Selling globally. All year.')
+    expect(mainHeading).toHaveTextContent('title')
     expect(mainHeading).toHaveClass('font-heading')
   })
 
   it('has CTA link to onboarding', () => {
     render(<Hero />)
 
-    const ctaLink = screen.getByRole('link', { name: 'Start now!' })
+    const ctaLink = screen.getByRole('link', { name: 'cta' })
     expect(ctaLink).toHaveAttribute('href', '/onboarding')
   })
 

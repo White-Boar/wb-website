@@ -1,21 +1,26 @@
 import { render, screen } from '@testing-library/react'
 import { Steps } from '@/components/Steps'
 
+// Mock next-intl to return translation keys
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key
+}))
+
 describe('Steps', () => {
   it('renders the section title', () => {
     render(<Steps />)
 
-    expect(screen.getByText('Three simple steps')).toBeInTheDocument()
-    const heading = screen.getByRole('heading', { level: 2, name: 'Three simple steps' })
+    expect(screen.getByText('title')).toBeInTheDocument()
+    const heading = screen.getByRole('heading', { level: 2, name: 'title' })
     expect(heading).toBeInTheDocument()
   })
 
   it('renders all three steps', () => {
     render(<Steps />)
 
-    expect(screen.getByText('Start now')).toBeInTheDocument()
-    expect(screen.getByText('Approve your project')).toBeInTheDocument()
-    expect(screen.getByText('Go live & grow')).toBeInTheDocument()
+    expect(screen.getByText('step1.title')).toBeInTheDocument()
+    expect(screen.getByText('step2.title')).toBeInTheDocument()
+    expect(screen.getByText('step3.title')).toBeInTheDocument()
   })
 
   it('renders step numbers', () => {
@@ -29,17 +34,17 @@ describe('Steps', () => {
   it('renders step subtitles', () => {
     render(<Steps />)
 
-    expect(screen.getByText('Tell us about your vision')).toBeInTheDocument()
-    expect(screen.getByText("In five days, you'll receive a complete website")).toBeInTheDocument()
-    expect(screen.getByText('Launch your business online')).toBeInTheDocument()
+    expect(screen.getByText('step1.subtitle')).toBeInTheDocument()
+    expect(screen.getByText('step2.subtitle')).toBeInTheDocument()
+    expect(screen.getByText('step3.subtitle')).toBeInTheDocument()
   })
 
   it('renders step descriptions', () => {
     render(<Steps />)
 
-    expect(screen.getByText("In just 15 minutes, our smart form captures the essence of your business.")).toBeInTheDocument()
-    expect(screen.getByText('Beautiful, branded, and ready to launch in English and Italian.')).toBeInTheDocument()
-    expect(screen.getByText('Attract new customers and build lasting loyalty through our platform.')).toBeInTheDocument()
+    expect(screen.getByText('step1.description')).toBeInTheDocument()
+    expect(screen.getByText('step2.description')).toBeInTheDocument()
+    expect(screen.getByText('step3.description')).toBeInTheDocument()
   })
 
   it('has proper semantic structure', () => {

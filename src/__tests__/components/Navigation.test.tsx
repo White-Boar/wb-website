@@ -1,6 +1,12 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Navigation } from '@/components/Navigation'
 
+// Mock next-intl to return translation keys
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key,
+  useLocale: () => 'en'
+}))
+
 // Mock scrollIntoView
 const mockScrollIntoView = jest.fn()
 window.HTMLElement.prototype.scrollIntoView = mockScrollIntoView
@@ -18,9 +24,9 @@ describe('Navigation', () => {
     render(<Navigation />)
 
     expect(screen.getByText('WhiteBoar')).toBeInTheDocument()
-    expect(screen.getByText('Services')).toBeInTheDocument()
-    expect(screen.getByText('Clients')).toBeInTheDocument()
-    expect(screen.getByText('Start')).toBeInTheDocument()
+    expect(screen.getByText('services')).toBeInTheDocument()
+    expect(screen.getByText('clients')).toBeInTheDocument()
+    expect(screen.getByText('start')).toBeInTheDocument()
   })
 
   it('has proper logo link', () => {
@@ -33,7 +39,7 @@ describe('Navigation', () => {
   it('scrolls to pricing section when services button is clicked', () => {
     render(<Navigation />)
 
-    const servicesButton = screen.getByText('Services')
+    const servicesButton = screen.getByText('services')
     fireEvent.click(servicesButton)
 
     expect(document.getElementById).toHaveBeenCalledWith('pricing')
@@ -42,10 +48,10 @@ describe('Navigation', () => {
 
   it('scrolls to portfolio section when clients button is clicked', () => {
     render(<Navigation />)
-    
-    const clientsButton = screen.getByText('Clients')
+
+    const clientsButton = screen.getByText('clients')
     fireEvent.click(clientsButton)
-    
+
     expect(document.getElementById).toHaveBeenCalledWith('portfolio')
     expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' })
   })

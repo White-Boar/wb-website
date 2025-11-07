@@ -1,6 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { PortfolioCarousel } from '@/components/PortfolioCarousel'
 
+// Mock next-intl to return translation keys
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key
+}))
+
 // Mock embla carousel
 jest.mock('embla-carousel-react', () => {
   return jest.fn(() => [
@@ -26,9 +31,9 @@ jest.mock('embla-carousel-autoplay', () => {
 describe('PortfolioCarousel', () => {
   it('renders portfolio section', () => {
     render(<PortfolioCarousel />)
-    
-    expect(screen.getByText('Clients')).toBeInTheDocument()
-    expect(screen.getByText('See what we\'ve built for businesses like yours')).toBeInTheDocument()
+
+    expect(screen.getByText('title')).toBeInTheDocument()
+    expect(screen.getByText('subtitle')).toBeInTheDocument()
   })
 
   it('has proper section id for navigation', () => {
@@ -58,9 +63,9 @@ describe('PortfolioCarousel', () => {
 
   it('has proper heading structure', () => {
     render(<PortfolioCarousel />)
-    
+
     const mainHeading = screen.getByRole('heading', { level: 2 })
-    expect(mainHeading).toHaveTextContent('Clients')
+    expect(mainHeading).toHaveTextContent('title')
     expect(mainHeading).toHaveClass('font-heading')
   })
 
