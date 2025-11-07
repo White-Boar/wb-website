@@ -287,7 +287,8 @@ export class WebhookService {
       }
 
       const submission = lookupResult.submission
-      const scheduleId = submission.stripe_subscription_schedule_id
+      // Preserve existing schedule_id if already set (don't overwrite with NULL)
+      const scheduleId = submission.stripe_subscription_schedule_id || null
 
       // Extract discount information from invoice
       let discountAmount = 0
@@ -340,35 +341,46 @@ export class WebhookService {
       }
 
       // Update submission with payment details including discount information
-      await supabase
+      // Only update Stripe IDs if not already set (don't overwrite values from CheckoutSessionService)
+      const updateData: any = {
+        status: 'paid',
+        payment_amount: invoice.total,
+        currency: invoice.currency.toUpperCase(),
+        payment_completed_at: invoice.status_transitions?.paid_at
+          ? new Date(invoice.status_transitions.paid_at * 1000).toISOString()
+          : new Date().toISOString(),
+        payment_metadata: {
+          invoice_id: invoice.id,
+          payment_method: invoice.default_payment_method,
+          billing_reason: invoice.billing_reason,
+          schedule_id: scheduleId,
+          subtotal: invoice.subtotal,
+          discount_amount: discountAmount,
+          recurring_discount: recurringDiscount,
+          discount_info: discountMetadata
+        },
+        updated_at: new Date().toISOString()
+      }
+
+      // Only update Stripe IDs if webhook has values (don't overwrite with NULL)
+      // This prevents race condition where webhook overwrites CheckoutSessionService's values
+      if (paymentIntentId) updateData.stripe_payment_id = paymentIntentId
+      if (customerId) updateData.stripe_customer_id = customerId
+      if (subscriptionId) updateData.stripe_subscription_id = subscriptionId
+      if (scheduleId) updateData.stripe_subscription_schedule_id = scheduleId
+
+      const { error: updateError } = await supabase
         .from('onboarding_submissions')
-        .update({
-          status: 'paid',
-          stripe_payment_id: paymentIntentId,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subscriptionId,
-          stripe_subscription_schedule_id: scheduleId,
-          payment_amount: invoice.total,
-          currency: invoice.currency.toUpperCase(),
-          payment_completed_at: invoice.status_transitions?.paid_at
-            ? new Date(invoice.status_transitions.paid_at * 1000).toISOString()
-            : new Date().toISOString(),
-          payment_metadata: {
-            invoice_id: invoice.id,
-            payment_method: invoice.default_payment_method,
-            billing_reason: invoice.billing_reason,
-            schedule_id: scheduleId,
-            subtotal: invoice.subtotal,
-            discount_amount: discountAmount,
-            recurring_discount: recurringDiscount,
-            discount_info: discountMetadata
-          },
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', submission.id)
 
+      if (updateError) {
+        console.error('[Webhook] Failed to update submission in invoice.paid:', updateError)
+        throw new Error(`Failed to update submission: ${updateError.message}`)
+      }
+
       // Log payment event
-      await supabase.from('onboarding_analytics').insert({
+      const { error: analyticsError } = await supabase.from('onboarding_analytics').insert({
         session_id: submission.session_id,
         event_type: 'payment_succeeded',
         metadata: {
@@ -379,7 +391,14 @@ export class WebhookService {
         }
       })
 
+      if (analyticsError) {
+        console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
+        // Don't throw - analytics is non-critical, continue processing
+      }
+
       // Send admin notification email
+      // Note: EmailService.sendPaymentNotification already checks IS_TEST_MODE
+      // which includes CI, development, and Vercel preview environments
       if (ADMIN_EMAIL) {
         const businessName = submission.form_data?.businessName ||
                            submission.form_data?.step3?.businessName ||
@@ -400,7 +419,7 @@ export class WebhookService {
             paymentIntentId ?? '',
             additionalLanguages
           )
-          debugLog('Payment notification email sent successfully')
+          debugLog('Payment notification sent successfully')
         } catch (emailError) {
           console.error('Failed to send payment notification email:', emailError)
           // Log error but don't fail the webhook
@@ -504,42 +523,58 @@ export class WebhookService {
         : amount + computedDiscountAmount
 
       // Update submission with payment details
-      await supabase
-        .from('onboarding_submissions')
-        .update({
-          status: 'paid',
-          stripe_payment_id: paymentIntentId,
-          stripe_customer_id: customerId,
-          payment_amount: amount,
+      // Only update Stripe IDs if not already set (don't overwrite values from CheckoutSessionService)
+      const updateData: any = {
+        status: 'paid',
+        payment_amount: amount,
+        currency: currency.toUpperCase(),
+        payment_completed_at: new Date().toISOString(),
+        payment_metadata: {
+          payment_intent_id: paymentIntentId,
+          invoice_id: invoiceId,
+          payment_method: paymentIntent.payment_method,
+          amount_charged: amount,
           currency: currency.toUpperCase(),
-          payment_completed_at: new Date().toISOString(),
-          payment_metadata: {
-            payment_intent_id: paymentIntentId,
-            invoice_id: invoiceId,
-            payment_method: paymentIntent.payment_method,
-            amount_charged: amount,
-            currency: currency.toUpperCase(),
-            subtotal: computedSubtotal,
-            discount_amount: computedDiscountAmount,
-            recurring_discount: recurringDiscount,
-            discount_info: discountMetadata
-          },
-          updated_at: new Date().toISOString()
-        })
+          subtotal: computedSubtotal,
+          discount_amount: computedDiscountAmount,
+          recurring_discount: recurringDiscount,
+          discount_info: discountMetadata
+        },
+        updated_at: new Date().toISOString()
+      }
+
+      // Only update Stripe IDs if webhook has values (don't overwrite with NULL)
+      // This prevents race condition where webhook overwrites CheckoutSessionService's values
+      if (paymentIntentId) updateData.stripe_payment_id = paymentIntentId
+      if (customerId) updateData.stripe_customer_id = customerId
+
+      const { error: updateError } = await supabase
+        .from('onboarding_submissions')
+        .update(updateData)
         .eq('id', submission.id)
+
+      if (updateError) {
+        console.error('[Webhook] Failed to update submission:', updateError)
+        throw new Error(`Failed to update submission: ${updateError.message}`)
+      }
 
       debugLog('[Webhook] ✅ Submission updated: status=paid')
 
       // Log payment event
-      await supabase.from('onboarding_analytics').insert({
+      const { error: analyticsError } = await supabase.from('onboarding_analytics').insert({
         session_id: submission.session_id,
         event_type: 'payment_succeeded',
-        event_data: {
+        metadata: {
           payment_intent_id: paymentIntentId,
           amount,
           currency
         }
       })
+
+      if (analyticsError) {
+        console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
+        // Don't throw - analytics is non-critical, continue processing
+      }
 
       return { success: true }
     } catch (error) {

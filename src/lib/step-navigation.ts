@@ -106,7 +106,7 @@ export const STEP_CONFIGS: Record<StepNumber, StepConfig> = {
   14: {
     number: 14,
     title: 'Payment',
-    description: 'Complete your subscription',
+    description: '30-day money back guarantee',
     estimatedMinutes: 3
   }
 }

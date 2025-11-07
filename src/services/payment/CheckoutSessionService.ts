@@ -444,20 +444,34 @@ export class CheckoutSessionService {
         paymentRequired: addOnResult.paymentRequired,
         couponId: validatedCoupon?.id || null,
         invoiceTotal: addOnResult.invoiceTotal,
-        invoiceDiscount: addOnResult.invoiceDiscount
+        invoiceDiscount: addOnResult.invoiceDiscount,
+        paymentIntentId: addOnResult.paymentIntentId || null
       })
 
-      // 10. Update submission with Stripe IDs
-      await supabase
+      // 10. Update submission with Stripe IDs (including payment intent ID for mock webhooks)
+      const { error: updateError } = await supabase
         .from('onboarding_submissions')
         .update({
           stripe_customer_id: customer.id,
           stripe_subscription_id: subscription.id,
           stripe_subscription_schedule_id: schedule.id,
+          stripe_payment_id: addOnResult.paymentIntentId || null,
           form_data: submission.form_data,
           updated_at: new Date().toISOString()
         })
         .eq('id', submissionId)
+
+      if (updateError) {
+        console.error('[CheckoutSessionService] Failed to update submission with Stripe IDs:', updateError)
+      } else {
+        console.log('[CheckoutSessionService] Updated submission with Stripe IDs', {
+          submissionId,
+          customerId: customer.id,
+          subscriptionId: subscription.id,
+          scheduleId: schedule.id,
+          paymentIntentId: addOnResult.paymentIntentId || null
+        })
+      }
 
       console.log('[CheckoutSessionService] returning session creation result', {
         submissionId,
@@ -523,6 +537,7 @@ export class CheckoutSessionService {
     invoiceId: string
     invoiceTotal: number
     invoiceDiscount: number
+    paymentIntentId?: string | null
   }> {
     const stripe = this.stripeService.getStripeInstance()
 
@@ -594,8 +609,10 @@ export class CheckoutSessionService {
     }
 
     // Finalize the invoice to create the Payment Intent with discounts automatically applied
+    // NOTE: In Stripe API v2025-09-30.clover+, payment_intent is no longer directly on invoice
+    // Instead, it's nested in payments array: invoice.payments.data[0].payment.payment_intent
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoiceId, {
-      expand: ['confirmation_secret', 'payment_intent', 'total_discount_amounts']
+      expand: ['confirmation_secret', 'payments', 'total_discount_amounts']
     })
 
     console.log('[CheckoutSessionService] finalized invoice', {
@@ -604,7 +621,9 @@ export class CheckoutSessionService {
       subtotal: finalizedInvoice.subtotal,
       totalDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0),
       discountAmounts: finalizedInvoice.total_discount_amounts,
-      couponId
+      couponId,
+      paymentsCount: (finalizedInvoice as any).payments?.data?.length || 0,
+      firstPaymentIntentId: (finalizedInvoice as any).payments?.data?.[0]?.payment?.payment_intent
     })
 
     // Handle zero-amount invoices (discount >= total)
@@ -617,16 +636,18 @@ export class CheckoutSessionService {
         clientSecret: null,
         invoiceId: invoiceIdValue,
         invoiceTotal: finalizedInvoice.total ?? 0,
-        invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0)
+        invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0),
+        paymentIntentId: null
       }
     }
 
-    // Update PaymentIntent metadata with submission_id to ensure webhook can find it
-    // This is critical for webhook processing to work reliably
-    const invoiceWithPaymentIntent = finalizedInvoice as any
-    const paymentIntentId = typeof invoiceWithPaymentIntent.payment_intent === 'string'
-      ? invoiceWithPaymentIntent.payment_intent
-      : invoiceWithPaymentIntent.payment_intent?.id
+    // Extract PaymentIntent ID from the payments array (Stripe API v2025-09-30.clover+)
+    // In newer Stripe APIs, payment_intent is nested in: invoice.payments.data[0].payment.payment_intent
+    const paymentsData = (finalizedInvoice as any).payments?.data
+    const firstPayment = paymentsData?.[0]?.payment
+    const paymentIntentId = typeof firstPayment?.payment_intent === 'string'
+      ? firstPayment.payment_intent
+      : firstPayment?.payment_intent?.id
 
     if (paymentIntentId) {
       await stripe.paymentIntents.update(paymentIntentId, {
@@ -650,7 +671,8 @@ export class CheckoutSessionService {
       clientSecret: confirmationSecret.client_secret,
       invoiceId: invoiceIdValue,
       invoiceTotal: finalizedInvoice.total ?? 0,
-      invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0)
+      invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0),
+      paymentIntentId: paymentIntentId || null
     }
   }
 }

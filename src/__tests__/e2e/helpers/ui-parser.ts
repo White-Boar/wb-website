@@ -107,11 +107,32 @@ export async function fillStripePaymentForm(
     }
   }
 
-  // Wait for the card input fields to be visible
-  await stripeFrame.getByRole('textbox', { name: 'Card number' }).waitFor({
-    state: 'visible',
-    timeout: 30000
-  })
+  // Wait for the card input fields to be visible with retry logic
+  console.log('Waiting for Stripe card number field to become visible...')
+  let lastError: Error | null = null
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await stripeFrame.getByRole('textbox', { name: 'Card number' }).waitFor({
+        state: 'visible',
+        timeout: 15000
+      })
+      console.log('✓ Stripe card number field is visible')
+      break // Success!
+    } catch (error) {
+      console.warn(`Attempt ${attempt}/3: Card number field not visible yet`)
+      lastError = error as Error
+
+      // Wait a bit longer before retrying
+      if (attempt < 3) {
+        console.log('Waiting 5 more seconds for Stripe Elements to initialize...')
+        await page.waitForTimeout(5000)
+      }
+    }
+  }
+
+  if (lastError) {
+    throw new Error(`Stripe card number field never became visible after 3 attempts (45 seconds total). Original error: ${lastError.message}`)
+  }
 
   // Fill card number (Stripe test card)
   const cardNumberInput = stripeFrame.getByRole('textbox', { name: 'Card number' })

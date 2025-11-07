@@ -345,8 +345,12 @@ export class OnboardingServerService {
     const serviceClient = createServiceClient()
 
     try {
-      // Development bypass for testing
-      if (process.env.NODE_ENV === 'development' && (code === 'DEV123' || code === '123456')) {
+      // Development/CI/Preview bypass for testing
+      const isTestEnvironment = process.env.NODE_ENV === 'development' ||
+                                 process.env.CI === 'true' ||
+                                 process.env.VERCEL_ENV === 'preview' ||
+                                 process.env.VERCEL_ENV === 'development'
+      if (isTestEnvironment && (code === 'DEV123' || code === '123456')) {
         const { error } = await serviceClient
           .from('onboarding_sessions')
           .update({

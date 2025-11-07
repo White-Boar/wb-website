@@ -15,17 +15,28 @@ const ADMIN_EMAIL = process.env.NOTIFICATION_ADMIN_EMAIL || 'admin@whiteboar.it'
 const SUPPORT_EMAIL = process.env.NOTIFICATION_SUPPORT_EMAIL || 'info@whiteboar.it'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'
 
-// Test mode configuration - skip sending real emails in dev/test/CI unless explicitly enabled
+// Test mode configuration - skip sending real emails in dev/test/CI/preview unless explicitly enabled
 const ENABLE_EMAILS = process.env.ENABLE_EMAILS === 'true'
 const SHOULD_SKIP_BY_DEFAULT =
   process.env.NODE_ENV === 'test' ||
   process.env.NODE_ENV === 'development' ||
-  process.env.CI === 'true'
+  process.env.CI === 'true' ||
+  process.env.VERCEL_ENV === 'preview'
 const IS_TEST_MODE = !ENABLE_EMAILS && SHOULD_SKIP_BY_DEFAULT
 
 // Validate Resend API key (only warn in production)
 if (!process.env.RESEND_API_KEY && !process.env.RESEND_KEY && process.env.NODE_ENV === 'production') {
   console.error('ERROR: RESEND_API_KEY or RESEND_KEY environment variable is not set in production')
+}
+
+/**
+ * Sanitize a string for use as a Resend email tag value.
+ * Resend requires tags to only contain ASCII letters, numbers, underscores, or dashes.
+ */
+function sanitizeTagValue(value: string): string {
+  return value
+    .replace(/[^a-zA-Z0-9_-]/g, '_')
+    .substring(0, 256) // Resend has a 256 char limit per tag value
 }
 
 // =============================================================================
@@ -221,7 +232,7 @@ export class EmailService {
         text: textContent,
         tags: [
           { name: 'category', value: 'admin_notification' },
-          { name: 'business_name', value: formData.businessName }
+          { name: 'business_name', value: sanitizeTagValue(formData.businessName) }
         ]
       })
 
@@ -794,7 +805,7 @@ export class EmailService {
         text: textContent,
         tags: [
           { name: 'category', value: 'payment_notification' },
-          { name: 'business_name', value: businessName },
+          { name: 'business_name', value: sanitizeTagValue(businessName) },
           { name: 'amount', value: amount.toString() }
         ]
       })

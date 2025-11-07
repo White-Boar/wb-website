@@ -166,12 +166,12 @@ const testData = {
   // Step 11: Website Structure
   primaryGoal: 'Generate Leads',
   websiteSections: [
-    'About Us',
-    'Services',
-    'Portfolio',
-    'Testimonials',
-    'Contact',
-    'Blog'
+    'Hero / Introduction',  // Always included
+    'Contact us',          // Always included
+    'About / Story',
+    'Services / Products',
+    'Portfolio / Gallery',
+    'Testimonials / Reviews'
   ]
 };
 
@@ -813,6 +813,7 @@ test.describe('Complete Onboarding Flow', () => {
     await page.waitForTimeout(1000);
 
     // Website structure - select some checkboxes if available
+    // Note: Hero and Contact are always selected and disabled
     // Note: Radix UI Checkbox uses <button role="checkbox">, not <input type="checkbox">
     const checkboxes = page.locator('button[role="checkbox"]');
     const checkboxCount = await checkboxes.count();
@@ -823,34 +824,50 @@ test.describe('Complete Onboarding Flow', () => {
 
       // Try to find and click Services/Products checkbox by label
       try {
-        const servicesLabel = page.locator('label').filter({ hasText: /Services\/Products|Services/ }).first();
+        const servicesLabel = page.locator('label').filter({ hasText: /Services.*Products|Services/ }).first();
         if (await servicesLabel.isVisible()) {
-          await servicesLabel.click();
-          await page.waitForTimeout(300);
-          servicesSelected = true;
+          const htmlFor = await servicesLabel.getAttribute('for');
+          const checkbox = page.locator(`#${htmlFor}`);
+          const isDisabled = await checkbox.getAttribute('disabled').catch(() => null);
+
+          // Only click if not disabled (Hero and Contact are disabled)
+          if (!isDisabled) {
+            await servicesLabel.click();
+            await page.waitForTimeout(300);
+            servicesSelected = true;
+          }
         }
       } catch (e) {
         console.log('⚠️ Could not find Services/Products via label');
       }
 
-      // Click the first 3 checkboxes by finding their labels
+      // Click some optional checkboxes (skip Hero and Contact which are always selected and disabled)
       const labels = page.locator('label[for]');
       const labelCount = await labels.count();
       console.log(`Found ${labelCount} checkbox labels`);
 
-      for (let i = 0; i < Math.min(3, labelCount); i++) {
+      let clickedCount = 0;
+      for (let i = 0; i < labelCount && clickedCount < 3; i++) {
         const label = labels.nth(i);
         const labelText = await label.textContent();
         const htmlFor = await label.getAttribute('for');
+
+        // Skip Hero and Contact (they're always included and disabled)
+        if (labelText?.includes('Hero') || labelText?.includes('Contact')) {
+          console.log(`  Skipping "${labelText?.substring(0, 30)}" (always included)`);
+          continue;
+        }
+
         const checkbox = page.locator(`#${htmlFor}`);
         const state = await checkbox.getAttribute('data-state').catch(() => null);
+        const isDisabled = await checkbox.getAttribute('disabled').catch(() => null);
 
-        console.log(`  Label ${i}: "${labelText?.substring(0, 30)}" (for=${htmlFor}), state=${state}`);
+        console.log(`  Label ${i}: "${labelText?.substring(0, 30)}" (for=${htmlFor}), state=${state}, disabled=${isDisabled}`);
 
-        if (state !== 'checked') {
+        if (state !== 'checked' && !isDisabled) {
           await label.click();
           await page.waitForTimeout(300);
-          const newState = await checkbox.getAttribute('data-state').catch(() => null);
+          clickedCount++;
         }
       }
     } else {

@@ -171,6 +171,7 @@ export default function OnboardingStep() {
         return {
           websiteSections: formData?.websiteSections || [],
           primaryGoal: formData?.primaryGoal || '',
+          offeringType: formData?.offeringType || undefined,
           offerings: formData?.offerings || []
         }
       case 12:

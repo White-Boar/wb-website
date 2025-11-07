@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import Stripe from 'stripe'
 import { createServiceClient } from '@/lib/supabase'
 import { stripe } from '@/lib/stripe'
@@ -39,13 +39,17 @@ export async function POST(request: NextRequest) {
     // In test/CI environments, allow mock webhooks with special header
     // Mock webhooks bypass signature verification for testing
     const isMockWebhook = request.headers.get('x-mock-webhook') === 'true'
-    const isNotProduction = process.env.NODE_ENV !== 'production'
+    // Check if we're using TEST Stripe keys (webhook secret starts with 'whsec_test_')
+    // Production webhook secrets start with 'whsec_' (without 'test')
+    const isTestEnvironment = WEBHOOK_SECRET?.startsWith('whsec_test_') ||
+                               process.env.VERCEL_ENV === 'preview' ||
+                               process.env.VERCEL_ENV === 'development'
 
     let event: Stripe.Event
 
-    if (isMockWebhook && isNotProduction) {
-      // Parse mock webhook directly without signature verification (test mode only)
-      debugLog(`[${webhookId}] ℹ️  Processing mock webhook (test mode)`)
+    if (isMockWebhook && isTestEnvironment) {
+      // Parse mock webhook directly without signature verification (test environments only)
+      debugLog(`[${webhookId}] ℹ️  Processing mock webhook (test environment)`)
       event = JSON.parse(body) as Stripe.Event
     } else {
       // Real webhook - verify signature
@@ -92,15 +96,22 @@ export async function POST(request: NextRequest) {
       throw insertError
     }
 
-    debugLog(`[${webhookId}] Event record created, scheduling async processing...`)
+    debugLog(`[${webhookId}] Event record created, scheduling background processing...`)
 
-    processWebhookEvent({
-      event,
-      supabase,
-      webhookService,
-      webhookId
-    }).catch(error => {
-      console.error(`[${webhookId}] ❌ Async webhook processing error:`, error)
+    // Use Next.js 15's after() API to ensure webhook processing completes
+    // This keeps the serverless function alive until background work finishes
+    // Critical for Vercel deployments where functions terminate after response
+    after(async () => {
+      try {
+        await processWebhookEvent({
+          event,
+          supabase,
+          webhookService,
+          webhookId
+        })
+      } catch (error) {
+        console.error(`[${webhookId}] ❌ Background webhook processing error:`, error)
+      }
     })
 
     return NextResponse.json({ received: true })

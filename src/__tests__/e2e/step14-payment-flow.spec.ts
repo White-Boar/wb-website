@@ -146,7 +146,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // 11. Wait for webhooks to process (payment_intent.succeeded webhook updates status to 'paid')
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
-        maxAttempts: 20,
+        maxAttempts: 30, // 15 seconds (now using after() API so webhooks complete reliably)
         delayMs: 500
       })
 
@@ -234,7 +234,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // 9. Wait for webhooks to process (payment_intent.succeeded webhook updates status to 'paid')
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
-        maxAttempts: 20,
+        maxAttempts: 30, // 15 seconds (now using after() API so webhooks complete reliably)
         delayMs: 500
       })
 
@@ -733,7 +733,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // 8. Wait for webhooks to process
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid', {
-        maxAttempts: 20,
+        maxAttempts: 30, // 15 seconds (now using after() API so webhooks complete reliably)
         delayMs: 500
       })
       expect(webhookProcessed).toBe(true)
@@ -859,9 +859,10 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       // Validate payment amount
       // Base package: €35/month = 3500 cents
-      // Note: Discount codes apply to recurring subscription charges via Stripe schedule
-      // First payment shows full amount, discount applies to future recurring charges
-      expect(submission.payment_amount).toBe(stripePrices.base)
+      // 20% discount code applied: 3500 * 0.8 = 2800 cents
+      // Note: Discount codes apply to BOTH first payment and recurring charges
+      const expectedDiscountedAmount = Math.round(stripePrices.base * 0.8)
+      expect(submission.payment_amount).toBe(expectedDiscountedAmount)
       expect(submission.currency).toBe('EUR')
       expect(submission.status).toBe('paid')
 

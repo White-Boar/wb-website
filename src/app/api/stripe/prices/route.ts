@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import { StripePaymentService } from '@/services/payment/StripePaymentService'
 
-// In-memory cache for prices (5-minute TTL)
+// In-memory cache for prices (10-minute TTL)
 let pricesCache: {
   data: any
   timestamp: number
 } | null = null
 
-const CACHE_TTL = 5 * 60 * 1000 // 5 minutes in milliseconds
+const CACHE_TTL = 10 * 60 * 1000 // 10 minutes in milliseconds
 
 export async function GET() {
   try {

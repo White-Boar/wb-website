@@ -15,10 +15,12 @@ import {
 } from "@/components/ui/card"
 import { Link } from "@/i18n/navigation"
 import { fadeInUp, staggerChildren, scaleIn } from "../../context/design-system/motion/variants"
+import { usePricing } from "@/hooks/usePricing"
 
 export function PricingTable() {
   const t = useTranslations('pricing')
   const shouldReduce = useReducedMotion()
+  const { basePackagePricePerMonth } = usePricing()
 
   const variants = shouldReduce ? {} : {
     container: staggerChildren,
@@ -31,7 +33,7 @@ export function PricingTable() {
       id: 'fast',
       name: t('fast.name'),
       tagline: t('fast.tagline'),
-      price: t('fast.price'),
+      price: basePackagePricePerMonth,
       features: [
         t('fast.feature1'),
         t('fast.feature2'),

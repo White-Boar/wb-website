@@ -60,7 +60,7 @@ const portfolioItems = [
 export function PortfolioCarousel() {
   const t = useTranslations('portfolio')
   const shouldReduce = useReducedMotion()
-  
+
   const plugin = React.useRef(
     Autoplay({ delay: 7000, stopOnInteraction: true })
   )

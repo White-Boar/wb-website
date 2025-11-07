@@ -256,8 +256,8 @@ export function ColorPalette({
                         {/* Tags */}
                         {option.tags && option.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1">
-                            {option.tags.map((tag) => (
-                              <Badge key={tag} variant="outline" className="text-[10px] h-5">
+                            {option.tags.map((tag, index) => (
+                              <Badge key={`${tag}-${index}`} variant="outline" className="text-[10px] h-5">
                                 {tag}
                               </Badge>
                             ))}
