@@ -15,7 +15,7 @@
   },
   "hero": {
     "title": "La tua attività. Vendendo globalmente. Tutto l'anno.",
-    "subtitle": "Vendi a clienti internazionali anche dopo le festività: un sito web multilingue che ti mantiene in contatto.",
+    "subtitle": "Vendi a clienti internazionali anche dopo le festività: un sito web multilingue che ti tiene in contatto.",
     "cta": "Inizia ora!"
   },
   "steps": {
@@ -28,12 +28,12 @@
     "step2": {
       "title": "Approva il tuo progetto",
       "subtitle": "In cinque giorni riceverai un sito web completo",
-      "description": "Bello, brandizzato e pronto per il lancio in inglese e italiano."
+      "description": "Bello, personalizzato e pronto per il lancio in inglese e italiano."
     },
     "step3": {
       "title": "Vai online e cresci",
       "subtitle": "Lancia la tua attività online",
-      "description": "Attira nuovi clienti e costruisci una fedeltà duratura attraverso la nostra piattaforma."
+      "description": "Attira nuovi clienti e fidelizzali a lungo termine attraverso la nostra piattaforma."
     }
   },
   "pricing": {
@@ -321,7 +321,7 @@
           "description": {
             "label": "Chi sono i tuoi clienti ideali?",
             "placeholder": "Descrivi i tuoi clienti tipici (età, interessi, necessità, ecc.)",
-            "hint": "Capire il tuo pubblico ci aiuta a creare contenuti che risuonano"
+            "hint": "Capire il tuo pubblico ci aiuta a creare contenuti efficaci per il tuo target"
           }
         },
         "uniqueness": {
@@ -493,7 +493,7 @@
         "description": "Comprendere cosa hanno davvero bisogno i tuoi clienti",
         "intro": {
           "title": "Comprendere le Sfide dei Clienti",
-          "description": "Aiutaci a capire i problemi che affrontano i tuoi clienti e come la tua attività li risolve. Questa comprensione plasmerà i messaggi e il posizionamento del tuo sito web."
+          "description": "Aiutaci a capire i problemi che affrontano i tuoi clienti e come la tua attività li risolve. Questa comprensione guiderà i messaggi e il posizionamento del tuo sito web."
         },
         "problems": {
           "title": "Problemi e Punti Dolenti dei Clienti",
