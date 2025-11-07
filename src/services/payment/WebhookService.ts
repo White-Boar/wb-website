@@ -396,7 +396,9 @@ export class WebhookService {
         // Don't throw - analytics is non-critical, continue processing
       }
 
-      // Send admin notification email (skip for test emails)
+      // Send admin notification email
+      // Note: EmailService.sendPaymentNotification already checks IS_TEST_MODE
+      // which includes CI, development, and Vercel preview environments
       if (ADMIN_EMAIL) {
         const businessName = submission.form_data?.businessName ||
                            submission.form_data?.step3?.businessName ||
@@ -407,27 +409,20 @@ export class WebhookService {
                      'unknown@example.com'
         const additionalLanguages = submission.form_data?.step13?.additionalLanguages || []
 
-        // Skip sending admin emails for test/CI emails
-        const isTestEmail = email.includes('@example.com') || email.includes('.test@')
-
-        if (!isTestEmail) {
-          try {
-            await EmailService.sendPaymentNotification(
-              submission.id,
-              businessName,
-              email,
-              invoice.amount_paid,
-              invoice.currency.toUpperCase(),
-              paymentIntentId ?? '',
-              additionalLanguages
-            )
-            debugLog('Payment notification email sent successfully')
-          } catch (emailError) {
-            console.error('Failed to send payment notification email:', emailError)
-            // Log error but don't fail the webhook
-          }
-        } else {
-          debugLog('[TEST MODE] Skipping payment notification for test email:', email)
+        try {
+          await EmailService.sendPaymentNotification(
+            submission.id,
+            businessName,
+            email,
+            invoice.amount_paid,
+            invoice.currency.toUpperCase(),
+            paymentIntentId ?? '',
+            additionalLanguages
+          )
+          debugLog('Payment notification sent successfully')
+        } catch (emailError) {
+          console.error('Failed to send payment notification email:', emailError)
+          // Log error but don't fail the webhook
         }
       }
 

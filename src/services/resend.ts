@@ -15,12 +15,13 @@ const ADMIN_EMAIL = process.env.NOTIFICATION_ADMIN_EMAIL || 'admin@whiteboar.it'
 const SUPPORT_EMAIL = process.env.NOTIFICATION_SUPPORT_EMAIL || 'info@whiteboar.it'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'
 
-// Test mode configuration - skip sending real emails in dev/test/CI unless explicitly enabled
+// Test mode configuration - skip sending real emails in dev/test/CI/preview unless explicitly enabled
 const ENABLE_EMAILS = process.env.ENABLE_EMAILS === 'true'
 const SHOULD_SKIP_BY_DEFAULT =
   process.env.NODE_ENV === 'test' ||
   process.env.NODE_ENV === 'development' ||
-  process.env.CI === 'true'
+  process.env.CI === 'true' ||
+  process.env.VERCEL_ENV === 'preview'
 const IS_TEST_MODE = !ENABLE_EMAILS && SHOULD_SKIP_BY_DEFAULT
 
 // Validate Resend API key (only warn in production)
