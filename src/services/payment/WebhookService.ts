@@ -340,7 +340,7 @@ export class WebhookService {
       }
 
       // Update submission with payment details including discount information
-      await supabase
+      const { error: updateError } = await supabase
         .from('onboarding_submissions')
         .update({
           status: 'paid',
@@ -367,8 +367,13 @@ export class WebhookService {
         })
         .eq('id', submission.id)
 
+      if (updateError) {
+        console.error('[Webhook] Failed to update submission in invoice.paid:', updateError)
+        throw new Error(`Failed to update submission: ${updateError.message}`)
+      }
+
       // Log payment event
-      await supabase.from('onboarding_analytics').insert({
+      const { error: analyticsError } = await supabase.from('onboarding_analytics').insert({
         session_id: submission.session_id,
         event_type: 'payment_succeeded',
         metadata: {
@@ -378,6 +383,11 @@ export class WebhookService {
           currency: invoice.currency
         }
       })
+
+      if (analyticsError) {
+        console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
+        // Don't throw - analytics is non-critical, continue processing
+      }
 
       // Send admin notification email
       if (ADMIN_EMAIL) {
@@ -504,7 +514,7 @@ export class WebhookService {
         : amount + computedDiscountAmount
 
       // Update submission with payment details
-      await supabase
+      const { error: updateError } = await supabase
         .from('onboarding_submissions')
         .update({
           status: 'paid',
@@ -528,10 +538,15 @@ export class WebhookService {
         })
         .eq('id', submission.id)
 
+      if (updateError) {
+        console.error('[Webhook] Failed to update submission:', updateError)
+        throw new Error(`Failed to update submission: ${updateError.message}`)
+      }
+
       debugLog('[Webhook] ✅ Submission updated: status=paid')
 
       // Log payment event
-      await supabase.from('onboarding_analytics').insert({
+      const { error: analyticsError } = await supabase.from('onboarding_analytics').insert({
         session_id: submission.session_id,
         event_type: 'payment_succeeded',
         event_data: {
@@ -540,6 +555,11 @@ export class WebhookService {
           currency
         }
       })
+
+      if (analyticsError) {
+        console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
+        // Don't throw - analytics is non-critical, continue processing
+      }
 
       return { success: true }
     } catch (error) {
