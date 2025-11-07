@@ -1,0 +1,868 @@
+
+> whiteboar-website@0.1.0 test:e2e /Users/Yoav/Projects/wb/wb-website
+> playwright test --project=chromium --reporter=line
+
+✓ Next.js server already running
+🚀 Starting global Stripe webhook listener...
+ℹ️  Stripe CLI version does not support --request-timeout; using default timeout
+[Stripe] Checking for new versions...
+[Stripe] 
+✓ Global Stripe webhook listener ready
+[dotenv@17.2.2] injecting env (44) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.2] injecting env (0) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+
+Running 73 tests using 4 workers
+
+[1A[2K[1/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:5:7 › Accessibility Tests › should not have any automatically detectable accessibility issues
+[1A[2K[2/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:72:7 › Accessibility Tests › should have proper alt text for images
+[1A[2K[3/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:43:7 › Accessibility Tests › should have proper focus management
+[1A[2K[4/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:14:7 › Accessibility Tests › should have proper heading hierarchy
+[1A[2K[5/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:92:7 › Accessibility Tests › should have proper ARIA labels and roles
+[1A[2K[6/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:126:7 › Accessibility Tests › should have sufficient color contrast
+[1A[2K[7/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:142:7 › Accessibility Tests › should be keyboard accessible
+[1A[2K[8/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:167:7 › Accessibility Tests › should have proper form accessibility
+[1A[2K[9/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:191:7 › Accessibility Tests › should announce content changes to screen readers
+[1A[2K[10/73] [chromium] › src/__tests__/e2e/accessibility.spec.ts:213:7 › Accessibility Tests › should work with reduced motion preferences
+[1A[2K[11/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:9:7 › Custom Software Page › loads page successfully with correct content
+[1A[2K[12/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:29:7 › Custom Software Page › navigation from homepage pricing section works
+[1A[2K[13/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:47:7 › Custom Software Page › form submission with valid data works
+[1A[2K[14/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:64:7 › Custom Software Page › form validation shows errors for empty fields
+[1A[2K[15/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:82:7 › Custom Software Page › form validation shows error for invalid email
+[1A[2K[16/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:103:7 › Custom Software Page › form validation shows error for short description
+[1A[2K[17/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:114:7 › Custom Software Page › navigation component works on custom software page
+[1A[2K[18/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:131:7 › Custom Software Page › footer is displayed on custom software page
+[1A[2K[19/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:141:7 › Custom Software Page › language switching works (EN ↔ IT)
+[1A[2K[20/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:165:7 › Custom Software Page › theme toggle works
+[1A[2K[21/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:193:7 › Custom Software Page › portfolio carousel renders correctly
+[1A[2K[22/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:213:7 › Custom Software Page › mobile responsiveness
+[1A[2K[23/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:238:7 › Custom Software Page › accessibility validation with axe-core
+[1A[2K[24/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:245:7 › Custom Software Page › keyboard navigation works
+[1A[2K[25/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:256:7 › Custom Software Page › form fields have proper ARIA attributes
+[1A[2K[26/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:274:7 › Custom Software Page › services grid displays all services
+[1A[2K[27/73] [chromium] › src/__tests__/e2e/custom-software.spec.ts:290:7 › Custom Software Page › page has proper section structure
+[1A[2K[28/73] [chromium] › src/__tests__/e2e/home.spec.ts:21:7 › WhiteBoar Homepage › navigation works correctly
+[1A[2K[29/73] [chromium] › src/__tests__/e2e/home.spec.ts:8:7 › WhiteBoar Homepage › loads homepage successfully
+[1A[2K[30/73] [chromium] › src/__tests__/e2e/home.spec.ts:41:7 › WhiteBoar Homepage › language switching works
+[1A[2K[31/73] [chromium] › src/__tests__/e2e/home.spec.ts:64:7 › WhiteBoar Homepage › theme toggle works
+[1A[2K[32/73] [chromium] › src/__tests__/e2e/home.spec.ts:93:7 › WhiteBoar Homepage › pricing plan selection works
+[1A[2K[33/73] [chromium] › src/__tests__/e2e/home.spec.ts:104:7 › WhiteBoar Homepage › social links are working
+[1A[2K[34/73] [chromium] › src/__tests__/e2e/home.spec.ts:121:7 › WhiteBoar Homepage › accessibility features work
+[1A[2K[35/73] [chromium] › src/__tests__/e2e/home.spec.ts:142:7 › WhiteBoar Homepage › portfolio carousel works
+[1A[2K[36/73] [chromium] › src/__tests__/e2e/home.spec.ts:169:7 › WhiteBoar Homepage › mobile responsiveness
+[1A[2K[37/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:24:7 › Onboarding Accessibility › should not have accessibility violations on Step 1
+[1A[2K[38/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:37:7 › Onboarding Accessibility › supports keyboard navigation throughout form
+[1A[2K[39/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:64:7 › Onboarding Accessibility › form labels are properly associated
+[1A[2K[40/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:81:7 › Onboarding Accessibility › required fields are properly marked
+[1A[2K[41/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:93:7 › Onboarding Accessibility › error states are announced to screen readers
+[1A[2K[42/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:119:7 › Onboarding Accessibility › supports screen reader navigation landmarks
+[1A[2K[43/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:133:7 › Onboarding Accessibility › focus management during step transitions
+[1A[2K[44/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:158:7 › Onboarding Accessibility › color contrast meets WCAG AA standards
+[1A[2K[45/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:169:7 › Onboarding Accessibility › supports high contrast mode
+[1A[2K[46/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:193:7 › Onboarding Accessibility › respects reduced motion preferences
+[1A[2K[47/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:221:7 › Onboarding Accessibility › supports voice navigation commands
+[1A[2K[48/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:257:7 › Onboarding Accessibility › provides meaningful error messages
+[1A[2K[49/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:283:7 › Onboarding Accessibility › skip links functionality
+[1A[2K[50/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:298:7 › Onboarding Accessibility › form field help text is accessible
+[1A[2K[51/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:313:7 › Onboarding Accessibility › Step 2 accessibility (Email Verification)
+[1A[2K[52/73] [chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:344:7 › Onboarding Accessibility › dynamic content announcements
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+
+[1A[2K[53/73] [chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+Cleaned up test data for marco.rossi.worker1.test@example.com
+
+[1A[2K[54/73] [chromium] › src/__tests__/e2e/performance.spec.ts:4:7 › Performance Tests › measures Core Web Vitals
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-accessibility.spec.ts:344:7 › Onboarding Accessibility › dynamic content announcements
+Error message: Please enter a valid email address
+
+[1A[2K[55/73] [chromium] › src/__tests__/e2e/performance.spec.ts:56:7 › Performance Tests › checks for performance issues
+[1A[2K[chromium] › src/__tests__/e2e/performance.spec.ts:56:7 › Performance Tests › checks for performance issues
+Performance timing: {
+  name: [32m'http://localhost:3783/'[39m,
+  entryType: [32m'navigation'[39m,
+  startTime: [33m0[39m,
+  duration: [33m2354.2000000476837[39m,
+  initiatorType: [32m'navigation'[39m,
+  deliveryType: [32m''[39m,
+  nextHopProtocol: [32m'http/1.1'[39m,
+  renderBlockingStatus: [32m'non-blocking'[39m,
+  workerStart: [33m0[39m,
+  workerRouterEvaluationStart: [33m0[39m,
+  workerCacheLookupStart: [33m0[39m,
+  workerMatchedSourceType: [32m''[39m,
+  workerFinalSourceType: [32m''[39m,
+  redirectStart: [33m0[39m,
+  redirectEnd: [33m0[39m,
+  fetchStart: [33m0[39m,
+  domainLookupStart: [33m0.7000000476837158[39m,
+  domainLookupEnd: [33m0.7000000476837158[39m,
+  connectStart: [33m0.7000000476837158[39m,
+  secureConnectionStart: [33m0[39m,
+  connectEnd: [33m0.8999999761581421[39m,
+  requestStart: [33m0.8999999761581421[39m,
+  responseStart: [33m1716.3999999761581[39m,
+  firstInterimResponseStart: [33m0[39m,
+  finalResponseHeadersStart: [33m1716.3999999761581[39m,
+  responseEnd: [33m1788.7999999523163[39m,
+  transferSize: [33m33211[39m,
+  encodedBodySize: [33m32911[39m,
+  decodedBodySize: [33m128163[39m,
+  responseStatus: [33m200[39m,
+  serverTiming: [],
+  unloadEventStart: [33m0[39m,
+  unloadEventEnd: [33m0[39m,
+  domInteractive: [33m1993.2000000476837[39m,
+  domContentLoadedEventStart: [33m1993.2000000476837[39m,
+  domContentLoadedEventEnd: [33m1993.2999999523163[39m,
+  domComplete: [33m2354.2000000476837[39m,
+  loadEventStart: [33m2354.2000000476837[39m,
+  loadEventEnd: [33m2354.2000000476837[39m,
+  type: [32m'navigate'[39m,
+  redirectCount: [33m0[39m,
+  activationStart: [33m0[39m,
+  criticalCHRestart: [33m0[39m,
+  notRestoredReasons: [1mnull[22m
+}
+
+[1A[2K[56/73] [chromium] › src/__tests__/e2e/performance.spec.ts:76:7 › Performance Tests › validates image optimization
+[1A[2K[57/73] [chromium] › src/__tests__/e2e/performance.spec.ts:97:7 › Performance Tests › checks font loading performance
+[1A[2K[58/73] [chromium] › src/__tests__/e2e/performance.spec.ts:116:7 › Performance Tests › validates no console errors
+[1A[2K[chromium] › src/__tests__/e2e/performance.spec.ts:4:7 › Performance Tests › measures Core Web Vitals
+Core Web Vitals: {}
+
+[1A[2K[59/73] [chromium] › src/__tests__/e2e/step12-ui-restoration.spec.ts:22:7 › Step 12 - File Upload Persistence Bug › should show uploaded files in UI when navigating back to Step 12
+[1A[2K[chromium] › src/__tests__/e2e/step12-ui-restoration.spec.ts:22:7 › Step 12 - File Upload Persistence Bug › should show uploaded files in UI when navigating back to Step 12
+
+🧪 TESTING STEP 12 FILE UPLOAD PERSISTENCE BUG
+
+[1A[2K================================================================================
+
+[1A[2K
+📦 STEP 1: Creating real test session...
+
+[1A[2K[chromium] › src/__tests__/e2e/performance.spec.ts:97:7 › Performance Tests › checks font loading performance
+Font loading status: [
+  { family: [32m'Inter'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Inter'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Inter'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Inter'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Inter'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Inter'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Inter'[39m, status: [32m'loaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'loaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'Montserrat'[39m, status: [32m'loaded'[39m, display: [32m'swap'[39m },
+  { family: [32m'__nextjs-Geist'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  {
+    family: [32m'__nextjs-Geist Mono'[39m,
+    status: [32m'unloaded'[39m,
+    display: [32m'swap'[39m
+  },
+  { family: [32m'__nextjs-Geist'[39m, status: [32m'unloaded'[39m, display: [32m'swap'[39m },
+  {
+    family: [32m'__nextjs-Geist Mono'[39m,
+    status: [32m'unloaded'[39m,
+    display: [32m'swap'[39m
+  }
+]
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+
+[1A[2K[60/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:98:7 › Step 14: Payment Flow E2E › complete payment flow from Step 13 to thank-you page
+[1A[2K[chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:98:7 › Step 14: Payment Flow E2E › complete payment flow from Step 13 to thank-you page
+Setting up test environment...
+
+[1A[2K[dotenv@17.2.2] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+
+[1A[2K[61/73] [chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:104:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] base package - validates UI matches Stripe prices
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:104:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] base package - validates UI matches Stripe prices
+
+=== STRIPE VALIDATION TESTS ===
+
+[1A[2KSetting up test coupons...
+
+[1A[2K[chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:98:7 › Step 14: Payment Flow E2E › complete payment flow from Step 13 to thank-you page
+✓ Coupon E2E_TEST_10_w0 already exists
+
+[1A[2K✓ Coupon E2E_TEST_20_w0 already exists
+
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:104:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] base package - validates UI matches Stripe prices
+✓ Coupon E2E_TEST_10_w3 already exists
+
+[1A[2K[chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:98:7 › Step 14: Payment Flow E2E › complete payment flow from Step 13 to thank-you page
+✓ Coupon E2E_TEST_50_3MO_w0 already exists
+
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:104:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] base package - validates UI matches Stripe prices
+✓ Coupon E2E_TEST_20_w3 already exists
+
+[1A[2K[chromium] › src/__tests__/e2e/step12-ui-restoration.spec.ts:22:7 › Step 12 - File Upload Persistence Bug › should show uploaded files in UI when navigating back to Step 12
+✅ Real test session created
+
+[1A[2K   Session ID: dee060a9-039d-4d3a-9381-2b906decf11c
+
+[1A[2K   Submission ID: 3dc43574-add0-4ceb-9191-ac439f225bfc
+
+[1A[2K   Current Step: 14 (can navigate to any previous step)
+
+[1A[2K
+📍 STEP 2: Navigating to Step 12...
+
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:104:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] base package - validates UI matches Stripe prices
+✓ Coupon E2E_TEST_50_3MO_w3 already exists
+
+[1A[2K[chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:98:7 › Step 14: Payment Flow E2E › complete payment flow from Step 13 to thank-you page
+✓ Stripe test mode connected
+
+[1A[2K✓ Base package price: [33m3500[39m cents (€35)
+
+[1A[2K✓ Language add-on price: [33m7500[39m cents (€75)
+
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:104:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] base package - validates UI matches Stripe prices
+✓ Stripe connected
+
+[1A[2K✓ Base price: €35
+
+[1A[2K✓ Add-on price: €75
+
+[1A[2K
+
+[1A[2KTesting with Stripe base price: [33m3500[39m cents (€35)
+
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+  Found 4 comboboxes on the page
+
+[1A[2K  ✓ businessName: "Innovativa Tech Solutions"
+
+[1A[2K  ✓ industry: "technology-and-it-services"
+
+[1A[2K  ✓ vatNumber: "IT12345678901"
+
+[1A[2K  ✓ businessPhone: "320 123 4567"
+
+[1A[2K  ✓ businessEmail: "info@innovativa-tech.com"
+
+[1A[2K  ✓ businessStreet: "Via Giuseppe Mazzini 142"
+
+[1A[2K  ✓ businessCity: "Milano"
+
+[1A[2K  ✓ businessPostalCode: "20123"
+
+[1A[2K  ✓ businessProvince: "BG"
+
+[1A[2K  ✓ businessCountry: "Italy"
+
+[1A[2K  Country dropdown value: "Italy"
+
+[1A[2K[chromium] › src/__tests__/e2e/step12-ui-restoration.spec.ts:22:7 › Step 12 - File Upload Persistence Bug › should show uploaded files in UI when navigating back to Step 12
+
+📍 STEP 3: Verifying navigation to Step 12...
+
+[1A[2K✅ Successfully navigated to Step 12
+
+[1A[2K
+📤 STEP 4: Uploading logo...
+
+[1A[2K   Logo file path: /Users/Yoav/Projects/wb/wb-website/src/__tests__/fixtures/test-logo.png
+
+[Stripe] 2025-11-05 14:01:28   --> customer.created [evt_1SQ6L6L6744XdVfOhgDFoSPS]
+[Stripe] 2025-11-05 14:01:28   --> customer.created [evt_1SQ6L6L6744XdVfOkvAczJYH]
+[1A[2K✅ Logo uploaded and visible in UI
+
+[1A[2K
+📤 STEP 5: Uploading business photo...
+
+[1A[2K   Found 1 file inputs on page
+
+[1A[2K⚠️  Only one file input found, skipping business photo upload
+
+[1A[2K
+💾 STEP 6: Checking localStorage after upload...
+
+[1A[2K   localStorage contents:
+
+[1A[2K   - Logo: ✅ test-logo.png
+
+[1A[2K   - Photos: ❌ Empty
+
+[1A[2K   - Current Step: [33m14[39m
+
+[Stripe] 2025-11-05 14:01:29  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L6L6744XdVfOhgDFoSPS]
+[Stripe] 2025-11-05 14:01:29  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L6L6744XdVfOkvAczJYH]
+[Stripe] 2025-11-05 14:01:29   --> invoice.created [evt_1SQ6L7L6744XdVfOhqv5MbLN]
+[Stripe] 2025-11-05 14:01:29   --> subscription_schedule.created [evt_1SQ6L7L6744XdVfOT6E1qXxm]
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+✓ Step 3 completed successfully
+
+[Stripe] 2025-11-05 14:01:29   --> invoice.created [evt_1SQ6L7L6744XdVfOzKmBqSH2]
+[Stripe] 2025-11-05 14:01:29   --> customer.updated [evt_1SQ6L7L6744XdVfOSgJTHnZm]
+[Stripe] 2025-11-05 14:01:29  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L7L6744XdVfOhqv5MbLN]
+[Stripe] 2025-11-05 14:01:29  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L7L6744XdVfOT6E1qXxm]
+[Stripe] 2025-11-05 14:01:30   --> customer.subscription.created [evt_1SQ6L7L6744XdVfOCMHGrL6M]
+[Stripe] 2025-11-05 14:01:30   --> customer.subscription.created [evt_1SQ6L7L6744XdVfOuNcAeqyh]
+[Stripe] 2025-11-05 14:01:30  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L7L6744XdVfOSgJTHnZm]
+[Stripe] 2025-11-05 14:01:30  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L7L6744XdVfOzKmBqSH2]
+[Stripe] 2025-11-05 14:01:30  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L7L6744XdVfOCMHGrL6M]
+[Stripe] 2025-11-05 14:01:30   --> customer.updated [evt_1SQ6L7L6744XdVfOgAXuX6UI]
+[Stripe] 2025-11-05 14:01:30   --> customer.subscription.updated [evt_1SQ6L8L6744XdVfOxy2WLXtY]
+[Stripe] 2025-11-05 14:01:30  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L7L6744XdVfOuNcAeqyh]
+[Stripe] 2025-11-05 14:01:30   --> subscription_schedule.created [evt_1SQ6L7L6744XdVfOXVCYCDlU]
+[1A[2K[chromium] › src/__tests__/e2e/step12-ui-restoration.spec.ts:22:7 › Step 12 - File Upload Persistence Bug › should show uploaded files in UI when navigating back to Step 12
+
+➡️  STEP 7: Navigating to Step 13 (clicking Next)...
+
+[Stripe] 2025-11-05 14:01:31   --> customer.subscription.updated [evt_1SQ6L8L6744XdVfOAAoDCb2W]
+[Stripe] 2025-11-05 14:01:31  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L7L6744XdVfOgAXuX6UI]
+[Stripe] 2025-11-05 14:01:31  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L8L6744XdVfOxy2WLXtY]
+[Stripe] 2025-11-05 14:01:31  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L7L6744XdVfOXVCYCDlU]
+[1A[2K✅ Successfully navigated to Step 13
+
+[Stripe] 2025-11-05 14:01:31  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L8L6744XdVfOAAoDCb2W]
+[Stripe] 2025-11-05 14:01:31   --> invoice.updated [evt_1SQ6L9L6744XdVfOBRPi7D4E]
+[Stripe] 2025-11-05 14:01:32   --> invoice.updated [evt_1SQ6LAL6744XdVfOEbZIOJSe]
+[Stripe] 2025-11-05 14:01:32  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6L9L6744XdVfOBRPi7D4E]
+[Stripe] 2025-11-05 14:01:32  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LAL6744XdVfOEbZIOJSe]
+[1A[2K
+⬅️  STEP 8: Navigating back to Step 12 (clicking Previous)...
+
+[1A[2K   🔍 THIS IS THE CRITICAL TEST - Will the UI show the uploaded files?
+
+[1A[2K✅ Returned to Step 12
+
+[Stripe] 2025-11-05 14:01:33   --> payment_intent.created [evt_3SQ6LAL6744XdVfO0P8EHbOO]
+[Stripe] 2025-11-05 14:01:33  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6LAL6744XdVfO0P8EHbOO]
+[Stripe] 2025-11-05 14:01:33   --> invoice.updated [evt_1SQ6LBL6744XdVfORPzVr31n]
+[Stripe] 2025-11-05 14:01:34   --> payment_intent.created [evt_3SQ6LAL6744XdVfO0OqPZMDW]
+[Stripe] 2025-11-05 14:01:34   --> invoice.finalized [evt_1SQ6LBL6744XdVfO8zx63w1z]
+[Stripe] 2025-11-05 14:01:34  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LBL6744XdVfORPzVr31n]
+[Stripe] 2025-11-05 14:01:34  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6LAL6744XdVfO0OqPZMDW]
+[1A[2K
+🔍 STEP 9: Checking localStorage after returning to Step 12...
+
+[1A[2K   localStorage after return:
+
+[1A[2K   - Logo: ✅ test-logo.png
+
+[1A[2K   - Photos: ❌ Empty
+
+[1A[2K
+🔍 STEP 10: Verifying files are visible in UI...
+
+[1A[2K   ✅ Logo file visible: test-logo.png
+
+[1A[2K
+💾 STEP 11: Final localStorage verification...
+
+[1A[2K   localStorage contents after return:
+
+[1A[2K   - Logo: ✅ test-logo.png
+
+[1A[2K   - Photos: ❌ Empty
+
+[1A[2K   - Current Step: [33m14[39m
+
+[1A[2K
+🚨 STEP 12: Checking for error states in UI...
+
+[1A[2K   ✅ No error alerts in UI
+
+[1A[2K
+🎛️  STEP 13: Verifying file controls (X buttons to remove files) are visible...
+
+[1A[2K   Found 1 file list item(s) with remove button
+
+[1A[2K
+✅ No console errors detected
+
+[1A[2K
+================================================================================
+
+[1A[2K✅ TEST PASSED: Files persist in UI and localStorage after navigation
+
+[1A[2K================================================================================
+
+
+[Stripe] 2025-11-05 14:01:34   --> invoice.updated [evt_1SQ6LCL6744XdVfOX92TK29v]
+[Stripe] 2025-11-05 14:01:34   --> invoice.finalized [evt_1SQ6LCL6744XdVfOS6m8VfRp]
+[Stripe] 2025-11-05 14:01:35  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LBL6744XdVfO8zx63w1z]
+[Stripe] 2025-11-05 14:01:35  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LCL6744XdVfOX92TK29v]
+[Stripe] 2025-11-05 14:01:35  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LCL6744XdVfOS6m8VfRp]
+[1A[2K🧹 Test session cleaned up
+
+[Stripe] 2025-11-05 14:01:36   --> customer.created [evt_1SQ6LEL6744XdVfOYOd25oXx]
+[Stripe] 2025-11-05 14:01:36   --> customer.created [evt_1SQ6LEL6744XdVfOX9OVm9mJ]
+[Stripe] 2025-11-05 14:01:36   --> customer.created [evt_1SQ6LEL6744XdVfOBHREfW4s]
+[Stripe] 2025-11-05 14:01:36  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LEL6744XdVfOYOd25oXx]
+[Stripe] 2025-11-05 14:01:36  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LEL6744XdVfOX9OVm9mJ]
+[Stripe] 2025-11-05 14:01:36  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LEL6744XdVfOBHREfW4s]
+[Stripe] 2025-11-05 14:01:36   --> customer.created [evt_1SQ6LEL6744XdVfOpeZ7K0u4]
+[Stripe] 2025-11-05 14:01:37  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LEL6744XdVfOpeZ7K0u4]
+[Stripe] 2025-11-05 14:01:37   --> customer.deleted [evt_1SQ6LFL6744XdVfOVTshX7Ya]
+[Stripe] 2025-11-05 14:01:37   --> customer.deleted [evt_1SQ6LFL6744XdVfOq8dcPpGr]
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:104:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] base package - validates UI matches Stripe prices
+Validating UI prices...
+
+[1A[2K  UI Pay button amount: [33m3500[39m cents
+
+[Stripe] 2025-11-05 14:01:37   --> customer.deleted [evt_1SQ6LFL6744XdVfOL1ApKyHb]
+[1A[2K  UI recurring amount: [33m3500[39m cents
+
+[1A[2K✓ UI matches Stripe prices
+
+[Stripe] 2025-11-05 14:01:37  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LFL6744XdVfOVTshX7Ya]
+[Stripe] 2025-11-05 14:01:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LFL6744XdVfOq8dcPpGr]
+[Stripe] 2025-11-05 14:01:38   --> customer.deleted [evt_1SQ6LFL6744XdVfO35ZxTWJp]
+[Stripe] 2025-11-05 14:01:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LFL6744XdVfOL1ApKyHb]
+[Stripe] 2025-11-05 14:01:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LFL6744XdVfO35ZxTWJp]
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+  ✓ Step 6 Next button is enabled
+
+[1A[2K  📍 Clicked Step 6 Next button (attempt 1)
+
+[1A[2K  ✓ Successfully navigated to Step 7
+
+[1A[2K🔴 CRITICAL TEST: Testing Step 7 optional websiteReferences behavior
+
+[1A[2K📍 Next button enabled WITHOUT website references: true
+
+[1A[2K✓ BUG FIX CONFIRMED: Step 7 correctly allows progression without website references!
+
+[1A[2K📝 Found 1 URL input fields, filling some for comprehensive testing...
+
+[1A[2K⏳ Validating Step 7 optional behavior - Next button should be enabled...
+
+[1A[2K✓ Step 7 validation passed - Next button enabled without website references!
+
+[1A[2K  Found 6 design style cards
+
+[Stripe] 2025-11-05 14:01:44   --> invoice_payment.paid [evt_1SQ6LML6744XdVfOzbS4aCMw]
+[Stripe] 2025-11-05 14:01:45  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LML6744XdVfOzbS4aCMw]
+[Stripe] 2025-11-05 14:01:45   --> charge.succeeded [evt_3SQ6LAL6744XdVfO089w1amc]
+[Stripe] 2025-11-05 14:01:45   --> payment_intent.succeeded [evt_3SQ6LAL6744XdVfO0YzBsFA7]
+[Stripe] 2025-11-05 14:01:45   --> invoice.updated [evt_1SQ6LNL6744XdVfOG5rs0raj]
+[1A[2K  ✓ Step 8 Next button is enabled
+
+[1A[2K  Next button disabled state: false
+
+[Stripe] 2025-11-05 14:01:46   --> invoice.paid [evt_1SQ6LNL6744XdVfOPidRceZz]
+[Stripe] 2025-11-05 14:01:46  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6LAL6744XdVfO089w1amc]
+[Stripe] 2025-11-05 14:01:46   --> invoice.payment_succeeded [evt_1SQ6LOL6744XdVfO4tWRthAT]
+[Stripe] 2025-11-05 14:01:46  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6LAL6744XdVfO0YzBsFA7]
+[Stripe] 2025-11-05 14:01:46  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LNL6744XdVfOG5rs0raj]
+[Stripe] 2025-11-05 14:01:46  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LNL6744XdVfOPidRceZz]
+[Stripe] 2025-11-05 14:01:47  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LOL6744XdVfO4tWRthAT]
+[Stripe] 2025-11-05 14:01:47   --> invoice_payment.paid [evt_1SQ6LPL6744XdVfOMyp0vWec]
+[Stripe] 2025-11-05 14:01:48  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LPL6744XdVfOMyp0vWec]
+[Stripe] 2025-11-05 14:01:48   --> payment_intent.succeeded [evt_3SQ6LAL6744XdVfO0nQqOzVR]
+[Stripe] 2025-11-05 14:01:48   --> charge.succeeded [evt_3SQ6LAL6744XdVfO06M3h32u]
+[Stripe] 2025-11-05 14:01:48   --> invoice.updated [evt_1SQ6LQL6744XdVfOiH3LhmvQ]
+[Stripe] 2025-11-05 14:01:49  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6LAL6744XdVfO0nQqOzVR]
+[Stripe] 2025-11-05 14:01:49   --> invoice.paid [evt_1SQ6LQL6744XdVfOFqmEu4v2]
+[Stripe] 2025-11-05 14:01:49  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6LAL6744XdVfO06M3h32u]
+[Stripe] 2025-11-05 14:01:49   --> invoice.payment_succeeded [evt_1SQ6LRL6744XdVfOKtPbNZlW]
+[1A[2K  Found 6 image style cards
+
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:104:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] base package - validates UI matches Stripe prices
+Validating database...
+
+[1A[2K✓ Database correct
+
+[1A[2KValidating Stripe objects...
+
+[1A[2K[StripeValidation] checking subscription sub_1SQ6L6L6744XdVfOnyXv87kX
+
+[Stripe] 2025-11-05 14:01:55  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LQL6744XdVfOiH3LhmvQ]
+[Stripe] 2025-11-05 14:01:55  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LQL6744XdVfOFqmEu4v2]
+[1A[2K[StripeValidation] checking schedule sub_sched_1SQ6L6L6744XdVfOZlHqipLP
+
+[Stripe] 2025-11-05 14:01:55  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LRL6744XdVfOKtPbNZlW]
+[1A[2K✓ Payment Intent amount matches UI
+
+[1A[2K✓ Subscription has NO discount
+
+[1A[2K✓ Schedule has NO discount in phase
+
+[1A[2K✓ Future invoices will charge €35
+
+[1A[2K
+
+[1A[2K=== TEST PASSED: User paid exactly what they saw ===
+
+
+
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+  Found 49 color palette cards
+
+
+[1A[2K  1) [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:98:7 › Step 14: Payment Flow E2E › complete payment flow from Step 13 to thank-you page 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeTruthy[2m()[22m
+
+    Received: [31mnull[39m
+
+      162 |       expect(submissions).toBeTruthy()
+      163 |       expect(submissions.status).toBe('paid')
+    > 164 |       expect(submissions.stripe_subscription_id).toBeTruthy()
+          |                                                  ^
+      165 |       expect(submissions.payment_completed_at).toBeTruthy()
+      166 |
+      167 |     } finally {
+        at /Users/Yoav/Projects/wb/wb-website/src/__tests__/e2e/step14-payment-flow.spec.ts:164:50
+
+    Error Context: test-results/step14-payment-flow-Step-1-1f290-m-Step-13-to-thank-you-page-chromium/error-context.md
+
+
+[1A[2K[62/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:175:7 › Step 14: Payment Flow E2E › payment flow with language add-ons
+[1A[2K[63/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:260:7 › Step 14: Payment Flow E2E › payment failure handling
+[1A[2K[64/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:312:7 › Step 14: Payment Flow E2E › discount with language add-ons keeps UI total in sync with Stripe
+[1A[2K[65/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:386:7 › Step 14: Payment Flow E2E › 100% discount completes without requiring card entry
+[1A[2K[66/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:454:7 › Step 14: Payment Flow E2E › discount code validation - valid code
+[1A[2K[67/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:523:7 › Step 14: Payment Flow E2E › discount code validation - invalid code
+[1A[2K[68/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:577:7 › Step 14: Payment Flow E2E › discount code validation - empty code
+[1A[2K[69/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:619:7 › Step 14: Payment Flow E2E › discount code applied with payment completion
+[1A[2K[70/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:678:7 › Step 14: Payment Flow E2E › comprehensive database validation after payment
+[1A[2K[71/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:805:7 › Step 14: Payment Flow E2E › database validation - discount code metadata persisted
+[1A[2K[72/73] [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:878:7 › Step 14: Payment Flow E2E › database validation - subscription schedule dates
+[1A[2K[73/73] [chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:188:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] 20% forever discount - validates discount in Stripe
+[Stripe] 2025-11-05 14:02:00   --> customer.created [evt_1SQ6LcL6744XdVfOfAYYT6yw]
+[Stripe] 2025-11-05 14:02:00  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LcL6744XdVfOfAYYT6yw]
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:188:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] 20% forever discount - validates discount in Stripe
+[StripeService] Preview with discount: {
+  couponId: [32m'E2E_TEST_20_w3'[39m,
+  originalAmount: [33m3500[39m,
+  subscriptionDiscount: [33m700[39m,
+  subscriptionAmount: [33m2800[39m,
+  hasDiscountAmounts: [33mtrue[39m
+}
+
+[1A[2KBase price: [33m3500[39m cents (€35)
+
+[1A[2KStripe preview total with 20% discount: [33m2800[39m cents (€28)
+
+[Stripe] 2025-11-05 14:02:01   --> customer.deleted [evt_1SQ6LdL6744XdVfO4eMBR7lA]
+[Stripe] 2025-11-05 14:02:02  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LdL6744XdVfO4eMBR7lA]
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+Found 7 checkbox labels
+
+[1A[2K  Label 0: "About Us" (for=about), state=unchecked
+
+[1A[2K  Label 1: "Contact" (for=contact), state=unchecked
+
+[1A[2K  Label 2: "Events" (for=events), state=unchecked
+
+[1A[2K🎯 CRITICAL: Selecting primary goal for Step 11 validation...
+
+[Stripe] 2025-11-05 14:02:05   --> customer.created [evt_1SQ6LhL6744XdVfOBqLAe3Ys]
+[Stripe] 2025-11-05 14:02:06  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LhL6744XdVfOBqLAe3Ys]
+[Stripe] 2025-11-05 14:02:06   --> invoice.created [evt_1SQ6LiL6744XdVfODza1JiaW]
+[Stripe] 2025-11-05 14:02:07   --> subscription_schedule.created [evt_1SQ6LiL6744XdVfOH4SelImw]
+[Stripe] 2025-11-05 14:02:07   --> customer.subscription.created [evt_1SQ6LjL6744XdVfOc6pbIUxO]
+[Stripe] 2025-11-05 14:02:07   --> customer.updated [evt_1SQ6LjL6744XdVfOEAjWybU6]
+[Stripe] 2025-11-05 14:02:07  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LiL6744XdVfODza1JiaW]
+[Stripe] 2025-11-05 14:02:07  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LiL6744XdVfOH4SelImw]
+[Stripe] 2025-11-05 14:02:07  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LjL6744XdVfOc6pbIUxO]
+[Stripe] 2025-11-05 14:02:07  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LjL6744XdVfOEAjWybU6]
+[Stripe] 2025-11-05 14:02:08   --> customer.subscription.updated [evt_1SQ6LkL6744XdVfOHEbr5tpw]
+[Stripe] 2025-11-05 14:02:09  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LkL6744XdVfOHEbr5tpw]
+[Stripe] 2025-11-05 14:02:09   --> invoice.updated [evt_1SQ6LlL6744XdVfOdoxciqZd]
+[Stripe] 2025-11-05 14:02:09  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LlL6744XdVfOdoxciqZd]
+[Stripe] 2025-11-05 14:02:11   --> payment_intent.created [evt_3SQ6LmL6744XdVfO1gAp2peE]
+[1A[2K✓ Step 11 Next button is enabled, clicking...
+
+[Stripe] 2025-11-05 14:02:11  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6LmL6744XdVfO1gAp2peE]
+[Stripe] 2025-11-05 14:02:11   --> invoice.updated [evt_1SQ6LnL6744XdVfO9Cbsguqx]
+[Stripe] 2025-11-05 14:02:12   --> invoice.finalized [evt_1SQ6LnL6744XdVfO1XlMmuIH]
+[Stripe] 2025-11-05 14:02:12  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LnL6744XdVfO9Cbsguqx]
+[Stripe] 2025-11-05 14:02:12  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LnL6744XdVfO1XlMmuIH]
+[Stripe] 2025-11-05 14:02:13   --> customer.created [evt_1SQ6LoL6744XdVfOIThxjtl2]
+[Stripe] 2025-11-05 14:02:13  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LoL6744XdVfOIThxjtl2]
+[Stripe] 2025-11-05 14:02:14   --> customer.created [evt_1SQ6LpL6744XdVfOdkfGXe6H]
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:188:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] 20% forever discount - validates discount in Stripe
+Applying E2E_TEST_20_w3 discount code...
+
+[Stripe] 2025-11-05 14:02:14   --> customer.deleted [evt_1SQ6LqL6744XdVfO80a77e16]
+[Stripe] 2025-11-05 14:02:15  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LpL6744XdVfOdkfGXe6H]
+[Stripe] 2025-11-05 14:02:15   --> customer.deleted [evt_1SQ6LqL6744XdVfO0P95Wgx0]
+[Stripe] 2025-11-05 14:02:15  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LqL6744XdVfO80a77e16]
+[Stripe] 2025-11-05 14:02:16  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LqL6744XdVfO0P95Wgx0]
+[Stripe] 2025-11-05 14:02:18   --> customer.created [evt_1SQ6LuL6744XdVfOSPz4Og9F]
+[Stripe] 2025-11-05 14:02:18  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LuL6744XdVfOSPz4Og9F]
+[Stripe] 2025-11-05 14:02:19   --> customer.deleted [evt_1SQ6LvL6744XdVfOv5LXsro8]
+[1A[2KUI Pay button: [33m2800[39m cents
+
+[1A[2KUI recurring: [33m2800[39m cents
+
+[1A[2K✓ UI shows discounted amounts
+
+[Stripe] 2025-11-05 14:02:20  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LvL6744XdVfOv5LXsro8]
+
+[Stripe] 2025-11-05 14:02:21   --> subscription_schedule.canceled [evt_1SQ6LxL6744XdVfOaSVTRSXN]
+[Stripe] 2025-11-05 14:02:21   --> customer.subscription.deleted [evt_1SQ6LxL6744XdVfOO8zOoC1o]
+
+[Stripe] 2025-11-05 14:02:21  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LxL6744XdVfOaSVTRSXN]
+[Stripe] 2025-11-05 14:02:21   --> customer.created [evt_1SQ6LxL6744XdVfO9VDuOjtQ]
+[Stripe] 2025-11-05 14:02:21  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LxL6744XdVfOO8zOoC1o]
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+🖼️ Uploaded logo file: test-logo.png
+
+[1A[2KFound 1 file input(s) on Step 12
+
+[1A[2K⚠️  Second file input not found on Step 12
+
+[Stripe] 2025-11-05 14:02:22  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LxL6744XdVfO9VDuOjtQ]
+[Stripe] 2025-11-05 14:02:23   --> customer.deleted [evt_1SQ6LzL6744XdVfOnnXkgmCq]
+[Stripe] 2025-11-05 14:02:23  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LzL6744XdVfOnnXkgmCq]
+[Stripe] 2025-11-05 14:02:23   --> invoice.updated [evt_1SQ6LzL6744XdVfOJ2tGmVAt]
+[Stripe] 2025-11-05 14:02:24  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6LzL6744XdVfOJ2tGmVAt]
+[Stripe] 2025-11-05 14:02:24   --> invoice.created [evt_1SQ6M0L6744XdVfOtlhztfTq]
+[Stripe] 2025-11-05 14:02:24   --> subscription_schedule.created [evt_1SQ6M0L6744XdVfOtOCbHXbb]
+[Stripe] 2025-11-05 14:02:24  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M0L6744XdVfOtlhztfTq]
+[Stripe] 2025-11-05 14:02:24   --> customer.discount.created [evt_1SQ6M0L6744XdVfO92yS0SBL]
+[Stripe] 2025-11-05 14:02:24   --> customer.subscription.created [evt_1SQ6M0L6744XdVfO2hJ4uQOB]
+[Stripe] 2025-11-05 14:02:24  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M0L6744XdVfOtOCbHXbb]
+[Stripe] 2025-11-05 14:02:25  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M0L6744XdVfO92yS0SBL]
+[Stripe] 2025-11-05 14:02:25  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M0L6744XdVfO2hJ4uQOB]
+[Stripe] 2025-11-05 14:02:25   --> customer.subscription.updated [evt_1SQ6M1L6744XdVfOTrAbXgd1]
+[Stripe] 2025-11-05 14:02:26  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M1L6744XdVfOTrAbXgd1]
+[Stripe] 2025-11-05 14:02:27   --> invoice.updated [evt_1SQ6M3L6744XdVfOiFRPtnto]
+[Stripe] 2025-11-05 14:02:28  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M3L6744XdVfOiFRPtnto]
+[Stripe] 2025-11-05 14:02:29   --> payment_intent.created [evt_3SQ6M4L6744XdVfO05gZZaik]
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:188:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] 20% forever discount - validates discount in Stripe
+Checkout debug invoice: {
+  invoiceId: [32m'in_1SQ6LzL6744XdVfOONcZHzrg'[39m,
+  total: [33m2800[39m,
+  totalDiscount: [33m700[39m
+}
+
+[1A[2KCheckout session payload: {
+  paymentRequired: [33mtrue[39m,
+  clientSecret: [32m'pi_3SQ6M4L6744XdVfO0o5NAYyY_secret_39Uy09iAZ9whk5KyrTG2f0aSC'[39m,
+  invoiceId: [32m'in_1SQ6LzL6744XdVfOONcZHzrg'[39m,
+  sessionId: [32m'in_1SQ6LzL6744XdVfOONcZHzrg'[39m,
+  customerId: [32m'cus_TMq1gPLvhE9GkS'[39m,
+  subscriptionId: [32m'sub_1SQ6LzL6744XdVfO2adalsvm'[39m,
+  invoiceTotal: [33m2800[39m,
+  invoiceDiscount: [33m700[39m,
+  couponId: [32m'E2E_TEST_20_w3'[39m,
+  requestedDiscountCode: [32m'E2E_TEST_20_w3'[39m,
+  debugInvoice: {
+    invoiceId: [32m'in_1SQ6LzL6744XdVfOONcZHzrg'[39m,
+    total: [33m2800[39m,
+    totalDiscount: [33m700[39m
+  }
+}
+
+[1A[2KDiscount meta: {
+  code: [32m'E2E_TEST_20_w3'[39m,
+  couponId: [32m'E2E_TEST_20_w3'[39m,
+  promotionCodeId: [90mundefined[39m,
+  enteredCode: [32m'E2E_TEST_20_w3'[39m,
+  duration: [32m'forever'[39m,
+  durationInMonths: [1mnull[22m,
+  preview: {
+    subtotal: [33m3500[39m,
+    discountAmount: [33m700[39m,
+    total: [33m2800[39m,
+    recurringAmount: [33m2800[39m,
+    recurringDiscount: [33m700[39m,
+    lineItems: [ [36m[Object][39m ]
+  }
+}
+
+[1A[2KRefresh payloads: [
+  { languages: [], discountCode: [1mnull[22m },
+  { languages: [], discountCode: [32m'E2E_TEST_20_w3'[39m }
+]
+
+[Stripe] 2025-11-05 14:02:29   --> invoice.updated [evt_1SQ6M5L6744XdVfOOy3Uk9Hk]
+[Stripe] 2025-11-05 14:02:30  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6M4L6744XdVfO05gZZaik]
+[Stripe] 2025-11-05 14:02:30   --> invoice.finalized [evt_1SQ6M5L6744XdVfO2Ya1gY5O]
+[Stripe] 2025-11-05 14:02:30  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M5L6744XdVfOOy3Uk9Hk]
+[Stripe] 2025-11-05 14:02:30  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M5L6744XdVfO2Ya1gY5O]
+[Stripe] 2025-11-05 14:02:31   --> invoice.created [evt_1SQ6M7L6744XdVfOs5w3ngnL]
+[Stripe] 2025-11-05 14:02:31   --> subscription_schedule.created [evt_1SQ6M7L6744XdVfOhjs3q31K]
+[1A[2K[chromium] › src/__tests__/e2e/onboarding-flow-complete.spec.ts:204:7 › Complete Onboarding Flow › completes the entire onboarding flow with all data validation
+⚠️ Checkout error detected: Get Started - WhiteBoar
+
+[1A[2K⚠️ Stripe payment form not found
+
+[1A[2K📍 Validating submission was created at Step 13→14
+
+[1A[2K✅ Reached Step 14 (Checkout)! Final URL: http://localhost:3783/onboarding/step/14
+
+[1A[2K📊 Starting comprehensive database validation...
+
+[Stripe] 2025-11-05 14:02:31   --> customer.subscription.created [evt_1SQ6M7L6744XdVfOD3Px0igX]
+[Stripe] 2025-11-05 14:02:31  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M7L6744XdVfOs5w3ngnL]
+[Stripe] 2025-11-05 14:02:31  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M7L6744XdVfOhjs3q31K]
+[Stripe] 2025-11-05 14:02:31   --> customer.created [evt_1SQ6M7L6744XdVfOubu3Snfa]
+[Stripe] 2025-11-05 14:02:31  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M7L6744XdVfOD3Px0igX]
+[Stripe] 2025-11-05 14:02:31  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M7L6744XdVfOubu3Snfa]
+[Stripe] 2025-11-05 14:02:32   --> customer.created [evt_1SQ6M7L6744XdVfO6OTdwT3S]
+[Stripe] 2025-11-05 14:02:32  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M7L6744XdVfO6OTdwT3S]
+[Stripe] 2025-11-05 14:02:32   --> customer.subscription.updated [evt_1SQ6M8L6744XdVfOPCwVvvbJ]
+[Stripe] 2025-11-05 14:02:32   --> customer.deleted [evt_1SQ6M8L6744XdVfOjZZpLEkV]
+[Stripe] 2025-11-05 14:02:33  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M8L6744XdVfOPCwVvvbJ]
+[Stripe] 2025-11-05 14:02:33  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M8L6744XdVfOjZZpLEkV]
+[Stripe] 2025-11-05 14:02:33   --> customer.deleted [evt_1SQ6M9L6744XdVfOvL1zrNQm]
+[Stripe] 2025-11-05 14:02:33  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M9L6744XdVfOvL1zrNQm]
+[Stripe] 2025-11-05 14:02:33   --> invoice.updated [evt_1SQ6M9L6744XdVfO4RakYL2j]
+[Stripe] 2025-11-05 14:02:34  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6M9L6744XdVfO4RakYL2j]
+[1A[2K🔍 Validating submission data...
+
+[1A[2K🔍 Querying submissions for email: marco.rossi.worker1.test@example.com
+
+[1A[2K📊 Query result: Found 1 submissions
+
+[1A[2K✅ Submission found: ID=61405764-3b95-4f8b-b7ac-d5b15cf46e89, Status=submitted
+
+[1A[2K📝 Validating comprehensive form data from JSONB column...
+
+[1A[2K✓ Personal information validation passed
+
+[1A[2K✓ Email verification validation passed
+
+[1A[2K✓ Business details validation passed
+
+[1A[2K✓ Optional VAT number validation passed
+
+[1A[2K✓ Address information validation passed
+
+[1A[2K✓ Business description validation passed
+
+[1A[2K✓ Optional competitor data validation passed
+
+[1A[2K✓ Customer profile validation passed
+
+[1A[2K✓ Customer needs validation passed
+
+[1A[2K🔴 CRITICAL BUG FIX TEST: websiteReferences = []
+
+[1A[2K✓ STEP 7 BUG FIX CONFIRMED: websiteReferences stored as array (optional field working)
+
+[1A[2K✓ Design choices validation passed
+
+[1A[2K✓ Website structure validation passed
+
+[1A[2Kℹ️  Business photos not uploaded (only 1 file input found on Step 12)
+
+[1A[2K✓ Business assets validation passed
+
+[1A[2Kℹ️  No additional languages selected (optional field)
+
+[1A[2K✓ Step 13 language add-ons validation passed
+
+[1A[2K✓ Step 14 payment form data validation passed
+
+[1A[2Kℹ️  Stripe payment columns (populated after payment completion):
+
+[1A[2K   - stripe_customer_id: (not set yet)
+
+[1A[2K   - stripe_subscription_id: (not set yet)
+
+[1A[2K   - stripe_subscription_schedule_id: (not set yet)
+
+[1A[2K   - payment_amount: (not set yet)
+
+[1A[2K   - currency: EUR
+
+[1A[2K   - discount_code: (none)
+
+[1A[2K   - payment_completed_at: (not completed yet)
+
+[1A[2K✓ Step 14 Stripe payment columns validation passed (fields exist, payment pending)
+
+[1A[2K🎉 COMPREHENSIVE DATABASE VALIDATION COMPLETED!
+
+[1A[2K
+📋 Final Test Summary:
+
+[1A[2K  ✅ All 14 steps completed successfully (including Steps 13-14)
+
+[1A[2K  ✅ All required fields validated and stored correctly
+
+[1A[2K  ✅ All optional fields tested (some filled, some empty)
+
+[1A[2K  ✅ Step 7 websiteReferences confirmed optional (CRITICAL BUG FIX)
+
+[1A[2K  ✅ Step 14 Stripe payment form loads without errors
+
+[1A[2K  ✅ Database contains all expected data in correct JSONB structure
+
+[1A[2K  ✅ Test runs without forced navigation or workarounds
+
+[1A[2KCleaned up test data for marco.rossi.worker1.test@example.com
+
+[Stripe] 2025-11-05 14:02:35   --> payment_intent.created [evt_3SQ6MAL6744XdVfO0xTDRYws]
+[Stripe] 2025-11-05 14:02:35  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6MAL6744XdVfO0xTDRYws]
+[Stripe] 2025-11-05 14:02:35   --> invoice.updated [evt_1SQ6MBL6744XdVfOnKSgSNsC]
+[1A[2KCleaned up test data for marco.rossi.worker1.test@example.com
+
+[Stripe] 2025-11-05 14:02:36  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MBL6744XdVfOnKSgSNsC]
+[Stripe] 2025-11-05 14:02:36   --> customer.created [evt_1SQ6MCL6744XdVfOyO4ub4a1]
+[Stripe] 2025-11-05 14:02:36   --> invoice.finalized [evt_1SQ6MBL6744XdVfOT4AdvTZb]
+[Stripe] 2025-11-05 14:02:36   --> customer.created [evt_1SQ6MCL6744XdVfOuDXX6Vt6]
+[Stripe] 2025-11-05 14:02:36   --> invoice_payment.paid [evt_1SQ6MCL6744XdVfOh8buo3ou]
+[Stripe] 2025-11-05 14:02:36  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MCL6744XdVfOyO4ub4a1]
+[Stripe] 2025-11-05 14:02:36  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MBL6744XdVfOT4AdvTZb]
+[Stripe] 2025-11-05 14:02:37   --> payment_intent.succeeded [evt_3SQ6M4L6744XdVfO09I3DXHZ]
+[Stripe] 2025-11-05 14:02:37  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MCL6744XdVfOuDXX6Vt6]
+[Stripe] 2025-11-05 14:02:37  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MCL6744XdVfOh8buo3ou]
+[Stripe] 2025-11-05 14:02:37   --> charge.succeeded [evt_3SQ6M4L6744XdVfO0sV50hHB]
+[Stripe] 2025-11-05 14:02:37   --> customer.deleted [evt_1SQ6MDL6744XdVfO1j8uJg16]
+[Stripe] 2025-11-05 14:02:38   --> customer.deleted [evt_1SQ6MDL6744XdVfO3ZStYFal]
+[Stripe] 2025-11-05 14:02:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6M4L6744XdVfO09I3DXHZ]
+[Stripe] 2025-11-05 14:02:38   --> invoice.updated [evt_1SQ6MEL6744XdVfOjU1ZcxB2]
+[Stripe] 2025-11-05 14:02:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_3SQ6M4L6744XdVfO0sV50hHB]
+[Stripe] 2025-11-05 14:02:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MDL6744XdVfO1j8uJg16]
+[Stripe] 2025-11-05 14:02:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MDL6744XdVfO3ZStYFal]
+[Stripe] 2025-11-05 14:02:38   --> invoice.paid [evt_1SQ6MEL6744XdVfOoLPJ2kir]
+[Stripe] 2025-11-05 14:02:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MEL6744XdVfOjU1ZcxB2]
+[Stripe] 2025-11-05 14:02:38   --> invoice.payment_succeeded [evt_1SQ6MEL6744XdVfO03fhlQpB]
+[1A[2K[chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:188:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] 20% forever discount - validates discount in Stripe
+Validating database...
+
+[Stripe] 2025-11-05 14:02:38  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MEL6744XdVfOoLPJ2kir]
+[Stripe] 2025-11-05 14:02:39  <--  [200] POST http://localhost:3783/api/stripe/webhook [evt_1SQ6MEL6744XdVfO03fhlQpB]
+[1A[2K✓ Database records discount code
+
+[1A[2KValidating Stripe objects...
+
+[1A[2K  2) [chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:188:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] 20% forever discount - validates discount in Stripe 
+
+    Error: Stripe: Argument "intent" must be a string, but got: null (on API request to `GET /v1/payment_intents/{intent}`)
+
+       at helpers/stripe-validation.ts:30
+
+      28 | ) {
+      29 |   // 1. VALIDATE PAYMENT INTENT
+    > 30 |   const paymentIntent = await stripe.paymentIntents.retrieve(
+         |                                                     ^
+      31 |     submission.stripe_payment_id
+      32 |   )
+      33 |   expect(paymentIntent.status).toBe('succeeded')
+        at /Users/Yoav/Projects/wb/wb-website/node_modules/.pnpm/stripe@19.1.0_@types+node@22.18.6/node_modules/stripe/cjs/StripeResource.js:101:23
+        at Constructor._getRequestOpts (/Users/Yoav/Projects/wb/wb-website/node_modules/.pnpm/stripe@19.1.0_@types+node@22.18.6/node_modules/stripe/cjs/StripeResource.js:98:35)
+        at /Users/Yoav/Projects/wb/wb-website/node_modules/.pnpm/stripe@19.1.0_@types+node@22.18.6/node_modules/stripe/cjs/StripeResource.js:146:29
+        at Constructor._makeRequest (/Users/Yoav/Projects/wb/wb-website/node_modules/.pnpm/stripe@19.1.0_@types+node@22.18.6/node_modules/stripe/cjs/StripeResource.js:142:16)
+        at Constructor.retrieve (/Users/Yoav/Projects/wb/wb-website/node_modules/.pnpm/stripe@19.1.0_@types+node@22.18.6/node_modules/stripe/cjs/StripeMethod.js:31:83)
+        at validateStripePaymentComplete (/Users/Yoav/Projects/wb/wb-website/src/__tests__/e2e/helpers/stripe-validation.ts:30:53)
+        at /Users/Yoav/Projects/wb/wb-website/src/__tests__/e2e/step14-stripe-validation.spec.ts:292:42
+
+    Error Context: test-results/step14-stripe-validation-S-339ed-alidates-discount-in-Stripe-chromium/error-context.md
+
+
+🛑 Stopping global Stripe webhook listener...
+[1A[2K  2 failed
+    [chromium] › src/__tests__/e2e/step14-payment-flow.spec.ts:98:7 › Step 14: Payment Flow E2E › complete payment flow from Step 13 to thank-you page 
+    [chromium] › src/__tests__/e2e/step14-stripe-validation.spec.ts:188:7 › Step 14: Stripe Validation (Comprehensive) › [COMPREHENSIVE] 20% forever discount - validates discount in Stripe 
+  11 did not run
+  60 passed (2.8m)
+ ELIFECYCLE  Command failed with exit code 1.

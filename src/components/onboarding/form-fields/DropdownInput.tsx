@@ -285,7 +285,7 @@ export const DropdownInput = forwardRef<HTMLButtonElement, DropdownInputProps>(
             </Button>
           </PopoverTrigger>
           
-          <PopoverContent className="w-full p-0" align="start">
+          <PopoverContent className="w-full p-1" align="start">
             <Command>
               {searchable && (
                 <CommandInput
