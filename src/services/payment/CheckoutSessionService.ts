@@ -610,9 +610,9 @@ export class CheckoutSessionService {
 
     // Finalize the invoice to create the Payment Intent with discounts automatically applied
     // NOTE: In Stripe API v2025-09-30.clover+, payment_intent is no longer directly on invoice
-    // Instead, it's nested in payments array: invoice.payments.data[0].payment_intent
+    // Instead, it's nested in payments array: invoice.payments.data[0].payment.payment_intent
     const finalizedInvoice = await stripe.invoices.finalizeInvoice(invoiceId, {
-      expand: ['confirmation_secret', 'payments.data.payment_intent', 'total_discount_amounts']
+      expand: ['confirmation_secret', 'payments', 'total_discount_amounts']
     })
 
     console.log('[CheckoutSessionService] finalized invoice', {
@@ -623,7 +623,7 @@ export class CheckoutSessionService {
       discountAmounts: finalizedInvoice.total_discount_amounts,
       couponId,
       paymentsCount: (finalizedInvoice as any).payments?.data?.length || 0,
-      firstPaymentIntentId: (finalizedInvoice as any).payments?.data?.[0]?.payment_intent
+      firstPaymentIntentId: (finalizedInvoice as any).payments?.data?.[0]?.payment?.payment_intent
     })
 
     // Handle zero-amount invoices (discount >= total)
@@ -642,9 +642,9 @@ export class CheckoutSessionService {
     }
 
     // Extract PaymentIntent ID from the payments array (Stripe API v2025-09-30.clover+)
-    // In newer Stripe APIs, payment_intent is nested in: invoice.payments.data[0].payment_intent
+    // In newer Stripe APIs, payment_intent is nested in: invoice.payments.data[0].payment.payment_intent
     const paymentsData = (finalizedInvoice as any).payments?.data
-    const firstPayment = paymentsData?.[0]
+    const firstPayment = paymentsData?.[0]?.payment
     const paymentIntentId = typeof firstPayment?.payment_intent === 'string'
       ? firstPayment.payment_intent
       : firstPayment?.payment_intent?.id
