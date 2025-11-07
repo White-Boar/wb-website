@@ -28,6 +28,16 @@ if (!process.env.RESEND_API_KEY && !process.env.RESEND_KEY && process.env.NODE_E
   console.error('ERROR: RESEND_API_KEY or RESEND_KEY environment variable is not set in production')
 }
 
+/**
+ * Sanitize a string for use as a Resend email tag value.
+ * Resend requires tags to only contain ASCII letters, numbers, underscores, or dashes.
+ */
+function sanitizeTagValue(value: string): string {
+  return value
+    .replace(/[^a-zA-Z0-9_-]/g, '_')
+    .substring(0, 256) // Resend has a 256 char limit per tag value
+}
+
 // =============================================================================
 // EMAIL SERVICE CLASS
 // =============================================================================
@@ -221,7 +231,7 @@ export class EmailService {
         text: textContent,
         tags: [
           { name: 'category', value: 'admin_notification' },
-          { name: 'business_name', value: formData.businessName }
+          { name: 'business_name', value: sanitizeTagValue(formData.businessName) }
         ]
       })
 
@@ -794,7 +804,7 @@ export class EmailService {
         text: textContent,
         tags: [
           { name: 'category', value: 'payment_notification' },
-          { name: 'business_name', value: businessName },
+          { name: 'business_name', value: sanitizeTagValue(businessName) },
           { name: 'amount', value: amount.toString() }
         ]
       })

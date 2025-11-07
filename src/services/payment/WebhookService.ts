@@ -549,7 +549,7 @@ export class WebhookService {
       const { error: analyticsError } = await supabase.from('onboarding_analytics').insert({
         session_id: submission.session_id,
         event_type: 'payment_succeeded',
-        event_data: {
+        metadata: {
           payment_intent_id: paymentIntentId,
           amount,
           currency
