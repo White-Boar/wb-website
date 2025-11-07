@@ -954,7 +954,7 @@ declare const messages: {
       },
       "14": {
         "title": "Payment",
-        "description": "Complete your subscription",
+        "description": "30-day money back guarantee",
         "heading": "Complete Your Order",
         "subtitle": "Secure checkout powered by Stripe",
         "orderSummary": "Order Summary",
