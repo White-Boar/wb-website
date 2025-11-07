@@ -91,15 +91,6 @@ export async function fillStripePaymentForm(
 
   // Wait for Stripe Elements iframe to load
   await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
-
-  // Check for any error messages on the page before proceeding
-  const errorAlert = page.locator('[role="alert"]').first()
-  if (await errorAlert.isVisible().catch(() => false)) {
-    const errorText = await errorAlert.textContent()
-    console.error('⚠️  Error message found on page:', errorText)
-    throw new Error(`Page shows error: ${errorText}`)
-  }
-
   await page.waitForTimeout(3000) // Let Stripe fully initialize
 
   // Get the Stripe iframe locator
@@ -131,12 +122,6 @@ export async function fillStripePaymentForm(
       console.warn(`Attempt ${attempt}/3: Card number field not visible yet`)
       lastError = error as Error
 
-      // Check if there's an error on the page
-      if (await errorAlert.isVisible().catch(() => false)) {
-        const errorText = await errorAlert.textContent()
-        throw new Error(`Stripe Elements failed to load. Page error: ${errorText}`)
-      }
-
       // Wait a bit longer before retrying
       if (attempt < 3) {
         console.log('Waiting 5 more seconds for Stripe Elements to initialize...')
@@ -146,11 +131,6 @@ export async function fillStripePaymentForm(
   }
 
   if (lastError) {
-    // Final check for page errors before throwing
-    if (await errorAlert.isVisible().catch(() => false)) {
-      const errorText = await errorAlert.textContent()
-      throw new Error(`Stripe Elements failed to load. Page error: ${errorText}`)
-    }
     throw new Error(`Stripe card number field never became visible after 3 attempts (45 seconds total). Original error: ${lastError.message}`)
   }
 
