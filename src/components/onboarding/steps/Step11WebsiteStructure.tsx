@@ -70,6 +70,7 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
 
   const selectedSections = watch('websiteSections') || []
   const primaryGoal = watch('primaryGoal')
+  const offeringType = watch('offeringType')
   const offerings = watch('offerings') || []
 
   const handleSectionChange = (sectionId: string, checked: boolean) => {
@@ -293,50 +294,59 @@ export function Step11WebsiteStructure({ form, errors, isLoading }: StepComponen
               <Controller
                 name="offeringType"
                 control={control}
-                render={({ field }) => (
-                  <div className="space-y-3">
-                    <Label className="text-sm font-medium">What do you offer?</Label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {[
-                        { value: 'products', label: 'Products', description: 'Physical or digital goods' },
-                        { value: 'services', label: 'Services', description: 'Consulting, support, maintenance' },
-                        { value: 'both', label: 'Both', description: 'Products and services' }
-                      ].map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          disabled={isLoading}
-                          onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            field.onChange(option.value)
-                          }}
-                          className={`flex flex-col items-center space-y-2 border rounded-lg p-3 transition-colors ${
-                            isLoading
-                              ? 'cursor-not-allowed opacity-50'
-                              : 'cursor-pointer hover:bg-muted/50'
-                          } ${
-                            field.value === option.value
-                              ? 'border-primary bg-primary/5'
-                              : 'border-muted'
-                          }`}
-                        >
-                          <div className={`w-4 h-4 rounded-full border-2 ${
-                            field.value === option.value
-                              ? 'border-primary bg-primary'
-                              : 'border-muted-foreground'
-                          }`}>
-                            {field.value === option.value && (
-                              <div className="w-full h-full rounded-full bg-white scale-50" />
-                            )}
-                          </div>
-                          <span className="font-medium pointer-events-none">{option.label}</span>
-                          <span className="text-xs text-muted-foreground text-center pointer-events-none">{option.description}</span>
-                        </button>
-                      ))}
+                render={({ field }) => {
+                  // Use both field.value and offeringType watch to ensure re-renders
+                  const currentValue = field.value || offeringType
+
+                  return (
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">What do you offer?</Label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {[
+                          { value: 'products', label: 'Products', description: 'Physical or digital goods' },
+                          { value: 'services', label: 'Services', description: 'Consulting, support, maintenance' },
+                          { value: 'both', label: 'Both', description: 'Products and services' }
+                        ].map((option) => {
+                          const isSelected = currentValue === option.value
+
+                          return (
+                            <button
+                              key={option.value}
+                              type="button"
+                              disabled={isLoading}
+                              onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                field.onChange(option.value)
+                              }}
+                              className={`flex flex-col items-center space-y-2 border rounded-lg p-3 transition-colors ${
+                                isLoading
+                                  ? 'cursor-not-allowed opacity-50'
+                                  : 'cursor-pointer hover:bg-muted/50'
+                              } ${
+                                isSelected
+                                  ? 'border-primary bg-primary/5'
+                                  : 'border-muted'
+                              }`}
+                            >
+                              <div className={`w-4 h-4 rounded-full border-2 ${
+                                isSelected
+                                  ? 'border-primary bg-primary'
+                                  : 'border-muted-foreground'
+                              }`}>
+                                {isSelected && (
+                                  <div className="w-full h-full rounded-full bg-white scale-50" />
+                                )}
+                              </div>
+                              <span className="font-medium pointer-events-none">{option.label}</span>
+                              <span className="text-xs text-muted-foreground text-center pointer-events-none">{option.description}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )
+                }}
               />
 
               <div className="bg-muted/50 rounded-lg p-4 space-y-2">
