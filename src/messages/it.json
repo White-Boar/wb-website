@@ -14,8 +14,8 @@
     }
   },
   "hero": {
-    "title": "La tua attività. Vendite globali. Tutto l'anno.",
-    "subtitle": "Vendi a clienti internazionali anche dopo le feste: un sito web multilingue che ti mantiene in contatto.",
+    "title": "La tua attività. Vendendo globalmente. Tutto l'anno.",
+    "subtitle": "Vendi a clienti internazionali anche dopo le festività: un sito web multilingue che ti mantiene in contatto.",
     "cta": "Inizia ora!"
   },
   "steps": {
@@ -40,11 +40,11 @@
     "title": "Servizi",
     "fast": {
       "name": "Veloce e Semplice",
-      "tagline": "Sito web personalizzato di una pagina",
+      "tagline": "Sito web personalizzato a pagina singola",
       "price": "€35 / mese",
       "feature1": "Branding personalizzato",
       "feature2": "Consegnato in 5 giorni lavorativi",
-      "feature3": "Multilingue: inglese e italiano inclusi (altri su richiesta)",
+      "feature3": "Multilingue: inglese e italiano inclusi (altre lingue su richiesta)",
       "feature4": "Visibilità sui motori di ricerca",
       "feature5": "Pacchetto di modifiche incluso",
       "feature6": "Hosting incluso (10k visite al mese)"
@@ -483,10 +483,9 @@
           }
         },
         "tips": {
-          "title": "Suggerimenti per risposte migliori:",
           "honest": "Sii onesto sui tuoi clienti reali, non su chi vorresti che fossero",
           "typical": "Pensa ai tuoi clienti più tipici, non alle eccezioni",
-          "adjust": "Puoi regolare queste impostazioni più tardi mentre la tua attività evolve"
+          "adjust": "Puoi regolare queste impostazioni più tardi man mano che la tua attività si evolve"
         }
       },
       "6": {
@@ -938,7 +937,7 @@
         "heading": "Scegli Lingue Aggiuntive",
         "includedLanguages": "Inclusi: Inglese e Italiano",
         "availableLanguages": "Lingue Disponibili ({count})",
-        "selectedCount": "{count} lingua selezionata",
+        "selectedCount": "{count} lingue selezionate",
         "pricePerLanguage": "€75 per lingua",
         "searchPlaceholder": "Cerca lingue...",
         "selectLanguage": "Seleziona {language}",
@@ -1100,12 +1099,7 @@
     },
     "slider": {
       "reset": "Reimposta al centro",
-      "required": "Questo campo è obbligatorio",
-      "interpretation": {
-        "balanced": "Bilanciato"
-      },
-      "examples": "Esempi",
-      "summary": "Riepilogo"
+      "required": "Questo campo è obbligatorio"
     },
     "imageGrid": {
       "premium": "Premium",
