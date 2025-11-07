@@ -287,7 +287,8 @@ export class WebhookService {
       }
 
       const submission = lookupResult.submission
-      const scheduleId = submission.stripe_subscription_schedule_id
+      // Preserve existing schedule_id if already set (don't overwrite with NULL)
+      const scheduleId = submission.stripe_subscription_schedule_id || null
 
       // Extract discount information from invoice
       let discountAmount = 0
@@ -340,31 +341,37 @@ export class WebhookService {
       }
 
       // Update submission with payment details including discount information
+      // Only update Stripe IDs if not already set (don't overwrite values from CheckoutSessionService)
+      const updateData: any = {
+        status: 'paid',
+        payment_amount: invoice.total,
+        currency: invoice.currency.toUpperCase(),
+        payment_completed_at: invoice.status_transitions?.paid_at
+          ? new Date(invoice.status_transitions.paid_at * 1000).toISOString()
+          : new Date().toISOString(),
+        payment_metadata: {
+          invoice_id: invoice.id,
+          payment_method: invoice.default_payment_method,
+          billing_reason: invoice.billing_reason,
+          schedule_id: scheduleId,
+          subtotal: invoice.subtotal,
+          discount_amount: discountAmount,
+          recurring_discount: recurringDiscount,
+          discount_info: discountMetadata
+        },
+        updated_at: new Date().toISOString()
+      }
+
+      // Only update Stripe IDs if webhook has values (don't overwrite with NULL)
+      // This prevents race condition where webhook overwrites CheckoutSessionService's values
+      if (paymentIntentId) updateData.stripe_payment_id = paymentIntentId
+      if (customerId) updateData.stripe_customer_id = customerId
+      if (subscriptionId) updateData.stripe_subscription_id = subscriptionId
+      if (scheduleId) updateData.stripe_subscription_schedule_id = scheduleId
+
       const { error: updateError } = await supabase
         .from('onboarding_submissions')
-        .update({
-          status: 'paid',
-          stripe_payment_id: paymentIntentId,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subscriptionId,
-          stripe_subscription_schedule_id: scheduleId,
-          payment_amount: invoice.total,
-          currency: invoice.currency.toUpperCase(),
-          payment_completed_at: invoice.status_transitions?.paid_at
-            ? new Date(invoice.status_transitions.paid_at * 1000).toISOString()
-            : new Date().toISOString(),
-          payment_metadata: {
-            invoice_id: invoice.id,
-            payment_method: invoice.default_payment_method,
-            billing_reason: invoice.billing_reason,
-            schedule_id: scheduleId,
-            subtotal: invoice.subtotal,
-            discount_amount: discountAmount,
-            recurring_discount: recurringDiscount,
-            discount_info: discountMetadata
-          },
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', submission.id)
 
       if (updateError) {
@@ -514,28 +521,34 @@ export class WebhookService {
         : amount + computedDiscountAmount
 
       // Update submission with payment details
+      // Only update Stripe IDs if not already set (don't overwrite values from CheckoutSessionService)
+      const updateData: any = {
+        status: 'paid',
+        payment_amount: amount,
+        currency: currency.toUpperCase(),
+        payment_completed_at: new Date().toISOString(),
+        payment_metadata: {
+          payment_intent_id: paymentIntentId,
+          invoice_id: invoiceId,
+          payment_method: paymentIntent.payment_method,
+          amount_charged: amount,
+          currency: currency.toUpperCase(),
+          subtotal: computedSubtotal,
+          discount_amount: computedDiscountAmount,
+          recurring_discount: recurringDiscount,
+          discount_info: discountMetadata
+        },
+        updated_at: new Date().toISOString()
+      }
+
+      // Only update Stripe IDs if webhook has values (don't overwrite with NULL)
+      // This prevents race condition where webhook overwrites CheckoutSessionService's values
+      if (paymentIntentId) updateData.stripe_payment_id = paymentIntentId
+      if (customerId) updateData.stripe_customer_id = customerId
+
       const { error: updateError } = await supabase
         .from('onboarding_submissions')
-        .update({
-          status: 'paid',
-          stripe_payment_id: paymentIntentId,
-          stripe_customer_id: customerId,
-          payment_amount: amount,
-          currency: currency.toUpperCase(),
-          payment_completed_at: new Date().toISOString(),
-          payment_metadata: {
-            payment_intent_id: paymentIntentId,
-            invoice_id: invoiceId,
-            payment_method: paymentIntent.payment_method,
-            amount_charged: amount,
-            currency: currency.toUpperCase(),
-            subtotal: computedSubtotal,
-            discount_amount: computedDiscountAmount,
-            recurring_discount: recurringDiscount,
-            discount_info: discountMetadata
-          },
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', submission.id)
 
       if (updateError) {

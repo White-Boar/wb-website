@@ -278,9 +278,6 @@ function CheckoutForm({
       setDiscountValidation(null)
 
       // Fetch CSRF token first
-      if (process.env.NODE_ENV !== 'production') {
-        console.log('[Step14Checkout] verifying discount with session', sessionId, 'code', code)
-      }
       const csrfResponse = await fetch(`/api/csrf-token?sessionId=${sessionId}`)
       const csrfData = await csrfResponse.json()
 
@@ -563,11 +560,6 @@ function CheckoutForm({
               <AlertCircle className="w-4 h-4" />
               <AlertDescription className="text-xs">
                 {t('commitmentNotice', { amount: recurringMonthlyPrice.toFixed(2) })}
-                {discountValidation?.status === 'valid' && discountValidation.duration === 'forever' && (
-                  <span className="block mt-1 text-green-600 dark:text-green-400 font-medium">
-                    {t('discount.foreverDiscount', { code: discountValidation.code ?? '' })}
-                  </span>
-                )}
               </AlertDescription>
             </Alert>
           </CardContent>
@@ -1065,17 +1057,6 @@ function CheckoutFormWrapper(props: CheckoutWrapperProps) {
 
       if (!response.ok || !data.success) {
         throw new Error(data.error?.message || 'Failed to create checkout session')
-      }
-
-      if (typeof window !== 'undefined') {
-        console.log('[Step14Checkout] refreshPaymentIntent resolved', {
-          requestKey,
-          discountCode: discountCode ?? null,
-          invoiceTotal: data.data?.invoiceTotal ?? null,
-          invoiceDiscount: data.data?.invoiceDiscount ?? null,
-          requestedDiscountCode: data.data?.requestedDiscountCode ?? null,
-          couponId: data.data?.couponId ?? null
-        })
       }
 
       if (typeof window !== 'undefined' && data.data?.debugInvoice) {
