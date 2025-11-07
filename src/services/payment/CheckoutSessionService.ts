@@ -635,6 +635,13 @@ export class CheckoutSessionService {
           session_id: sessionId
         }
       })
+
+      // Save payment intent ID to database for mock webhooks in CI
+      // This allows triggerMockWebhookForPayment() to find the payment intent ID
+      await supabase
+        .from('onboarding_submissions')
+        .update({ stripe_payment_id: paymentIntentId })
+        .eq('id', submissionId)
     }
 
     // Use the invoice's confirmation_secret which contains the PaymentIntent client_secret
