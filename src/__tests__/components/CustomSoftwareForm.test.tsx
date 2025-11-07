@@ -1,6 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { CustomSoftwareForm } from '@/components/CustomSoftwareForm'
 
+// Mock next-intl to return translation keys
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key
+}))
+
 // Mock fetch
 global.fetch = jest.fn()
 
@@ -12,11 +17,12 @@ describe('CustomSoftwareForm', () => {
   it('renders form with all required fields', () => {
     render(<CustomSoftwareForm />)
 
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/phone/i)).toBeInTheDocument()
-    expect(screen.getByLabelText(/describe what you would like us to build/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /send/i })).toBeInTheDocument()
+    // Using regex to match labels in a locale-agnostic way
+    expect(screen.getByLabelText(/customSoftware\.form\.nameLabel/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/customSoftware\.form\.emailLabel/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/customSoftware\.form\.phoneLabel/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/customSoftware\.form\.descriptionLabel/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /customSoftware\.form\.submitButton/i })).toBeInTheDocument()
   })
 
   it('shows validation errors for empty fields', async () => {
@@ -26,66 +32,66 @@ describe('CustomSoftwareForm', () => {
     fireEvent.submit(form!)
 
     await waitFor(() => {
-      expect(screen.getByText(/name is required/i)).toBeInTheDocument()
+      expect(screen.getByText('errors.nameRequired')).toBeInTheDocument()
     })
-    expect(screen.getByText(/email is required/i)).toBeInTheDocument()
-    expect(screen.getByText(/phone is required/i)).toBeInTheDocument()
-    expect(screen.getByText(/project description is required/i)).toBeInTheDocument()
+    expect(screen.getByText('errors.emailRequired')).toBeInTheDocument()
+    expect(screen.getByText('errors.phoneRequired')).toBeInTheDocument()
+    expect(screen.getByText('errors.descriptionRequired')).toBeInTheDocument()
   })
 
   it('shows validation error for short name', async () => {
     const { container } = render(<CustomSoftwareForm />)
 
-    const nameInput = screen.getByLabelText(/name/i)
+    const nameInput = screen.getByLabelText(/customSoftware\.form\.nameLabel/i)
     fireEvent.change(nameInput, { target: { value: 'A' } })
 
     const form = container.querySelector('form')
     fireEvent.submit(form!)
 
     await waitFor(() => {
-      expect(screen.getByText(/name must be at least 2 characters/i)).toBeInTheDocument()
+      expect(screen.getByText('errors.nameTooShort')).toBeInTheDocument()
     })
   })
 
   it('shows validation error for invalid email', async () => {
     const { container } = render(<CustomSoftwareForm />)
 
-    const emailInput = screen.getByLabelText(/email/i)
+    const emailInput = screen.getByLabelText(/customSoftware\.form\.emailLabel/i)
     fireEvent.change(emailInput, { target: { value: 'invalid-email' } })
 
     const form = container.querySelector('form')
     fireEvent.submit(form!)
 
     await waitFor(() => {
-      expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument()
+      expect(screen.getByText('errors.emailInvalid')).toBeInTheDocument()
     })
   })
 
   it('shows validation error for invalid phone', async () => {
     const { container } = render(<CustomSoftwareForm />)
 
-    const phoneInput = screen.getByLabelText(/phone/i)
+    const phoneInput = screen.getByLabelText(/customSoftware\.form\.phoneLabel/i)
     fireEvent.change(phoneInput, { target: { value: '123' } })
 
     const form = container.querySelector('form')
     fireEvent.submit(form!)
 
     await waitFor(() => {
-      expect(screen.getByText(/please enter a valid phone number/i)).toBeInTheDocument()
+      expect(screen.getByText('errors.phoneInvalid')).toBeInTheDocument()
     })
   })
 
   it('shows validation error for short description', async () => {
     const { container } = render(<CustomSoftwareForm />)
 
-    const descriptionInput = screen.getByLabelText(/describe what you would like us to build/i)
+    const descriptionInput = screen.getByLabelText(/customSoftware\.form\.descriptionLabel/i)
     fireEvent.change(descriptionInput, { target: { value: 'Too short' } })
 
     const form = container.querySelector('form')
     fireEvent.submit(form!)
 
     await waitFor(() => {
-      expect(screen.getByText(/please provide more details.*at least 20 characters/i)).toBeInTheDocument()
+      expect(screen.getByText('errors.descriptionTooShort')).toBeInTheDocument()
     })
   })
 
@@ -99,21 +105,21 @@ describe('CustomSoftwareForm', () => {
     render(<CustomSoftwareForm />)
 
     // Fill out form
-    fireEvent.change(screen.getByLabelText(/name/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.nameLabel/i), {
       target: { value: 'John Doe' }
     })
-    fireEvent.change(screen.getByLabelText(/email/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.emailLabel/i), {
       target: { value: 'john@example.com' }
     })
-    fireEvent.change(screen.getByLabelText(/phone/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.phoneLabel/i), {
       target: { value: '+39 123 456 7890' }
     })
-    fireEvent.change(screen.getByLabelText(/describe what you would like us to build/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.descriptionLabel/i), {
       target: { value: 'I need a custom SaaS platform for managing inventory and sales' }
     })
 
     // Submit form
-    const submitButton = screen.getByRole('button', { name: /send/i })
+    const submitButton = screen.getByRole('button', { name: /customSoftware\.form\.submitButton/i })
     fireEvent.click(submitButton)
 
     await waitFor(() => {
@@ -131,8 +137,8 @@ describe('CustomSoftwareForm', () => {
 
     // Check success message
     await waitFor(() => {
-      expect(screen.getByText(/thank you/i)).toBeInTheDocument()
-      expect(screen.getByText(/we will be in touch within 2 business days/i)).toBeInTheDocument()
+      expect(screen.getByText('success.title')).toBeInTheDocument()
+      expect(screen.getByText('success.message')).toBeInTheDocument()
     })
   })
 
@@ -146,21 +152,21 @@ describe('CustomSoftwareForm', () => {
     render(<CustomSoftwareForm />)
 
     // Fill out form with valid data
-    fireEvent.change(screen.getByLabelText(/name/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.nameLabel/i), {
       target: { value: 'John Doe' }
     })
-    fireEvent.change(screen.getByLabelText(/email/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.emailLabel/i), {
       target: { value: 'john@example.com' }
     })
-    fireEvent.change(screen.getByLabelText(/phone/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.phoneLabel/i), {
       target: { value: '+39 123 456 7890' }
     })
-    fireEvent.change(screen.getByLabelText(/describe what you would like us to build/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.descriptionLabel/i), {
       target: { value: 'I need a custom SaaS platform for managing inventory' }
     })
 
     // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /send/i }))
+    fireEvent.click(screen.getByRole('button', { name: /customSoftware\.form\.submitButton/i }))
 
     await waitFor(() => {
       expect(screen.getByText(/server error/i)).toBeInTheDocument()
@@ -174,32 +180,32 @@ describe('CustomSoftwareForm', () => {
     render(<CustomSoftwareForm />)
 
     // Fill out form
-    fireEvent.change(screen.getByLabelText(/name/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.nameLabel/i), {
       target: { value: 'John Doe' }
     })
-    fireEvent.change(screen.getByLabelText(/email/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.emailLabel/i), {
       target: { value: 'john@example.com' }
     })
-    fireEvent.change(screen.getByLabelText(/phone/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.phoneLabel/i), {
       target: { value: '+39 123 456 7890' }
     })
-    fireEvent.change(screen.getByLabelText(/describe what you would like us to build/i), {
+    fireEvent.change(screen.getByLabelText(/customSoftware\.form\.descriptionLabel/i), {
       target: { value: 'I need a custom SaaS platform for managing inventory' }
     })
 
     // Submit form
-    fireEvent.click(screen.getByRole('button', { name: /send/i }))
+    fireEvent.click(screen.getByRole('button', { name: /customSoftware\.form\.submitButton/i }))
 
     // Check that button shows loading state
     await waitFor(() => {
-      expect(screen.getByText(/sending/i)).toBeInTheDocument()
+      expect(screen.getByText('submitting')).toBeInTheDocument()
     })
 
     // Check that inputs are disabled
-    expect(screen.getByLabelText(/name/i)).toBeDisabled()
-    expect(screen.getByLabelText(/email/i)).toBeDisabled()
-    expect(screen.getByLabelText(/phone/i)).toBeDisabled()
-    expect(screen.getByLabelText(/describe what you would like us to build/i)).toBeDisabled()
+    expect(screen.getByLabelText(/customSoftware\.form\.nameLabel/i)).toBeDisabled()
+    expect(screen.getByLabelText(/customSoftware\.form\.emailLabel/i)).toBeDisabled()
+    expect(screen.getByLabelText(/customSoftware\.form\.phoneLabel/i)).toBeDisabled()
+    expect(screen.getByLabelText(/customSoftware\.form\.descriptionLabel/i)).toBeDisabled()
   })
 
   it('has proper accessibility attributes', () => {

@@ -1,6 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { PricingTable } from '@/components/PricingTable'
 
+// Mock next-intl to return translation keys
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => key
+}))
+
 // Mock window.location
 const mockLocationAssign = jest.fn()
 Object.defineProperty(window, 'location', {
@@ -17,29 +22,29 @@ describe('PricingTable', () => {
   it('renders pricing section', () => {
     render(<PricingTable />)
 
-    expect(screen.getByText('Services')).toBeInTheDocument()
-    expect(screen.getByText('Fast & Simple')).toBeInTheDocument()
-    expect(screen.getByText('Custom Made')).toBeInTheDocument()
+    expect(screen.getByText('title')).toBeInTheDocument()
+    expect(screen.getByText('fast.name')).toBeInTheDocument()
+    expect(screen.getByText('custom.name')).toBeInTheDocument()
   })
 
   it('displays plan details correctly', () => {
     render(<PricingTable />)
 
     // Fast & Simple plan
-    expect(screen.getByText('Personalized one-page website')).toBeInTheDocument()
-    expect(screen.getByText('€35 / month')).toBeInTheDocument()
+    expect(screen.getByText('fast.tagline')).toBeInTheDocument()
+    expect(screen.getByText('fast.price')).toBeInTheDocument()
 
     // Custom Made plan
-    expect(screen.getByText('Custom software development')).toBeInTheDocument()
-    expect(screen.getByText('from €3,000')).toBeInTheDocument()
+    expect(screen.getByText('custom.tagline')).toBeInTheDocument()
+    expect(screen.getByText('custom.price')).toBeInTheDocument()
   })
 
   it('shows features for each plan', () => {
     render(<PricingTable />)
 
-    // Check if features are displayed (they come from translation mock)
-    expect(screen.getByText(/Personalized branding/)).toBeInTheDocument()
-    expect(screen.getByText(/SaaS platforms/)).toBeInTheDocument()
+    // Check if features are displayed (they come from translation keys)
+    expect(screen.getByText('fast.feature1')).toBeInTheDocument()
+    expect(screen.getByText('custom.feature5')).toBeInTheDocument()
   })
 
   it('has CTA links for both plans', () => {
@@ -78,7 +83,7 @@ describe('PricingTable', () => {
   it('has accessible structure', () => {
     render(<PricingTable />)
 
-    const heading = screen.getByRole('heading', { name: 'Services' })
+    const heading = screen.getByRole('heading', { name: 'title' })
     expect(heading).toBeInTheDocument()
 
     const links = screen.getAllByRole('link')
