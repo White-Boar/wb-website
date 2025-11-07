@@ -60,6 +60,9 @@ export async function triggerMockWebhookForPayment(submissionId: string): Promis
 
   console.log(`📤 Triggering mock webhook for submission: ${submissionId}`)
 
+  // Wait for database write to propagate (race condition fix)
+  await new Promise(resolve => setTimeout(resolve, 1000))
+
   // Fetch submission to get Stripe IDs
   const { data: submission, error } = await supabase
     .from('onboarding_submissions')
