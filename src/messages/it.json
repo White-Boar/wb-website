@@ -53,7 +53,7 @@
       "name": "Su Misura",
       "tagline": "Sviluppo software personalizzato",
       "price": "da €3.000",
-      "feature1": "Integrazioni AI e automazione",
+      "feature1": "Integrazioni IA e automazione",
       "feature2": "Soluzioni e-commerce",
       "feature3": "App mobile",
       "feature4": "Applicazioni web e dashboard",
@@ -67,14 +67,14 @@
     "subtitle": "Guarda cosa abbiamo costruito per aziende come la tua"
   },
   "footer": {
-    "brandDescription": "Agenzia digitale guidata dall'AI che potenzia le piccole imprese con una presenza online professionale.",
+    "brandDescription": "Agenzia digitale guidata dall'IA che potenzia le piccole imprese con una presenza online professionale.",
     "quickLinks": "Link Rapidi",
     "followUs": "Seguici",
     "copyright": "© 2025 WhiteBoar"
   },
   "meta": {
-    "title": "WhiteBoar - Agenzia Digitale Guidata dall'AI",
-    "description": "Trasforma la tua attività con siti web e branding guidati dall'AI. Presenza online professionale in giorni, non mesi."
+    "title": "WhiteBoar - Agenzia Digitale Guidata dall'IA",
+    "description": "Trasforma la tua attività con siti web e branding guidati dall'IA. Presenza online professionale in giorni, non mesi."
   },
   "onboarding": {
     "title": "Inizia con WhiteBoar",
@@ -1200,7 +1200,7 @@
   "terms": {
     "meta": {
       "title": "Termini e Condizioni - WhiteBoar",
-      "description": "Termini e condizioni per l'utilizzo dei servizi di creazione e hosting di siti web guidati dall'AI di WhiteBoar."
+      "description": "Termini e condizioni per l'utilizzo dei servizi di creazione e hosting di siti web guidati dall'IA di WhiteBoar."
     },
     "title": "Termini e Condizioni",
     "lastUpdated": "Ultimo aggiornamento: Gennaio 2025",
@@ -1215,10 +1215,10 @@
       },
       "services": {
         "title": "3. Descrizione dei Servizi",
-        "intro": "WhiteBoar fornisce servizi di creazione di siti web guidati dall'AI, branding e hosting tra cui:",
+        "intro": "WhiteBoar fornisce servizi di creazione di siti web guidati dall'IA, branding e hosting tra cui:",
         "items": {
           "branding": "Creazione automatizzata di identità di marca (logo, colori, tipografia)",
-          "design": "Design e sviluppo di siti web generati dall'AI",
+          "design": "Design e sviluppo di siti web generati dall'IA",
           "hosting": "Hosting di siti web gestito con CDN globale",
           "seo": "Ottimizzazione per motori di ricerca e metadati",
           "multilingual": "Supporto per siti web multilingue",
@@ -1247,8 +1247,8 @@
       "intellectualProperty": {
         "title": "7. Proprietà Intellettuale",
         "yourContent": "Mantieni tutti i diritti sui contenuti che fornisci (testo, immagini, loghi)",
-        "generatedContent": "Design e codice generati dall'AI creati per il tuo sito web diventano di tua proprietà al pagamento completo",
-        "platform": "WhiteBoar mantiene tutti i diritti sulla sua piattaforma, software e tecnologia AI",
+        "generatedContent": "Design e codice generati dall'IA creati per il tuo sito web diventano di tua proprietà al pagamento completo",
+        "platform": "WhiteBoar mantiene tutti i diritti sulla sua piattaforma, software e tecnologia IA",
         "license": "Concedi a WhiteBoar una licenza per utilizzare i tuoi contenuti esclusivamente per fornirti i servizi"
       },
       "userResponsibilities": {
@@ -1304,7 +1304,7 @@
     "sections": {
       "introduction": {
         "title": "1. Introduzione",
-        "content": "Questa Informativa sulla Privacy descrive come Conscious Digital MTÜ (\"noi\", \"ci\", o \"WhiteBoar\") raccoglie, utilizza e protegge le tue informazioni personali quando utilizzi i nostri servizi di creazione e hosting di siti web guidati dall'AI. Ci impegniamo a proteggere la tua privacy e a conformarci al Regolamento Generale sulla Protezione dei Dati (GDPR) e ad altre leggi applicabili sulla protezione dei dati."
+        "content": "Questa Informativa sulla Privacy descrive come Conscious Digital MTÜ (\"noi\", \"ci\", o \"WhiteBoar\") raccoglie, utilizza e protegge le tue informazioni personali quando utilizzi i nostri servizi di creazione e hosting di siti web guidati dall'IA. Ci impegniamo a proteggere la tua privacy e a conformarci al Regolamento Generale sulla Protezione dei Dati (GDPR) e ad altre leggi applicabili sulla protezione dei dati."
       },
       "controller": {
         "title": "2. Titolare del Trattamento",
@@ -1345,11 +1345,11 @@
         "title": "4. Come Utilizziamo le Tue Informazioni",
         "intro": "Utilizziamo le tue informazioni per:",
         "items": {
-          "service": "Fornire ed erogare i nostri servizi di creazione di siti web guidati dall'AI",
+          "service": "Fornire ed erogare i nostri servizi di creazione di siti web guidati dall'IA",
           "branding": "Generare identità di marca e design di siti web personalizzati",
           "hosting": "Ospitare e mantenere il tuo sito web",
           "communication": "Comunicare con te riguardo al tuo servizio e account",
-          "improvement": "Migliorare i nostri algoritmi AI e la qualità del servizio",
+          "improvement": "Migliorare i nostri algoritmi IA e la qualità del servizio",
           "legal": "Conformarci agli obblighi legali e proteggere i nostri diritti",
           "analytics": "Comprendere come vengono utilizzati i nostri servizi (solo dati anonimizzati)"
         }
