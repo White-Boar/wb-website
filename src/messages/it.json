@@ -14,8 +14,8 @@
     }
   },
   "hero": {
-    "title": "La tua attività. Vendite globali. Tutto l'anno.",
-    "subtitle": "Vendi a clienti internazionali anche dopo le feste: un sito web multilingue che ti mantiene in contatto.",
+    "title": "La tua attività. Vendendo globalmente. Tutto l'anno.",
+    "subtitle": "Vendi a clienti internazionali anche dopo le festività: un sito web multilingue che ti tiene in contatto.",
     "cta": "Inizia ora!"
   },
   "steps": {
@@ -28,23 +28,23 @@
     "step2": {
       "title": "Approva il tuo progetto",
       "subtitle": "In cinque giorni riceverai un sito web completo",
-      "description": "Bello, brandizzato e pronto per il lancio in inglese e italiano."
+      "description": "Bello, personalizzato e pronto per il lancio in inglese e italiano."
     },
     "step3": {
       "title": "Vai online e cresci",
       "subtitle": "Lancia la tua attività online",
-      "description": "Attira nuovi clienti e costruisci una fedeltà duratura attraverso la nostra piattaforma."
+      "description": "Attira nuovi clienti e fidelizzali a lungo termine attraverso la nostra piattaforma."
     }
   },
   "pricing": {
     "title": "Servizi",
     "fast": {
       "name": "Veloce e Semplice",
-      "tagline": "Sito web personalizzato di una pagina",
+      "tagline": "Sito web personalizzato a pagina singola",
       "price": "€35 / mese",
       "feature1": "Branding personalizzato",
       "feature2": "Consegnato in 5 giorni lavorativi",
-      "feature3": "Multilingue: inglese e italiano inclusi (altri su richiesta)",
+      "feature3": "Multilingue: inglese e italiano inclusi (altre lingue su richiesta)",
       "feature4": "Visibilità sui motori di ricerca",
       "feature5": "Pacchetto di modifiche incluso",
       "feature6": "Hosting incluso (10k visite al mese)"
@@ -53,7 +53,7 @@
       "name": "Su Misura",
       "tagline": "Sviluppo software personalizzato",
       "price": "da €3.000",
-      "feature1": "Integrazioni AI e automazione",
+      "feature1": "Integrazioni IA e automazione",
       "feature2": "Soluzioni e-commerce",
       "feature3": "App mobile",
       "feature4": "Applicazioni web e dashboard",
@@ -67,14 +67,14 @@
     "subtitle": "Guarda cosa abbiamo costruito per aziende come la tua"
   },
   "footer": {
-    "brandDescription": "Agenzia digitale guidata dall'AI che potenzia le piccole imprese con una presenza online professionale.",
+    "brandDescription": "Agenzia digitale guidata dall'IA che potenzia le piccole imprese con una presenza online professionale.",
     "quickLinks": "Link Rapidi",
     "followUs": "Seguici",
     "copyright": "© 2025 WhiteBoar"
   },
   "meta": {
-    "title": "WhiteBoar - Agenzia Digitale Guidata dall'AI",
-    "description": "Trasforma la tua attività con siti web e branding guidati dall'AI. Presenza online professionale in giorni, non mesi."
+    "title": "WhiteBoar - Agenzia Digitale Guidata dall'IA",
+    "description": "Trasforma la tua attività con siti web e branding guidati dall'IA. Presenza online professionale in giorni, non mesi."
   },
   "onboarding": {
     "title": "Inizia con WhiteBoar",
@@ -321,7 +321,7 @@
           "description": {
             "label": "Chi sono i tuoi clienti ideali?",
             "placeholder": "Descrivi i tuoi clienti tipici (età, interessi, necessità, ecc.)",
-            "hint": "Capire il tuo pubblico ci aiuta a creare contenuti che risuonano"
+            "hint": "Capire il tuo pubblico ci aiuta a creare contenuti efficaci per il tuo target"
           }
         },
         "uniqueness": {
@@ -483,10 +483,9 @@
           }
         },
         "tips": {
-          "title": "Suggerimenti per risposte migliori:",
           "honest": "Sii onesto sui tuoi clienti reali, non su chi vorresti che fossero",
           "typical": "Pensa ai tuoi clienti più tipici, non alle eccezioni",
-          "adjust": "Puoi regolare queste impostazioni più tardi mentre la tua attività evolve"
+          "adjust": "Puoi regolare queste impostazioni più tardi man mano che la tua attività si evolve"
         }
       },
       "6": {
@@ -494,7 +493,7 @@
         "description": "Comprendere cosa hanno davvero bisogno i tuoi clienti",
         "intro": {
           "title": "Comprendere le Sfide dei Clienti",
-          "description": "Aiutaci a capire i problemi che affrontano i tuoi clienti e come la tua attività li risolve. Questa comprensione plasmerà i messaggi e il posizionamento del tuo sito web."
+          "description": "Aiutaci a capire i problemi che affrontano i tuoi clienti e come la tua attività li risolve. Questa comprensione guiderà i messaggi e il posizionamento del tuo sito web."
         },
         "problems": {
           "title": "Problemi e Punti Dolenti dei Clienti",
@@ -938,7 +937,7 @@
         "heading": "Scegli Lingue Aggiuntive",
         "includedLanguages": "Inclusi: Inglese e Italiano",
         "availableLanguages": "Lingue Disponibili ({count})",
-        "selectedCount": "{count} lingua selezionata",
+        "selectedCount": "{count} lingue selezionate",
         "pricePerLanguage": "€75 per lingua",
         "searchPlaceholder": "Cerca lingue...",
         "selectLanguage": "Seleziona {language}",
@@ -1100,12 +1099,7 @@
     },
     "slider": {
       "reset": "Reimposta al centro",
-      "required": "Questo campo è obbligatorio",
-      "interpretation": {
-        "balanced": "Bilanciato"
-      },
-      "examples": "Esempi",
-      "summary": "Riepilogo"
+      "required": "Questo campo è obbligatorio"
     },
     "imageGrid": {
       "premium": "Premium",
@@ -1206,7 +1200,7 @@
   "terms": {
     "meta": {
       "title": "Termini e Condizioni - WhiteBoar",
-      "description": "Termini e condizioni per l'utilizzo dei servizi di creazione e hosting di siti web guidati dall'AI di WhiteBoar."
+      "description": "Termini e condizioni per l'utilizzo dei servizi di creazione e hosting di siti web guidati dall'IA di WhiteBoar."
     },
     "title": "Termini e Condizioni",
     "lastUpdated": "Ultimo aggiornamento: Gennaio 2025",
@@ -1221,10 +1215,10 @@
       },
       "services": {
         "title": "3. Descrizione dei Servizi",
-        "intro": "WhiteBoar fornisce servizi di creazione di siti web guidati dall'AI, branding e hosting tra cui:",
+        "intro": "WhiteBoar fornisce servizi di creazione di siti web guidati dall'IA, branding e hosting tra cui:",
         "items": {
           "branding": "Creazione automatizzata di identità di marca (logo, colori, tipografia)",
-          "design": "Design e sviluppo di siti web generati dall'AI",
+          "design": "Design e sviluppo di siti web generati dall'IA",
           "hosting": "Hosting di siti web gestito con CDN globale",
           "seo": "Ottimizzazione per motori di ricerca e metadati",
           "multilingual": "Supporto per siti web multilingue",
@@ -1253,8 +1247,8 @@
       "intellectualProperty": {
         "title": "7. Proprietà Intellettuale",
         "yourContent": "Mantieni tutti i diritti sui contenuti che fornisci (testo, immagini, loghi)",
-        "generatedContent": "Design e codice generati dall'AI creati per il tuo sito web diventano di tua proprietà al pagamento completo",
-        "platform": "WhiteBoar mantiene tutti i diritti sulla sua piattaforma, software e tecnologia AI",
+        "generatedContent": "Design e codice generati dall'IA creati per il tuo sito web diventano di tua proprietà al pagamento completo",
+        "platform": "WhiteBoar mantiene tutti i diritti sulla sua piattaforma, software e tecnologia IA",
         "license": "Concedi a WhiteBoar una licenza per utilizzare i tuoi contenuti esclusivamente per fornirti i servizi"
       },
       "userResponsibilities": {
@@ -1310,7 +1304,7 @@
     "sections": {
       "introduction": {
         "title": "1. Introduzione",
-        "content": "Questa Informativa sulla Privacy descrive come Conscious Digital MTÜ (\"noi\", \"ci\", o \"WhiteBoar\") raccoglie, utilizza e protegge le tue informazioni personali quando utilizzi i nostri servizi di creazione e hosting di siti web guidati dall'AI. Ci impegniamo a proteggere la tua privacy e a conformarci al Regolamento Generale sulla Protezione dei Dati (GDPR) e ad altre leggi applicabili sulla protezione dei dati."
+        "content": "Questa Informativa sulla Privacy descrive come Conscious Digital MTÜ (\"noi\", \"ci\", o \"WhiteBoar\") raccoglie, utilizza e protegge le tue informazioni personali quando utilizzi i nostri servizi di creazione e hosting di siti web guidati dall'IA. Ci impegniamo a proteggere la tua privacy e a conformarci al Regolamento Generale sulla Protezione dei Dati (GDPR) e ad altre leggi applicabili sulla protezione dei dati."
       },
       "controller": {
         "title": "2. Titolare del Trattamento",
@@ -1351,11 +1345,11 @@
         "title": "4. Come Utilizziamo le Tue Informazioni",
         "intro": "Utilizziamo le tue informazioni per:",
         "items": {
-          "service": "Fornire ed erogare i nostri servizi di creazione di siti web guidati dall'AI",
+          "service": "Fornire ed erogare i nostri servizi di creazione di siti web guidati dall'IA",
           "branding": "Generare identità di marca e design di siti web personalizzati",
           "hosting": "Ospitare e mantenere il tuo sito web",
           "communication": "Comunicare con te riguardo al tuo servizio e account",
-          "improvement": "Migliorare i nostri algoritmi AI e la qualità del servizio",
+          "improvement": "Migliorare i nostri algoritmi IA e la qualità del servizio",
           "legal": "Conformarci agli obblighi legali e proteggere i nostri diritti",
           "analytics": "Comprendere come vengono utilizzati i nostri servizi (solo dati anonimizzati)"
         }
