@@ -693,13 +693,20 @@ export class WebhookService {
       // Find and update submission status
       const lookupResult = await this.findSubmissionByEvent(event, supabase)
       if (lookupResult.submission) {
-        await supabase
-          .from('onboarding_submissions')
-          .update({
-            status: 'cancelled',
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', lookupResult.submission.id)
+        // Only mark as cancelled if payment hasn't been completed yet
+        // This prevents overwriting 'paid' status when subscription is cancelled
+        // after successful payment (e.g., 100% discount with no payment method)
+        if (lookupResult.submission.status !== 'paid') {
+          await supabase
+            .from('onboarding_submissions')
+            .update({
+              status: 'cancelled',
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', lookupResult.submission.id)
+        } else {
+          debugLog('[Webhook] Subscription deleted but payment already completed - keeping status as paid')
+        }
       }
 
       // Log analytics event
