@@ -38,7 +38,7 @@ describe('Stripe Checkout Session Creation Tests', () => {
       id: testSessionId,
       email: testEmail,
       current_step: 14,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
       form_data: {
         step3: {
           businessName: 'Checkout Test Business',
