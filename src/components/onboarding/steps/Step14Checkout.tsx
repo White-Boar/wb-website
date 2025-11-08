@@ -825,6 +825,9 @@ export function Step14Checkout(props: StepComponentProps) {
   const [error, setError] = useState<string | null>(null)
 
   // Get sessionId from URL params or onboarding store
+  // ARCHITECTURE: localStorage-first with URL fallback
+  // - Normal flow: Session from Zustand store (localStorage)
+  // - URL override: ?sessionId=xxx&submissionId=xxx (for cross-device, bookmarks, test seeding)
   useEffect(() => {
     const loadIds = async () => {
       try {
