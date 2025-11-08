@@ -831,7 +831,15 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await discountInput.fill(discountCode)
       const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
       await verifyButton.click()
-      await page.waitForTimeout(2000)
+
+      // Wait for discount to be confirmed
+      await page.waitForFunction((code: string) => {
+        const meta = (window as any).__wb_lastDiscountMeta
+        return meta?.code === code
+      }, discountCode, { timeout: 15000 })
+
+      // Verify discount applied
+      await expect(page.locator(`text=Discount code ${discountCode} applied`)).toBeVisible({ timeout: 15000 })
 
       // 5. Complete payment
       await page.locator('#acceptTerms').click()
