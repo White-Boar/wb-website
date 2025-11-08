@@ -66,7 +66,8 @@ export function PricingTable() {
     <section id="pricing" className="py-24 bg-muted">
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <motion.h2 
+          <motion.h2
+            data-testid="pricing-title"
             className="font-heading text-3xl sm:text-4xl font-bold text-foreground mb-4"
             variants={variants.title}
             initial="hidden"
@@ -86,7 +87,8 @@ export function PricingTable() {
         >
           {plans.map((plan) => (
             <motion.div key={plan.id} variants={variants.card} className="h-full">
-              <Card 
+              <Card
+                data-testid={`pricing-card-${plan.id}`}
                 className={`relative h-full flex flex-col ${plan.popular ? 'ring-2 ring-accent shadow-lg' : ''}`}
               >
               {plan.popular && (
@@ -118,6 +120,7 @@ export function PricingTable() {
 
               <CardFooter className="flex flex-col space-y-4">
                 <Button
+                  data-testid={`pricing-cta-${plan.id}`}
                   className="w-full"
                   variant={plan.popular ? "default" : "outline"}
                   asChild

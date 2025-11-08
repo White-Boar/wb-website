@@ -59,6 +59,7 @@ export function CustomSoftwareHero() {
           animate="show"
         >
           <motion.h1
+            data-testid="custom-software-hero-title"
             className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6"
             variants={variants.item}
           >
