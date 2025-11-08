@@ -73,12 +73,14 @@ export function Navigation() {
             {/* Navigation Links */}
             <div className="flex items-center space-x-2">
               <button
+                data-testid="nav-services-btn"
                 onClick={() => scrollToSection('pricing')}
                 className="text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-accent px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
               >
                 {t('services')}
               </button>
               <button
+                data-testid="nav-clients-btn"
                 onClick={() => scrollToSection('portfolio')}
                 className="text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-accent px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
               >
@@ -121,7 +123,7 @@ export function Navigation() {
             </div>
 
             {/* CTA Button */}
-            <Button asChild>
+            <Button asChild data-testid="nav-start-cta">
               <Link href="/onboarding">{t('start')}</Link>
             </Button>
 
@@ -154,6 +156,7 @@ export function Navigation() {
                 {/* Mobile Navigation Links */}
                 <div className="space-y-2">
                   <button
+                    data-testid="nav-services-btn"
                     onClick={() => {
                       scrollToSection('pricing')
                       setMobileMenuOpen(false)
@@ -163,6 +166,7 @@ export function Navigation() {
                     {t('services')}
                   </button>
                   <button
+                    data-testid="nav-clients-btn"
                     onClick={() => {
                       scrollToSection('portfolio')
                       setMobileMenuOpen(false)
