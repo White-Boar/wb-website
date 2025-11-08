@@ -130,8 +130,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: [],
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 
@@ -207,8 +207,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: ['de'],
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 
@@ -254,8 +254,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: [], // intentionally empty to ensure server trusts DB
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 
@@ -304,8 +304,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: ['de', 'fr', 'es'],
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 
@@ -343,8 +343,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
         submission_id: testSubmissionId,
         additionalLanguages: [],
         discountCode: coupon.id,
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 
@@ -393,8 +393,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
         submission_id: testSubmissionId,
         additionalLanguages: [],
         discountCode: coupon.id,
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 
@@ -429,8 +429,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
         submission_id: testSubmissionId,
         additionalLanguages: [],
         discountCode: 'INVALID_CODE_123',
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 
@@ -450,8 +450,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
       },
       body: JSON.stringify({
         additionalLanguages: [],
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 
@@ -502,8 +502,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
         body: JSON.stringify({
           submission_id: submissionId,
           additionalLanguages: [],
-          successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-          cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+          successUrl: 'http://localhost:3783/onboarding/thank-you',
+          cancelUrl: 'http://localhost:3783/onboarding/step/14'
         })
       })
 
@@ -545,8 +545,8 @@ describe('Stripe Checkout Session Creation Tests', () => {
       body: JSON.stringify({
         submission_id: testSubmissionId,
         additionalLanguages: [],
-        successUrl: 'http://localhost:3783/en/onboarding/thank-you',
-        cancelUrl: 'http://localhost:3783/en/onboarding/step/14'
+        successUrl: 'http://localhost:3783/onboarding/thank-you',
+        cancelUrl: 'http://localhost:3783/onboarding/step/14'
       })
     })
 

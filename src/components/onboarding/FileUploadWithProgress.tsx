@@ -185,7 +185,7 @@ export function FileUploadWithProgress({
       }
 
       const isValidType = accept.some(type =>
-        file.type.match(type.replace('*', '.*'))
+        file.type.match(type.replace(/\*/g, '.*'))
       )
 
       if (!isValidType) {

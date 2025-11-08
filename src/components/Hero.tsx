@@ -43,6 +43,7 @@ export function Hero() {
         animate="show"
       >
         <motion.h1
+          data-testid="hero-title"
           className="font-heading font-bold text-white mb-6 max-w-4xl mx-auto leading-tight"
           style={{ fontSize: '2.70rem' }}
           variants={variants.title}
@@ -50,15 +51,16 @@ export function Hero() {
           {t('title')}
         </motion.h1>
         
-        <motion.p 
+        <motion.p
+          data-testid="hero-subtitle"
           className="text-xl sm:text-2xl text-gray-200 mb-8 max-w-2xl mx-auto"
           variants={variants.title}
         >
           {t('subtitle')}
         </motion.p>
-        
+
         <motion.div variants={variants.cta}>
-          <Button size="lg" className="text-lg px-8 py-3" asChild>
+          <Button size="lg" className="text-lg px-8 py-3" asChild data-testid="hero-cta">
             <Link href="/onboarding">
               {t('cta')}
             </Link>

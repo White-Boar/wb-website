@@ -109,7 +109,17 @@ test.describe('Performance Tests', () => {
     // Filter out external service errors (not our code's fault)
     const relevantErrors = consoleErrors.filter(error => {
       // Google Fonts CORS errors (caused by Vercel protection headers)
-      if (error.includes('fonts.gstatic.com')) return false;
+      // Instead of substring matching, extract URLs and check host precisely
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const urls = error.match(urlRegex) || [];
+      for (const urlString of urls) {
+        try {
+          const thisUrl = new URL(urlString);
+          if (thisUrl.host === 'fonts.gstatic.com') return false;
+        } catch (e) {
+          // Not a valid URL, ignore
+        }
+      }
       if (error.includes('CORS policy')) return false;
       if (error.includes('Failed to load resource')) return false;
       // Vercel Live feedback widget CSP errors

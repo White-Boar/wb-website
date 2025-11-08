@@ -147,10 +147,10 @@ export function CustomSoftwareForm() {
           <CardContent className="pt-6">
             <div className="text-center">
               <CheckCircle2 className="w-16 h-16 text-green-600 dark:text-green-500 mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-green-900 dark:text-green-100 mb-2">
+              <h3 data-testid="custom-software-success-title" className="text-2xl font-bold text-green-900 dark:text-green-100 mb-2">
                 {t('success.title')}
               </h3>
-              <p className="text-green-800 dark:text-green-200">
+              <p data-testid="custom-software-success-message" className="text-green-800 dark:text-green-200">
                 {t('success.message')}
               </p>
             </div>
@@ -170,7 +170,7 @@ export function CustomSoftwareForm() {
     >
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">{t('title')}</CardTitle>
+          <CardTitle data-testid="custom-software-form-title" className="text-2xl">{t('title')}</CardTitle>
           <CardDescription>{t('subtitle')}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -280,6 +280,7 @@ export function CustomSoftwareForm() {
 
             {/* Submit Button */}
             <Button
+              data-testid="custom-software-submit-btn"
               type="submit"
               disabled={formState.isSubmitting}
               className="w-full"
