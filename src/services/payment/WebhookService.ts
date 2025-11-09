@@ -681,6 +681,84 @@ export class WebhookService {
   }
 
   /**
+   * Handle setup_intent.succeeded event
+   * Triggered when payment method is successfully collected for $0 invoices
+   */
+  async handleSetupIntentSucceeded(
+    event: Stripe.Event,
+    supabase: SupabaseClient
+  ): Promise<WebhookHandlerResult> {
+    try {
+      const setupIntent = event.data.object as Stripe.SetupIntent
+
+      console.log('[Webhook] 🔧 Processing setup_intent.succeeded', {
+        setupIntentId: setupIntent.id,
+        customerId: setupIntent.customer,
+        paymentMethod: setupIntent.payment_method,
+        metadataKeys: Object.keys(setupIntent.metadata || {}),
+        metadataJSON: JSON.stringify(setupIntent.metadata)
+      })
+
+      // Extract metadata
+      const submissionId = setupIntent.metadata?.submission_id
+      const subscriptionId = setupIntent.metadata?.subscription_id
+
+      console.log('[Webhook] Extracted metadata values:', {
+        submissionId,
+        subscriptionId,
+        hasMetadata: !!setupIntent.metadata,
+        metadataType: typeof setupIntent.metadata
+      })
+
+      if (!submissionId) {
+        console.warn('[Webhook] setup_intent.succeeded without submission_id metadata')
+        return { success: true }
+      }
+
+      // Verify payment method was collected
+      if (!setupIntent.payment_method) {
+        throw new Error('SetupIntent succeeded but no payment method attached')
+      }
+
+      debugLog('[Webhook] Payment method successfully collected for $0 invoice', {
+        submissionId,
+        subscriptionId,
+        setupIntentId: setupIntent.id,
+        paymentMethodId: setupIntent.payment_method
+      })
+
+      // Attach payment method to subscription for future billing
+      if (subscriptionId) {
+        await this.stripe.subscriptions.update(subscriptionId, {
+          default_payment_method: setupIntent.payment_method as string
+        })
+
+        debugLog('[Webhook] Payment method attached to subscription', {
+          subscriptionId,
+          paymentMethodId: setupIntent.payment_method
+        })
+      }
+
+      // Log analytics event
+      await supabase.from('onboarding_analytics').insert({
+        session_id: setupIntent.metadata?.session_id || null,
+        event_type: 'setup_intent_succeeded',
+        metadata: {
+          setup_intent_id: setupIntent.id,
+          submission_id: submissionId,
+          subscription_id: subscriptionId,
+          payment_method_id: setupIntent.payment_method
+        }
+      })
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error handling setup_intent.succeeded:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+    }
+  }
+
+  /**
    * Handle customer.subscription.deleted event
    */
   async handleSubscriptionDeleted(
@@ -693,20 +771,13 @@ export class WebhookService {
       // Find and update submission status
       const lookupResult = await this.findSubmissionByEvent(event, supabase)
       if (lookupResult.submission) {
-        // Only mark as cancelled if payment hasn't been completed yet
-        // This prevents overwriting 'paid' status when subscription is cancelled
-        // after successful payment (e.g., 100% discount with no payment method)
-        if (lookupResult.submission.status !== 'paid') {
-          await supabase
-            .from('onboarding_submissions')
-            .update({
-              status: 'cancelled',
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', lookupResult.submission.id)
-        } else {
-          debugLog('[Webhook] Subscription deleted but payment already completed - keeping status as paid')
-        }
+        await supabase
+          .from('onboarding_submissions')
+          .update({
+            status: 'cancelled',
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', lookupResult.submission.id)
       }
 
       // Log analytics event

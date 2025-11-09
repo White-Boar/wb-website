@@ -383,19 +383,20 @@ test.describe('Step 14: Payment Flow E2E', () => {
     }
   })
 
-  test('100% discount completes without requiring card entry', async ({ page }) => {
-    test.setTimeout(90000)
+  test('100% discount requires payment method for future billing', async ({ page }) => {
+    test.setTimeout(120000)
 
     let sessionId: string | null = null
     let submissionId: string | null = null
     const couponId = `E2E_FREE_${Date.now()}`
 
     try {
+      // Create 100% "once" discount coupon
       await stripe.coupons.create({
         id: couponId,
         percent_off: 100,
         duration: 'once',
-        name: 'E2E Test 100% Once'
+        name: 'E2E Test 100% Discount Once'
       })
 
       const seed = await seedStep14TestSession()
@@ -411,10 +412,12 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(2000)
 
+      // Apply 100% discount code
       const discountInput = page.getByRole('textbox', { name: /discount/i })
       await discountInput.fill(couponId)
       await page.getByRole('button', { name: /Apply|Verify/i }).click()
 
+      // Wait for discount confirmation
       await Promise.race([
         page.waitForFunction((code: string) => {
           const meta = (window as any).__wb_lastDiscountMeta
@@ -427,22 +430,90 @@ test.describe('Step 14: Payment Flow E2E', () => {
 
       await expect(page.locator(`text=/Discount code ${couponId} applied/i`)).toBeVisible({ timeout: 15000 })
 
-      // Payment element should be hidden when no payment required
-      await expect(page.locator('[data-testid="stripe-payment-element"]')).toHaveCount(0)
+      // CRITICAL: Payment form MUST BE VISIBLE (collecting payment method for future billing)
+      const paymentElement = page.locator('[data-testid="stripe-payment-element"]')
+      await expect(paymentElement).toBeVisible({ timeout: 10000 })
+      console.log('✅ TEST ASSERTION: Payment form is visible for 100% discount')
 
+      // Verify amount shows €0.00 under "Due Today"
+      await expect(page.locator('text=/Due Today/i')).toBeVisible()
+      await expect(page.locator('text=/€0\\.00/i').first()).toBeVisible()
+
+      // Fill in test card details (will be saved but not charged)
+      console.log('Filling payment details for future billing...')
+      const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
+      await stripeFrame.locator('input[name="number"]').fill('4242424242424242')
+      await stripeFrame.locator('input[name="expiry"]').fill('12/34')
+      await stripeFrame.locator('input[name="cvc"]').fill('123')
+      console.log('✅ Payment details filled')
+
+      // Accept terms
       await page.locator('#acceptTerms').click()
 
-      const completeButton = page.getByRole('button', { name: /Complete without payment/i })
+      // Button shows "Pay €0" for 100% discount
+      const completeButton = page.getByRole('button', { name: /Pay.*€0/i })
       await expect(completeButton).toBeEnabled()
+      console.log('✅ Complete Payment button enabled')
+
+      // Submit payment form
       await completeButton.click()
 
+      // Should redirect to thank-you page
       await page.waitForURL(url => url.pathname.includes('/thank-you'), { timeout: 30000 })
+      console.log('✅ Redirected to thank-you page')
 
-      // Trigger mock webhook in CI, or wait for real webhook locally
+      // Wait for webhooks (invoice.paid and setup_intent.succeeded)
       await triggerMockWebhookForPayment(submissionId!)
-
       const webhookProcessed = await waitForWebhookProcessing(submissionId!, 'paid')
       expect(webhookProcessed).toBe(true)
+
+      // CRITICAL DATABASE VERIFICATION
+      const { data: submission } = await supabase
+        .from('onboarding_submissions')
+        .select('stripe_subscription_id, stripe_customer_id, status')
+        .eq('id', submissionId)
+        .single()
+
+      expect(submission?.status).toBe('paid')
+      console.log('✅ Submission status is "paid"')
+
+      // CRITICAL STRIPE VERIFICATION - Subscription Status
+      const subscription = await stripe.subscriptions.retrieve(submission!.stripe_subscription_id!)
+
+      expect(subscription.status).toBe('active')
+      console.log('✅ Subscription status is "active" (NOT cancelled)')
+
+      // CRITICAL - Verify payment method is attached
+      expect(subscription.default_payment_method).toBeTruthy()
+      console.log('✅ Payment method attached:', subscription.default_payment_method)
+
+      // Verify first invoice was $0 and paid
+      const invoice = await stripe.invoices.retrieve(subscription.latest_invoice as string)
+      expect(invoice.total).toBe(0)
+      expect(invoice.status).toBe('paid')
+      console.log('✅ Invoice: €0.00, status: paid')
+
+      // Verify discount was applied
+      expect(invoice.total_discount_amounts).toBeTruthy()
+      const totalDiscount = invoice.total_discount_amounts!.reduce((sum, d) => sum + d.amount, 0)
+      expect(totalDiscount).toBe(3500) // Full €35 discounted
+      console.log('✅ Discount applied: €35.00')
+
+      // Verify customer has payment method
+      const customer = await stripe.customers.retrieve(submission!.stripe_customer_id!) as Stripe.Customer
+      expect(customer.invoice_settings.default_payment_method).toBeTruthy()
+      console.log('✅ Customer has default payment method')
+
+      // Verify next invoice will charge full price
+      const upcomingInvoice = await stripe.invoices.retrieveUpcoming({
+        customer: submission!.stripe_customer_id!,
+        subscription: submission!.stripe_subscription_id!
+      })
+      expect(upcomingInvoice.total).toBe(3500) // Next billing: full €35
+      console.log('✅ Next invoice will charge €35.00')
+
+      console.log('\n✅ ALL TESTS PASSED - 100% discount flow working correctly!')
+
     } finally {
       if (sessionId && submissionId) {
         await cleanupTestSession(sessionId, submissionId)

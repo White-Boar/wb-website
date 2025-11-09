@@ -352,8 +352,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
 
     const data = await response.json()
     expect(data.success).toBe(true)
-    expect(data.data.paymentRequired).toBe(false)
-    expect(data.data.clientSecret).toBeNull()
+    // For 100% discount: payment method MUST be collected for future billing
+    expect(data.data.paymentRequired).toBe(true)
+    expect(data.data.clientSecret).toBeTruthy()
+    expect(data.data.clientSecret.startsWith('seti_')).toBe(true) // SetupIntent for $0 invoice
     expect(data.data.sessionId).toBeNull()
     expect(data.data.invoiceId).toBeTruthy()
     expect(data.data.subscriptionId).toBeTruthy()

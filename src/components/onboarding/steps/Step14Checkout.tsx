@@ -89,6 +89,7 @@ interface CheckoutFormProps extends CheckoutWrapperProps {
   paymentRequired: boolean
   hasZeroPayment: boolean
   noPaymentDue: boolean
+  clientSecret: string | null
   stripe: Stripe | null
   elements: StripeElements | null
   discountValidation: DiscountValidation | null
@@ -109,6 +110,7 @@ function CheckoutForm({
   paymentRequired,
   hasZeroPayment,
   noPaymentDue,
+  clientSecret,
   stripe,
   elements,
   discountValidation,
@@ -188,7 +190,9 @@ function CheckoutForm({
     }
   }, [discountValidation])
 
-  const effectiveNoPayment = noPaymentDue || hasZeroPayment || totalDueToday <= 0
+  // For 100% discount: paymentRequired=true (collecting payment method for future billing)
+  // So we need to show payment form even when totalDueToday=0
+  const effectiveNoPayment = noPaymentDue && !paymentRequired
 
   // Fallback prices (only for display before API loads)
   const basePackageFallback = prices?.basePackage || 0
@@ -217,41 +221,82 @@ function CheckoutForm({
       setIsProcessing(true)
       setPaymentError(null)
 
-      // Confirm payment
+      // Submit the form
       const { error: submitError } = await elements.submit()
       if (submitError) {
         throw new Error(submitError.message)
       }
 
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/${locale}/onboarding/thank-you`,
-        },
-        redirect: 'if_required' // Only redirect if payment method requires it
-      })
+      // Detect if this is a SetupIntent (for $0 invoices) or PaymentIntent
+      // SetupIntent client_secret starts with 'seti_', PaymentIntent starts with 'pi_'
+      const isSetupIntent = clientSecret?.startsWith('seti_') || false
 
-      if (error) {
-        // Payment failed - show error
-        throw new Error(error.message)
+      if (isSetupIntent) {
+        // For $0 invoices - collect payment method without charging
+        const { error, setupIntent } = await stripe.confirmSetup({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/${locale}/onboarding/thank-you`,
+          },
+          redirect: 'if_required'
+        })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        // Verify setup succeeded
+        if (setupIntent?.status === 'succeeded') {
+          console.log('[Step14] Payment method collected for future billing (SetupIntent)', {
+            setupIntentId: setupIntent.id
+          })
+          window.location.href = `/${locale}/onboarding/thank-you`
+          return
+        }
+
+        if (setupIntent?.status === 'requires_action') {
+          // Stripe will handle next_action when redirect === 'if_required'
+          return
+        }
+
+        if (setupIntent?.status === 'requires_payment_method') {
+          throw new Error(t('paymentFailed'))
+        }
+
+      } else {
+        // For normal invoices - charge immediately
+        const { error, paymentIntent } = await stripe.confirmPayment({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/${locale}/onboarding/thank-you`,
+          },
+          redirect: 'if_required'
+        })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        // Payment succeeded
+        if (paymentIntent?.status === 'succeeded') {
+          console.log('[Step14] Payment processed successfully (PaymentIntent)', {
+            paymentIntentId: paymentIntent.id
+          })
+          window.location.href = `/${locale}/onboarding/thank-you`
+          return
+        }
+
+        if (paymentIntent?.status === 'requires_payment_method') {
+          throw new Error(t('paymentFailed'))
+        }
+
+        if (paymentIntent?.status === 'requires_action') {
+          // Stripe will handle next_action when redirect === 'if_required'
+          return
+        }
       }
 
-      // Payment succeeded - redirect manually if not already redirected
-      if (paymentIntent && paymentIntent.status === 'succeeded') {
-        window.location.href = `/${locale}/onboarding/thank-you`
-        return
-      }
-
-      if (paymentIntent && paymentIntent.status === 'requires_payment_method') {
-        throw new Error(t('paymentFailed'))
-      }
-
-      if (paymentIntent && paymentIntent.status === 'requires_action') {
-        // Stripe will handle next_action when redirect === 'if_required'
-        return
-      }
-
-      // If payment is processing, Stripe will handle the redirect
+      // If processing, Stripe will handle the redirect
     } catch (error) {
       console.error('Payment error:', error)
       setPaymentError(
@@ -1253,6 +1298,7 @@ function CheckoutFormWrapper(props: CheckoutWrapperProps) {
     activeDiscountCode,
     paymentRequired,
     hasZeroPayment,
+    clientSecret,
     discountValidation,
     setDiscountValidation,
     onDiscountApplied: handleDiscountApplied,
