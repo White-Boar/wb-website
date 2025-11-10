@@ -37,6 +37,14 @@ export class CheckoutSessionService {
     const scheduleId = submission.stripe_subscription_schedule_id as string | null
     const subscriptionId = submission.stripe_subscription_id as string | null
 
+    const isResourceMissing = (err: unknown) => {
+      if (err && typeof err === 'object' && 'code' in err) {
+        const stripeError = err as { code?: string }
+        return stripeError.code === 'resource_missing'
+      }
+      return false
+    }
+
     if (scheduleId) {
       try {
         await stripe.subscriptionSchedules.cancel(scheduleId, {
@@ -44,7 +52,14 @@ export class CheckoutSessionService {
           prorate: false
         })
       } catch (error) {
-        console.error('Failed to cancel subscription schedule during reset:', error)
+        if (isResourceMissing(error)) {
+          console.warn('Subscription schedule already missing during reset, skipping cancel', {
+            scheduleId,
+            submissionId: submission.id
+          })
+        } else {
+          console.error('Failed to cancel subscription schedule during reset:', error)
+        }
       }
     }
 
@@ -55,7 +70,14 @@ export class CheckoutSessionService {
           prorate: false
         })
       } catch (error) {
-        console.error('Failed to cancel subscription during reset:', error)
+        if (isResourceMissing(error)) {
+          console.warn('Subscription already missing during reset, skipping cancel', {
+            subscriptionId,
+            submissionId: submission.id
+          })
+        } else {
+          console.error('Failed to cancel subscription during reset:', error)
+        }
       }
     }
 
