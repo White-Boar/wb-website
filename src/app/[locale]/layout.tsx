@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
+import { CookieConsent } from '@/components/CookieConsent';
 
 export const metadata: Metadata = {
   icons: {
@@ -65,6 +66,7 @@ export default async function LocaleLayout({
       <body className="font-body antialiased">
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
+          <CookieConsent />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -5,9 +5,12 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { X, Linkedin, Github } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { CookiePreferences } from "@/components/CookiePreferences"
+
 export function Footer() {
   const t = useTranslations('footer')
   const navT = useTranslations('nav')
+  const [showCookiePreferences, setShowCookiePreferences] = React.useState(false)
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -71,6 +74,12 @@ export function Footer() {
               >
                 Privacy Policy
               </Link>
+              <button
+                onClick={() => setShowCookiePreferences(true)}
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+              >
+                {t('manageCookies')}
+              </button>
             </nav>
           </div>
 
@@ -121,6 +130,12 @@ export function Footer() {
           </p>
         </div>
       </div>
+
+      <CookiePreferences
+        open={showCookiePreferences}
+        onOpenChange={setShowCookiePreferences}
+        onSave={() => setShowCookiePreferences(false)}
+      />
     </footer>
   )
 }

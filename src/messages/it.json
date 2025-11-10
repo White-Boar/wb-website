@@ -70,7 +70,8 @@
     "brandDescription": "Agenzia digitale guidata dall'IA che potenzia le piccole imprese con una presenza online professionale.",
     "quickLinks": "Link Rapidi",
     "followUs": "Seguici",
-    "copyright": "© 2025 WhiteBoar"
+    "copyright": "© 2025 WhiteBoar",
+    "manageCookies": "Gestisci Cookie"
   },
   "meta": {
     "title": "WhiteBoar - Agenzia Digitale Guidata dall'IA",
@@ -1431,5 +1432,32 @@
         "address": "Indirizzo: Harju maakond, Tallinn, Sakala tn 7-2, 10141, Estonia"
       }
     }
+  },
+  "cookieConsent": {
+    "title": "Utilizziamo i cookie",
+    "description": "Utilizziamo cookie essenziali per la funzionalità del sito e cookie opzionali per le analisi. Puoi personalizzare le tue preferenze o accettare tutti i cookie.",
+    "acceptAll": "Accetta Tutti",
+    "essentialOnly": "Solo Essenziali",
+    "customize": "Personalizza"
+  },
+  "cookiePreferences": {
+    "title": "Preferenze Cookie",
+    "description": "Gestisci le tue preferenze sui cookie. Puoi abilitare o disabilitare diverse categorie di cookie qui sotto.",
+    "essential": {
+      "title": "Cookie Essenziali",
+      "description": "Necessari per il corretto funzionamento del sito web. Questi cookie abilitano funzionalità di base come sicurezza, gestione della rete e accessibilità.",
+      "alwaysActive": "Sempre Attivi"
+    },
+    "analytics": {
+      "title": "Cookie Analitici",
+      "description": "Ci aiutano a capire come i visitatori interagiscono con il nostro sito web raccogliendo e riportando informazioni in modo anonimo."
+    },
+    "marketing": {
+      "title": "Cookie di Marketing",
+      "description": "Utilizzati per tracciare i visitatori attraverso i siti web per visualizzare pubblicità pertinenti e incoraggiarli a interagire."
+    },
+    "acceptAll": "Accetta Tutti",
+    "savePreferences": "Salva Preferenze",
+    "cancel": "Annulla"
   }
 }
