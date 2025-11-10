@@ -759,9 +759,39 @@ export class WebhookService {
         metadataJSON: JSON.stringify(setupIntent.metadata)
       })
 
-      // Extract metadata
-      const submissionId = setupIntent.metadata?.submission_id
-      const subscriptionId = setupIntent.metadata?.subscription_id
+      let submissionId = setupIntent.metadata?.submission_id
+      let subscriptionId = setupIntent.metadata?.subscription_id
+
+      if (!submissionId) {
+        const { data: submissionLookup, error: submissionLookupError } = await supabase
+          .from('onboarding_submissions')
+          .select('id, stripe_subscription_id, session_id')
+          .eq('stripe_payment_id', setupIntent.id)
+          .single()
+
+        if (submissionLookup) {
+          submissionId = submissionLookup.id
+          subscriptionId = subscriptionId ?? submissionLookup.stripe_subscription_id ?? undefined
+
+          setupIntent.metadata = {
+            ...(setupIntent.metadata || {}),
+            submission_id: submissionId,
+            session_id: submissionLookup.session_id || setupIntent.metadata?.session_id || '',
+            ...(subscriptionId ? { subscription_id: subscriptionId } : {})
+          }
+
+          console.log('[Webhook] Enriched setup_intent metadata from database', {
+            setupIntentId: setupIntent.id,
+            submissionId,
+            subscriptionId
+          })
+        } else {
+          console.warn('[Webhook] Unable to enrich setup_intent metadata from database', {
+            setupIntentId: setupIntent.id,
+            lookupError: submissionLookupError
+          })
+        }
+      }
 
       console.log('[Webhook] Extracted metadata values:', {
         submissionId,
