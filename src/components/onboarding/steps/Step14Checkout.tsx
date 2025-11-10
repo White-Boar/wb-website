@@ -842,7 +842,7 @@ function CheckoutForm({
                 className="mt-1 shrink-0"
               />
               <div className="flex-1">
-                <Label htmlFor="acceptTerms" className="text-sm cursor-pointer inline">
+                <Label htmlFor="acceptTerms" className="text-sm text-foreground cursor-pointer inline">
                   {t.rich('termsText', {
                     termsLink: (chunks) => (
                       <Link href="/terms" target="_blank" className="text-primary hover:underline">

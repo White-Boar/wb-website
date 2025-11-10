@@ -392,7 +392,14 @@ export class WebhookService {
       })
 
       if (analyticsError) {
-        console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
+        if (analyticsError.code === '23503') {
+          console.warn('[Webhook] Skipping analytics log because session no longer exists (cleanup already ran).', {
+            submissionId: submission.id,
+            sessionId: submission.session_id
+          })
+        } else {
+          console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
+        }
         // Don't throw - analytics is non-critical, continue processing
       }
 
@@ -572,7 +579,14 @@ export class WebhookService {
       })
 
       if (analyticsError) {
-        console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
+        if (analyticsError.code === '23503') {
+          console.warn('[Webhook] Skipping analytics log because session no longer exists (cleanup already ran).', {
+            submissionId: submission.id,
+            sessionId: submission.session_id
+          })
+        } else {
+          console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
+        }
         // Don't throw - analytics is non-critical, continue processing
       }
 
