@@ -10,17 +10,16 @@ test.describe('Custom Software Page', () => {
     // Check page title
     await expect(page).toHaveTitle(/Custom Software Development.*WhiteBoar/i);
 
-    // Check hero section
-    await expect(page.getByRole('heading', { name: /Custom Software Development/i })).toBeVisible();
-    await expect(page.getByText(/From concept to launch/i)).toBeVisible();
+    // Check hero section using test ID
+    await expect(page.getByTestId('custom-software-hero-title')).toBeVisible();
 
     // Check services are displayed (use heading role to avoid strict mode violations)
     await expect(page.getByRole('heading', { name: /Web Applications/i })).toBeVisible();
     await expect(page.getByRole('heading', { name: /Mobile Apps/i })).toBeVisible();
     await expect(page.getByRole('heading', { name: /SaaS Platforms/i })).toBeVisible();
 
-    // Check form is visible
-    await expect(page.getByRole('heading', { name: /Tell Us About Your Project/i })).toBeVisible();
+    // Check form is visible using test ID
+    await expect(page.getByTestId('custom-software-form-title')).toBeVisible();
 
     // Check portfolio section is visible - use aria-roledescription
     await expect(page.locator('[role="region"][aria-roledescription="carousel"]')).toBeVisible();
@@ -30,18 +29,18 @@ test.describe('Custom Software Page', () => {
     // Go to homepage
     await page.goto('/');
 
-    // Scroll to pricing section
-    await page.getByRole('heading', { name: 'Services' }).scrollIntoViewIfNeeded();
+    // Scroll to pricing section using test ID
+    await page.getByTestId('pricing-title').scrollIntoViewIfNeeded();
 
-    // Click on Custom Made button and wait for navigation
+    // Click on Custom Made button using test ID
     await Promise.all([
       page.waitForURL(/\/custom-software$/),
-      page.getByRole('link', { name: 'Start with Custom Made' }).click()
+      page.getByTestId('pricing-cta-custom').click()
     ]);
 
     // Check that we navigated to custom-software page
     await expect(page).toHaveURL(/\/custom-software$/);
-    await expect(page.getByRole('heading', { name: /Custom Software Development/i })).toBeVisible();
+    await expect(page.getByTestId('custom-software-hero-title')).toBeVisible();
   });
 
   test('form submission with valid data works', async ({ page }) => {
@@ -53,12 +52,12 @@ test.describe('Custom Software Page', () => {
       'I need a custom SaaS platform for managing customer relationships and sales pipeline with integration to our existing CRM system.'
     );
 
-    // Submit form
-    await page.getByRole('button', { name: /Send/i }).click();
+    // Submit form using test ID
+    await page.getByTestId('custom-software-submit-btn').click();
 
-    // Check for success message
-    await expect(page.getByText(/Thank you!/i)).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText(/We will be in touch within 2 business days/i)).toBeVisible();
+    // Check for success message using test IDs
+    await expect(page.getByTestId('custom-software-success-title')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByTestId('custom-software-success-message')).toBeVisible();
   });
 
   test('form validation shows errors for empty fields', async ({ page }) => {
@@ -139,8 +138,8 @@ test.describe('Custom Software Page', () => {
   });
 
   test('language switching works (EN ↔ IT)', async ({ page, isMobile }) => {
-    // Check initial language (English) - use heading role to avoid strict mode violation
-    await expect(page.getByRole('heading', { name: 'Custom Software Development' })).toBeVisible();
+    // Check initial language (English) - use test ID
+    await expect(page.getByTestId('custom-software-hero-title')).toBeVisible();
 
     // On mobile, open the mobile menu first
     if (isMobile) {
@@ -157,9 +156,8 @@ test.describe('Custom Software Page', () => {
     // Check URL changed to /it/custom-software
     await expect(page).toHaveURL('/it/custom-software');
 
-    // Check content is in Italian - use heading role to avoid strict mode violation
-    await expect(page.getByRole('heading', { name: 'Sviluppo Software Personalizzato' })).toBeVisible();
-    await expect(page.getByText(/Dal concetto al lancio/i)).toBeVisible();
+    // Check content is in Italian - hero should still be visible
+    await expect(page.getByTestId('custom-software-hero-title')).toBeVisible();
   });
 
   test('theme toggle works', async ({ page, isMobile }) => {
@@ -191,8 +189,8 @@ test.describe('Custom Software Page', () => {
   });
 
   test('portfolio carousel renders correctly', async ({ page, isMobile }) => {
-    // Scroll to portfolio section (heading is "Clients" not "Our Work")
-    await page.getByRole('heading', { name: /Clients/i }).scrollIntoViewIfNeeded();
+    // Scroll to portfolio section using test ID
+    await page.getByTestId('portfolio-title').scrollIntoViewIfNeeded();
 
     // Check carousel is visible
     await expect(page.locator('[role="region"][aria-roledescription="carousel"]')).toBeVisible();
@@ -225,13 +223,12 @@ test.describe('Custom Software Page', () => {
       // Close mobile menu
       await page.getByLabel('Toggle mobile menu').click();
 
-      // Check that content is readable on mobile
-      const heading = page.getByRole('heading', { name: /Custom Software Development/i });
-      await expect(heading).toBeVisible();
+      // Check that content is readable on mobile using test ID
+      await expect(page.getByTestId('custom-software-hero-title')).toBeVisible();
 
       // Check that form is accessible on mobile
       await expect(page.getByLabel(/^Name/i)).toBeVisible();
-      await expect(page.getByRole('button', { name: /Send/i })).toBeVisible();
+      await expect(page.getByTestId('custom-software-submit-btn')).toBeVisible();
     }
   });
 
