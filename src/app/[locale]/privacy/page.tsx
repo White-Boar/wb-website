@@ -165,6 +165,7 @@ export default async function PrivacyPage({
                 </p>
                 <ul className="list-disc list-inside space-y-2 ml-4">
                   <li className="text-foreground/90">{t('sections.dataSharing.items.vercel')}</li>
+                  <li className="text-foreground/90">{t('sections.dataSharing.items.supabase')}</li>
                   <li className="text-foreground/90">{t('sections.dataSharing.items.stripe')}</li>
                   <li className="text-foreground/90">{t('sections.dataSharing.items.analytics')}</li>
                   <li className="text-foreground/90">{t('sections.dataSharing.items.email')}</li>
