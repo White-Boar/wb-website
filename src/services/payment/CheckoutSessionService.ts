@@ -24,7 +24,7 @@ export class CheckoutSessionService {
 
   private async cancelPendingStripeResources(
     submission: any,
-    supabase: SupabaseClient
+    supabaseClient: SupabaseClient
   ): Promise<void> {
     const stripe = this.stripeService.getStripeInstance()
 
@@ -81,7 +81,7 @@ export class CheckoutSessionService {
       }
     }
 
-    const { error: cleanupError } = await supabase
+    const { error: cleanupError } = await supabaseClient
       .from('onboarding_submissions')
       .update({
         stripe_subscription_id: null,
@@ -107,19 +107,19 @@ export class CheckoutSessionService {
    * Validate submission and check if it's eligible for payment
    *
    * @param submissionId - Onboarding submission ID
-   * @param supabase - Supabase client
+   * @param supabaseClient - Supabase client
    * @returns Validation result with submission data or error
    */
   async validateSubmission(
     submissionId: string,
-    supabase: SupabaseClient
+    supabaseClient: SupabaseClient
   ): Promise<SubmissionValidationResult> {
     // Fetch submission from database
     let submission: any | null = null
     let fetchError: any = null
 
     for (let attempt = 0; attempt < 2 && !submission; attempt++) {
-      const { data, error } = await supabase
+      const { data, error } = await supabaseClient
         .from('onboarding_submissions')
         .select('*')
         .eq('id', submissionId)
@@ -195,16 +195,16 @@ export class CheckoutSessionService {
    * Check rate limiting for payment attempts
    *
    * @param sessionId - Onboarding session ID
-   * @param supabase - Supabase client
+   * @param supabaseClient - Supabase client
    * @returns Rate limit status
    */
   async checkRateLimit(
     sessionId: string,
-    supabase: SupabaseClient
+    supabaseClient: SupabaseClient
   ): Promise<RateLimitResult> {
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
 
-    const { count: recentAttempts } = await supabase
+    const { count: recentAttempts } = await supabaseClient
       .from('onboarding_analytics')
       .select('*', { count: 'exact', head: true })
       .eq('session_id', sessionId)
@@ -227,15 +227,15 @@ export class CheckoutSessionService {
    * @param sessionId - Onboarding session ID
    * @param submissionId - Submission ID
    * @param languageCount - Number of language add-ons
-   * @param supabase - Supabase client
+   * @param supabaseClient - Supabase client
    */
   async logPaymentAttempt(
     sessionId: string,
     submissionId: string,
     languageCount: number,
-    supabase: SupabaseClient
+    supabaseClient: SupabaseClient
   ): Promise<void> {
-    await supabase.from('onboarding_analytics').insert({
+    await supabaseClient.from('onboarding_analytics').insert({
       session_id: sessionId,
       event_type: 'payment_attempt',
       event_data: {
@@ -277,12 +277,12 @@ export class CheckoutSessionService {
    * Create a complete checkout session with payment intent
    *
    * @param params - Session creation parameters
-   * @param supabase - Supabase client
+   * @param supabaseClient - Supabase client
    * @returns Checkout session result with client secret
    */
   async createCheckoutSession(
     params: CreateSessionParams,
-    supabase: SupabaseClient
+    supabaseClient: SupabaseClient
   ): Promise<CheckoutSessionResult> {
     const {
       submissionId,
@@ -292,7 +292,7 @@ export class CheckoutSessionService {
 
     try {
       // 1. Validate submission
-      const validationResult = await this.validateSubmission(submissionId, supabase)
+      const validationResult = await this.validateSubmission(submissionId, supabaseClient)
       if (!validationResult.valid || !validationResult.submission) {
         return {
           success: false,
@@ -317,7 +317,7 @@ export class CheckoutSessionService {
       // 1a. Handle existing subscription - retrieve existing client secret
     if (validationResult.existingSubscription && submission.stripe_subscription_id) {
       console.warn('Existing subscription detected – resetting Stripe resources')
-      await this.cancelPendingStripeResources(submission, supabase)
+      await this.cancelPendingStripeResources(submission, supabaseClient)
       submission.stripe_subscription_id = null
       submission.stripe_subscription_schedule_id = null
       validationResult.existingSubscription = false
@@ -338,7 +338,7 @@ export class CheckoutSessionService {
       }
 
       // 3. Check rate limiting
-      const rateLimitResult = await this.checkRateLimit(submission.session_id, supabase)
+      const rateLimitResult = await this.checkRateLimit(submission.session_id, supabaseClient)
       if (!rateLimitResult.allowed) {
         return {
           success: false,
@@ -356,7 +356,7 @@ export class CheckoutSessionService {
         submission.session_id,
         submissionId,
         languagesToUse.length,
-        supabase
+        supabaseClient
       )
 
       // 5. Extract customer information
@@ -457,7 +457,8 @@ export class CheckoutSessionService {
         languagesToUse,
         submissionId,
         submission.session_id,
-        validatedCoupon?.id ?? null
+        validatedCoupon?.id ?? null,
+        supabaseClient
       )
 
       console.log('[CheckoutSessionService] addLanguageAddOns result', {
@@ -471,7 +472,7 @@ export class CheckoutSessionService {
       })
 
       // 10. Update submission with Stripe IDs (including payment intent ID for mock webhooks)
-      const { error: updateError } = await supabase
+      const { error: updateError } = await supabaseClient
         .from('onboarding_submissions')
         .update({
           stripe_customer_id: customer.id,
@@ -544,15 +545,17 @@ export class CheckoutSessionService {
   /**
    * Add language add-ons to the subscription invoice
    *
+   * @param supabaseClient - Supabase client for persistence when needed
    * @private
-   */
+  */
   private async addLanguageAddOns(
     customerId: string,
     subscription: Stripe.Subscription,
     languageCodes: string[],
     submissionId: string,
     sessionId: string,
-    couponId?: string | null
+    couponId: string | null,
+    supabaseClient: SupabaseClient
   ): Promise<{
     paymentRequired: boolean
     clientSecret: string | null
@@ -672,7 +675,7 @@ export class CheckoutSessionService {
         throw new Error('SetupIntent created but client_secret is missing')
       }
 
-      const { error: setupIntentIdSaveError } = await supabase
+      const { error: setupIntentIdSaveError } = await supabaseClient
         .from('onboarding_submissions')
         .update({
           stripe_payment_id: setupIntent.id,
