@@ -136,7 +136,7 @@ export async function POST(request: NextRequest) {
         paymentRequired: result.paymentRequired,
         clientSecret: result.clientSecret,
         invoiceId: result.invoiceId || null,
-        sessionId: result.paymentRequired ? result.invoiceId || null : null,
+        sessionId: null, // Not using Stripe Checkout Sessions - direct invoice + SetupIntent/PaymentIntent flow
         customerId: result.customerId,
         subscriptionId: result.subscriptionId,
         invoiceTotal: result.invoiceTotal ?? null,

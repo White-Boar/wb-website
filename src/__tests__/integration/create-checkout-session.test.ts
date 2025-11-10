@@ -38,7 +38,7 @@ describe('Stripe Checkout Session Creation Tests', () => {
       id: testSessionId,
       email: testEmail,
       current_step: 14,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
       form_data: {
         step3: {
           businessName: 'Checkout Test Business',
@@ -352,8 +352,10 @@ describe('Stripe Checkout Session Creation Tests', () => {
 
     const data = await response.json()
     expect(data.success).toBe(true)
-    expect(data.data.paymentRequired).toBe(false)
-    expect(data.data.clientSecret).toBeNull()
+    // For 100% discount: payment method MUST be collected for future billing
+    expect(data.data.paymentRequired).toBe(true)
+    expect(data.data.clientSecret).toBeTruthy()
+    expect(data.data.clientSecret.startsWith('seti_')).toBe(true) // SetupIntent for $0 invoice
     expect(data.data.sessionId).toBeNull()
     expect(data.data.invoiceId).toBeTruthy()
     expect(data.data.subscriptionId).toBeTruthy()

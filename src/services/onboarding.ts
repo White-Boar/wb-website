@@ -35,7 +35,7 @@ export class OnboardingService {
         form_data: { firstName: name.split(' ')[0], lastName: name.split(' ')[1] || '' },
         email_verified: false,
         locale,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+        expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 days
         verification_code: null,
         verification_attempts: 0
       }
@@ -78,7 +78,7 @@ export class OnboardingService {
         form_data: { name, email },
         email_verified: false,
         locale,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days
+        expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(), // 60 days
         verification_code: Math.floor(100000 + Math.random() * 900000).toString(), // 6-digit code
         verification_attempts: 0
       }
@@ -179,7 +179,7 @@ export class OnboardingService {
    */
   static async refreshSession(sessionId: string): Promise<void> {
     try {
-      const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+      const newExpiresAt = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString()
 
       const { error } = await supabase
         .from('onboarding_sessions')

@@ -133,7 +133,7 @@ export async function seedStep14TestSession(
       currentStep: 14,
       completedSteps: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
       formData: data.formData, // Full form data from seed API
-      sessionExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      sessionExpiresAt: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
       isSessionExpired: false
     },
     version: 1 // Must match version in onboarding.ts

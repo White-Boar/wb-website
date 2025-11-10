@@ -149,6 +149,10 @@ async function processWebhookEvent({
         result = await webhookService.handlePaymentIntentSucceeded(event, supabase)
         break
 
+      case 'setup_intent.succeeded':
+        result = await webhookService.handleSetupIntentSucceeded(event, supabase)
+        break
+
       case 'customer.subscription.created':
         result = await webhookService.handleSubscriptionCreated(event, supabase)
         break

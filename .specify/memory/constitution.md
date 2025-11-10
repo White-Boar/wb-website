@@ -71,7 +71,7 @@ Red-Green-Refactor cycle is mandatory. Features without passing tests cannot be 
 All client-side state persistence MUST include:
 - Schema versioning for migration compatibility
 - Graceful degradation when stored data is invalid/outdated
-- Clear expiration policies (default: 7 days for user sessions)
+- Clear expiration policies (default: 60 days for user sessions)
 - State cleanup utilities for testing and user-initiated resets
 - Recovery mechanisms for corrupted state
 

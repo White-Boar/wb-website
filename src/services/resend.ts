@@ -317,7 +317,7 @@ export class EmailService {
         ? 'Non perdere la tua creazione WhiteBoar'
         : "Don't lose your WhiteBoar creation"
 
-      const recoveryUrl = `${APP_URL}/onboarding?session=${sessionId}`
+      const recoveryUrl = `${APP_URL}/onboarding?sessionId=${sessionId}`
 
       const htmlContent = this.generateRecoveryEmailHTML(name, recoveryUrl, currentStep, locale)
       const textContent = this.generateRecoveryEmailText(name, recoveryUrl, currentStep, locale)

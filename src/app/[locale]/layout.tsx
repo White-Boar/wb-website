@@ -6,6 +6,7 @@ import { routing } from '@/i18n/routing';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
 import { CookieConsent } from '@/components/CookieConsent';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   icons: {
@@ -59,6 +60,22 @@ export default async function LocaleLayout({
                   // Keep default 'light' class
                 }
               })();
+            `,
+          }}
+        />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-N0XKF0819Q"
+          strategy="afterInteractive"
+          nonce={nonce || undefined}
+        />
+        <script
+          nonce={nonce || undefined}
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-N0XKF0819Q');
             `,
           }}
         />

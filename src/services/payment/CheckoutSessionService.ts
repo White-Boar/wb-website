@@ -630,14 +630,40 @@ export class CheckoutSessionService {
     const invoiceIdValue = finalizedInvoice.id
 
     if (finalizedInvoice.amount_due <= 0) {
-      // Stripe automatically marks zero-amount invoices as paid
+      // For $0 invoices, we must collect payment method for future billing
+      // Subscription schedules don't support payment_behavior parameter, so Stripe
+      // never auto-creates pending_setup_intent. We must create SetupIntent manually.
+
+      const setupIntent = await stripe.setupIntents.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        usage: 'off_session',  // Allow future automatic charges
+        metadata: {
+          submission_id: submissionId,
+          session_id: sessionId,
+          invoice_id: invoiceId,
+          subscription_id: subscription.id
+        }
+      })
+
+      if (!setupIntent.client_secret) {
+        throw new Error('SetupIntent created but client_secret is missing')
+      }
+
+      console.log('[CheckoutSessionService] Created SetupIntent for $0 invoice', {
+        submissionId,
+        setupIntentId: setupIntent.id,
+        invoiceTotal: 0,
+        invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0)
+      })
+
       return {
-        paymentRequired: false,
-        clientSecret: null,
+        paymentRequired: true,  // Show payment form to collect payment method
+        clientSecret: setupIntent.client_secret,  // SetupIntent client_secret
         invoiceId: invoiceIdValue,
-        invoiceTotal: finalizedInvoice.total ?? 0,
+        invoiceTotal: 0,
         invoiceDiscount: (finalizedInvoice.total_discount_amounts || []).reduce((sum, d) => sum + d.amount, 0),
-        paymentIntentId: null
+        paymentIntentId: null  // No PaymentIntent for $0 invoices
       }
     }
 

@@ -42,7 +42,7 @@ export class OnboardingClientService {
     return await circuitBreakers.sessionService.execute(async () => {
       const result = await retry.critical(async () => {
         const expiresAt = new Date()
-        expiresAt.setDate(expiresAt.getDate() + 7) // 7 days from now
+        expiresAt.setDate(expiresAt.getDate() + 60) // 60 days from now
 
         // Generate a unique temporary email as placeholder (required by schema)
         // Use crypto.randomUUID() if available, fallback for Firefox in non-HTTPS contexts
@@ -106,7 +106,7 @@ export class OnboardingClientService {
   ): Promise<OnboardingSession> {
     const cleanEmail = email.toLowerCase().trim()
     const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 7)
+    expiresAt.setDate(expiresAt.getDate() + 60)
 
     const { data, error } = await supabase
       .from('onboarding_sessions')
@@ -197,7 +197,7 @@ export class OnboardingClientService {
    */
   static async refreshSession(sessionId: string): Promise<void> {
     const newExpiresAt = new Date()
-    newExpiresAt.setDate(newExpiresAt.getDate() + 7)
+    newExpiresAt.setDate(newExpiresAt.getDate() + 60)
 
     const { error } = await supabase
       .from('onboarding_sessions')

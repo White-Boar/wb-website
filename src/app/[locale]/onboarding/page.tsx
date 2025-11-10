@@ -25,7 +25,30 @@ export default function OnboardingWelcome() {
     setMounted(true)
 
     const checkSessionAndPayment = async () => {
-      // Check for existing session after mount
+      // PRIORITY 1: Check for session ID in URL (recovery email link)
+      const urlParams = new URLSearchParams(window.location.search)
+      const urlSessionId = urlParams.get('sessionId')
+
+      if (urlSessionId) {
+        try {
+          // Load session from URL parameter (recovery email scenario)
+          const { initSession } = useOnboardingStore.getState()
+          await initSession(urlSessionId)
+
+          // Get the current step from the loaded session
+          const loadedSession = useOnboardingStore.getState()
+          const step = loadedSession.currentStep || 1
+
+          // Redirect to the appropriate step
+          router.push(`/${locale}/onboarding/step/${step}`)
+          return
+        } catch (error) {
+          console.error('Failed to load session from URL:', error)
+          // Fall through to check localStorage
+        }
+      }
+
+      // PRIORITY 2: Check for existing session in localStorage
       const existingSession = loadExistingSession()
 
       if (existingSession && existingSession.id) {

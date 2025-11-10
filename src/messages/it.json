@@ -1229,10 +1229,12 @@
       "subscription": {
         "title": "4. Termini di Abbonamento",
         "monthly": "Abbonamento mensile con fatturazione ricorrente",
+        "commitment": "L'abbonamento base richiede un periodo minimo di impegno di 12 mesi",
         "included": "L'abbonamento base include hosting del sito web e fino a 10.000 visualizzazioni di pagina mensili",
-        "addons": "Componenti aggiuntivi una tantum opzionali disponibili per funzionalità aggiuntive",
+        "overage": "Il traffico che supera 1 milione di visitatori mensili comporterà un costo aggiuntivo di €50 per milione di visitatori",
+        "addons": "Componenti aggiuntivi una tantum opzionali disponibili per funzionalità aggiuntive. Le tariffe dei componenti aggiuntivi non sono rimborsabili una volta avviata la configurazione",
         "renewal": "Gli abbonamenti si rinnovano automaticamente salvo cancellazione",
-        "cancellation": "Puoi cancellare il tuo abbonamento in qualsiasi momento tramite le impostazioni del tuo account"
+        "cancellation": "Puoi cancellare il tuo abbonamento in qualsiasi momento tramite le impostazioni del tuo account. Si applica la garanzia soddisfatti o rimborsati di 30 giorni come descritto nella Sezione 5. Non vengono forniti rimborsi per i mesi rimanenti dopo il periodo di garanzia"
       },
       "guarantee": {
         "title": "5. Garanzia Soddisfatti o Rimborsati",
@@ -1241,7 +1243,8 @@
       "domain": {
         "title": "6. Trasferimento di Dominio e Sito Web",
         "ownership": "Mantieni la proprietà di tutti i contenuti che fornisci a WhiteBoar",
-        "transfer": "Il trasferimento del dominio alla tua proprietà è disponibile su richiesta dopo 1 anno di abbonamento attivo",
+        "registration": "I domini sono inizialmente registrati e mantenuti a nome di WhiteBoar per la durata del tuo abbonamento attivo",
+        "transfer": "Il trasferimento completo del dominio alla tua proprietà è disponibile su richiesta dopo 1 anno di abbonamento attivo",
         "process": "Le richieste di trasferimento devono essere inviate a info@consciousdigital.org e saranno elaborate entro 14 giorni lavorativi",
         "requirements": "L'account deve essere in regola senza pagamenti in sospeso"
       },
@@ -1266,7 +1269,7 @@
       "serviceLevel": {
         "title": "9. Livello di Servizio e Disponibilità",
         "effort": "WhiteBoar fornisce hosting su base best-effort",
-        "uptime": "Pur cercando di garantire la massima disponibilità, non garantiamo un servizio ininterrotto",
+        "uptime": "Puntiamo a un uptime del 99,9% ma non forniamo garanzie SLA. Pur cercando di garantire la massima disponibilità, non garantiamo un servizio ininterrotto",
         "maintenance": "La manutenzione programmata sarà eseguita con preavviso quando possibile",
         "support": "Il supporto tecnico è fornito via email all'indirizzo info@consciousdigital.org"
       },
@@ -1287,7 +1290,7 @@
       },
       "governingLaw": {
         "title": "13. Legge Applicabile e Controversie",
-        "content": "Questi termini saranno regolati e interpretati in conformità con i principi di diritto commerciale internazionale applicabili. Eventuali controversie saranno risolte attraverso negoziazione in buona fede o, se necessario, attraverso arbitrato."
+        "content": "Questi termini saranno regolati e interpretati in conformità con le leggi della Toscana, Italia, e le normative dell'Unione Europea applicabili. Eventuali controversie saranno risolte attraverso negoziazione in buona fede o, se necessario, attraverso arbitrato in conformità con le procedure di arbitrato italiane."
       },
       "contact": {
         "title": "14. Informazioni di Contatto",
@@ -1322,7 +1325,7 @@
           "items": {
             "contact": "Nome, indirizzo email, numero di telefono",
             "business": "Nome dell'azienda, indirizzo, partita IVA",
-            "payment": "Informazioni di pagamento (elaborate in sicurezza da Stripe)"
+            "payment": "Informazioni di pagamento (elaborate in sicurezza da Stripe. WhiteBoar non archivia né ha accesso ai dettagli della tua carta di credito)"
           }
         },
         "business": {
@@ -1350,7 +1353,7 @@
           "branding": "Generare identità di marca e design di siti web personalizzati",
           "hosting": "Ospitare e mantenere il tuo sito web",
           "communication": "Comunicare con te riguardo al tuo servizio e account",
-          "improvement": "Migliorare i nostri algoritmi IA e la qualità del servizio",
+          "improvement": "Migliorare i nostri algoritmi IA e la qualità del servizio. I dati dei clienti possono essere anonimizzati e aggregati per il miglioramento dei modelli AI. I dati identificativi individuali non vengono mai utilizzati per l'addestramento dei modelli AI",
           "legal": "Conformarci agli obblighi legali e proteggere i nostri diritti",
           "analytics": "Comprendere come vengono utilizzati i nostri servizi (solo dati anonimizzati)"
         }
@@ -1361,7 +1364,7 @@
         "items": {
           "contract": "Esecuzione del contratto - per fornire i servizi richiesti",
           "consent": "Il tuo consenso esplicito per specifiche attività di trattamento",
-          "legitimate": "Interessi legittimi - per migliorare i nostri servizi e prevenire frodi",
+          "legitimate": "Interessi legittimi - inclusa la prevenzione delle frodi, la sicurezza del servizio, l'analisi aziendale utilizzando dati anonimizzati e il miglioramento della qualità del servizio. Conduciamo test di bilanciamento per garantire che i nostri interessi non prevalgano sui tuoi diritti",
           "legal": "Obblighi legali - per conformarci a requisiti fiscali e normativi"
         }
       },
@@ -1370,9 +1373,10 @@
         "intro": "Condividiamo le tue informazioni solo con:",
         "items": {
           "vercel": "Vercel - per hosting e deployment di siti web (server situati nell'UE)",
-          "stripe": "Stripe - per l'elaborazione sicura dei pagamenti",
-          "analytics": "Google Analytics - per statistiche di utilizzo anonime",
-          "email": "Fornitori di servizi email - per comunicazioni di servizio"
+          "supabase": "Supabase - per hosting database e autenticazione utente (server situati nell'UE)",
+          "stripe": "Stripe - per l'elaborazione sicura dei pagamenti (conforme PCI-DSS)",
+          "analytics": "Google Analytics - per statistiche di utilizzo anonime con anonimizzazione IP abilitata",
+          "email": "Resend - per la consegna di email transazionali e comunicazioni di servizio"
         },
         "location": "Tutto il trattamento dei dati avviene all'interno dell'Unione Europea. Non trasferiamo dati al di fuori dell'UE.",
         "noSale": "Non vendiamo mai le tue informazioni personali a terzi."
@@ -1380,7 +1384,7 @@
       "dataRetention": {
         "title": "7. Conservazione dei Dati",
         "active": "Conserviamo i tuoi dati personali finché il tuo account è attivo",
-        "terminated": "Dopo la chiusura dell'account, i dati vengono conservati per 30 giorni poi eliminati permanentemente",
+        "terminated": "Dopo la chiusura dell'account, le informazioni personali (nome, email, dettagli di contatto) vengono eliminate dopo 30 giorni. Il codice del sito web generato e i design vengono conservati per 90 giorni per consentire il recupero se necessario, quindi eliminati permanentemente",
         "legal": "Alcune informazioni possono essere conservate più a lungo ove richiesto dalla legge (es. registri fiscali per 7 anni)",
         "backups": "Le copie di backup vengono eliminate automaticamente entro 90 giorni"
       },
@@ -1396,15 +1400,15 @@
           "object": "Opposizione - opporti a determinati tipi di trattamento",
           "withdraw": "Revoca del consenso - revocare il consenso in qualsiasi momento"
         },
-        "exercise": "Per esercitare uno di questi diritti, contattaci all'indirizzo info@consciousdigital.org",
+        "exercise": "Per esercitare uno di questi diritti, contattaci all'indirizzo info@consciousdigital.org. Risponderemo alla tua richiesta entro 30 giorni come richiesto dal GDPR",
         "complaint": "Hai anche il diritto di presentare un reclamo all'autorità locale per la protezione dei dati"
       },
       "cookies": {
         "title": "9. Cookie e Tracciamento",
-        "analytics": "Utilizziamo cookie di Google Analytics per comprendere l'utilizzo del sito web (anonimi)",
+        "analytics": "Utilizziamo cookie di Google Analytics per comprendere l'utilizzo del sito web. L'anonimizzazione IP è abilitata, i dati vengono conservati per 26 mesi e tutti i dati sono anonimizzati. Puoi disattivare in qualsiasi momento utilizzando le impostazioni del browser o il componente aggiuntivo per il browser di disattivazione di Google Analytics",
         "essential": "Cookie essenziali per la funzionalità del sito web e le preferenze dell'utente (tema, lingua)",
         "noMarketing": "Non utilizziamo cookie di marketing o pubblicitari",
-        "control": "Puoi controllare i cookie tramite le impostazioni del tuo browser"
+        "control": "Puoi controllare i cookie tramite le impostazioni del tuo browser o disattivare il tracciamento di Google Analytics"
       },
       "security": {
         "title": "10. Sicurezza dei Dati",

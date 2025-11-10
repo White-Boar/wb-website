@@ -681,6 +681,98 @@ export class WebhookService {
   }
 
   /**
+   * Handle setup_intent.succeeded event
+   * Triggered when payment method is successfully collected for $0 invoices
+   */
+  async handleSetupIntentSucceeded(
+    event: Stripe.Event,
+    supabase: SupabaseClient
+  ): Promise<WebhookHandlerResult> {
+    try {
+      const setupIntent = event.data.object as Stripe.SetupIntent
+
+      console.log('[Webhook] 🔧 Processing setup_intent.succeeded', {
+        setupIntentId: setupIntent.id,
+        customerId: setupIntent.customer,
+        paymentMethod: setupIntent.payment_method,
+        metadataKeys: Object.keys(setupIntent.metadata || {}),
+        metadataJSON: JSON.stringify(setupIntent.metadata)
+      })
+
+      // Extract metadata
+      const submissionId = setupIntent.metadata?.submission_id
+      const subscriptionId = setupIntent.metadata?.subscription_id
+
+      console.log('[Webhook] Extracted metadata values:', {
+        submissionId,
+        subscriptionId,
+        hasMetadata: !!setupIntent.metadata,
+        metadataType: typeof setupIntent.metadata
+      })
+
+      if (!submissionId) {
+        console.warn('[Webhook] setup_intent.succeeded without submission_id metadata')
+        return { success: true }
+      }
+
+      // Verify payment method was collected
+      if (!setupIntent.payment_method) {
+        throw new Error('SetupIntent succeeded but no payment method attached')
+      }
+
+      debugLog('[Webhook] Payment method successfully collected for $0 invoice', {
+        submissionId,
+        subscriptionId,
+        setupIntentId: setupIntent.id,
+        paymentMethodId: setupIntent.payment_method
+      })
+
+      // Attach payment method to subscription for future billing
+      if (subscriptionId) {
+        await this.stripe.subscriptions.update(subscriptionId, {
+          default_payment_method: setupIntent.payment_method as string
+        })
+
+        debugLog('[Webhook] Payment method attached to subscription', {
+          subscriptionId,
+          paymentMethodId: setupIntent.payment_method
+        })
+      }
+
+      // Also set as customer's default payment method for future invoices
+      if (setupIntent.customer) {
+        await this.stripe.customers.update(setupIntent.customer as string, {
+          invoice_settings: {
+            default_payment_method: setupIntent.payment_method as string
+          }
+        })
+
+        debugLog('[Webhook] Payment method set as customer default', {
+          customerId: setupIntent.customer,
+          paymentMethodId: setupIntent.payment_method
+        })
+      }
+
+      // Log analytics event
+      await supabase.from('onboarding_analytics').insert({
+        session_id: setupIntent.metadata?.session_id || null,
+        event_type: 'setup_intent_succeeded',
+        metadata: {
+          setup_intent_id: setupIntent.id,
+          submission_id: submissionId,
+          subscription_id: subscriptionId,
+          payment_method_id: setupIntent.payment_method
+        }
+      })
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error handling setup_intent.succeeded:', error)
+      return { success: false, error: error instanceof Error ? error.message : 'Unknown error' }
+    }
+  }
+
+  /**
    * Handle customer.subscription.deleted event
    */
   async handleSubscriptionDeleted(

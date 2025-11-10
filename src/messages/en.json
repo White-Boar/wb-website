@@ -1229,10 +1229,12 @@
       "subscription": {
         "title": "4. Subscription Terms",
         "monthly": "Monthly subscription with recurring billing",
+        "commitment": "Base subscription requires a 12-month minimum commitment period",
         "included": "Base subscription includes website hosting and up to 10,000 monthly page views",
-        "addons": "Optional one-time add-ons available for additional features",
+        "overage": "Traffic exceeding 1 million monthly visitors will incur an additional charge of €50 per million visitors",
+        "addons": "Optional one-time add-ons available for additional features. Add-on fees are non-refundable once setup has been initiated",
         "renewal": "Subscriptions automatically renew unless cancelled",
-        "cancellation": "You may cancel your subscription at any time through your account settings"
+        "cancellation": "You may cancel your subscription at any time through your account settings. The 30-day money-back guarantee applies as described in Section 5. No refunds are provided for remaining months after the guarantee period"
       },
       "guarantee": {
         "title": "5. Money-Back Guarantee",
@@ -1241,7 +1243,8 @@
       "domain": {
         "title": "6. Domain and Website Transfer",
         "ownership": "You retain ownership of all content you provide to WhiteBoar",
-        "transfer": "Domain transfer to your ownership is available upon request after 1 year of active subscription",
+        "registration": "Domains are initially registered and maintained in WhiteBoar's name for the duration of your active subscription",
+        "transfer": "Full domain transfer to your ownership is available upon request after 1 year of active subscription",
         "process": "Transfer requests should be sent to info@consciousdigital.org and will be processed within 14 business days",
         "requirements": "Account must be in good standing with no outstanding payments"
       },
@@ -1266,7 +1269,7 @@
       "serviceLevel": {
         "title": "9. Service Level and Availability",
         "effort": "WhiteBoar provides hosting on a best-effort basis",
-        "uptime": "While we strive for maximum uptime, we do not guarantee uninterrupted service",
+        "uptime": "We target 99.9% uptime but provide no SLA guarantees. While we strive for maximum uptime, we do not guarantee uninterrupted service",
         "maintenance": "Scheduled maintenance will be performed with advance notice when possible",
         "support": "Technical support is provided via email at info@consciousdigital.org"
       },
@@ -1287,7 +1290,7 @@
       },
       "governingLaw": {
         "title": "13. Governing Law and Disputes",
-        "content": "These terms shall be governed by and construed in accordance with applicable international commercial law principles. Any disputes shall be resolved through good faith negotiation or, if necessary, through arbitration."
+        "content": "These terms shall be governed by and construed in accordance with the laws of Tuscany, Italy, and applicable European Union regulations. Any disputes shall be resolved through good faith negotiation or, if necessary, through arbitration in accordance with Italian arbitration procedures."
       },
       "contact": {
         "title": "14. Contact Information",
@@ -1322,7 +1325,7 @@
           "items": {
             "contact": "Name, email address, phone number",
             "business": "Business name, address, VAT number",
-            "payment": "Payment information (processed securely by Stripe)"
+            "payment": "Payment information (processed securely by Stripe. WhiteBoar does not store or have access to your credit card details)"
           }
         },
         "business": {
@@ -1350,7 +1353,7 @@
           "branding": "Generating custom brand identities and website designs",
           "hosting": "Hosting and maintaining your website",
           "communication": "Communicating with you about your service and account",
-          "improvement": "Improving our AI algorithms and service quality",
+          "improvement": "Improving our AI algorithms and service quality. Customer data may be anonymized and aggregated for AI model improvement. Individual identifying data is never used for training AI models",
           "legal": "Complying with legal obligations and protecting our rights",
           "analytics": "Understanding how our services are used (anonymized data only)"
         }
@@ -1361,7 +1364,7 @@
         "items": {
           "contract": "Contract performance - to provide the services you requested",
           "consent": "Your explicit consent for specific processing activities",
-          "legitimate": "Legitimate interests - to improve our services and prevent fraud",
+          "legitimate": "Legitimate interests - including fraud prevention, service security, business analytics using anonymized data, and improving service quality. We conduct balancing tests to ensure our interests do not override your rights",
           "legal": "Legal obligations - to comply with tax and regulatory requirements"
         }
       },
@@ -1370,9 +1373,10 @@
         "intro": "We share your information only with:",
         "items": {
           "vercel": "Vercel - for website hosting and deployment (servers located in EU)",
-          "stripe": "Stripe - for secure payment processing",
-          "analytics": "Google Analytics - for anonymous usage statistics",
-          "email": "Email service providers - for service communications"
+          "supabase": "Supabase - for database hosting and user authentication (servers located in EU)",
+          "stripe": "Stripe - for secure payment processing (PCI-DSS compliant)",
+          "analytics": "Google Analytics - for anonymous usage statistics with IP anonymization enabled",
+          "email": "Resend - for transactional email delivery and service communications"
         },
         "location": "All data processing occurs within the European Union. We do not transfer data outside the EU.",
         "noSale": "We never sell your personal information to third parties."
@@ -1380,7 +1384,7 @@
       "dataRetention": {
         "title": "7. Data Retention",
         "active": "We retain your personal data for as long as your account is active",
-        "terminated": "After account termination, data is retained for 30 days then permanently deleted",
+        "terminated": "After account termination, personal information (name, email, contact details) is deleted after 30 days. Generated website code and designs are retained for 90 days to allow recovery if needed, then permanently deleted",
         "legal": "Some information may be retained longer where required by law (e.g., tax records for 7 years)",
         "backups": "Backup copies are automatically deleted within 90 days"
       },
@@ -1396,15 +1400,15 @@
           "object": "Object - object to certain types of processing",
           "withdraw": "Withdraw consent - withdraw consent at any time"
         },
-        "exercise": "To exercise any of these rights, contact us at info@consciousdigital.org",
+        "exercise": "To exercise any of these rights, contact us at info@consciousdigital.org. We will respond to your request within 30 days as required by GDPR",
         "complaint": "You also have the right to lodge a complaint with your local data protection authority"
       },
       "cookies": {
         "title": "9. Cookies and Tracking",
-        "analytics": "We use Google Analytics cookies to understand website usage (anonymous)",
+        "analytics": "We use Google Analytics cookies to understand website usage. IP anonymization is enabled, data is retained for 26 months, and all data is anonymized. You can opt out at any time using browser settings or the Google Analytics Opt-out Browser Add-on",
         "essential": "Essential cookies for website functionality and user preferences (theme, language)",
         "noMarketing": "We do not use marketing or advertising cookies",
-        "control": "You can control cookies through your browser settings"
+        "control": "You can control cookies through your browser settings or opt out of Google Analytics tracking"
       },
       "security": {
         "title": "10. Data Security",

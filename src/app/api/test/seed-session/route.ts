@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Create session with pre-filled data
     const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + 7) // 7 days expiry
+    expiresAt.setDate(expiresAt.getDate() + 60) // 60 days expiry
 
     // Realistic form data that passes all validations
     const formData = {
