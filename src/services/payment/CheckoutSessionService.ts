@@ -672,6 +672,18 @@ export class CheckoutSessionService {
         throw new Error('SetupIntent created but client_secret is missing')
       }
 
+      const { error: setupIntentIdSaveError } = await supabase
+        .from('onboarding_submissions')
+        .update({
+          stripe_payment_id: setupIntent.id,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', submissionId)
+
+      if (setupIntentIdSaveError) {
+        console.error('Failed to persist SetupIntent ID on submission:', setupIntentIdSaveError)
+      }
+
       console.log('[CheckoutSessionService] Created SetupIntent for $0 invoice', {
         submissionId,
         setupIntentId: setupIntent.id,

@@ -431,6 +431,24 @@ export class WebhookService {
           console.error('Failed to send payment notification email:', emailError)
           // Log error but don't fail the webhook
         }
+
+        // Send customer success confirmation email
+        try {
+          // Determine locale from submission metadata or default to 'en'
+          const locale = (submission.metadata?.locale as 'en' | 'it') || 'en'
+
+          await EmailService.sendPaymentSuccessConfirmation(
+            email,
+            businessName,
+            invoice.amount_paid,
+            invoice.currency.toUpperCase(),
+            locale
+          )
+          debugLog('Customer success confirmation sent successfully')
+        } catch (emailError) {
+          console.error('Failed to send customer success confirmation email:', emailError)
+          // Log error but don't fail the webhook
+        }
       }
 
       return { success: true }
@@ -588,6 +606,34 @@ export class WebhookService {
           console.error('[Webhook] Failed to log payment analytics event:', analyticsError)
         }
         // Don't throw - analytics is non-critical, continue processing
+      }
+
+      // Send customer success confirmation email
+      if (ADMIN_EMAIL) {
+        const businessName = submission.form_data?.businessName ||
+                           submission.form_data?.step3?.businessName ||
+                           'Unknown Business'
+        const email = submission.form_data?.email ||
+                     submission.form_data?.businessEmail ||
+                     submission.form_data?.step3?.businessEmail ||
+                     'unknown@example.com'
+
+        try {
+          // Determine locale from submission metadata or default to 'en'
+          const locale = (submission.metadata?.locale as 'en' | 'it') || 'en'
+
+          await EmailService.sendPaymentSuccessConfirmation(
+            email,
+            businessName,
+            amount,
+            currency.toUpperCase(),
+            locale
+          )
+          debugLog('Customer success confirmation sent successfully')
+        } catch (emailError) {
+          console.error('Failed to send customer success confirmation email:', emailError)
+          // Log error but don't fail the webhook
+        }
       }
 
       return { success: true }

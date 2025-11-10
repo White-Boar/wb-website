@@ -75,7 +75,10 @@ export async function triggerMockWebhookForPayment(submissionId: string, expecte
     throw new Error(`Failed to fetch submission: ${error?.message}`)
   }
 
-  const paymentIntentId = submission.stripe_payment_id
+  const rawIntentId = submission.stripe_payment_id as string | null
+  const isSetupIntent = !!rawIntentId && rawIntentId.startsWith('seti_')
+  const paymentIntentId = !isSetupIntent ? rawIntentId : null
+  const setupIntentId = isSetupIntent ? rawIntentId : null
   const customerId = submission.stripe_customer_id
   const subscriptionId = submission.stripe_subscription_id
 
@@ -117,8 +120,26 @@ export async function triggerMockWebhookForPayment(submissionId: string, expecte
 
     await sendMockWebhook(paymentIntentEvent)
     console.log(`✅ Sent mock payment_intent.succeeded webhook`)
+  } else if (setupIntentId) {
+    try {
+      const Stripe = (await import('stripe')).default
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        apiVersion: '2025-09-30.clover'
+      })
+      const setupIntent = await stripe.setupIntents.retrieve(setupIntentId)
+      const setupEvent = createMockSetupIntentSucceededEvent(setupIntent, {
+        submission_id: submissionId,
+        session_id: submission.session_id || '',
+        subscription_id: subscriptionId || ''
+      })
+
+      await sendMockWebhook(setupEvent)
+      console.log(`✅ Sent mock setup_intent.succeeded webhook`)
+    } catch (error) {
+      console.error(`Failed to send mock setup_intent webhook for ${setupIntentId}:`, error)
+    }
   } else {
-    console.log(`ℹ️  No payment intent (likely 100% discount) - skipping payment_intent webhook`)
+    console.log(`ℹ️  No payment intent or setup intent ID on submission - skipping intent webhooks`)
   }
 
   // If there's a subscription, also send invoice.paid event
@@ -175,6 +196,37 @@ export function createMockPaymentIntentSucceededEvent(
         status: 'succeeded',
         // Add other required PaymentIntent fields with mock data
       } as Stripe.PaymentIntent,
+    },
+  } as Stripe.Event
+}
+
+export function createMockSetupIntentSucceededEvent(
+  setupIntent: Stripe.SetupIntent,
+  metadata: Record<string, string> = {}
+): Stripe.Event {
+  const serializedSetupIntent = JSON.parse(JSON.stringify(setupIntent)) as Stripe.SetupIntent
+
+  serializedSetupIntent.metadata = {
+    ...(serializedSetupIntent.metadata || {}),
+    ...metadata
+  }
+
+  serializedSetupIntent.status = 'succeeded'
+
+  return {
+    id: `evt_mock_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+    object: 'event',
+    api_version: '2025-09-30.clover',
+    created: Math.floor(Date.now() / 1000),
+    type: 'setup_intent.succeeded',
+    livemode: false,
+    pending_webhooks: 0,
+    request: {
+      id: null,
+      idempotency_key: null,
+    },
+    data: {
+      object: serializedSetupIntent,
     },
   } as Stripe.Event
 }
