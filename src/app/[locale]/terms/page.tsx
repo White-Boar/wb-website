@@ -97,7 +97,9 @@ export default async function TermsPage({
                 </h2>
                 <ul className="list-disc list-inside space-y-2 ml-4">
                   <li className="text-foreground/90">{t('sections.subscription.monthly')}</li>
+                  <li className="text-foreground/90">{t('sections.subscription.commitment')}</li>
                   <li className="text-foreground/90">{t('sections.subscription.included')}</li>
+                  <li className="text-foreground/90">{t('sections.subscription.overage')}</li>
                   <li className="text-foreground/90">{t('sections.subscription.addons')}</li>
                   <li className="text-foreground/90">{t('sections.subscription.renewal')}</li>
                   <li className="text-foreground/90">{t('sections.subscription.cancellation')}</li>
@@ -121,6 +123,7 @@ export default async function TermsPage({
                 </h2>
                 <ul className="list-disc list-inside space-y-2 ml-4">
                   <li className="text-foreground/90">{t('sections.domain.ownership')}</li>
+                  <li className="text-foreground/90">{t('sections.domain.registration')}</li>
                   <li className="text-foreground/90">{t('sections.domain.transfer')}</li>
                   <li className="text-foreground/90">{t('sections.domain.process')}</li>
                   <li className="text-foreground/90">{t('sections.domain.requirements')}</li>
