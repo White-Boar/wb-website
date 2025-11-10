@@ -71,7 +71,10 @@
     "quickLinks": "Link Rapidi",
     "followUs": "Seguici",
     "copyright": "© 2025 WhiteBoar",
-    "manageCookies": "Gestisci Cookie"
+    "manageCookies": "Gestisci Cookie",
+    "cookieSettings": "Impostazioni Cookie",
+    "analytics": "Analitici",
+    "marketing": "Marketing"
   },
   "meta": {
     "title": "WhiteBoar - Agenzia Digitale Guidata dall'IA",

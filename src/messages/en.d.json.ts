@@ -74,7 +74,10 @@ declare const messages: {
     "quickLinks": "Quick Links",
     "followUs": "Follow Us",
     "copyright": "© 2025 WhiteBoar",
-    "manageCookies": "Manage Cookies"
+    "manageCookies": "Manage Cookies",
+    "cookieSettings": "Cookie Settings",
+    "analytics": "Analytics",
+    "marketing": "Marketing"
   },
   "meta": {
     "title": "WhiteBoar - AI-Driven Digital Agency",
