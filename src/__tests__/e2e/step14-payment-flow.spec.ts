@@ -41,6 +41,21 @@ function deriveCouponSuffix(testInfo: import('@playwright/test').TestInfo): stri
   return `w${index}`
 }
 
+async function withTimeout<T>(promiseFactory: () => Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`${label} timed out after ${timeoutMs}ms`)), timeoutMs)
+  })
+
+  try {
+    return await Promise.race([promiseFactory(), timeoutPromise])
+  } finally {
+    if (timer) {
+      clearTimeout(timer)
+    }
+  }
+}
+
 
 // Helper: Wait for webhook processing with retries
 async function waitForWebhookProcessing(
@@ -355,6 +370,10 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(2000)
 
+      const initialPaymentElementState = await page.evaluate(() => (window as any).__wb_paymentElement || null)
+      const initialPaymentElementVersion = initialPaymentElementState?.version ?? 0
+      console.log('Initial PaymentElement state:', initialPaymentElementState)
+
       const discountInput = page.getByRole('textbox', { name: /discount/i })
       await discountInput.fill(couponIds.twentyPercent)
       const verifyButton = page.getByRole('button', { name: /Apply|Verify/i })
@@ -418,6 +437,10 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await page.waitForSelector('iframe[name^="__privateStripeFrame"]', { timeout: 30000 })
       await page.waitForTimeout(2000)
 
+      const initialPaymentElementState = await page.evaluate(() => (window as any).__wb_paymentElement || null)
+      const initialPaymentElementVersion = initialPaymentElementState?.version ?? 0
+      console.log('Initial PaymentElement state:', initialPaymentElementState)
+
       // Apply 100% discount code
       const discountInput = page.getByRole('textbox', { name: /discount/i })
       await discountInput.fill(couponId)
@@ -456,6 +479,33 @@ test.describe('Step 14: Payment Flow E2E', () => {
       )
       console.log('✅ Checkout session updated with SetupIntent')
 
+      const paymentElementStateHandle = await page.waitForFunction(
+        ({ prevSecret, prevVersion, minReadyDuration }) => {
+          const state = (window as any).__wb_paymentElement
+          if (!state || !state.clientSecret) {
+            return null
+          }
+          if (prevSecret && state.clientSecret === prevSecret) {
+            return null
+          }
+          if (typeof prevVersion === 'number' && state.version <= prevVersion) {
+            return null
+          }
+          if (!state.ready || !state.readyAt) {
+            return null
+          }
+          if (Date.now() - state.readyAt < minReadyDuration) {
+            return null
+          }
+          return state
+        },
+        { prevSecret: initialClientSecret, prevVersion: initialPaymentElementVersion, minReadyDuration: 20000 },
+        { timeout: 60000 }
+      )
+      const paymentElementState = await paymentElementStateHandle.jsonValue()
+      await paymentElementStateHandle.dispose()
+      console.log('✅ PaymentElement ready and stable state:', paymentElementState)
+
       // CRITICAL: Payment form MUST BE VISIBLE (collecting payment method for future billing)
       const paymentElement = page.locator('[data-testid="stripe-payment-element"]')
       await expect(paymentElement).toBeVisible({ timeout: 10000 })
@@ -471,36 +521,6 @@ test.describe('Step 14: Payment Flow E2E', () => {
       // CRITICAL: Wait for Stripe iframe src to stabilize (stop changing)
       // The iframe can reload multiple times as React processes state changes
       // We need to ensure it's been stable for a LONG time before proceeding
-      console.log('Waiting for Stripe iframe src to stabilize (this may take 20-30 seconds)...')
-      let stableCount = 0
-      let lastIframeSrc = ''
-      const checkInterval = 2000  // Check every 2 seconds
-      const maxIterations = 60  // 60 iterations x 2 seconds = 120 seconds max
-      let iterations = 0
-      const requiredStableChecks = 10  // 10 checks x 2 seconds = 20 seconds stable
-
-      while (stableCount < requiredStableChecks && iterations < maxIterations) {
-        await page.waitForTimeout(checkInterval)
-        iterations++
-        const currentIframeSrc = await page.locator('iframe[name^="__privateStripeFrame"]').first().getAttribute('src') || ''
-
-        if (currentIframeSrc === lastIframeSrc && currentIframeSrc !== '') {
-          stableCount++
-          console.log(`Iframe src stable (${stableCount}/${requiredStableChecks})`)
-        } else {
-          stableCount = 0
-          console.log(`Iframe src changed, resetting counter (iteration ${iterations}/${maxIterations})`)
-        }
-
-        lastIframeSrc = currentIframeSrc
-      }
-
-      if (iterations >= maxIterations) {
-        throw new Error(`Iframe never stabilized after ${maxIterations} iterations (${(maxIterations * checkInterval) / 1000}s). This suggests the iframe is continuously reloading.`)
-      }
-
-      console.log(`✅ Iframe src has been stable for ${(requiredStableChecks * checkInterval) / 1000} seconds - should be safe to fill now`)
-
       // CRITICAL: Fill fields with retry mechanism (100% discount causes iframe to reload during filling)
       // The SetupIntent creation and invoice finalization happen AFTER iframe stabilizes, causing it to reload
       let fillAttempt = 0
@@ -511,64 +531,86 @@ test.describe('Step 14: Payment Flow E2E', () => {
         fillAttempt++
         console.log(`\nFill attempt ${fillAttempt}/${maxFillAttempts}`)
 
-        // Get fresh frameLocator and field references for this attempt
-        const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
-        const cardNumberField = stripeFrame.getByRole('textbox', { name: 'Card number' })
-        await cardNumberField.waitFor({ state: 'visible', timeout: 10000 })
+        const activePaymentElementVersion = await page.evaluate(() => (window as any).__wb_paymentElement?.version ?? 0)
+        let lastFillError: Error | null = null
 
-        // Additional wait for Stripe.js to be fully interactive
-        console.log('Card number field visible - waiting additional 3s for Stripe.js to be interactive')
-        await page.waitForTimeout(3000)
+        try {
+          const stripeFrame = page.frameLocator('iframe[name^="__privateStripeFrame"]').first()
+          const cardNumberField = stripeFrame.getByRole('textbox', { name: 'Card number' })
+          await cardNumberField.waitFor({ state: 'visible', timeout: 10000 })
 
-        console.log('Filling card number...')
-        await cardNumberField.click()
-        await cardNumberField.pressSequentially('4242424242424242', { delay: 50 })
+          // Additional wait for Stripe.js to be fully interactive
+          console.log('Card number field visible - waiting additional 3s for Stripe.js to be interactive')
+          await page.waitForTimeout(3000)
 
-        console.log('Filling expiry...')
-        const expiryField = stripeFrame.getByRole('textbox', { name: /Expir/i })
-        await expiryField.click()
-        await expiryField.pressSequentially('1228', { delay: 50 })
+          console.log('Filling card number...')
+          await cardNumberField.click()
+          await withTimeout(() => cardNumberField.pressSequentially('4242424242424242', { delay: 50 }), 10000, 'Card number entry')
 
-        console.log('Filling CVC...')
-        const cvcField = stripeFrame.getByRole('textbox', { name: 'Security code' })
-        await cvcField.click()
-        await cvcField.pressSequentially('123', { delay: 50 })
+          console.log('Filling expiry...')
+          const expiryField = stripeFrame.getByRole('textbox', { name: /Expir/i })
+          await expiryField.click()
+          await withTimeout(() => expiryField.pressSequentially('1228', { delay: 50 }), 8000, 'Expiry entry')
 
-        console.log('Filling ZIP...')
-        const zipField = stripeFrame.getByRole('textbox', { name: 'ZIP code' })
-        await zipField.click()
-        await zipField.pressSequentially('12345', { delay: 50 })
+          console.log('Filling CVC...')
+          const cvcField = stripeFrame.getByRole('textbox', { name: 'Security code' })
+          await cvcField.click()
+          await withTimeout(() => cvcField.pressSequentially('123', { delay: 50 }), 8000, 'CVC entry')
 
-        // CRITICAL: 100% discounts use SetupIntent which requires email collection
-        console.log('Filling email (required for SetupIntent)...')
-        const emailField = stripeFrame.getByRole('textbox', { name: 'Email' })
-        await emailField.click()
-        // Clear any existing value first
-        await emailField.fill('')
-        await emailField.pressSequentially('test@example.com', { delay: 50 })
-
-        console.log('All fields filled - verifying...')
-
-        // CRITICAL: Wait to ensure fields remain filled (iframe doesn't reload again)
-        console.log('Waiting 3s to verify fields remain stable...')
-        await page.waitForTimeout(3000)
-
-        // Verify fields are still filled (iframe didn't reload)
-        const cardValueCheck = await cardNumberField.inputValue()
-        const expiryValueCheck = await expiryField.inputValue()
-
-        if (cardValueCheck && cardValueCheck.length >= 10 && expiryValueCheck && expiryValueCheck.length >= 4) {
-          console.log('✅ Card number verified:', cardValueCheck)
-          console.log('✅ Expiry verified:', expiryValueCheck)
-          console.log('✅ Payment fields filled and verified stable')
-          fieldsVerified = true
+        const zipField = stripeFrame.getByRole('textbox', { name: /(zip|postal)/i })
+        if (await zipField.count()) {
+          console.log('Filling postal/ZIP code...')
+          await zipField.first().click()
+          await withTimeout(() => zipField.first().pressSequentially('12345', { delay: 50 }), 8000, 'Postal code entry')
         } else {
-          console.log(`⚠️  Fields verification failed (card: "${cardValueCheck}", expiry: "${expiryValueCheck}")`)
-          if (fillAttempt < maxFillAttempts) {
-            console.log('Iframe likely reloaded - waiting for it to stabilize again...')
-            // Wait for iframe to stabilize again before retrying
-            await page.waitForTimeout(3000)
+          console.log('Postal/ZIP field not present - skipping')
+        }
+
+          // CRITICAL: 100% discounts use SetupIntent which requires email collection
+          console.log('Filling email (required for SetupIntent)...')
+          const emailField = stripeFrame.getByRole('textbox', { name: 'Email' })
+          await emailField.click()
+          await withTimeout(() => emailField.fill(''), 5000, 'Email clear')
+          await withTimeout(() => emailField.pressSequentially('test@example.com', { delay: 50 }), 8000, 'Email entry')
+
+          console.log('All fields filled - verifying...')
+
+          // CRITICAL: Wait to ensure fields remain filled (iframe doesn't reload again)
+          console.log('Waiting 3s to verify fields remain stable...')
+          await page.waitForTimeout(3000)
+
+          // Verify fields are still filled (iframe didn't reload)
+          const cardValueCheck = await cardNumberField.inputValue()
+          const expiryValueCheck = await expiryField.inputValue()
+
+          if (cardValueCheck && cardValueCheck.length >= 10 && expiryValueCheck && expiryValueCheck.length >= 4) {
+            const latestVersion = await page.evaluate(() => (window as any).__wb_paymentElement?.version ?? 0)
+            if (latestVersion !== activePaymentElementVersion) {
+              console.log(`⚠️  PaymentElement version changed during fill (${activePaymentElementVersion} → ${latestVersion}). Retrying...`)
+            } else {
+              console.log('✅ Card number verified:', cardValueCheck)
+              console.log('✅ Expiry verified:', expiryValueCheck)
+              console.log('✅ Payment fields filled and verified stable')
+              fieldsVerified = true
+            }
+          } else {
+            console.log(`⚠️  Fields verification failed (card: "${cardValueCheck}", expiry: "${expiryValueCheck}")`)
           }
+        } catch (error) {
+          lastFillError = error instanceof Error ? error : new Error(String(error))
+          console.log(`⚠️  Fill attempt ${fillAttempt} failed: ${lastFillError.message}`)
+        }
+
+        if (!fieldsVerified) {
+          if (fillAttempt >= maxFillAttempts) {
+            if (lastFillError) {
+              throw lastFillError
+            }
+            throw new Error(`Failed to fill payment fields after ${maxFillAttempts} attempts. Iframe keeps reloading.`)
+          }
+
+          console.log('Iframe likely reloaded or Stripe not ready - waiting for it to stabilize again...')
+          await page.waitForTimeout(3000)
         }
       }
 

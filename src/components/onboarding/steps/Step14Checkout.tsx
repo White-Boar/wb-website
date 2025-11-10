@@ -127,6 +127,7 @@ function CheckoutForm({
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isVerifyingDiscount, setIsVerifyingDiscount] = useState(false)
+  const lastInstrumentedClientSecretRef = useRef<string | null>(null)
 
   // Stripe prices from API
   const [prices, setPrices] = useState<{
@@ -189,6 +190,66 @@ function CheckoutForm({
       ;(window as any).__wb_lastDiscountValidation = discountValidation
     }
   }, [discountValidation])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const bumpVersion = () => {
+      const previousState = (window as any).__wb_paymentElement
+      const previousVersion = typeof previousState?.version === 'number' ? previousState.version : 0
+      return previousVersion + 1
+    }
+
+    // If no payment is required, expose a ready state immediately for tests
+    if (!paymentRequired) {
+      const version = bumpVersion()
+      lastInstrumentedClientSecretRef.current = null
+      ;(window as any).__wb_paymentElement = {
+        version,
+        clientSecret: null,
+        ready: true,
+        readyAt: Date.now(),
+        updatedAt: Date.now(),
+        reason: 'no-payment-required'
+      }
+      return
+    }
+
+    if (!clientSecret) {
+      return
+    }
+
+    if (lastInstrumentedClientSecretRef.current === clientSecret) {
+      return
+    }
+
+    const version = bumpVersion()
+    lastInstrumentedClientSecretRef.current = clientSecret
+
+    ;(window as any).__wb_paymentElement = {
+      version,
+      clientSecret,
+      ready: false,
+      updatedAt: Date.now()
+    }
+  }, [clientSecret, paymentRequired])
+
+  const handlePaymentElementReady = useCallback(() => {
+    if (typeof window === 'undefined' || !clientSecret) {
+      return
+    }
+    const currentState = (window as any).__wb_paymentElement
+    if (!currentState || currentState.clientSecret !== clientSecret) {
+      return
+    }
+    ;(window as any).__wb_paymentElement = {
+      ...currentState,
+      ready: true,
+      readyAt: Date.now()
+    }
+  }, [clientSecret])
 
   // For 100% discount: paymentRequired=true (collecting payment method for future billing)
   // So we need to show payment form even when totalDueToday=0
@@ -742,6 +803,7 @@ function CheckoutForm({
                       layout: 'tabs',
                       paymentMethodOrder: ['card', 'sepa_debit', 'paypal'],
                     }}
+                    onReady={handlePaymentElementReady}
                   />
                 </div>
 
