@@ -739,6 +739,20 @@ export class WebhookService {
         })
       }
 
+      // Also set as customer's default payment method for future invoices
+      if (setupIntent.customer) {
+        await this.stripe.customers.update(setupIntent.customer as string, {
+          invoice_settings: {
+            default_payment_method: setupIntent.payment_method as string
+          }
+        })
+
+        debugLog('[Webhook] Payment method set as customer default', {
+          customerId: setupIntent.customer,
+          paymentMethodId: setupIntent.payment_method
+        })
+      }
+
       // Log analytics event
       await supabase.from('onboarding_analytics').insert({
         session_id: setupIntent.metadata?.session_id || null,
