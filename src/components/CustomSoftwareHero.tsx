@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useTranslations } from "next-intl"
 import { motion, useReducedMotion } from "framer-motion"
-import { Code2, Smartphone, Database, LayoutDashboard, Plug, ShoppingCart } from "lucide-react"
+import { Sparkles, Smartphone, Database, LayoutDashboard, ShoppingCart, Plug } from "lucide-react"
 import { fadeInUp, staggerChildren } from "../../context/design-system/motion/variants"
 
 export function CustomSoftwareHero() {
@@ -17,24 +17,9 @@ export function CustomSoftwareHero() {
 
   const services = [
     {
-      icon: Code2,
-      title: t('services.webApps'),
-      description: t('services.webAppsDesc')
-    },
-    {
-      icon: Smartphone,
-      title: t('services.mobileApps'),
-      description: t('services.mobileAppsDesc')
-    },
-    {
-      icon: Database,
-      title: t('services.saas'),
-      description: t('services.saasDesc')
-    },
-    {
-      icon: LayoutDashboard,
-      title: t('services.dashboards'),
-      description: t('services.dashboardsDesc')
+      icon: Sparkles,
+      title: t('services.ai'),
+      description: t('services.aiDesc')
     },
     {
       icon: Plug,
@@ -45,6 +30,21 @@ export function CustomSoftwareHero() {
       icon: ShoppingCart,
       title: t('services.ecommerce'),
       description: t('services.ecommerceDesc')
+    },
+    {
+      icon: Smartphone,
+      title: t('services.mobileApps'),
+      description: t('services.mobileAppsDesc')
+    },
+    {
+      icon: LayoutDashboard,
+      title: t('services.webDashboards'),
+      description: t('services.webDashboardsDesc')
+    },
+    {
+      icon: Database,
+      title: t('services.saas'),
+      description: t('services.saasDesc')
     }
   ]
 
@@ -59,6 +59,7 @@ export function CustomSoftwareHero() {
           animate="show"
         >
           <motion.h1
+            data-testid="custom-software-hero-title"
             className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6"
             variants={variants.item}
           >

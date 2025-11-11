@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { createClient } from '@supabase/supabase-js';
 import * as dotenv from 'dotenv';
 import path from 'path';
+import { setCookieConsentBeforeLoad } from './helpers/test-utils';
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -188,6 +189,9 @@ test.describe('Complete Onboarding Flow', () => {
 
     // Start fresh
     await cleanupTestData(testEmail);
+
+    // Set cookie consent before page load to prevent banner from interfering with tests
+    await setCookieConsentBeforeLoad(page, true, false);
 
     // Navigate to homepage (uses baseURL from playwright.config.ts)
     await page.goto('/');

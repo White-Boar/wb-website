@@ -11,15 +11,35 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'terms.meta' })
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'
+  const canonicalUrl = locale === 'en' ? `${baseUrl}/terms` : `${baseUrl}/${locale}/terms`
+  const ogImage = `/images/og-image-${locale}.png`
+
   return {
     title: t('title'),
     description: t('description'),
     openGraph: {
       title: t('title'),
       description: t('description'),
-      type: 'website',
+      url: canonicalUrl,
+      siteName: 'WhiteBoar',
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: t('title'),
+        },
+      ],
       locale: locale,
       alternateLocale: locale === 'en' ? 'it' : 'en',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      images: [ogImage],
     },
     alternates: {
       canonical: locale === 'en' ? '/terms' : `/${locale}/terms`,
@@ -97,7 +117,9 @@ export default async function TermsPage({
                 </h2>
                 <ul className="list-disc list-inside space-y-2 ml-4">
                   <li className="text-foreground/90">{t('sections.subscription.monthly')}</li>
+                  <li className="text-foreground/90">{t('sections.subscription.commitment')}</li>
                   <li className="text-foreground/90">{t('sections.subscription.included')}</li>
+                  <li className="text-foreground/90">{t('sections.subscription.overage')}</li>
                   <li className="text-foreground/90">{t('sections.subscription.addons')}</li>
                   <li className="text-foreground/90">{t('sections.subscription.renewal')}</li>
                   <li className="text-foreground/90">{t('sections.subscription.cancellation')}</li>
@@ -121,6 +143,7 @@ export default async function TermsPage({
                 </h2>
                 <ul className="list-disc list-inside space-y-2 ml-4">
                   <li className="text-foreground/90">{t('sections.domain.ownership')}</li>
+                  <li className="text-foreground/90">{t('sections.domain.registration')}</li>
                   <li className="text-foreground/90">{t('sections.domain.transfer')}</li>
                   <li className="text-foreground/90">{t('sections.domain.process')}</li>
                   <li className="text-foreground/90">{t('sections.domain.requirements')}</li>

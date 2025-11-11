@@ -2,14 +2,39 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { devtools } from 'zustand/middleware'
 import debounce from 'lodash.debounce'
-import { 
-  OnboardingFormData, 
-  OnboardingStore, 
-  ValidationError, 
+import {
+  OnboardingFormData,
+  OnboardingStore,
+  ValidationError,
   StepValidationResult,
   OnboardingSession,
   TOTAL_STEPS
 } from '@/types/onboarding'
+
+/**
+ * ONBOARDING SESSION MANAGEMENT ARCHITECTURE
+ *
+ * This store implements a localStorage-first session persistence strategy:
+ *
+ * PRIMARY: localStorage via Zustand persist middleware
+ * - Session data automatically saved to browser localStorage
+ * - Survives page refreshes and browser restarts
+ * - Fastest access for normal user flow
+ *
+ * FALLBACK: URL ?sessionId=xxx parameter
+ * - Used for recovery emails (future feature - not yet automated)
+ * - Enables cross-device continuation via email links
+ * - Supports bookmarking and direct session URLs
+ *
+ * PRIORITY: URL parameters override localStorage when present
+ * - Allows session recovery even if localStorage is cleared
+ * - Handles cross-device scenarios via recovery email links
+ *
+ * DATABASE: Supabase onboarding_sessions table
+ * - Server-side source of truth
+ * - Auto-save on form changes (debounced 1.5s)
+ * - Session expiration: 60 days
+ */
 
 // Initial form data structure
 const initialFormData: Partial<OnboardingFormData> = {
@@ -245,7 +270,7 @@ export const useOnboardingStore = create<OnboardingStore>()(
 
               // Extend expiration time
               const newExpiresAt = new Date()
-              newExpiresAt.setDate(newExpiresAt.getDate() + 7)
+              newExpiresAt.setDate(newExpiresAt.getDate() + 60)
 
               set({
                 sessionExpiresAt: newExpiresAt.toISOString(),

@@ -5,8 +5,11 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
+import { CookieConsent } from '@/components/CookieConsent';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'),
   icons: {
     icon: '/images/favicon.ico',
   },
@@ -65,6 +68,8 @@ export default async function LocaleLayout({
       <body className="font-body antialiased">
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
+          <GoogleAnalytics />
+          <CookieConsent />
         </NextIntlClientProvider>
       </body>
     </html>

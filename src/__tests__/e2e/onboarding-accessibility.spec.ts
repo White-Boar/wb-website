@@ -1,9 +1,11 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { getOnboardingNextButton, ensureFreshOnboardingState } from './helpers/test-utils';
+import { getOnboardingNextButton, ensureFreshOnboardingState, setCookieConsentBeforeLoad } from './helpers/test-utils';
 
 test.describe('Onboarding Accessibility', () => {
   test.beforeEach(async ({ page }) => {
+    // Set cookie consent before page load to prevent banner from interfering with tests
+    await setCookieConsentBeforeLoad(page, true, false);
     // Ensure fresh onboarding state using the restart functionality
     await ensureFreshOnboardingState(page);
 

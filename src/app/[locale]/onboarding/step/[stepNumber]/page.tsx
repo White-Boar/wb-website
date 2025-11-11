@@ -20,11 +20,11 @@ export const dynamicParams = true
 
 export default function OnboardingStep() {
   const router = useRouter()
-  const params = useParams()
+  const params = useParams<{ stepNumber?: string; locale?: string }>()
   const t = useTranslations('onboarding.steps')
 
-  const stepNumber = parseInt(params.stepNumber as string)
-  const locale = params.locale as string
+  const stepNumber = parseInt(params?.stepNumber ?? '1', 10)
+  const locale = (params?.locale ?? 'en') as string
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>('')
 
@@ -41,10 +41,14 @@ export default function OnboardingStep() {
   } = useOnboardingStore()
 
   // Initialize session if none exists or load existing session from URL
+  // ARCHITECTURE NOTE: Session persistence uses localStorage-first approach
+  // - Primary: Session data persisted in localStorage via Zustand
+  // - Fallback: URL ?sessionId=xxx parameter (for recovery emails, cross-device, bookmarks)
+  // - URL parameters take priority when present to support session recovery
   useEffect(() => {
     const initSession = async () => {
-      // Check for session ID in URL params first
-      const urlSessionId = new URLSearchParams(window.location.search).get('session')
+      // Check for session ID in URL params first (recovery email, bookmark, cross-device)
+      const urlSessionId = new URLSearchParams(window.location.search).get('sessionId')
 
       if (urlSessionId && urlSessionId !== sessionId) {
         try {

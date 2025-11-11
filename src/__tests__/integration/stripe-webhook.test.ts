@@ -77,7 +77,7 @@ describe('Stripe Webhook Handler Tests', () => {
       id: testSessionId,
       email: testEmail,
       current_step: 14,
-      expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      expires_at: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString(),
       form_data: {
         step3: {
           businessName: 'Webhook Test Business',
@@ -377,6 +377,69 @@ describe('Stripe Webhook Handler Tests', () => {
     )
 
     expect(submission.stripe_subscription_id).toBe(subscription.id)
+  })
+
+  it('should handle setup_intent.succeeded event for $0 invoices', async () => {
+    const setupIntent = {
+      id: `seti_test_${Date.now()}`,
+      customer: testCustomerId,
+      payment_method: 'pm_test_card',
+      status: 'succeeded',
+      metadata: {
+        submission_id: testSubmissionId,
+        session_id: testSessionId,
+        subscription_id: testSubscriptionId
+      }
+    }
+
+    const event = {
+      id: `evt_test_${Date.now()}`,
+      type: 'setup_intent.succeeded',
+      data: {
+        object: setupIntent
+      }
+    } as Stripe.Event
+
+    const signature = generateWebhookSignature(JSON.stringify(event), webhookSecret)
+
+    const response = await fetch('http://localhost:3783/api/stripe/webhook', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'stripe-signature': signature
+      },
+      body: JSON.stringify(event)
+    })
+
+    expect(response.status).toBe(200)
+
+    // Verify analytics event was logged (webhook processing is async)
+    // Poll for analytics record with timeout
+    const timeout = 5000
+    const start = Date.now()
+    let analytics = null
+
+    while (Date.now() - start < timeout) {
+      const { data } = await supabase
+        .from('onboarding_analytics')
+        .select('*')
+        .eq('event_type', 'setup_intent_succeeded')
+        .eq('metadata->>submission_id', testSubmissionId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+
+      if (data && data.length > 0) {
+        analytics = data
+        break
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 250))
+    }
+
+    expect(analytics).toBeTruthy()
+    expect(analytics![0].metadata.setup_intent_id).toBe(setupIntent.id)
+    expect(analytics![0].metadata.payment_method_id).toBe(setupIntent.payment_method)
+    expect(analytics![0].metadata.subscription_id).toBe(testSubscriptionId)
   })
 
   it.skip('should enforce rate limiting on webhook endpoint', async () => {

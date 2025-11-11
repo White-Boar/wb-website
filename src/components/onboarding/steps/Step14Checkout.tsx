@@ -89,6 +89,7 @@ interface CheckoutFormProps extends CheckoutWrapperProps {
   paymentRequired: boolean
   hasZeroPayment: boolean
   noPaymentDue: boolean
+  clientSecret: string | null
   stripe: Stripe | null
   elements: StripeElements | null
   discountValidation: DiscountValidation | null
@@ -109,6 +110,7 @@ function CheckoutForm({
   paymentRequired,
   hasZeroPayment,
   noPaymentDue,
+  clientSecret,
   stripe,
   elements,
   discountValidation,
@@ -125,6 +127,7 @@ function CheckoutForm({
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
   const [isVerifyingDiscount, setIsVerifyingDiscount] = useState(false)
+  const lastInstrumentedClientSecretRef = useRef<string | null>(null)
 
   // Stripe prices from API
   const [prices, setPrices] = useState<{
@@ -188,7 +191,69 @@ function CheckoutForm({
     }
   }, [discountValidation])
 
-  const effectiveNoPayment = noPaymentDue || hasZeroPayment || totalDueToday <= 0
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const bumpVersion = () => {
+      const previousState = (window as any).__wb_paymentElement
+      const previousVersion = typeof previousState?.version === 'number' ? previousState.version : 0
+      return previousVersion + 1
+    }
+
+    // If no payment is required, expose a ready state immediately for tests
+    if (!paymentRequired) {
+      const version = bumpVersion()
+      lastInstrumentedClientSecretRef.current = null
+      ;(window as any).__wb_paymentElement = {
+        version,
+        clientSecret: null,
+        ready: true,
+        readyAt: Date.now(),
+        updatedAt: Date.now(),
+        reason: 'no-payment-required'
+      }
+      return
+    }
+
+    if (!clientSecret) {
+      return
+    }
+
+    if (lastInstrumentedClientSecretRef.current === clientSecret) {
+      return
+    }
+
+    const version = bumpVersion()
+    lastInstrumentedClientSecretRef.current = clientSecret
+
+    ;(window as any).__wb_paymentElement = {
+      version,
+      clientSecret,
+      ready: false,
+      updatedAt: Date.now()
+    }
+  }, [clientSecret, paymentRequired])
+
+  const handlePaymentElementReady = useCallback(() => {
+    if (typeof window === 'undefined' || !clientSecret) {
+      return
+    }
+    const currentState = (window as any).__wb_paymentElement
+    if (!currentState || currentState.clientSecret !== clientSecret) {
+      return
+    }
+    ;(window as any).__wb_paymentElement = {
+      ...currentState,
+      ready: true,
+      readyAt: Date.now()
+    }
+  }, [clientSecret])
+
+  // For 100% discount: paymentRequired=true (collecting payment method for future billing)
+  // So we need to show payment form even when totalDueToday=0
+  const effectiveNoPayment = noPaymentDue && !paymentRequired
 
   // Fallback prices (only for display before API loads)
   const basePackageFallback = prices?.basePackage || 0
@@ -217,41 +282,82 @@ function CheckoutForm({
       setIsProcessing(true)
       setPaymentError(null)
 
-      // Confirm payment
+      // Submit the form
       const { error: submitError } = await elements.submit()
       if (submitError) {
         throw new Error(submitError.message)
       }
 
-      const { error, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          return_url: `${window.location.origin}/${locale}/onboarding/thank-you`,
-        },
-        redirect: 'if_required' // Only redirect if payment method requires it
-      })
+      // Detect if this is a SetupIntent (for $0 invoices) or PaymentIntent
+      // SetupIntent client_secret starts with 'seti_', PaymentIntent starts with 'pi_'
+      const isSetupIntent = clientSecret?.startsWith('seti_') || false
 
-      if (error) {
-        // Payment failed - show error
-        throw new Error(error.message)
+      if (isSetupIntent) {
+        // For $0 invoices - collect payment method without charging
+        const { error, setupIntent } = await stripe.confirmSetup({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/${locale}/onboarding/thank-you`,
+          },
+          redirect: 'if_required'
+        })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        // Verify setup succeeded
+        if (setupIntent?.status === 'succeeded') {
+          console.log('[Step14] Payment method collected for future billing (SetupIntent)', {
+            setupIntentId: setupIntent.id
+          })
+          window.location.href = `/${locale}/onboarding/thank-you`
+          return
+        }
+
+        if (setupIntent?.status === 'requires_action') {
+          // Stripe will handle next_action when redirect === 'if_required'
+          return
+        }
+
+        if (setupIntent?.status === 'requires_payment_method') {
+          throw new Error(t('paymentFailed'))
+        }
+
+      } else {
+        // For normal invoices - charge immediately
+        const { error, paymentIntent } = await stripe.confirmPayment({
+          elements,
+          confirmParams: {
+            return_url: `${window.location.origin}/${locale}/onboarding/thank-you`,
+          },
+          redirect: 'if_required'
+        })
+
+        if (error) {
+          throw new Error(error.message)
+        }
+
+        // Payment succeeded
+        if (paymentIntent?.status === 'succeeded') {
+          console.log('[Step14] Payment processed successfully (PaymentIntent)', {
+            paymentIntentId: paymentIntent.id
+          })
+          window.location.href = `/${locale}/onboarding/thank-you`
+          return
+        }
+
+        if (paymentIntent?.status === 'requires_payment_method') {
+          throw new Error(t('paymentFailed'))
+        }
+
+        if (paymentIntent?.status === 'requires_action') {
+          // Stripe will handle next_action when redirect === 'if_required'
+          return
+        }
       }
 
-      // Payment succeeded - redirect manually if not already redirected
-      if (paymentIntent && paymentIntent.status === 'succeeded') {
-        window.location.href = `/${locale}/onboarding/thank-you`
-        return
-      }
-
-      if (paymentIntent && paymentIntent.status === 'requires_payment_method') {
-        throw new Error(t('paymentFailed'))
-      }
-
-      if (paymentIntent && paymentIntent.status === 'requires_action') {
-        // Stripe will handle next_action when redirect === 'if_required'
-        return
-      }
-
-      // If payment is processing, Stripe will handle the redirect
+      // If processing, Stripe will handle the redirect
     } catch (error) {
       console.error('Payment error:', error)
       setPaymentError(
@@ -697,6 +803,7 @@ function CheckoutForm({
                       layout: 'tabs',
                       paymentMethodOrder: ['card', 'sepa_debit', 'paypal'],
                     }}
+                    onReady={handlePaymentElementReady}
                   />
                 </div>
 
@@ -735,7 +842,7 @@ function CheckoutForm({
                 className="mt-1 shrink-0"
               />
               <div className="flex-1">
-                <Label htmlFor="acceptTerms" className="text-sm cursor-pointer inline">
+                <Label htmlFor="acceptTerms" className="text-sm text-foreground cursor-pointer inline">
                   {t.rich('termsText', {
                     termsLink: (chunks) => (
                       <Link href="/terms" target="_blank" className="text-primary hover:underline">
@@ -825,6 +932,9 @@ export function Step14Checkout(props: StepComponentProps) {
   const [error, setError] = useState<string | null>(null)
 
   // Get sessionId from URL params or onboarding store
+  // ARCHITECTURE: localStorage-first with URL fallback
+  // - Normal flow: Session from Zustand store (localStorage)
+  // - URL override: ?sessionId=xxx&submissionId=xxx (for cross-device, bookmarks, test seeding)
   useEffect(() => {
     const loadIds = async () => {
       try {
@@ -1250,6 +1360,7 @@ function CheckoutFormWrapper(props: CheckoutWrapperProps) {
     activeDiscountCode,
     paymentRequired,
     hasZeroPayment,
+    clientSecret,
     discountValidation,
     setDiscountValidation,
     onDiscountApplied: handleDiscountApplied,

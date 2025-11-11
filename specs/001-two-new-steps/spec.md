@@ -119,7 +119,7 @@ A business owner starts checkout on Step 14 but closes their browser before comp
 **Acceptance Scenarios**:
 
 1. **Given** user has reached Step 14 and their session is persisted, **When** they close browser and return to onboarding, **Then** the system automatically resumes at Step 14 with their previous selections and pricing intact
-2. **Given** user session has expired (>7 days), **When** they attempt to access onboarding, **Then** they are redirected to start a new onboarding session
+2. **Given** user session has expired (>60 days), **When** they attempt to access onboarding, **Then** they are redirected to start a new onboarding session
 3. **Given** user has already completed payment for a session, **When** they return to onboarding, **Then** they are redirected to the thank-you page
 
 ---

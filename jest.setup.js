@@ -203,3 +203,6 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 })
+
+// Mock global fetch
+global.fetch = jest.fn()

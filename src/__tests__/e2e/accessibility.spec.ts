@@ -1,7 +1,13 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { setCookieConsentBeforeLoad } from './helpers/test-utils';
 
 test.describe('Accessibility Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    // Set cookie consent before page load to prevent banner from interfering with tests
+    await setCookieConsentBeforeLoad(page, true, false);
+  });
+
   test('should not have any automatically detectable accessibility issues', async ({ page }) => {
     await page.goto('/');
     await page.waitForLoadState('networkidle');
