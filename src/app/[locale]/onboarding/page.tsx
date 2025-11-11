@@ -14,8 +14,8 @@ import { usePricing } from '@/hooks/usePricing'
 export default function OnboardingWelcome() {
   const t = useTranslations('onboarding.welcome')
   const router = useRouter()
-  const params = useParams()
-  const locale = params.locale as 'en' | 'it'
+  const params = useParams<{ locale?: 'en' | 'it' }>()
+  const locale = (params?.locale ?? 'en') as 'en' | 'it'
   const { initializeSession, loadExistingSession } = useOnboardingStore()
   const [mounted, setMounted] = useState(false)
   const { basePackagePrice } = usePricing()

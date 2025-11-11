@@ -28,8 +28,8 @@ export function OnboardingHeader() {
   const [isRestarting, setIsRestarting] = useState(false)
   const { clearSession } = useOnboardingStore()
   const router = useRouter()
-  const params = useParams()
-  const locale = params.locale as string
+  const params = useParams<{ locale?: string }>()
+  const locale = (params?.locale ?? 'en') as string
   const { toast } = useToast()
 
   const handleRestartClick = () => {

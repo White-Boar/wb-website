@@ -12,13 +12,13 @@ import { StepComponentProps } from './index'
 export function Step2EmailVerification({ form, data, isLoading, error }: StepComponentProps) {
   const t = useTranslations('onboarding.steps.2')
   const router = useRouter()
-  const params = useParams()
+  const params = useParams<{ locale?: string }>()
   const [verificationError, setVerificationError] = useState<string>('')
   const [isVerifying, setIsVerifying] = useState(false)
   const hasAutoSentRef = useRef(false)
 
   const { verifyEmail, resendVerificationCode, formData, nextStep, validateStep } = useOnboardingStore()
-  const locale = params.locale as string
+  const locale = (params?.locale ?? 'en') as string
 
   // Get email from Step 1 (with fallback for testing)
   const email = formData.email || 'john.doe@test.com'

@@ -13,8 +13,8 @@ import { WhiteBoarLogo } from "@/components/WhiteBoarLogo"
 import { slideFade } from "../../context/design-system/motion/variants"
 
 export function Navigation() {
-  const params = useParams()
-  const locale = (params.locale as string) || 'en'
+  const params = useParams<{ locale?: string }>()
+  const locale = (params?.locale ?? 'en') as string
   const t = useTranslations('nav')
   const shouldReduce = useReducedMotion()
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
