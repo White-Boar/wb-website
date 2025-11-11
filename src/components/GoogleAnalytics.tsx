@@ -55,7 +55,7 @@ export function GoogleAnalytics() {
   return (
     <>
       <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-N0XKF0819Q"
+        src="https://www.googletagmanager.com/gtag/js?id=G-D9CTLY8FWT"
         strategy="afterInteractive"
       />
       <Script
@@ -66,7 +66,7 @@ export function GoogleAnalytics() {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-N0XKF0819Q', {
+            gtag('config', 'G-D9CTLY8FWT', {
               'anonymize_ip': true,
               'cookie_flags': 'SameSite=None;Secure'
             });

@@ -21,7 +21,10 @@
     "test:e2e:onboarding:advanced": "playwright test onboarding-advanced.spec.ts",
     "test:e2e:onboarding:all": "playwright test onboarding*.spec.ts",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "db:push": "supabase db push --db-url \"$POSTGRES_URL_NON_POOLING\"",
+    "db:push:dry": "supabase db push --db-url \"$POSTGRES_URL_NON_POOLING\" --dry-run",
+    "db:migration:list": "supabase migration list --db-url \"$POSTGRES_URL_NON_POOLING\""
   },
   "dependencies": {
     "@anthropic-ai/claude-code": "^1.0.128",
