@@ -14,7 +14,7 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   transformIgnorePatterns: [
-    'node_modules/(?!(next-intl)/)',
+    'node_modules/(?!(next-intl|@radix-ui)/)',
   ],
   collectCoverageFrom: [
     'src/components/**/*.{js,jsx,ts,tsx}',

@@ -12,9 +12,9 @@ jest.mock('next/script', () => ({
   __esModule: true,
   default: ({ children, id, src }: any) => {
     if (src) {
-      return <script data-testid={`script-${src}`} src={src} />
+      return <script data-testid={`script-${src}`} src={src} async />
     }
-    return <script data-testid={`script-${id}`}>{children}</script>
+    return <script data-testid={`script-${id}`} async>{children}</script>
   },
 }))
 
