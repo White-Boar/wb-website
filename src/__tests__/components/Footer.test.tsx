@@ -35,10 +35,10 @@ describe('Footer', () => {
     expect(screen.getByText('start')).toBeInTheDocument()
   })
 
-  it('displays cookie settings section with social links', () => {
+  it('displays the manage cookies entry alongside social links', () => {
     render(<Footer />)
 
-    expect(screen.getByText('cookieSettings')).toBeInTheDocument()
+    expect(screen.getByText('manageCookies')).toBeInTheDocument()
 
     const twitterLink = screen.getByLabelText('Twitter')
     const linkedinLink = screen.getByLabelText('LinkedIn')
