@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { setCookieConsentBeforeLoad } from './helpers/test-utils';
 
 test.describe('WhiteBoar Homepage', () => {
   test.beforeEach(async ({ page }) => {
+    // Set cookie consent before page load to prevent banner from appearing
+    await setCookieConsentBeforeLoad(page, true, false);
     await page.goto('/');
   });
 

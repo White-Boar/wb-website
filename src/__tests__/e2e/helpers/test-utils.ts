@@ -398,3 +398,47 @@ export async function ensureFreshOnboardingState(page: Page) {
   // Verify the start button is visible
   await expect(page.getByRole('button', { name: /Start Your Website/i })).toBeVisible({ timeout: 5000 });
 }
+
+/**
+ * Dismiss cookie consent banner if present
+ * This should be called early in tests to avoid the banner interfering with interactions
+ */
+export async function dismissCookieConsent(page: Page, acceptAll: boolean = true) {
+  try {
+    // Check if cookie consent banner is visible
+    const cookieBanner = page.locator('[role="dialog"]').filter({ hasText: /cookies?/i });
+
+    if (await cookieBanner.isVisible({ timeout: 1000 })) {
+      if (acceptAll) {
+        // Click "Accept All" button
+        const acceptButton = page.getByRole('button', { name: /accept all/i });
+        await acceptButton.click();
+      } else {
+        // Click "Essential Only" button
+        const essentialButton = page.getByRole('button', { name: /essential only/i });
+        await essentialButton.click();
+      }
+
+      // Wait for banner to disappear
+      await expect(cookieBanner).not.toBeVisible({ timeout: 2000 });
+    }
+  } catch (error) {
+    // Banner might not be present or already dismissed, continue silently
+  }
+}
+
+/**
+ * Set cookie consent in localStorage before page load
+ * This prevents the banner from appearing at all
+ */
+export async function setCookieConsentBeforeLoad(page: Page, analytics: boolean = false, marketing: boolean = false) {
+  await page.addInitScript(({ analytics, marketing }) => {
+    const consent = {
+      essential: true,
+      analytics,
+      marketing,
+      timestamp: Date.now()
+    };
+    localStorage.setItem('wb_cookie_consent', JSON.stringify(consent));
+  }, { analytics, marketing });
+}
