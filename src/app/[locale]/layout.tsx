@@ -9,6 +9,7 @@ import { CookieConsent } from '@/components/CookieConsent';
 import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'),
   icons: {
     icon: '/images/favicon.ico',
   },
