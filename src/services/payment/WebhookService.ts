@@ -770,12 +770,13 @@ export class WebhookService {
           .single()
 
         if (submissionLookup) {
-          submissionId = submissionLookup.id
+          const enrichedSubmissionId = submissionLookup.id
+          submissionId = enrichedSubmissionId
           subscriptionId = subscriptionId ?? submissionLookup.stripe_subscription_id ?? undefined
 
           setupIntent.metadata = {
             ...(setupIntent.metadata || {}),
-            submission_id: submissionId,
+            submission_id: enrichedSubmissionId,
             session_id: submissionLookup.session_id || setupIntent.metadata?.session_id || '',
             ...(subscriptionId ? { subscription_id: subscriptionId } : {})
           }
