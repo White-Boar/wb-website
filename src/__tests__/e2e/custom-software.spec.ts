@@ -17,9 +17,10 @@ test.describe('Custom Software Page', () => {
     await expect(page.getByTestId('custom-software-hero-title')).toBeVisible();
 
     // Check services are displayed (use heading role to avoid strict mode violations)
-    await expect(page.getByRole('heading', { name: /Web Applications/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /AI Integrations & Automation/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /API Integrations/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /E-commerce Solutions/i })).toBeVisible();
     await expect(page.getByRole('heading', { name: /Mobile Apps/i })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /SaaS Platforms/i })).toBeVisible();
 
     // Check form is visible using test ID
     await expect(page.getByTestId('custom-software-form-title')).toBeVisible();
@@ -277,12 +278,12 @@ test.describe('Custom Software Page', () => {
 
   test('services grid displays all services', async ({ page }) => {
     const services = [
-      'Web Applications',
-      'Mobile Apps',
-      'SaaS Platforms',
-      'Custom Dashboards',
+      'AI Integrations & Automation',
       'API Integrations',
-      'E-commerce Solutions'
+      'E-commerce Solutions',
+      'Mobile Apps',
+      'Web Applications & Dashboards',
+      'SaaS Platforms'
     ];
 
     // Use heading role to avoid strict mode violations

@@ -20,11 +20,11 @@ export const dynamicParams = true
 
 export default function OnboardingStep() {
   const router = useRouter()
-  const params = useParams()
+  const params = useParams<{ stepNumber?: string; locale?: string }>()
   const t = useTranslations('onboarding.steps')
 
-  const stepNumber = parseInt(params.stepNumber as string)
-  const locale = params.locale as string
+  const stepNumber = parseInt(params?.stepNumber ?? '1', 10)
+  const locale = (params?.locale ?? 'en') as string
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>('')
 

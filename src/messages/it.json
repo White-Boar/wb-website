@@ -1144,28 +1144,28 @@
   },
   "customSoftware": {
     "meta": {
-      "title": "Sviluppo Software Personalizzato - WhiteBoar",
-      "description": "Sviluppo professionale di applicazioni web e mobile personalizzate. Piattaforme SaaS, dashboard, integrazioni API e altro."
+      "title": "Software Personalizzato con AI - WhiteBoar",
+      "description": "Team AI-native per integrazioni su misura, automazione, piattaforme SaaS e commerce experience evolute."
     },
     "hero": {
       "title": "Sviluppo Software Personalizzato",
-      "subtitle": "Dal concetto al lancio, costruiamo soluzioni personalizzate che crescono con la tua attività",
-      "description": "Che tu abbia bisogno di una piattaforma SaaS, un'app mobile o un'applicazione web complessa, il nostro team realizza software professionale su misura per le tue esigenze specifiche."
+      "subtitle": "Uniamo strategia AI e ingegneria senior per creare prodotti che apprendono e automatizzano.",
+      "description": "Dai copilot e workflow intelligenti alle app customer-facing, progettiamo, costruiamo e lanciamo esperienze AI-native su ogni piattaforma."
     },
     "services": {
-      "title": "Cosa Realizziamo",
-      "webApps": "Applicazioni Web",
-      "webAppsDesc": "Applicazioni web full-stack personalizzate con framework moderni",
-      "mobileApps": "App Mobile",
-      "mobileAppsDesc": "Applicazioni native iOS e Android",
-      "saas": "Piattaforme SaaS",
-      "saasDesc": "Piattaforme multi-tenant con gestione abbonamenti",
-      "dashboards": "Dashboard Personalizzate",
-      "dashboardsDesc": "Visualizzazione dati e strumenti di business intelligence",
+      "title": "Servizi AI-native che offriamo",
+      "ai": "Integrazioni e Automazione AI",
+      "aiDesc": "Inseriamo copilot LLM, agenti e automazioni nei tuoi sistemi.",
       "api": "Integrazioni API",
-      "apiDesc": "Connetti i tuoi sistemi e automatizza i flussi di lavoro",
+      "apiDesc": "Connetti i tuoi sistemi e automatizza i flussi con API stabili e documentate.",
       "ecommerce": "Soluzioni E-commerce",
-      "ecommerceDesc": "Negozi online personalizzati ed elaborazione pagamenti"
+      "ecommerceDesc": "Store componibili con merchandising personalizzato, abbonamenti e pagamenti.",
+      "mobileApps": "App Mobile",
+      "mobileAppsDesc": "App native e cross-platform che portano esperienze AI su iOS e Android.",
+      "webDashboards": "Applicazioni Web & Dashboard",
+      "webDashboardsDesc": "Web app ricche di dati, tool interni e hub analitici con insight in tempo reale.",
+      "saas": "Piattaforme SaaS",
+      "saasDesc": "Prodotti multi-tenant con billing, provisioning e funzionalità AI integrate."
     },
     "form": {
       "title": "Parlaci del Tuo Progetto",

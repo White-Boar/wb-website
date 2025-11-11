@@ -1144,28 +1144,28 @@
   },
   "customSoftware": {
     "meta": {
-      "title": "Custom Software Development - WhiteBoar",
-      "description": "Professional custom web and mobile application development. SaaS platforms, dashboards, API integrations, and more."
+      "title": "AI-Powered Custom Software Development - WhiteBoar",
+      "description": "AI-native product teams for custom integrations, automation, SaaS platforms, and commerce experiences."
     },
     "hero": {
       "title": "Custom Software Development",
-      "subtitle": "From concept to launch, we build custom solutions that scale with your business",
-      "description": "Whether you need a SaaS platform, mobile app, or complex web application, our team delivers professional software tailored to your exact requirements."
+      "subtitle": "We combine AI strategy with senior engineering to ship products that learn and automate.",
+      "description": "From copilots and intelligent workflows to customer-facing apps, we design, build, and launch AI-native experiences across every platform."
     },
     "services": {
-      "title": "What We Build",
-      "webApps": "Web Applications",
-      "webAppsDesc": "Full-stack custom web applications with modern frameworks",
-      "mobileApps": "Mobile Apps",
-      "mobileAppsDesc": "Native iOS and Android applications",
-      "saas": "SaaS Platforms",
-      "saasDesc": "Multi-tenant platforms with subscription management",
-      "dashboards": "Custom Dashboards",
-      "dashboardsDesc": "Data visualization and business intelligence tools",
+      "title": "AI-native services we deliver",
+      "ai": "AI Integrations & Automation",
+      "aiDesc": "Embed LLM copilots, agents, and workflow automation into your stack.",
       "api": "API Integrations",
-      "apiDesc": "Connect your systems and automate workflows",
+      "apiDesc": "Connect your systems and automate workflows with stable, well-documented APIs.",
       "ecommerce": "E-commerce Solutions",
-      "ecommerceDesc": "Custom online stores and payment processing"
+      "ecommerceDesc": "Composable storefronts with personalized merchandising, subscriptions, and payments.",
+      "mobileApps": "Mobile Apps",
+      "mobileAppsDesc": "Native and cross-platform apps that bring AI-powered experiences to iOS and Android.",
+      "webDashboards": "Web Applications & Dashboards",
+      "webDashboardsDesc": "Data-rich web apps, internal tools, and analytics hubs with realtime insight.",
+      "saas": "SaaS Platforms",
+      "saasDesc": "Multi-tenant products with billing, provisioning, and AI functionality baked in."
     },
     "form": {
       "title": "Tell Us About Your Project",
