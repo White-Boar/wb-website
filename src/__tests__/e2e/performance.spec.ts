@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { setCookieConsentBeforeLoad } from './helpers/test-utils';
 
 test.describe('Performance Tests', () => {
+  test.beforeEach(async ({ page }) => {
+    // Set cookie consent before page load to prevent banner from affecting performance
+    await setCookieConsentBeforeLoad(page, true, false);
+  });
+
   test('measures Core Web Vitals', async ({ page }) => {
     // Navigate to homepage
     await page.goto('/');

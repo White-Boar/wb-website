@@ -8,6 +8,7 @@ import { ensureTestCouponsExist, getStripePrices, getTestCouponIds, type CouponI
 import { getUIPaymentAmount, getUIRecurringAmount, fillStripePaymentForm } from './helpers/ui-parser'
 import { StripePaymentService } from '@/services/payment/StripePaymentService'
 import { triggerMockWebhookForPayment } from './helpers/mock-webhook'
+import { setCookieConsentBeforeLoad } from './helpers/test-utils'
 
 const isCI = Boolean(process.env.CI)
 
@@ -124,6 +125,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
       sessionId = seed.sessionId
       submissionId = seed.submissionId
 
+      // Set cookie consent before page load to prevent banner from interfering with tests
+      await setCookieConsentBeforeLoad(page, true, false)
+
       // 2. Inject Zustand store into localStorage BEFORE navigating
       await page.addInitScript((store) => {
         localStorage.setItem('wb-onboarding-store', store)
@@ -205,6 +209,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
       })
       sessionId = seed.sessionId
       submissionId = seed.submissionId
+
+      // Set cookie consent before page load to prevent banner from interfering with tests
+      await setCookieConsentBeforeLoad(page, true, false)
 
       // 2. Inject Zustand store into localStorage BEFORE navigating
       await page.addInitScript((store) => {
@@ -291,6 +298,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
       const seed = await seedStep14TestSession()
       sessionId = seed.sessionId
       submissionId = seed.submissionId
+
+      // Set cookie consent before page load to prevent banner from interfering with tests
+      await setCookieConsentBeforeLoad(page, true, false)
 
       // 2. Inject Zustand store into localStorage BEFORE navigating
       await page.addInitScript((store) => {
@@ -874,6 +884,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
       const seed = await seedStep14TestSession()
       sessionId = seed.sessionId
       submissionId = seed.submissionId
+
+      // Set cookie consent before page load to prevent banner from interfering with tests
+      await setCookieConsentBeforeLoad(page, true, false)
 
       // 2. Inject Zustand store into localStorage BEFORE navigating
       await page.addInitScript((store) => {

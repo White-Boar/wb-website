@@ -5,7 +5,8 @@ import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { headers } from 'next/headers';
 import { Metadata } from 'next';
-import Script from 'next/script';
+import { CookieConsent } from '@/components/CookieConsent';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 
 export const metadata: Metadata = {
   icons: {
@@ -62,26 +63,12 @@ export default async function LocaleLayout({
             `,
           }}
         />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-N0XKF0819Q"
-          strategy="afterInteractive"
-          nonce={nonce || undefined}
-        />
-        <script
-          nonce={nonce || undefined}
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-N0XKF0819Q');
-            `,
-          }}
-        />
       </head>
       <body className="font-body antialiased">
         <NextIntlClientProvider messages={messages} locale={locale}>
           {children}
+          <GoogleAnalytics />
+          <CookieConsent />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -5,9 +5,74 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { X, Linkedin, Github } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { CookiePreferences } from "@/components/CookiePreferences"
+import { getCookieConsent, setCookieConsent, hasGivenConsent } from "@/lib/cookie-consent"
+
 export function Footer() {
   const t = useTranslations('footer')
   const navT = useTranslations('nav')
+  const [showCookiePreferences, setShowCookiePreferences] = React.useState(false)
+  const [analyticsEnabled, setAnalyticsEnabled] = React.useState(false)
+  const [marketingEnabled, setMarketingEnabled] = React.useState(false)
+  const [hasConsent, setHasConsent] = React.useState(false)
+
+  React.useEffect(() => {
+    // Check if user has given consent
+    const consentGiven = hasGivenConsent()
+    setHasConsent(consentGiven)
+
+    if (consentGiven) {
+      const consent = getCookieConsent()
+      if (consent) {
+        setAnalyticsEnabled(consent.analytics)
+        setMarketingEnabled(consent.marketing)
+      }
+    }
+
+    // Listen for consent changes
+    const handleConsentChange = () => {
+      const newConsentGiven = hasGivenConsent()
+      setHasConsent(newConsentGiven)
+
+      if (newConsentGiven) {
+        const consent = getCookieConsent()
+        if (consent) {
+          setAnalyticsEnabled(consent.analytics)
+          setMarketingEnabled(consent.marketing)
+        }
+      }
+    }
+
+    window.addEventListener('cookieConsentChange', handleConsentChange)
+    return () => {
+      window.removeEventListener('cookieConsentChange', handleConsentChange)
+    }
+  }, [])
+
+  const handleAnalyticsChange = (checked: boolean) => {
+    setAnalyticsEnabled(checked)
+    const consent = getCookieConsent()
+    if (consent) {
+      setCookieConsent({
+        essential: true,
+        analytics: checked,
+        marketing: consent.marketing,
+      })
+    }
+  }
+
+  const handleMarketingChange = (checked: boolean) => {
+    setMarketingEnabled(checked)
+    const consent = getCookieConsent()
+    if (consent) {
+      setCookieConsent({
+        essential: true,
+        analytics: consent.analytics,
+        marketing: checked,
+      })
+    }
+  }
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -71,15 +136,57 @@ export function Footer() {
               >
                 Privacy Policy
               </Link>
+              <button
+                onClick={() => setShowCookiePreferences(true)}
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+              >
+                {t('manageCookies')}
+              </button>
             </nav>
           </div>
 
-          {/* Social Links */}
+          {/* Cookie Settings */}
           <div className="space-y-4">
             <h3 className="font-heading font-semibold text-gray-900 dark:text-white">
-              {t('followUs')}
+              {t('cookieSettings')}
             </h3>
-            <div className="flex space-x-2">
+            {hasConsent ? (
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="analytics-switch"
+                    className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer"
+                  >
+                    {t('analytics')}
+                  </label>
+                  <Switch
+                    id="analytics-switch"
+                    checked={analyticsEnabled}
+                    onCheckedChange={handleAnalyticsChange}
+                    aria-label={t('analytics')}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <label
+                    htmlFor="marketing-switch"
+                    className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer"
+                  >
+                    {t('marketing')}
+                  </label>
+                  <Switch
+                    id="marketing-switch"
+                    checked={marketingEnabled}
+                    onCheckedChange={handleMarketingChange}
+                    aria-label={t('marketing')}
+                  />
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {t('manageCookies')}
+              </p>
+            )}
+            <div className="flex space-x-2 pt-2">
               <Button variant="ghost" size="icon" asChild>
                 <a
                   href="https://twitter.com/whiteboar_ai"
@@ -121,6 +228,12 @@ export function Footer() {
           </p>
         </div>
       </div>
+
+      <CookiePreferences
+        open={showCookiePreferences}
+        onOpenChange={setShowCookiePreferences}
+        onSave={() => setShowCookiePreferences(false)}
+      />
     </footer>
   )
 }

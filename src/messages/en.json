@@ -70,7 +70,11 @@
     "brandDescription": "AI-driven digital agency empowering small businesses with professional online presence.",
     "quickLinks": "Quick Links",
     "followUs": "Follow Us",
-    "copyright": "© 2025 WhiteBoar"
+    "copyright": "© 2025 WhiteBoar",
+    "manageCookies": "Manage Cookies",
+    "cookieSettings": "Cookie Settings",
+    "analytics": "Analytics",
+    "marketing": "Marketing"
   },
   "meta": {
     "title": "WhiteBoar - AI-Driven Digital Agency",
@@ -1435,5 +1439,32 @@
         "address": "Address: Harju maakond, Tallinn, Sakala tn 7-2, 10141, Estonia"
       }
     }
+  },
+  "cookieConsent": {
+    "title": "We use cookies",
+    "description": "We use essential cookies for site functionality and optional cookies for analytics. You can customize your preferences or accept all cookies.",
+    "acceptAll": "Accept All",
+    "essentialOnly": "Essential Only",
+    "customize": "Customize"
+  },
+  "cookiePreferences": {
+    "title": "Cookie Preferences",
+    "description": "Manage your cookie preferences. You can enable or disable different categories of cookies below.",
+    "essential": {
+      "title": "Essential Cookies",
+      "description": "Required for the website to function properly. These cookies enable core functionality such as security, network management, and accessibility.",
+      "alwaysActive": "Always Active"
+    },
+    "analytics": {
+      "title": "Analytics Cookies",
+      "description": "Help us understand how visitors interact with our website by collecting and reporting information anonymously."
+    },
+    "marketing": {
+      "title": "Marketing Cookies",
+      "description": "Used to track visitors across websites to display relevant advertisements and encourage them to engage."
+    },
+    "acceptAll": "Accept All",
+    "savePreferences": "Save Preferences",
+    "cancel": "Cancel"
   }
 }

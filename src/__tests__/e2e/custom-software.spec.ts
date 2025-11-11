@@ -1,8 +1,11 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { setCookieConsentBeforeLoad } from './helpers/test-utils';
 
 test.describe('Custom Software Page', () => {
   test.beforeEach(async ({ page }) => {
+    // Set cookie consent before page load to prevent banner from interfering with tests
+    await setCookieConsentBeforeLoad(page, true, false);
     await page.goto('/custom-software');
   });
 
@@ -135,7 +138,7 @@ test.describe('Custom Software Page', () => {
     // Check footer content
     await expect(page.getByText(/AI-driven digital agency/i)).toBeVisible();
     await expect(page.getByText(/Quick Links/i)).toBeVisible();
-    await expect(page.getByText(/Follow Us/i)).toBeVisible();
+    await expect(page.getByText(/Cookie Settings/i)).toBeVisible();
   });
 
   test('language switching works (EN ↔ IT)', async ({ page, isMobile }) => {

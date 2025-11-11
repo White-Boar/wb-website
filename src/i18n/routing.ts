@@ -7,6 +7,9 @@ export const routing = defineRouting({
   // Used when no locale matches
   defaultLocale: 'en',
 
+  // automatically detect and redirect users based on their browser's Accept-Language header or system language
+  localeDetection: true,
+
   // Use "as-needed" strategy: en at /, it at /it
   localePrefix: 'as-needed'
 });

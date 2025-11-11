@@ -35,10 +35,10 @@ describe('Footer', () => {
     expect(screen.getByText('start')).toBeInTheDocument()
   })
 
-  it('displays social links section', () => {
+  it('displays cookie settings section with social links', () => {
     render(<Footer />)
 
-    expect(screen.getByText('followUs')).toBeInTheDocument()
+    expect(screen.getByText('cookieSettings')).toBeInTheDocument()
 
     const twitterLink = screen.getByLabelText('Twitter')
     const linkedinLink = screen.getByLabelText('LinkedIn')
@@ -84,12 +84,12 @@ describe('Footer', () => {
 
   it('has proper semantic structure', () => {
     render(<Footer />)
-    
+
     const footer = screen.getByRole('contentinfo')
     expect(footer).toBeInTheDocument()
-    
+
     const headings = screen.getAllByRole('heading', { level: 3 })
-    expect(headings).toHaveLength(2) // Quick Links and Follow Us
+    expect(headings).toHaveLength(2) // Quick Links and Cookie Settings
   })
 
   it('has logo with proper styling', () => {
