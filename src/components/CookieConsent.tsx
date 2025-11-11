@@ -47,7 +47,7 @@ export function CookieConsent() {
   return (
     <>
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-lg"
         role="dialog"
         aria-labelledby="cookie-consent-title"
         aria-describedby="cookie-consent-description"
@@ -55,10 +55,10 @@ export function CookieConsent() {
         <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex-1">
-              <h2 id="cookie-consent-title" className="font-heading font-semibold text-gray-900 dark:text-white mb-1">
+              <h2 id="cookie-consent-title" className="font-heading font-semibold text-foreground mb-1">
                 {t('title')}
               </h2>
-              <p id="cookie-consent-description" className="text-sm text-gray-600 dark:text-gray-300">
+              <p id="cookie-consent-description" className="text-sm text-muted-foreground">
                 {t('description')}
               </p>
             </div>

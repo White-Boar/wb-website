@@ -70,10 +70,10 @@ export function CookiePreferences({ open, onOpenChange, onSave }: CookiePreferen
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 dark:text-white">
+                <h3 className="font-semibold text-foreground">
                   {t('essential.title')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('essential.description')}
                 </p>
               </div>
@@ -83,7 +83,7 @@ export function CookiePreferences({ open, onOpenChange, onSave }: CookiePreferen
                 aria-label={t('essential.title')}
               />
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-muted-foreground">
               {t('essential.alwaysActive')}
             </p>
           </div>
@@ -92,10 +92,10 @@ export function CookiePreferences({ open, onOpenChange, onSave }: CookiePreferen
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 dark:text-white">
+                <h3 className="font-semibold text-foreground">
                   {t('analytics.title')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('analytics.description')}
                 </p>
               </div>
@@ -113,10 +113,10 @@ export function CookiePreferences({ open, onOpenChange, onSave }: CookiePreferen
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 dark:text-white">
+                <h3 className="font-semibold text-foreground">
                   {t('marketing.title')}
                 </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   {t('marketing.description')}
                 </p>
               </div>
