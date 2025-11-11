@@ -14,15 +14,35 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'customSoftware.meta' })
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://whiteboar.it'
+  const canonicalUrl = `${baseUrl}/${locale}/custom-software`
+  const ogImage = `/images/og-image-${locale}.png`
+
   return {
     title: t('title'),
     description: t('description'),
     openGraph: {
       title: t('title'),
       description: t('description'),
-      type: 'website',
+      url: canonicalUrl,
+      siteName: 'WhiteBoar',
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: t('title'),
+        },
+      ],
       locale: locale,
       alternateLocale: locale === 'en' ? 'it' : 'en',
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+      images: [ogImage],
     },
     alternates: {
       canonical: locale === 'en' ? '/en/custom-software' : `/${locale}/custom-software`,
