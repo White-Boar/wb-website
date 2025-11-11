@@ -431,6 +431,24 @@ export class WebhookService {
           console.error('Failed to send payment notification email:', emailError)
           // Log error but don't fail the webhook
         }
+
+        // Send customer success confirmation email
+        try {
+          // Determine locale from submission metadata or default to 'en'
+          const locale = (submission.metadata?.locale as 'en' | 'it') || 'en'
+
+          await EmailService.sendPaymentSuccessConfirmation(
+            email,
+            businessName,
+            invoice.amount_paid,
+            invoice.currency.toUpperCase(),
+            locale
+          )
+          debugLog('Customer success confirmation sent successfully')
+        } catch (emailError) {
+          console.error('Failed to send customer success confirmation email:', emailError)
+          // Log error but don't fail the webhook
+        }
       }
 
       return { success: true }
@@ -590,6 +608,34 @@ export class WebhookService {
         // Don't throw - analytics is non-critical, continue processing
       }
 
+      // Send customer success confirmation email
+      if (ADMIN_EMAIL) {
+        const businessName = submission.form_data?.businessName ||
+                           submission.form_data?.step3?.businessName ||
+                           'Unknown Business'
+        const email = submission.form_data?.email ||
+                     submission.form_data?.businessEmail ||
+                     submission.form_data?.step3?.businessEmail ||
+                     'unknown@example.com'
+
+        try {
+          // Determine locale from submission metadata or default to 'en'
+          const locale = (submission.metadata?.locale as 'en' | 'it') || 'en'
+
+          await EmailService.sendPaymentSuccessConfirmation(
+            email,
+            businessName,
+            amount,
+            currency.toUpperCase(),
+            locale
+          )
+          debugLog('Customer success confirmation sent successfully')
+        } catch (emailError) {
+          console.error('Failed to send customer success confirmation email:', emailError)
+          // Log error but don't fail the webhook
+        }
+      }
+
       return { success: true }
     } catch (error) {
       console.error('Error handling payment_intent.succeeded:', error)
@@ -713,9 +759,40 @@ export class WebhookService {
         metadataJSON: JSON.stringify(setupIntent.metadata)
       })
 
-      // Extract metadata
-      const submissionId = setupIntent.metadata?.submission_id
-      const subscriptionId = setupIntent.metadata?.subscription_id
+      let submissionId = setupIntent.metadata?.submission_id
+      let subscriptionId = setupIntent.metadata?.subscription_id
+
+      if (!submissionId) {
+        const { data: submissionLookup, error: submissionLookupError } = await supabase
+          .from('onboarding_submissions')
+          .select('id, stripe_subscription_id, session_id')
+          .eq('stripe_payment_id', setupIntent.id)
+          .single()
+
+        if (submissionLookup) {
+          const enrichedSubmissionId = submissionLookup.id
+          submissionId = enrichedSubmissionId
+          subscriptionId = subscriptionId ?? submissionLookup.stripe_subscription_id ?? undefined
+
+          setupIntent.metadata = {
+            ...(setupIntent.metadata || {}),
+            submission_id: enrichedSubmissionId,
+            session_id: submissionLookup.session_id || setupIntent.metadata?.session_id || '',
+            ...(subscriptionId ? { subscription_id: subscriptionId } : {})
+          }
+
+          console.log('[Webhook] Enriched setup_intent metadata from database', {
+            setupIntentId: setupIntent.id,
+            submissionId,
+            subscriptionId
+          })
+        } else {
+          console.warn('[Webhook] Unable to enrich setup_intent metadata from database', {
+            setupIntentId: setupIntent.id,
+            lookupError: submissionLookupError
+          })
+        }
+      }
 
       console.log('[Webhook] Extracted metadata values:', {
         submissionId,

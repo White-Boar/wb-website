@@ -824,6 +824,72 @@ export class EmailService {
   }
 
   /**
+   * Send payment success confirmation to customer
+   */
+  static async sendPaymentSuccessConfirmation(
+    email: string,
+    businessName: string,
+    amount: number,
+    currency: string,
+    locale: 'en' | 'it' = 'en'
+  ): Promise<boolean> {
+    try {
+      const subject = locale === 'it'
+        ? 'Il tuo nuovo sito web è in arrivo'
+        : 'Your new website is on its way'
+
+      const htmlContent = this.generatePaymentSuccessHTML(
+        businessName,
+        amount,
+        currency,
+        locale
+      )
+
+      const textContent = this.generatePaymentSuccessText(
+        businessName,
+        amount,
+        currency,
+        locale
+      )
+
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping payment success confirmation email:', {
+          to: email,
+          subject,
+          businessName,
+          amount
+        })
+        return true
+      }
+
+      const { data, error } = await resend.emails.send({
+        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+        to: [email],
+        subject,
+        html: htmlContent,
+        text: textContent,
+        tags: [
+          { name: 'category', value: 'payment_success' },
+          { name: 'locale', value: locale },
+          { name: 'business_name', value: sanitizeTagValue(businessName) }
+        ]
+      })
+
+      if (error) {
+        console.error('Failed to send payment success confirmation:', error)
+        return false
+      }
+
+      console.log('Payment success confirmation sent:', data)
+      return true
+    } catch (error) {
+      console.error('Send payment success confirmation error:', error)
+      return false
+    }
+  }
+
+  /**
    * Send custom software inquiry notification to admin
    */
   static async sendCustomSoftwareInquiry(
@@ -1021,6 +1087,301 @@ View in Stripe: ${stripeUrl}
 ---
 WhiteBoar Admin Panel
 Payment received at ${new Date().toLocaleString('en-US')}
+    `.trim()
+  }
+
+  private static generatePaymentSuccessHTML(
+    businessName: string,
+    amount: number,
+    currency: string,
+    locale: 'en' | 'it'
+  ): string {
+    const formattedAmount = (amount / 100).toFixed(2)
+    const shareUrl = encodeURIComponent(APP_URL)
+    const shareText = encodeURIComponent(locale === 'it'
+      ? 'Ho appena creato il mio sito web con WhiteBoar! Dai un\'occhiata 👉'
+      : 'I just created my website with WhiteBoar! Check it out 👉')
+
+    const content = locale === 'it' ? {
+      subject: 'Il tuo nuovo sito web è in arrivo',
+      header: 'Congratulazioni — il tuo viaggio inizia ora',
+      greeting: `Ciao ${businessName}!`,
+      intro: 'Hai appena fatto il passo più intelligente per mettere la tua azienda sulla mappa. Il tuo onboarding è completo, il pagamento è confermato e stiamo iniziando a lavorare sul tuo sito web.',
+      nextDaysTitle: 'Nei prossimi giorni, il nostro team:',
+      step1: 'Creerà la tua identità di marca — logo, colori e tipografia che ti fanno risaltare.',
+      step2: 'Costruirà il tuo sito web personalizzato — multilingue, mobile-ready e ottimizzato per i motori di ricerca.',
+      step3: 'Ti invierà un link di anteprima — così potrai revisionare e richiedere modifiche prima del lancio.',
+      noAction: 'Non devi muovere un dito. La tua azienda avrà presto una presenza online audace — costruita per crescere, pronta per partire.',
+      shareTitle: 'Aiuta i tuoi amici a mettere online le loro attività',
+      shareFacebook: 'Condividi su Facebook',
+      shareInstagram: 'Condividi su Instagram',
+      shareX: 'Condividi su X',
+      shareLinkedIn: 'Condividi su LinkedIn',
+      shareWhatsApp: 'Condividi su WhatsApp',
+      shareEmail: 'Condividi via email',
+      footerTagline: 'WhiteBoar — Grande presenza per piccole imprese',
+      footerQuestions: 'Domande? Contattaci in qualsiasi momento a'
+    } : {
+      subject: 'Your new website is on its way',
+      header: 'Congratulations — your journey starts now',
+      greeting: `Hello ${businessName}!`,
+      intro: 'You\'ve just taken the smartest step toward putting your business on the map. Your onboarding is complete, your payment confirmed, and we are starting work on your website.',
+      nextDaysTitle: 'Over the next few days, our team will:',
+      step1: 'Craft your brand identity — logo, colors, and typography that make you stand out.',
+      step2: 'Build your custom website — multilingual, mobile-ready, and search-optimized.',
+      step3: 'Send you a preview link — so you can review and request adjustments before launch.',
+      noAction: 'You don\'t need to lift a finger. Your business will soon have a bold online presence — built to grow, ready to go.',
+      shareTitle: 'Help your friends get their businesses online too',
+      shareFacebook: 'Share on Facebook',
+      shareInstagram: 'Share on Instagram',
+      shareX: 'Share on X',
+      shareLinkedIn: 'Share on LinkedIn',
+      shareWhatsApp: 'Share on WhatsApp',
+      shareEmail: 'Share via email',
+      footerTagline: 'WhiteBoar — Big presence for small business',
+      footerQuestions: 'Questions? Contact us anytime at'
+    }
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${content.subject}</title>
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              margin: 0;
+              padding: 20px;
+              background-color: #f4f4f4;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              background: white;
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            .header {
+              background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+              color: white;
+              padding: 40px 30px;
+              text-align: center;
+            }
+            .header h1 {
+              margin: 0;
+              font-size: 28px;
+              font-weight: bold;
+            }
+            .content {
+              padding: 40px 30px;
+            }
+            .steps {
+              background: #f0fdf4;
+              border-left: 4px solid #10b981;
+              padding: 20px;
+              margin: 25px 0;
+              border-radius: 4px;
+            }
+            .steps h3 {
+              margin-top: 0;
+              color: #065f46;
+            }
+            .steps ol {
+              margin: 15px 0;
+              padding-left: 20px;
+            }
+            .steps li {
+              margin: 10px 0;
+              color: #047857;
+            }
+            .no-action {
+              background: #fef3c7;
+              border-left: 4px solid #f59e0b;
+              padding: 20px;
+              margin: 25px 0;
+              border-radius: 4px;
+              font-size: 16px;
+              color: #78350f;
+            }
+            .share-section {
+              background: #eff6ff;
+              padding: 30px;
+              margin: 30px 0;
+              border-radius: 8px;
+              text-align: center;
+            }
+            .share-section h3 {
+              color: #1e40af;
+              margin-top: 0;
+            }
+            .share-buttons {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 10px;
+              justify-content: center;
+              margin-top: 20px;
+            }
+            .share-button {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 48px;
+              height: 48px;
+              text-decoration: none;
+              border-radius: 50%;
+              font-weight: 600;
+              color: white;
+              font-size: 20px;
+              transition: opacity 0.2s;
+            }
+            .share-button:hover {
+              opacity: 0.8;
+            }
+            .btn-facebook { background: #1877f2; }
+            .btn-instagram { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+            .btn-x { background: #000000; }
+            .btn-linkedin { background: #0077b5; }
+            .btn-whatsapp { background: #25d366; }
+            .btn-email { background: #6b7280; }
+            .footer {
+              background: #f8f9fa;
+              padding: 30px;
+              text-align: center;
+              color: #666;
+            }
+            .footer-tagline {
+              font-weight: bold;
+              color: #1f2937;
+              margin-bottom: 10px;
+            }
+            .footer a {
+              color: #3b82f6;
+              text-decoration: none;
+            }
+            @media only screen and (max-width: 600px) {
+              .share-buttons {
+                gap: 15px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
+              <h1>${content.header}</h1>
+            </div>
+
+            <div class="content">
+              <p style="font-size: 18px; margin-bottom: 20px;">${content.greeting}</p>
+
+              <p style="font-size: 16px;">${content.intro}</p>
+
+              <div class="steps">
+                <h3>${content.nextDaysTitle}</h3>
+                <ol>
+                  <li>${content.step1}</li>
+                  <li>${content.step2}</li>
+                  <li>${content.step3}</li>
+                </ol>
+              </div>
+
+              <div class="no-action">
+                <strong>${content.noAction}</strong>
+              </div>
+
+              <div class="share-section">
+                <h3>${content.shareTitle}</h3>
+                <div class="share-buttons">
+                  <a href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" class="share-button btn-facebook" target="_blank" title="${content.shareFacebook}">f</a>
+                  <a href="https://www.instagram.com/" class="share-button btn-instagram" target="_blank" title="${content.shareInstagram}">📷</a>
+                  <a href="https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}" class="share-button btn-x" target="_blank" title="${content.shareX}">𝕏</a>
+                  <a href="https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}" class="share-button btn-linkedin" target="_blank" title="${content.shareLinkedIn}">in</a>
+                  <a href="https://api.whatsapp.com/send?text=${shareText}%20${shareUrl}" class="share-button btn-whatsapp" target="_blank" title="${content.shareWhatsApp}">💬</a>
+                  <a href="mailto:?subject=${shareText}&body=${shareUrl}" class="share-button btn-email" title="${content.shareEmail}">✉️</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="footer">
+              <p class="footer-tagline">${content.footerTagline}</p>
+              <p>${content.footerQuestions} <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>
+              <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">
+                <a href="${APP_URL}">${APP_URL}</a>
+              </p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+  }
+
+  private static generatePaymentSuccessText(
+    businessName: string,
+    amount: number,
+    currency: string,
+    locale: 'en' | 'it'
+  ): string {
+    const formattedAmount = (amount / 100).toFixed(2)
+    const shareUrl = APP_URL
+
+    const content = locale === 'it' ? {
+      header: 'CONGRATULAZIONI — IL TUO VIAGGIO INIZIA ORA',
+      greeting: `Ciao ${businessName}!`,
+      intro: 'Hai appena fatto il passo più intelligente per mettere la tua azienda sulla mappa. Il tuo onboarding è completo, il pagamento è confermato e stiamo iniziando a lavorare sul tuo sito web.',
+      nextDays: 'NEI PROSSIMI GIORNI, IL NOSTRO TEAM:',
+      step1: '1. Creerà la tua identità di marca — logo, colori e tipografia che ti fanno risaltare.',
+      step2: '2. Costruirà il tuo sito web personalizzato — multilingue, mobile-ready e ottimizzato per i motori di ricerca.',
+      step3: '3. Ti invierà un link di anteprima — così potrai revisionare e richiedere modifiche prima del lancio.',
+      noAction: 'Non devi muovere un dito. La tua azienda avrà presto una presenza online audace — costruita per crescere, pronta per partire.',
+      share: 'Aiuta i tuoi amici a mettere online le loro attività: ' + shareUrl,
+      footerTagline: 'WhiteBoar — Grande presenza per piccole imprese',
+      footerQuestions: 'Domande? Contattaci in qualsiasi momento a ' + SUPPORT_EMAIL
+    } : {
+      header: 'CONGRATULATIONS — YOUR JOURNEY STARTS NOW',
+      greeting: `Hello ${businessName}!`,
+      intro: 'You\'ve just taken the smartest step toward putting your business on the map. Your onboarding is complete, your payment confirmed, and we are starting work on your website.',
+      nextDays: 'OVER THE NEXT FEW DAYS, OUR TEAM WILL:',
+      step1: '1. Craft your brand identity — logo, colors, and typography that make you stand out.',
+      step2: '2. Build your custom website — multilingual, mobile-ready, and search-optimized.',
+      step3: '3. Send you a preview link — so you can review and request adjustments before launch.',
+      noAction: 'You don\'t need to lift a finger. Your business will soon have a bold online presence — built to grow, ready to go.',
+      share: 'Help your friends get their businesses online too: ' + shareUrl,
+      footerTagline: 'WhiteBoar — Big presence for small business',
+      footerQuestions: 'Questions? Contact us anytime at ' + SUPPORT_EMAIL
+    }
+
+    return `
+${content.header}
+${'='.repeat(60)}
+
+${content.greeting}
+
+${content.intro}
+
+${content.nextDays}
+
+${content.step1}
+${content.step2}
+${content.step3}
+
+${content.noAction}
+
+---
+
+${content.share}
+
+---
+
+${content.footerTagline}
+${content.footerQuestions}
+
+${APP_URL}
     `.trim()
   }
 

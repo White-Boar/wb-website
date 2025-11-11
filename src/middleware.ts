@@ -21,7 +21,7 @@ export default function middleware(request: NextRequest) {
       img-src 'self' blob: data: https://*.stripe.com;
       font-src 'self' data: https://fonts.gstatic.com;
       connect-src 'self' https://api.stripe.com https://m.stripe.network https://*.supabase.co;
-      frame-src 'self' https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com;
+      frame-src 'self' https://*.js.stripe.com https://js.stripe.com https://hooks.stripe.com https://vercel.live;
       object-src 'none';
       base-uri 'self';
       form-action 'self';
