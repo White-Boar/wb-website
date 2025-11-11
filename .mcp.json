@@ -17,10 +17,18 @@
       "args": [
         "@jpisnice/shadcn-ui-mcp-server"
       ]
-    },     
+    },
     "supabase": {
-      "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=ytvgxewafpkczewwkdeg"
-    } 
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase",
+        "--project-ref=ytvgxewafpkczewwkdeg"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_KEY}"
+      }
+    }      
   }
 }
