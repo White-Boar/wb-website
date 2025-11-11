@@ -13,6 +13,7 @@ import { validateStripePaymentComplete } from './helpers/stripe-validation'
 import { getUIPaymentAmount, getUIRecurringAmount, fillStripePaymentForm } from './helpers/ui-parser'
 import { StripePaymentService } from '@/services/payment/StripePaymentService'
 import { triggerMockWebhookForPayment } from './helpers/mock-webhook'
+import { setCookieConsentBeforeLoad } from './helpers/test-utils'
 
 // Load environment variables
 dotenv.config({ path: path.resolve(process.cwd(), '.env') })
@@ -117,6 +118,9 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
       sessionId = seed.sessionId
       submissionId = seed.submissionId
 
+      // Set cookie consent before page load to prevent banner from interfering with tests
+      await setCookieConsentBeforeLoad(page, true, false)
+
       await page.addInitScript((store) => {
         localStorage.setItem('wb-onboarding-store', store)
       }, seed.zustandStore)
@@ -209,6 +213,9 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
       const seed = await seedStep14TestSession()
       sessionId = seed.sessionId
       submissionId = seed.submissionId
+
+      // Set cookie consent before page load to prevent banner from interfering with tests
+      await setCookieConsentBeforeLoad(page, true, false)
 
       await page.addInitScript((store) => {
         localStorage.setItem('wb-onboarding-store', store)

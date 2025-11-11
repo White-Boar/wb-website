@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import path from 'path'
 import { seedStep14TestSession, cleanupTestSession } from './helpers/seed-step14-session'
+import { setCookieConsentBeforeLoad } from './helpers/test-utils'
 
 /**
  * Step 12 Bug Fix Validation Test
@@ -45,6 +46,9 @@ test.describe('Step 12 - File Upload Persistence Bug', () => {
 
       sessionId = seed.sessionId
       submissionId = seed.submissionId
+
+      // Set cookie consent before page load to prevent banner from interfering with tests
+      await setCookieConsentBeforeLoad(page, true, false)
 
       // Inject the real session into localStorage
       await page.addInitScript((store) => {
