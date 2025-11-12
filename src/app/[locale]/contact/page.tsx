@@ -68,10 +68,10 @@ export default async function ContactPage({
         <Navigation />
         <main className="flex-1">
           {/* Hero Section */}
-          <section className="py-16 bg-gray-50 dark:bg-gray-900">
+          <section className="py-16 bg-white dark:bg-gray-100">
             <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8">
               <div className="text-center max-w-3xl mx-auto">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
                   {t('title')}
                 </h1>
               </div>
