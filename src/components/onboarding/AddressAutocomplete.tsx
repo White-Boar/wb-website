@@ -507,12 +507,7 @@ export function AddressAutocomplete({
         )}
       </div>
 
-      {/* No Google Maps API Warning */}
-      {typeof window !== 'undefined' && !(window as any).google?.maps?.places && (
-        <p className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 rounded px-2 py-1">
-          {t('googleMapsRequired')}
-        </p>
-      )}
+      {/* Silently fallback to manual entry when Google Maps is not available */}
     </div>
   )
 }
