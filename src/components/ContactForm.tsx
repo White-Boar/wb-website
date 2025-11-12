@@ -179,6 +179,8 @@ export function ContactForm() {
           <span>{tContact('contactInfo')}</span>
           <a
             href="mailto:info@whiteboar.it"
+            target="_blank"
+            rel="noopener noreferrer"
             className="font-medium text-primary hover:underline"
           >
             info@whiteboar.it
