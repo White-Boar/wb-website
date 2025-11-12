@@ -22,7 +22,7 @@ interface AddressAutocompleteProps {
   required?: boolean
   country?: string
   className?: string
-  onAddressSelect?: (address: AddressDetails) => void
+  onAddressSelect?: (address: AddressDetails | null) => void
   onAddressChange?: (query: string) => void
 }
 
@@ -76,7 +76,9 @@ export function AddressAutocomplete({
   const listRef = useRef<HTMLDivElement>(null)
   const autocompleteService = useRef<any>(null)
   const placesService = useRef<any>(null)
-  
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   const inputId = `address-${Math.random().toString(36).substr(2, 9)}`
   const hasError = !!(error || localError)
   const hasSuccess = !!success && !hasError
@@ -86,7 +88,7 @@ export function AddressAutocomplete({
     const initializeGooglePlaces = () => {
       if ((window as any).google?.maps?.places) {
         autocompleteService.current = new (window as any).google.maps.places.AutocompleteService()
-        
+
         // Create a hidden div for PlacesService
         const mapDiv = document.createElement('div')
         const map = new (window as any).google.maps.Map(mapDiv)
@@ -99,15 +101,33 @@ export function AddressAutocomplete({
       initializeGooglePlaces()
     } else {
       // Wait for Google Maps API to load
-      const checkGoogleMaps = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         if ((window as any).google?.maps?.places) {
           initializeGooglePlaces()
-          clearInterval(checkGoogleMaps)
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
         }
       }, 100)
-      
+
       // Cleanup interval after 10 seconds
-      setTimeout(() => clearInterval(checkGoogleMaps), 10000)
+      timeoutRef.current = setTimeout(() => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
+      }, 10000)
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
     }
   }, [])
 
@@ -299,7 +319,7 @@ export function AddressAutocomplete({
     setIsOpen(false)
     setLocalError('')
     onAddressChange?.('')
-    onAddressSelect?.(null as any)
+    onAddressSelect?.(null)
     inputRef.current?.focus()
   }
 
