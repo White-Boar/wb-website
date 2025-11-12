@@ -171,10 +171,10 @@ export function ContactForm() {
         viewport={{ once: true }}
         className="mb-8 text-center"
       >
-        <p className="text-lg text-muted-foreground mb-4">
+        <p className="text-lg text-gray-700 dark:text-gray-200 mb-4">
           {tContact('welcome')}
         </p>
-        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+        <div className="flex items-center justify-center gap-2 text-gray-700 dark:text-gray-200">
           <Mail className="w-5 h-5" />
           <span>{tContact('contactInfo')}</span>
           <a
