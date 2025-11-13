@@ -234,7 +234,7 @@ test.describe('Step 14: Stripe Validation (Comprehensive)', () => {
       await verifyButton.click()
 
       // VALIDATION 1: UI shows discount using Stripe-calculated totals
-      await expect(page.locator('text=/Discount Applied/i')).toBeVisible({ timeout: 15000 })
+      await expect(page.getByTestId('discount-summary')).toBeVisible({ timeout: 15000 })
       await page.waitForFunction((expected) => {
         const preview = (window as any).__wb_lastDiscountPreview
         return !!preview && preview.total === expected

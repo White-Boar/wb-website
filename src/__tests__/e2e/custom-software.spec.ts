@@ -136,9 +136,9 @@ test.describe('Custom Software Page', () => {
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
     // Check footer content
-    await expect(page.getByText(/AI-driven digital agency/i)).toBeVisible();
-    await expect(page.getByText(/Quick Links/i)).toBeVisible();
-    await expect(page.getByText(/Cookie Settings/i)).toBeVisible();
+    await expect(page.getByTestId('footer-brand-description')).toBeVisible();
+    await expect(page.getByTestId('footer-quick-links-heading')).toBeVisible();
+    await expect(page.getByTestId('footer-manage-cookies-button')).toBeVisible();
   });
 
   test('language switching works (EN ↔ IT)', async ({ page, isMobile }) => {
