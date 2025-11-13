@@ -1466,5 +1466,42 @@
     "acceptAll": "Accetta Tutti",
     "savePreferences": "Salva Preferenze",
     "cancel": "Annulla"
+  },
+  "contact": {
+    "meta": {
+      "title": "Contattaci - WhiteBoar",
+      "description": "Mettiti in contatto con WhiteBoar. Siamo qui per aiutarti con le tue domande e richieste di progetto."
+    },
+    "title": "Contattaci",
+    "welcome": "Ci piacerebbe sentirti! Che tu abbia una domanda sui nostri servizi, bisogno di assistenza o voglia discutere un potenziale progetto, non esitare a contattarci.",
+    "contactInfo": "Puoi anche inviarci un'email direttamente a",
+    "form": {
+      "title": "Inviaci un messaggio",
+      "nameLabel": "Nome",
+      "namePlaceholder": "Il tuo nome",
+      "emailLabel": "Email",
+      "emailPlaceholder": "tua@email.com",
+      "phoneLabel": "Telefono",
+      "phonePlaceholder": "+39 123 456 7890",
+      "detailsLabel": "Dettagli",
+      "detailsPlaceholder": "Parlaci della tua richiesta o progetto...",
+      "submitButton": "Invia Messaggio",
+      "submitting": "Invio in corso...",
+      "success": {
+        "title": "Grazie!",
+        "message": "Abbiamo ricevuto il tuo messaggio e ti risponderemo entro 2 giorni lavorativi."
+      },
+      "errors": {
+        "nameRequired": "Il nome è obbligatorio",
+        "nameTooShort": "Il nome deve contenere almeno 2 caratteri",
+        "emailRequired": "L'email è obbligatoria",
+        "emailInvalid": "Inserisci un indirizzo email valido",
+        "phoneRequired": "Il telefono è obbligatorio",
+        "phoneInvalid": "Inserisci un numero di telefono valido",
+        "detailsRequired": "I dettagli sono obbligatori",
+        "detailsTooShort": "Fornisci maggiori dettagli (almeno 15 caratteri)",
+        "submitFailed": "Invio del messaggio non riuscito. Riprova."
+      }
+    }
   }
 }

@@ -90,6 +90,12 @@ export function Footer() {
               >
                 {t('manageCookies')}
               </button>
+              <Link
+                href="/contact"
+                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+              >
+                Contact Us
+              </Link>
             </nav>
           </div>
 
