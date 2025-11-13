@@ -628,7 +628,7 @@ function CheckoutForm({
 
             {/* Discount */}
             {discountValidation?.status === 'valid' && discountAmount > 0 && (
-              <div className="border-t pt-4">
+              <div className="border-t pt-4" data-testid="discount-summary">
                 <div className="flex justify-between items-center text-green-600 dark:text-green-400">
                   <div className="flex items-center gap-2">
                     <Tag className="w-4 h-4" />
@@ -747,7 +747,10 @@ function CheckoutForm({
                 animate={{ opacity: 1, y: 0 }}
               >
                 {discountValidation.status === 'valid' ? (
-                  <Alert className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800">
+                  <Alert
+                    className="bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
+                    data-testid="discount-status-alert"
+                  >
                     <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
                     <AlertDescription className="text-green-800 dark:text-green-200">
                       {t('discount.validMessage', {

@@ -92,6 +92,10 @@ test.describe('Step 14: Payment Flow E2E', () => {
   test.describe.configure({ mode: 'serial' })
   // Allow tests to run in parallel while each scenario seeds its own session/coupon context
 
+  test.beforeEach(async ({ page }) => {
+    await setCookieConsentBeforeLoad(page, true, false)
+  })
+
   let couponIds: CouponIdSet
   let stripePrices: Awaited<ReturnType<typeof getStripePrices>>
 
@@ -392,7 +396,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await verifyButton.click()
 
       // Wait for Stripe discount verification to complete and preview to match expected totals
-      await expect(page.locator('text=/Discount Applied/i')).toBeVisible({ timeout: 15000 })
+      await expect(page.getByTestId('discount-summary')).toBeVisible({ timeout: 15000 })
       await page.waitForFunction((expected) => {
         const preview = (window as any).__wb_lastDiscountPreview
         return !!preview && preview.total === expected
@@ -440,6 +444,9 @@ test.describe('Step 14: Payment Flow E2E', () => {
       const seed = await seedStep14TestSession()
       sessionId = seed.sessionId
       submissionId = seed.submissionId
+
+      // Ensure cookie banner never appears and blocks the Pay button
+      await setCookieConsentBeforeLoad(page, true, false)
 
       await page.addInitScript((store) => {
         localStorage.setItem('wb-onboarding-store', store)
@@ -761,7 +768,7 @@ test.describe('Step 14: Payment Flow E2E', () => {
       await expect(page.locator(`text=Discount code ${discountCode} applied`)).toBeVisible({ timeout: 15000 })
 
       // Verify discount badge in order summary
-      await expect(page.locator('text=/Discount Applied/i')).toBeVisible()
+      await expect(page.getByTestId('discount-summary')).toBeVisible()
 
       // Verify price reduction (original €35, with 10% discount = €31.50)
       const expectedPayDisplay = formatEuroDisplay(Math.round(stripePrices.base * 0.9))
