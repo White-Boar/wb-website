@@ -24,8 +24,8 @@ export function Footer() {
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
+          <div className="space-y-4" data-testid="footer-brand">
+            <div className="flex items-center space-x-2" data-testid="footer-brand-logo">
               <div className="h-8 w-8 bg-accent rounded-lg flex items-center justify-center">
                 <span className="font-heading font-bold text-sm text-black">WB</span>
               </div>
@@ -33,32 +33,41 @@ export function Footer() {
                 WhiteBoar
               </span>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 max-w-sm">
+            <p
+              className="text-gray-600 dark:text-gray-400 max-w-sm"
+              data-testid="footer-brand-description"
+            >
               {t('brandDescription')}
             </p>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="font-heading font-semibold text-gray-900 dark:text-white">
+          <div className="space-y-4" data-testid="footer-quick-links">
+            <h3
+              className="font-heading font-semibold text-gray-900 dark:text-white"
+              data-testid="footer-quick-links-heading"
+            >
               {t('quickLinks')}
             </h3>
             <nav className="flex flex-col space-y-3" aria-label="Footer navigation">
               <button
                 onClick={() => scrollToSection('pricing')}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-link-services"
               >
                 {navT('services')}
               </button>
               <button
                 onClick={() => scrollToSection('portfolio')}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-link-clients"
               >
                 {navT('clients')}
               </button>
               <Link
                 href="/checkout"
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-link-start"
               >
                 {navT('start')}
               </Link>
@@ -77,6 +86,7 @@ export function Footer() {
               <button
                 onClick={() => setShowCookiePreferences(true)}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-manage-cookies-button"
               >
                 {t('manageCookies')}
               </button>
