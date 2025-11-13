@@ -63,6 +63,9 @@ temp/
 # Playwright MCP screenshots
 .playwright-mcp/
 
+# Supabase CLI temporary files
+supabase/.temp/
+
 # Editor directories and files
 .vscode/settings.json
 !.vscode/extensions.json

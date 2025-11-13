@@ -21,24 +21,24 @@ describe('Footer', () => {
   it('renders footer content', () => {
     render(<Footer />)
 
-    expect(screen.getByText('WhiteBoar')).toBeInTheDocument()
-    expect(screen.getByText('brandDescription')).toBeInTheDocument()
+    expect(screen.getByTestId('footer-brand-logo')).toBeInTheDocument()
+    expect(screen.getByTestId('footer-brand-description')).toBeInTheDocument()
     expect(screen.getByText('copyright')).toBeInTheDocument()
   })
 
   it('displays quick links section', () => {
     render(<Footer />)
 
-    expect(screen.getByText('quickLinks')).toBeInTheDocument()
-    expect(screen.getByText('services')).toBeInTheDocument()
-    expect(screen.getByText('clients')).toBeInTheDocument()
-    expect(screen.getByText('start')).toBeInTheDocument()
+    expect(screen.getByTestId('footer-quick-links-heading')).toBeInTheDocument()
+    expect(screen.getByTestId('footer-link-services')).toBeInTheDocument()
+    expect(screen.getByTestId('footer-link-clients')).toBeInTheDocument()
+    expect(screen.getByTestId('footer-link-start')).toBeInTheDocument()
   })
 
-  it('displays cookie settings section with social links', () => {
+  it('displays the manage cookies entry alongside social links', () => {
     render(<Footer />)
 
-    expect(screen.getByText('cookieSettings')).toBeInTheDocument()
+    expect(screen.getByTestId('footer-manage-cookies-button')).toBeInTheDocument()
 
     const twitterLink = screen.getByLabelText('Twitter')
     const linkedinLink = screen.getByLabelText('LinkedIn')
@@ -68,7 +68,7 @@ describe('Footer', () => {
   it('scrolls to sections when quick links are clicked', () => {
     render(<Footer />)
 
-    const servicesButton = screen.getByText('services')
+    const servicesButton = screen.getByTestId('footer-link-services')
     fireEvent.click(servicesButton)
 
     expect(document.getElementById).toHaveBeenCalledWith('pricing')
@@ -78,7 +78,7 @@ describe('Footer', () => {
   it('has checkout link for start button', () => {
     render(<Footer />)
 
-    const startLink = screen.getByRole('link', { name: 'start' })
+    const startLink = screen.getByTestId('footer-link-start')
     expect(startLink).toHaveAttribute('href', '/checkout')
   })
 
@@ -95,8 +95,8 @@ describe('Footer', () => {
   it('has logo with proper styling', () => {
     render(<Footer />)
     
-    const logo = screen.getByText('WB')
-    expect(logo).toBeInTheDocument()
-    expect(logo.parentElement).toHaveClass('bg-accent')
+    const logoWrapper = screen.getByTestId('footer-brand-logo')
+    expect(logoWrapper).toBeInTheDocument()
+    expect(logoWrapper.querySelector('.bg-accent')).toBeTruthy()
   })
 })

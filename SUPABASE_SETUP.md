@@ -58,35 +58,18 @@ DELETE FROM onboarding_sessions WHERE email = 'test@example.com';
 
 ## Storage Setup (for file uploads)
 
-### 1. Create Storage Bucket
+The storage bucket and policies are **automatically created** via the migration file:
+`supabase/migrations/20251111000000_setup_storage_bucket.sql`
 
-1. Go to **Storage** in Supabase dashboard
-2. Create a new bucket named `onboarding-uploads`
-3. Make it **private** (not public)
+This migration creates:
+- A private bucket named `onboarding-uploads` with 10MB file size limit
+- Allowed MIME types: `image/png`, `image/jpg`, `image/jpeg`, `image/svg+xml`
+- RLS policies for authenticated users to upload and view files
+- Full access for service role
 
-### 2. Set Storage Policies
-
-Run this SQL to set up storage policies:
-
-```sql
--- Allow users to upload files for their sessions
-CREATE POLICY "Users can upload files for their sessions" ON storage.objects
-FOR INSERT WITH CHECK (
-  bucket_id = 'onboarding-uploads' 
-  AND auth.role() = 'authenticated'
-);
-
--- Allow users to view their own uploads
-CREATE POLICY "Users can view their uploads" ON storage.objects
-FOR SELECT USING (
-  bucket_id = 'onboarding-uploads'
-  AND auth.role() = 'authenticated'
-);
-
--- Allow service role full access
-CREATE POLICY "Service role full access" ON storage.objects
-FOR ALL USING (auth.role() = 'service_role');
-```
+**No manual setup is required** - the bucket and policies are created when you run migrations via:
+- `supabase db push` (for local/production)
+- Or through the migration system in your Supabase dashboard
 
 ## Row Level Security (RLS) Details
 

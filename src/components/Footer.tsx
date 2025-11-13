@@ -5,74 +5,12 @@ import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { X, Linkedin, Github } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Switch } from "@/components/ui/switch"
 import { CookiePreferences } from "@/components/CookiePreferences"
-import { getCookieConsent, setCookieConsent, hasGivenConsent } from "@/lib/cookie-consent"
 
 export function Footer() {
   const t = useTranslations('footer')
   const navT = useTranslations('nav')
   const [showCookiePreferences, setShowCookiePreferences] = React.useState(false)
-  const [analyticsEnabled, setAnalyticsEnabled] = React.useState(false)
-  const [marketingEnabled, setMarketingEnabled] = React.useState(false)
-  const [hasConsent, setHasConsent] = React.useState(false)
-
-  React.useEffect(() => {
-    // Check if user has given consent
-    const consentGiven = hasGivenConsent()
-    setHasConsent(consentGiven)
-
-    if (consentGiven) {
-      const consent = getCookieConsent()
-      if (consent) {
-        setAnalyticsEnabled(consent.analytics)
-        setMarketingEnabled(consent.marketing)
-      }
-    }
-
-    // Listen for consent changes
-    const handleConsentChange = () => {
-      const newConsentGiven = hasGivenConsent()
-      setHasConsent(newConsentGiven)
-
-      if (newConsentGiven) {
-        const consent = getCookieConsent()
-        if (consent) {
-          setAnalyticsEnabled(consent.analytics)
-          setMarketingEnabled(consent.marketing)
-        }
-      }
-    }
-
-    window.addEventListener('cookieConsentChange', handleConsentChange)
-    return () => {
-      window.removeEventListener('cookieConsentChange', handleConsentChange)
-    }
-  }, [])
-
-  const handleAnalyticsChange = (checked: boolean) => {
-    setAnalyticsEnabled(checked)
-    const consent = getCookieConsent()
-    if (consent) {
-      setCookieConsent({
-        essential: true,
-        analytics: checked,
-        marketing: consent.marketing,
-      })
-    }
-  }
-
-  const handleMarketingChange = (checked: boolean) => {
-    setMarketingEnabled(checked)
-    const consent = getCookieConsent()
-    if (consent) {
-      setCookieConsent({
-        essential: true,
-        analytics: consent.analytics,
-        marketing: checked,
-      })
-    }
-  }
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId)
@@ -86,8 +24,8 @@ export function Footer() {
       <div className="max-w-content mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Section */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
+          <div className="space-y-4" data-testid="footer-brand">
+            <div className="flex items-center space-x-2" data-testid="footer-brand-logo">
               <div className="h-8 w-8 bg-accent rounded-lg flex items-center justify-center">
                 <span className="font-heading font-bold text-sm text-black">WB</span>
               </div>
@@ -95,32 +33,41 @@ export function Footer() {
                 WhiteBoar
               </span>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 max-w-sm">
+            <p
+              className="text-gray-600 dark:text-gray-400 max-w-sm"
+              data-testid="footer-brand-description"
+            >
               {t('brandDescription')}
             </p>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="font-heading font-semibold text-gray-900 dark:text-white">
+          <div className="space-y-4" data-testid="footer-quick-links">
+            <h3
+              className="font-heading font-semibold text-gray-900 dark:text-white"
+              data-testid="footer-quick-links-heading"
+            >
               {t('quickLinks')}
             </h3>
             <nav className="flex flex-col space-y-3" aria-label="Footer navigation">
               <button
                 onClick={() => scrollToSection('pricing')}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-link-services"
               >
                 {navT('services')}
               </button>
               <button
                 onClick={() => scrollToSection('portfolio')}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-link-clients"
               >
                 {navT('clients')}
               </button>
               <Link
                 href="/checkout"
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-link-start"
               >
                 {navT('start')}
               </Link>
@@ -139,54 +86,19 @@ export function Footer() {
               <button
                 onClick={() => setShowCookiePreferences(true)}
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors text-left focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-manage-cookies-button"
               >
                 {t('manageCookies')}
               </button>
             </nav>
           </div>
 
-          {/* Cookie Settings */}
+          {/* Social Links */}
           <div className="space-y-4">
             <h3 className="font-heading font-semibold text-gray-900 dark:text-white">
-              {t('cookieSettings')}
+              {t('followUs') || 'Follow Us'}
             </h3>
-            {hasConsent ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="analytics-switch"
-                    className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer"
-                  >
-                    {t('analytics')}
-                  </label>
-                  <Switch
-                    id="analytics-switch"
-                    checked={analyticsEnabled}
-                    onCheckedChange={handleAnalyticsChange}
-                    aria-label={t('analytics')}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="marketing-switch"
-                    className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer"
-                  >
-                    {t('marketing')}
-                  </label>
-                  <Switch
-                    id="marketing-switch"
-                    checked={marketingEnabled}
-                    onCheckedChange={handleMarketingChange}
-                    aria-label={t('marketing')}
-                  />
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {t('manageCookies')}
-              </p>
-            )}
-            <div className="flex space-x-2 pt-2">
+            <div className="flex space-x-2">
               <Button variant="ghost" size="icon" asChild>
                 <a
                   href="https://twitter.com/whiteboar_ai"
