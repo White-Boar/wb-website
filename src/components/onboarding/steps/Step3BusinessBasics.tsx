@@ -376,6 +376,7 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                 render={({ field }) => (
                   <AddressAutocomplete
                     label={t('address.street.label')}
+                    name="businessStreet"
                     placeholder={t('address.street.placeholder')}
                     hint={t('address.street.hint')}
                     value={watch('businessStreet') ? {

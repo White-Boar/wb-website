@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils'
 
 interface AddressAutocompleteProps {
   label: string
+  name?: string
   value?: AddressDetails
   placeholder?: string
   error?: string
@@ -52,6 +53,7 @@ interface PlaceSuggestion {
 
 export function AddressAutocomplete({
   label,
+  name,
   value,
   placeholder,
   error,
@@ -89,10 +91,9 @@ export function AddressAutocomplete({
       if ((window as any).google?.maps?.places) {
         autocompleteService.current = new (window as any).google.maps.places.AutocompleteService()
 
-        // Create a hidden div for PlacesService
+        // Create a hidden div for PlacesService (Places API only - no Map needed)
         const mapDiv = document.createElement('div')
-        const map = new (window as any).google.maps.Map(mapDiv)
-        placesService.current = new (window as any).google.maps.places.PlacesService(map)
+        placesService.current = new (window as any).google.maps.places.PlacesService(mapDiv)
       }
     }
 
@@ -223,15 +224,23 @@ export function AddressAutocomplete({
       lng: place.geometry?.location?.lng()
     }
 
+    // Track alternative city/locality values
+    let postalTown = ''
+    let adminLevel3 = ''
+
     components.forEach((component: any) => {
       const types = component.types
-      
+
       if (types.includes('street_number')) {
         details.street_number = component.long_name
       } else if (types.includes('route')) {
         details.route = component.long_name
       } else if (types.includes('locality')) {
         details.locality = component.long_name
+      } else if (types.includes('postal_town')) {
+        postalTown = component.long_name
+      } else if (types.includes('administrative_area_level_3')) {
+        adminLevel3 = component.long_name
       } else if (types.includes('administrative_area_level_2')) {
         details.administrative_area_level_2 = component.long_name
       } else if (types.includes('administrative_area_level_1')) {
@@ -242,6 +251,11 @@ export function AddressAutocomplete({
         details.country = component.long_name
       }
     })
+
+    // Fallback for locality (city): use postal_town or administrative_area_level_3
+    if (!details.locality) {
+      details.locality = postalTown || adminLevel3
+    }
 
     return details as AddressDetails
   }
@@ -367,10 +381,11 @@ export function AddressAutocomplete({
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
           <MapPin className="w-4 h-4" />
         </div>
-        
+
         <Input
           ref={inputRef}
           id={inputId}
+          name={name}
           type="text"
           value={query}
           onChange={handleInputChange}
@@ -411,19 +426,18 @@ export function AddressAutocomplete({
             </Button>
           )}
         </div>
-      </div>
 
-      {/* Suggestions Dropdown */}
-      <AnimatePresence>
-        {isOpen && suggestions.length > 0 && (
-          <motion.div
-            ref={listRef}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-1"
-          >
+        {/* Suggestions Dropdown */}
+        <AnimatePresence>
+          {isOpen && suggestions.length > 0 && (
+            <motion.div
+              ref={listRef}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.15 }}
+              className="absolute z-50 w-full mt-1"
+            >
             <Card className="border shadow-lg">
               <div className="max-h-60 overflow-auto">
                 {suggestions.map((suggestion, index) => (
@@ -457,7 +471,8 @@ export function AddressAutocomplete({
             </Card>
           </motion.div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
 
       {/* Selected Address Display */}
       {value && !isOpen && (

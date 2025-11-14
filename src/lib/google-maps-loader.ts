@@ -118,6 +118,7 @@ export function loadGoogleMapsAPI(options: GoogleMapsLoaderOptions = {}): Promis
  * Check if Google Maps API is loaded
  */
 export function isGoogleMapsLoaded(): boolean {
+  if (typeof window === 'undefined') return false
   return !!(window as any).google?.maps?.places
 }
 
