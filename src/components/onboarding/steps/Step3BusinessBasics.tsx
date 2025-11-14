@@ -169,11 +169,23 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
 
   const handleAddressSelect = (address: any) => {
     if (address) {
-      setValue('businessStreet', address.formatted_address)
-      setValue('businessCity', address.locality || '')
-      setValue('businessPostalCode', address.postal_code || '')
-      setValue('businessProvince', address.administrative_area_level_1 || '')
-      setValue('businessCountry', address.country || 'Italy')
+      setValue('businessStreet', address.formatted_address, { shouldValidate: true })
+      setValue('businessCity', address.locality || '', { shouldValidate: true })
+      setValue('businessPostalCode', address.postal_code || '', { shouldValidate: true })
+
+      // Find matching province code from administrative_area_level_1
+      // Use exact match first, then fallback to region matching to avoid false positives
+      const provinceName = address.administrative_area_level_1 || address.administrative_area_level_2 || ''
+      const matchingProvince = italianProvinces.find(
+        p => p.label.toLowerCase() === provinceName.toLowerCase()
+      ) || italianProvinces.find(
+        p => p.description.toLowerCase().includes(provinceName.toLowerCase())
+      )
+      setValue('businessProvince', matchingProvince?.value || '', { shouldValidate: true })
+      setValue('businessCountry', 'Italy', { shouldValidate: true })
+
+      // Trigger validation for all updated fields
+      trigger(['businessStreet', 'businessCity', 'businessPostalCode', 'businessProvince', 'businessCountry'])
     }
   }
 
@@ -362,15 +374,25 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
                 name="businessStreet"
                 control={control}
                 render={({ field }) => (
-                  <TextInput
-                    {...field}
+                  <AddressAutocomplete
                     label={t('address.street.label')}
+                    name="businessStreet"
                     placeholder={t('address.street.placeholder')}
                     hint={t('address.street.hint')}
+                    value={watch('businessStreet') ? {
+                      formatted_address: watch('businessStreet'),
+                      locality: watch('businessCity'),
+                      administrative_area_level_1: watch('businessProvince'),
+                      postal_code: watch('businessPostalCode'),
+                      country: watch('businessCountry') || 'Italy'
+                    } as any : undefined}
                     error={errors.businessStreet?.message}
                     required
-                    disabled={isLoading}
-                    leftIcon={<MapPin className="w-4 h-4" />}
+                    country="IT"
+                    onAddressSelect={handleAddressSelect}
+                    onAddressChange={(query) => {
+                      field.onChange(query)
+                    }}
                   />
                 )}
               />
