@@ -2,6 +2,7 @@
   "nav": {
     "services": "Servizi",
     "clients": "Clienti",
+    "contact": "Contatti",
     "start": "Inizia",
     "theme": {
       "light": "Chiaro",
@@ -69,7 +70,9 @@
   "footer": {
     "brandDescription": "Agenzia digitale guidata dall'IA che potenzia le piccole imprese con una presenza online professionale.",
     "quickLinks": "Link Rapidi",
-    "followUs": "Seguici",
+    "legal": "Legale",
+    "terms": "Termini e Condizioni",
+    "privacy": "Informativa sulla Privacy",
     "copyright": "© 2025 WhiteBoar",
     "manageCookies": "Gestisci Cookie",
     "cookieSettings": "Impostazioni Cookie",

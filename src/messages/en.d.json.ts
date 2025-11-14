@@ -5,6 +5,7 @@ declare const messages: {
   "nav": {
     "services": "Services",
     "clients": "Clients",
+    "contact": "Contact",
     "start": "Start",
     "theme": {
       "light": "Light",
@@ -72,7 +73,9 @@ declare const messages: {
   "footer": {
     "brandDescription": "AI-driven digital agency empowering small businesses with professional online presence.",
     "quickLinks": "Quick Links",
-    "followUs": "Follow Us",
+    "legal": "Legal",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy",
     "copyright": "© 2025 WhiteBoar",
     "manageCookies": "Manage Cookies",
     "cookieSettings": "Cookie Settings",

@@ -103,21 +103,11 @@ test.describe('WhiteBoar Homepage', () => {
     await expect(page).toHaveURL(/\/onboarding/, { timeout: 10000 });
   });
 
-  test('social links are working', async ({ page }) => {
-    // Check Twitter link
-    const twitterLink = page.getByLabel('Twitter').first();
-    await expect(twitterLink).toHaveAttribute('href', 'https://twitter.com/whiteboar_ai');
-    await expect(twitterLink).toHaveAttribute('target', '_blank');
-    
-    // Check LinkedIn link
-    const linkedinLink = page.getByLabel('LinkedIn').first();
-    await expect(linkedinLink).toHaveAttribute('href', 'https://linkedin.com/company/whiteboar');
-    await expect(linkedinLink).toHaveAttribute('target', '_blank');
-    
-    // Check GitHub link
-    const githubLink = page.getByLabel('GitHub').first();
-    await expect(githubLink).toHaveAttribute('href', 'https://github.com/whiteboar');
-    await expect(githubLink).toHaveAttribute('target', '_blank');
+  test('contact link is working', async ({ page }) => {
+    // Check Contact link in navigation
+    const contactLink = page.getByTestId('nav-contact-link');
+    await expect(contactLink).toBeVisible();
+    await expect(contactLink).toHaveAttribute('href', '/contact');
   });
 
   test('accessibility features work', async ({ page }) => {

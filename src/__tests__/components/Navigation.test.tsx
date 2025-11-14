@@ -26,6 +26,7 @@ describe('Navigation', () => {
     expect(screen.getByRole('link', { name: /whiteboar logo/i })).toBeInTheDocument()
     expect(screen.getByText('services')).toBeInTheDocument()
     expect(screen.getByText('clients')).toBeInTheDocument()
+    expect(screen.getByText('contact')).toBeInTheDocument()
     expect(screen.getByText('start')).toBeInTheDocument()
   })
 
@@ -56,20 +57,12 @@ describe('Navigation', () => {
     expect(mockScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' })
   })
 
-  it('has proper social media links', () => {
+  it('has contact link', () => {
     render(<Navigation />)
-    
-    const twitterLink = screen.getByLabelText('Twitter')
-    const linkedinLink = screen.getByLabelText('LinkedIn')
-    const githubLink = screen.getByLabelText('GitHub')
-    
-    expect(twitterLink).toHaveAttribute('href', 'https://twitter.com/whiteboar_ai')
-    expect(linkedinLink).toHaveAttribute('href', 'https://linkedin.com/company/whiteboar')
-    expect(githubLink).toHaveAttribute('href', 'https://github.com/whiteboar')
-    
-    expect(twitterLink).toHaveAttribute('target', '_blank')
-    expect(linkedinLink).toHaveAttribute('target', '_blank')
-    expect(githubLink).toHaveAttribute('target', '_blank')
+
+    const contactLink = screen.getByTestId('nav-contact-link')
+    expect(contactLink).toHaveAttribute('href', '/contact')
+    expect(contactLink).toHaveTextContent('contact')
   })
 
   it('has accessible navigation structure', () => {
