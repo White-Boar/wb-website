@@ -2,6 +2,7 @@
   "nav": {
     "services": "Servizi",
     "clients": "Clienti",
+    "contact": "Contatti",
     "start": "Inizia",
     "theme": {
       "light": "Chiaro",
@@ -14,7 +15,7 @@
     }
   },
   "hero": {
-    "title": "La tua attività. Vendendo globalmente. Tutto l'anno.",
+    "title": "Fai Crescere La Tua Attività Online",
     "subtitle": "Vendi a clienti internazionali anche dopo le festività: un sito web multilingue che ti tiene in contatto.",
     "cta": "Inizia ora!"
   },
@@ -69,7 +70,9 @@
   "footer": {
     "brandDescription": "Agenzia digitale guidata dall'IA che potenzia le piccole imprese con una presenza online professionale.",
     "quickLinks": "Link Rapidi",
-    "followUs": "Seguici",
+    "legal": "Legale",
+    "terms": "Termini e Condizioni",
+    "privacy": "Informativa sulla Privacy",
     "copyright": "© 2025 WhiteBoar",
     "manageCookies": "Gestisci Cookie",
     "cookieSettings": "Impostazioni Cookie",
@@ -100,7 +103,7 @@
       "description": "Crea il tuo sito web perfetto in 15 minuti."
     },
     "welcome": {
-      "title": "Metti La Tua Attività Online",
+      "title": "La tua attività. Vendendo globalmente. Tutto l'anno.",
       "subtitle": "Crea il tuo sito web perfetto in 15 minuti. Il nostro processo unico cattura l'essenza del tuo brand per costruire un sito web personalizzato pronto a impressionare i tuoi clienti.",
       "features": {
         "fast": {
@@ -1466,5 +1469,42 @@
     "acceptAll": "Accetta Tutti",
     "savePreferences": "Salva Preferenze",
     "cancel": "Annulla"
+  },
+  "contact": {
+    "meta": {
+      "title": "Contattaci - WhiteBoar",
+      "description": "Mettiti in contatto con WhiteBoar. Siamo qui per aiutarti con le tue domande e richieste di progetto."
+    },
+    "title": "Contattaci",
+    "welcome": "Ci piacerebbe sentirti! Che tu abbia una domanda sui nostri servizi, bisogno di assistenza o voglia discutere un potenziale progetto, non esitare a contattarci.",
+    "contactInfo": "Puoi anche inviarci un'email direttamente a",
+    "form": {
+      "title": "Inviaci un messaggio",
+      "nameLabel": "Nome",
+      "namePlaceholder": "Il tuo nome",
+      "emailLabel": "Email",
+      "emailPlaceholder": "tua@email.com",
+      "phoneLabel": "Telefono",
+      "phonePlaceholder": "+39 123 456 7890",
+      "detailsLabel": "Dettagli",
+      "detailsPlaceholder": "Parlaci della tua richiesta o progetto...",
+      "submitButton": "Invia Messaggio",
+      "submitting": "Invio in corso...",
+      "success": {
+        "title": "Grazie!",
+        "message": "Abbiamo ricevuto il tuo messaggio e ti risponderemo entro 2 giorni lavorativi."
+      },
+      "errors": {
+        "nameRequired": "Il nome è obbligatorio",
+        "nameTooShort": "Il nome deve contenere almeno 2 caratteri",
+        "emailRequired": "L'email è obbligatoria",
+        "emailInvalid": "Inserisci un indirizzo email valido",
+        "phoneRequired": "Il telefono è obbligatorio",
+        "phoneInvalid": "Inserisci un numero di telefono valido",
+        "detailsRequired": "I dettagli sono obbligatori",
+        "detailsTooShort": "Fornisci maggiori dettagli (almeno 15 caratteri)",
+        "submitFailed": "Invio del messaggio non riuscito. Riprova."
+      }
+    }
   }
 }

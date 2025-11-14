@@ -4,7 +4,7 @@ import * as React from "react"
 import { Link } from "@/i18n/navigation"
 import { useParams } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { X, Linkedin, Github, Menu, X as CloseIcon } from "lucide-react"
+import { Menu, X as CloseIcon } from "lucide-react"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ThemeToggle"
@@ -54,17 +54,12 @@ export function Navigation() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-3 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2">
-              <div className="h-20 w-20 flex items-center justify-center">
-                <WhiteBoarLogo
-                  width={100}
-                  height={100}
-                  className="text-accent dark:text-accent"
-                />
-              </div>
-              <span className="font-heading font-bold text-lg text-gray-900 dark:text-white">
-                WhiteBoar
-              </span>
+            <Link href="/" className="flex items-center focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2">
+              <WhiteBoarLogo
+                width={175}
+                height={175}
+                className="text-accent dark:text-accent"
+              />
             </Link>
           </div>
 
@@ -86,40 +81,13 @@ export function Navigation() {
               >
                 {t('clients')}
               </button>
-            </div>
-
-            {/* Social Icons */}
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="icon" asChild>
-                <a
-                  href="https://twitter.com/whiteboar_ai"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                >
-                  <X className="h-4 w-4" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <a
-                  href="https://linkedin.com/company/whiteboar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-4 w-4" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <a
-                  href="https://github.com/whiteboar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub"
-                >
-                  <Github className="h-4 w-4" />
-                </a>
-              </Button>
+              <Link
+                href="/contact"
+                data-testid="nav-contact-link"
+                className="text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-accent px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+              >
+                {t('contact')}
+              </Link>
             </div>
 
             {/* CTA Button */}
@@ -175,6 +143,14 @@ export function Navigation() {
                   >
                     {t('clients')}
                   </button>
+                  <Link
+                    href="/contact"
+                    data-testid="nav-contact-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block w-full text-left text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-accent px-3 py-2 text-base font-medium transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                  >
+                    {t('contact')}
+                  </Link>
                 </div>
 
                 {/* Mobile Controls */}
@@ -191,40 +167,6 @@ export function Navigation() {
                     <Link href="/onboarding" onClick={() => setMobileMenuOpen(false)}>
                       {t('start')}
                     </Link>
-                  </Button>
-                </div>
-
-                {/* Mobile Social Links */}
-                <div className="flex justify-center space-x-4 px-3 pt-2">
-                  <Button variant="ghost" size="icon" asChild>
-                    <a
-                      href="https://twitter.com/whiteboar_ai"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Twitter"
-                    >
-                      <X className="h-5 w-5" />
-                    </a>
-                  </Button>
-                  <Button variant="ghost" size="icon" asChild>
-                    <a
-                      href="https://linkedin.com/company/whiteboar"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="LinkedIn"
-                    >
-                      <Linkedin className="h-5 w-5" />
-                    </a>
-                  </Button>
-                  <Button variant="ghost" size="icon" asChild>
-                    <a
-                      href="https://github.com/whiteboar"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="GitHub"
-                    >
-                      <Github className="h-5 w-5" />
-                    </a>
                   </Button>
                 </div>
               </div>

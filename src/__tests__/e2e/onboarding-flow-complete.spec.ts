@@ -195,7 +195,7 @@ test.describe('Complete Onboarding Flow', () => {
 
     // Navigate to homepage (uses baseURL from playwright.config.ts)
     await page.goto('/');
-    await expect(page.locator('h1')).toContainText(/Your business. Selling globally. All year.|WhiteBoar|Digital Agency/i);
+    await expect(page.locator('h1')).toContainText(/Grow Your Business Online|WhiteBoar|Digital Agency/i);
   });
 
   test.afterEach(async () => {
@@ -226,7 +226,7 @@ test.describe('Complete Onboarding Flow', () => {
 
     // Should navigate to onboarding start page
     await page.waitForURL(/\/onboarding/);
-    await expect(page.locator('h1')).toContainText(/Get Your Business Online|get started|onboarding/i);
+    await expect(page.locator('h1')).toContainText(/Your business. Selling globally. All year.|get started|onboarding/i);
 
     // Click the main start button on onboarding page
     const onboardingStartButton = page.getByRole('button', { name: 'Start Your Website' });
@@ -373,6 +373,12 @@ test.describe('Complete Onboarding Flow', () => {
     const businessStreetInput = page.locator('input[name="businessStreet"]');
     if (await businessStreetInput.isVisible()) {
       await businessStreetInput.fill(testDataForWorker.physicalAddress.street);
+      // Dismiss autocomplete dropdown by blurring the input and clicking elsewhere
+      await businessStreetInput.blur();
+      await page.waitForTimeout(500);
+      // Click on a safe area (the heading) to ensure dropdown closes
+      await page.getByRole('heading', { name: /Business Details/ }).first().click();
+      await page.waitForTimeout(500);
     } else {
       console.log('❌ businessStreet input not found');
     }

@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils'
 
 interface AddressAutocompleteProps {
   label: string
+  name?: string
   value?: AddressDetails
   placeholder?: string
   error?: string
@@ -22,7 +23,7 @@ interface AddressAutocompleteProps {
   required?: boolean
   country?: string
   className?: string
-  onAddressSelect?: (address: AddressDetails) => void
+  onAddressSelect?: (address: AddressDetails | null) => void
   onAddressChange?: (query: string) => void
 }
 
@@ -52,6 +53,7 @@ interface PlaceSuggestion {
 
 export function AddressAutocomplete({
   label,
+  name,
   value,
   placeholder,
   error,
@@ -76,7 +78,9 @@ export function AddressAutocomplete({
   const listRef = useRef<HTMLDivElement>(null)
   const autocompleteService = useRef<any>(null)
   const placesService = useRef<any>(null)
-  
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   const inputId = `address-${Math.random().toString(36).substr(2, 9)}`
   const hasError = !!(error || localError)
   const hasSuccess = !!success && !hasError
@@ -86,11 +90,10 @@ export function AddressAutocomplete({
     const initializeGooglePlaces = () => {
       if ((window as any).google?.maps?.places) {
         autocompleteService.current = new (window as any).google.maps.places.AutocompleteService()
-        
-        // Create a hidden div for PlacesService
+
+        // Create a hidden div for PlacesService (Places API only - no Map needed)
         const mapDiv = document.createElement('div')
-        const map = new (window as any).google.maps.Map(mapDiv)
-        placesService.current = new (window as any).google.maps.places.PlacesService(map)
+        placesService.current = new (window as any).google.maps.places.PlacesService(mapDiv)
       }
     }
 
@@ -99,15 +102,35 @@ export function AddressAutocomplete({
       initializeGooglePlaces()
     } else {
       // Wait for Google Maps API to load
-      const checkGoogleMaps = setInterval(() => {
+      intervalRef.current = setInterval(() => {
         if ((window as any).google?.maps?.places) {
           initializeGooglePlaces()
-          clearInterval(checkGoogleMaps)
+          if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
+          }
         }
       }, 100)
-      
+
       // Cleanup interval after 10 seconds
-      setTimeout(() => clearInterval(checkGoogleMaps), 10000)
+      timeoutRef.current = setTimeout(() => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
+      }, 10000)
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+        timeoutRef.current = null
+      }
     }
   }, [])
 
@@ -126,8 +149,8 @@ export function AddressAutocomplete({
     try {
       const request: any = {
         input: searchQuery,
-        componentRestrictions: { country: country.toLowerCase() },
-        types: ['address']
+        componentRestrictions: { country: country.toLowerCase() }
+        // No types restriction - allows addresses, businesses, and establishments
       }
 
       autocompleteService.current.getPlacePredictions(
@@ -203,15 +226,23 @@ export function AddressAutocomplete({
       lng: place.geometry?.location?.lng()
     }
 
+    // Track alternative city/locality values
+    let postalTown = ''
+    let adminLevel3 = ''
+
     components.forEach((component: any) => {
       const types = component.types
-      
+
       if (types.includes('street_number')) {
         details.street_number = component.long_name
       } else if (types.includes('route')) {
         details.route = component.long_name
       } else if (types.includes('locality')) {
         details.locality = component.long_name
+      } else if (types.includes('postal_town')) {
+        postalTown = component.long_name
+      } else if (types.includes('administrative_area_level_3')) {
+        adminLevel3 = component.long_name
       } else if (types.includes('administrative_area_level_2')) {
         details.administrative_area_level_2 = component.long_name
       } else if (types.includes('administrative_area_level_1')) {
@@ -222,6 +253,11 @@ export function AddressAutocomplete({
         details.country = component.long_name
       }
     })
+
+    // Fallback for locality (city): use postal_town or administrative_area_level_3
+    if (!details.locality) {
+      details.locality = postalTown || adminLevel3
+    }
 
     return details as AddressDetails
   }
@@ -299,7 +335,7 @@ export function AddressAutocomplete({
     setIsOpen(false)
     setLocalError('')
     onAddressChange?.('')
-    onAddressSelect?.(null as any)
+    onAddressSelect?.(null)
     inputRef.current?.focus()
   }
 
@@ -347,10 +383,11 @@ export function AddressAutocomplete({
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
           <MapPin className="w-4 h-4" />
         </div>
-        
+
         <Input
           ref={inputRef}
           id={inputId}
+          name={name}
           type="text"
           value={query}
           onChange={handleInputChange}
@@ -391,19 +428,18 @@ export function AddressAutocomplete({
             </Button>
           )}
         </div>
-      </div>
 
-      {/* Suggestions Dropdown */}
-      <AnimatePresence>
-        {isOpen && suggestions.length > 0 && (
-          <motion.div
-            ref={listRef}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.15 }}
-            className="absolute z-50 w-full mt-1"
-          >
+        {/* Suggestions Dropdown */}
+        <AnimatePresence>
+          {isOpen && suggestions.length > 0 && (
+            <motion.div
+              ref={listRef}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.15 }}
+              className="absolute z-50 w-full mt-1"
+            >
             <Card className="border shadow-lg">
               <div className="max-h-60 overflow-auto">
                 {suggestions.map((suggestion, index) => (
@@ -437,7 +473,8 @@ export function AddressAutocomplete({
             </Card>
           </motion.div>
         )}
-      </AnimatePresence>
+        </AnimatePresence>
+      </div>
 
       {/* Selected Address Display */}
       {value && !isOpen && (
@@ -507,12 +544,7 @@ export function AddressAutocomplete({
         )}
       </div>
 
-      {/* No Google Maps API Warning */}
-      {typeof window !== 'undefined' && !(window as any).google?.maps?.places && (
-        <p className="text-xs text-yellow-600 bg-yellow-50 border border-yellow-200 rounded px-2 py-1">
-          {t('googleMapsRequired')}
-        </p>
-      )}
+      {/* Silently fallback to manual entry when Google Maps is not available */}
     </div>
   )
 }

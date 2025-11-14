@@ -108,7 +108,7 @@ export default function OnboardingWelcome() {
             >
               <Sparkles className="w-8 h-8" />
             </motion.div>
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent max-w-3xl mx-auto leading-tight pb-2">
               {t('title')}
             </h1>
           </div>

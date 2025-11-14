@@ -80,7 +80,7 @@
   --accent-foreground: 210 20% 98%;         /* Light text */
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 20% 98%;
-  --border: 215 27.9% 16.9%;                /* Medium dark border */
+  --border: 215 27.9% 65%;                  /* Light border for clear visibility against dark inputs */
   --input: 215 27.9% 16.9%;                 /* Medium dark input */
   --ring: 212.7 26.8% 83.9%;               /* Light ring */
 }

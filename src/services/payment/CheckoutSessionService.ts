@@ -708,7 +708,7 @@ export class CheckoutSessionService {
     // In newer Stripe APIs, payment_intent is nested in: invoice.payments.data[0].payment.payment_intent
     const paymentsData = (finalizedInvoice as any).payments?.data
     const firstPayment = paymentsData?.[0]?.payment
-    const paymentIntentId = typeof firstPayment?.payment_intent === 'string'
+    let paymentIntentId = typeof firstPayment?.payment_intent === 'string'
       ? firstPayment.payment_intent
       : firstPayment?.payment_intent?.id
 
@@ -724,6 +724,17 @@ export class CheckoutSessionService {
     // Use the invoice's confirmation_secret which contains the PaymentIntent client_secret
     // Stripe automatically creates this during finalization with discounts applied
     const confirmationSecret = finalizedInvoice.confirmation_secret
+
+    // In Stripe API v2025-09-30.clover, finalizeInvoice often returns before payments populate.
+    // When that happens we can still derive the PaymentIntent ID from the client_secret
+    // returned in confirmation_secret (format: pi_xxx_secret_yyy).
+    if (!paymentIntentId && confirmationSecret?.client_secret) {
+      const secret = confirmationSecret.client_secret
+      const secretPrefix = secret.split('_secret_')[0]
+      if (secretPrefix && secretPrefix.startsWith('pi_')) {
+        paymentIntentId = secretPrefix
+      }
+    }
 
     if (!confirmationSecret?.client_secret) {
       throw new Error('Invoice confirmation secret not available')

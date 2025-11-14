@@ -51,7 +51,15 @@ export class WebhookService {
 
     if (invoiceId) {
       try {
-        return await this.stripe.invoices.retrieve(invoiceId)
+        return await this.stripe.invoices.retrieve(invoiceId, {
+          expand: [
+            'line_items',
+            'total_discount_amounts',
+            'customer',
+            'subscription',
+            'payments.data.payment'
+          ]
+        })
       } catch (error) {
         debugLog(`Failed to retrieve invoice ${invoiceId}:`, error)
       }
@@ -266,21 +274,52 @@ export class WebhookService {
         return { success: false, error: 'Invoice not found' }
       }
 
-      const invoiceSubscriptionRaw = (invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription | null }).subscription ?? null
+      let invoiceSubscriptionRaw = (invoice as Stripe.Invoice & { subscription?: string | Stripe.Subscription | null }).subscription ?? null
+      let invoiceCustomerRaw = (invoice as Stripe.Invoice & { customer?: string | Stripe.Customer | null }).customer ?? null
+
+      if (!invoiceSubscriptionRaw && (invoice as any).metadata?.subscription_id) {
+        invoiceSubscriptionRaw = (invoice as any).metadata.subscription_id
+      }
+      if (!invoiceCustomerRaw && (invoice as any).metadata?.customer_id) {
+        invoiceCustomerRaw = (invoice as any).metadata.customer_id
+      }
+
       const subscriptionId = typeof invoiceSubscriptionRaw === 'string'
         ? invoiceSubscriptionRaw
         : invoiceSubscriptionRaw?.id ?? null
-      const invoiceCustomerRaw = (invoice as Stripe.Invoice & { customer?: string | Stripe.Customer | null }).customer ?? null
       const customerId = typeof invoiceCustomerRaw === 'string'
         ? invoiceCustomerRaw
         : invoiceCustomerRaw?.id ?? null
       const invoicePaymentIntentRaw = (invoice as Stripe.Invoice & { payment_intent?: string | Stripe.PaymentIntent | null }).payment_intent ?? null
-      const paymentIntentId = typeof invoicePaymentIntentRaw === 'string'
+      let paymentIntentId = typeof invoicePaymentIntentRaw === 'string'
         ? invoicePaymentIntentRaw
         : invoicePaymentIntentRaw?.id ?? null
 
+      if (!paymentIntentId) {
+        const paymentsArray = (invoice as any).payments?.data || []
+        const paymentIntentFromPayments = paymentsArray[0]?.payment?.payment_intent
+        if (typeof paymentIntentFromPayments === 'string') {
+          paymentIntentId = paymentIntentFromPayments
+        } else if (paymentIntentFromPayments?.id) {
+          paymentIntentId = paymentIntentFromPayments.id
+        }
+      }
+
       // Find submission
       const lookupResult = await this.findSubmissionByEvent(event, supabase)
+      if (!lookupResult.submission) {
+        // If metadata lookup fails, fall back to searching by subscription/customer IDs
+        const fallbackQuery = supabase
+          .from('onboarding_submissions')
+          .select('*')
+          .eq('stripe_subscription_id', subscriptionId || '')
+          .maybeSingle()
+        const { data: fallbackSubmission } = await fallbackQuery
+        if (fallbackSubmission) {
+          lookupResult.submission = fallbackSubmission
+        }
+      }
+
       if (!lookupResult.submission) {
         console.error(`Submission not found for subscription ${subscriptionId}`)
         return { success: false, error: 'Submission not found' }
@@ -479,6 +518,19 @@ export class WebhookService {
 
       // Find submission by customer_id or metadata
       const lookupResult = await this.findSubmissionByEvent(event, supabase)
+      if (!lookupResult.submission) {
+        // fallback lookup by subscription_id or customer_id
+        const { data: fallbackSubmission } = await supabase
+          .from('onboarding_submissions')
+          .select('*')
+          .eq('stripe_subscription_id', paymentIntent?.metadata?.subscription_id || '')
+          .maybeSingle()
+
+        if (fallbackSubmission) {
+          lookupResult.submission = fallbackSubmission
+        }
+      }
+
       if (!lookupResult.submission) {
         console.error(`Submission not found for payment intent ${paymentIntentId}`)
         return { success: false, error: 'Submission not found' }
@@ -750,6 +802,8 @@ export class WebhookService {
   ): Promise<WebhookHandlerResult> {
     try {
       const setupIntent = event.data.object as Stripe.SetupIntent
+      const isResourceMissingError = (error: unknown) =>
+        Boolean(error && typeof error === 'object' && 'code' in error && (error as { code?: string }).code === 'resource_missing')
 
       console.log('[Webhook] 🔧 Processing setup_intent.succeeded', {
         setupIntentId: setupIntent.id,
@@ -820,28 +874,50 @@ export class WebhookService {
 
       // Attach payment method to subscription for future billing
       if (subscriptionId) {
-        await this.stripe.subscriptions.update(subscriptionId, {
-          default_payment_method: setupIntent.payment_method as string
-        })
+        try {
+          await this.stripe.subscriptions.update(subscriptionId, {
+            default_payment_method: setupIntent.payment_method as string
+          })
 
-        debugLog('[Webhook] Payment method attached to subscription', {
-          subscriptionId,
-          paymentMethodId: setupIntent.payment_method
-        })
+          debugLog('[Webhook] Payment method attached to subscription', {
+            subscriptionId,
+            paymentMethodId: setupIntent.payment_method
+          })
+        } catch (error) {
+          if (isResourceMissingError(error)) {
+            console.warn('[Webhook] Subscription missing while attaching payment method, skipping', {
+              subscriptionId,
+              setupIntentId: setupIntent.id
+            })
+          } else {
+            throw error
+          }
+        }
       }
 
       // Also set as customer's default payment method for future invoices
       if (setupIntent.customer) {
-        await this.stripe.customers.update(setupIntent.customer as string, {
-          invoice_settings: {
-            default_payment_method: setupIntent.payment_method as string
-          }
-        })
+        try {
+          await this.stripe.customers.update(setupIntent.customer as string, {
+            invoice_settings: {
+              default_payment_method: setupIntent.payment_method as string
+            }
+          })
 
-        debugLog('[Webhook] Payment method set as customer default', {
-          customerId: setupIntent.customer,
-          paymentMethodId: setupIntent.payment_method
-        })
+          debugLog('[Webhook] Payment method set as customer default', {
+            customerId: setupIntent.customer,
+            paymentMethodId: setupIntent.payment_method
+          })
+        } catch (error) {
+          if (isResourceMissingError(error)) {
+            console.warn('[Webhook] Customer missing while setting default payment method, skipping', {
+              customerId: setupIntent.customer,
+              setupIntentId: setupIntent.id
+            })
+          } else {
+            throw error
+          }
+        }
       }
 
       // Log analytics event
@@ -876,13 +952,57 @@ export class WebhookService {
       // Find and update submission status
       const lookupResult = await this.findSubmissionByEvent(event, supabase)
       if (lookupResult.submission) {
+        const submission = lookupResult.submission
+
         await supabase
           .from('onboarding_submissions')
           .update({
             status: 'cancelled',
             updated_at: new Date().toISOString()
           })
-          .eq('id', lookupResult.submission.id)
+          .eq('id', submission.id)
+
+        // Extract customer information for emails
+        const businessName = submission.form_data?.businessName ||
+                           submission.form_data?.step3?.businessName ||
+                           'Unknown Business'
+        const email = submission.form_data?.email ||
+                     submission.form_data?.businessEmail ||
+                     submission.form_data?.step3?.businessEmail ||
+                     'unknown@example.com'
+
+        // Determine locale from submission metadata or default to 'en'
+        const locale = (submission.metadata?.locale as 'en' | 'it') || 'en'
+
+        // Send customer cancellation confirmation email
+        if (ADMIN_EMAIL) {
+          try {
+            await EmailService.sendCancellationConfirmation(
+              email,
+              businessName,
+              locale
+            )
+            debugLog('Cancellation confirmation sent to customer')
+          } catch (emailError) {
+            console.error('Failed to send cancellation confirmation email:', emailError)
+            // Log error but don't fail the webhook
+          }
+
+          // Send admin notification email
+          try {
+            await EmailService.sendCancellationNotification(
+              submission.id,
+              businessName,
+              email,
+              subscription.id,
+              subscription.canceled_at || Math.floor(Date.now() / 1000)
+            )
+            debugLog('Cancellation notification sent to admin')
+          } catch (emailError) {
+            console.error('Failed to send cancellation notification email:', emailError)
+            // Log error but don't fail the webhook
+          }
+        }
       }
 
       // Log analytics event

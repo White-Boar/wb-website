@@ -3,9 +3,9 @@
 import * as React from "react"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
-import { X, Linkedin, Github } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { CookiePreferences } from "@/components/CookiePreferences"
+import { WhiteBoarLogo } from "@/components/WhiteBoarLogo"
 
 export function Footer() {
   const t = useTranslations('footer')
@@ -25,13 +25,12 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Section */}
           <div className="space-y-4" data-testid="footer-brand">
-            <div className="flex items-center space-x-2" data-testid="footer-brand-logo">
-              <div className="h-8 w-8 bg-accent rounded-lg flex items-center justify-center">
-                <span className="font-heading font-bold text-sm text-black">WB</span>
-              </div>
-              <span className="font-heading font-bold text-lg text-gray-900 dark:text-white">
-                WhiteBoar
-              </span>
+            <div data-testid="footer-brand-logo">
+              <WhiteBoarLogo
+                width={175}
+                height={175}
+                className="text-accent dark:text-accent"
+              />
             </div>
             <p
               className="text-gray-600 dark:text-gray-400 max-w-sm"
@@ -42,7 +41,7 @@ export function Footer() {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4" data-testid="footer-quick-links">
+          <div className="space-y-4 md:mx-auto" data-testid="footer-quick-links">
             <h3
               className="font-heading font-semibold text-gray-900 dark:text-white"
               data-testid="footer-quick-links-heading"
@@ -65,23 +64,36 @@ export function Footer() {
                 {navT('clients')}
               </button>
               <Link
-                href="/checkout"
+                href="/contact"
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
-                data-testid="footer-link-start"
               >
-                {navT('start')}
+                {navT('contact')}
               </Link>
+            </nav>
+          </div>
+
+          {/* Legal Links */}
+          <div className="space-y-4 md:ml-auto" data-testid="footer-legal">
+            <h3
+              className="font-heading font-semibold text-gray-900 dark:text-white"
+              data-testid="footer-legal-heading"
+            >
+              {t('legal')}
+            </h3>
+            <nav className="flex flex-col space-y-3" aria-label="Legal links">
               <Link
                 href="/terms"
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-link-terms"
               >
-                Terms & Conditions
+                {t('terms')}
               </Link>
               <Link
                 href="/privacy"
                 className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+                data-testid="footer-link-privacy"
               >
-                Privacy Policy
+                {t('privacy')}
               </Link>
               <button
                 onClick={() => setShowCookiePreferences(true)}
@@ -91,45 +103,6 @@ export function Footer() {
                 {t('manageCookies')}
               </button>
             </nav>
-          </div>
-
-          {/* Social Links */}
-          <div className="space-y-4">
-            <h3 className="font-heading font-semibold text-gray-900 dark:text-white">
-              {t('followUs') || 'Follow Us'}
-            </h3>
-            <div className="flex space-x-2">
-              <Button variant="ghost" size="icon" asChild>
-                <a
-                  href="https://twitter.com/whiteboar_ai"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                >
-                  <X className="h-4 w-4" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <a
-                  href="https://linkedin.com/company/whiteboar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin className="h-4 w-4" />
-                </a>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <a
-                  href="https://github.com/whiteboar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub"
-                >
-                  <Github className="h-4 w-4" />
-                </a>
-              </Button>
-            </div>
           </div>
         </div>
 
