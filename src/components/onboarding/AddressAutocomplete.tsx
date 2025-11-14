@@ -147,8 +147,8 @@ export function AddressAutocomplete({
     try {
       const request: any = {
         input: searchQuery,
-        componentRestrictions: { country: country.toLowerCase() },
-        types: ['address']
+        componentRestrictions: { country: country.toLowerCase() }
+        // No types restriction - allows addresses, businesses, and establishments
       }
 
       autocompleteService.current.getPlacePredictions(
