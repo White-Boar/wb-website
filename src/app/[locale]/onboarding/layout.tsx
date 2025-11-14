@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 import { ThemeProvider } from '@/components/theme-provider'
 import { OnboardingHeader } from './components/OnboardingHeader'
+import { GoogleMapsProvider } from '@/components/onboarding/GoogleMapsProvider'
 
 interface OnboardingLayoutProps {
   children: React.ReactNode
@@ -59,18 +60,20 @@ export default async function OnboardingLayout({
 }: OnboardingLayoutProps) {
   return (
     <ThemeProvider defaultTheme="system" storageKey="wb-ui-theme">
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-        {/* Header */}
-        <OnboardingHeader />
+      <GoogleMapsProvider>
+        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+          {/* Header */}
+          <OnboardingHeader />
 
-        {/* Main Content */}
-        <main className="relative z-10">
-          {children}
-        </main>
+          {/* Main Content */}
+          <main className="relative z-10">
+            {children}
+          </main>
 
-        {/* Footer */}
-        <OnboardingFooter />
-      </div>
+          {/* Footer */}
+          <OnboardingFooter />
+        </div>
+      </GoogleMapsProvider>
     </ThemeProvider>
   )
 }

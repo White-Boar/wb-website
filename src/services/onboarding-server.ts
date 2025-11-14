@@ -115,11 +115,25 @@ export class OnboardingServerService {
           .eq('id', sessionId)
       }
 
+      // Transform flat address fields to nested physicalAddress for backward compatibility
+      const transformedFormData = {
+        ...formData,
+        // Create physicalAddress object from flat fields if they exist
+        physicalAddress: {
+          street: formData.businessStreet || '',
+          city: formData.businessCity || '',
+          postalCode: formData.businessPostalCode || '',
+          province: formData.businessProvince || '',
+          country: formData.businessCountry || 'Italy',
+          placeId: formData.businessPlaceId || undefined
+        }
+      }
+
       const submissionData = {
         session_id: sessionId,
         email: formData.email || session.email, // Use form email if available, fallback to session email
         business_name: formData.businessName || 'Unnamed Business',
-        form_data: formData,
+        form_data: transformedFormData,
         completion_time_seconds: completionTimeSeconds,
         status: 'submitted'
       }

@@ -373,6 +373,12 @@ test.describe('Complete Onboarding Flow', () => {
     const businessStreetInput = page.locator('input[name="businessStreet"]');
     if (await businessStreetInput.isVisible()) {
       await businessStreetInput.fill(testDataForWorker.physicalAddress.street);
+      // Dismiss autocomplete dropdown by blurring the input and clicking elsewhere
+      await businessStreetInput.blur();
+      await page.waitForTimeout(500);
+      // Click on a safe area (the heading) to ensure dropdown closes
+      await page.getByRole('heading', { name: /Business Details/ }).first().click();
+      await page.waitForTimeout(500);
     } else {
       console.log('❌ businessStreet input not found');
     }
