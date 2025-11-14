@@ -952,13 +952,57 @@ export class WebhookService {
       // Find and update submission status
       const lookupResult = await this.findSubmissionByEvent(event, supabase)
       if (lookupResult.submission) {
+        const submission = lookupResult.submission
+
         await supabase
           .from('onboarding_submissions')
           .update({
             status: 'cancelled',
             updated_at: new Date().toISOString()
           })
-          .eq('id', lookupResult.submission.id)
+          .eq('id', submission.id)
+
+        // Extract customer information for emails
+        const businessName = submission.form_data?.businessName ||
+                           submission.form_data?.step3?.businessName ||
+                           'Unknown Business'
+        const email = submission.form_data?.email ||
+                     submission.form_data?.businessEmail ||
+                     submission.form_data?.step3?.businessEmail ||
+                     'unknown@example.com'
+
+        // Determine locale from submission metadata or default to 'en'
+        const locale = (submission.metadata?.locale as 'en' | 'it') || 'en'
+
+        // Send customer cancellation confirmation email
+        if (ADMIN_EMAIL) {
+          try {
+            await EmailService.sendCancellationConfirmation(
+              email,
+              businessName,
+              locale
+            )
+            debugLog('Cancellation confirmation sent to customer')
+          } catch (emailError) {
+            console.error('Failed to send cancellation confirmation email:', emailError)
+            // Log error but don't fail the webhook
+          }
+
+          // Send admin notification email
+          try {
+            await EmailService.sendCancellationNotification(
+              submission.id,
+              businessName,
+              email,
+              subscription.id,
+              subscription.canceled_at || Math.floor(Date.now() / 1000)
+            )
+            debugLog('Cancellation notification sent to admin')
+          } catch (emailError) {
+            console.error('Failed to send cancellation notification email:', emailError)
+            // Log error but don't fail the webhook
+          }
+        }
       }
 
       // Log analytics event

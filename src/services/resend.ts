@@ -891,6 +891,130 @@ export class EmailService {
   }
 
   /**
+   * Send cancellation confirmation to customer
+   */
+  static async sendCancellationConfirmation(
+    email: string,
+    businessName: string,
+    locale: 'en' | 'it' = 'en'
+  ): Promise<boolean> {
+    try {
+      const subject = locale === 'it'
+        ? 'Il tuo abbonamento è stato cancellato'
+        : 'Your subscription has been cancelled'
+
+      const htmlContent = this.generateCancellationConfirmationHTML(
+        businessName,
+        locale
+      )
+
+      const textContent = this.generateCancellationConfirmationText(
+        businessName,
+        locale
+      )
+
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping cancellation confirmation email:', {
+          to: email,
+          subject,
+          businessName
+        })
+        return true
+      }
+
+      const { data, error } = await resend.emails.send({
+        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+        to: [email],
+        subject,
+        html: htmlContent,
+        text: textContent,
+        tags: [
+          { name: 'category', value: 'cancellation_confirmation' },
+          { name: 'locale', value: locale },
+          { name: 'business_name', value: sanitizeTagValue(businessName) }
+        ]
+      })
+
+      if (error) {
+        console.error('Failed to send cancellation confirmation:', error)
+        return false
+      }
+
+      console.log('Cancellation confirmation sent:', data)
+      return true
+    } catch (error) {
+      console.error('Send cancellation confirmation error:', error)
+      return false
+    }
+  }
+
+  /**
+   * Send cancellation notification to admin
+   */
+  static async sendCancellationNotification(
+    submissionId: string,
+    businessName: string,
+    email: string,
+    subscriptionId: string,
+    cancelledAt: number
+  ): Promise<boolean> {
+    try {
+      const subject = `⚠️ Subscription Cancelled: ${businessName}`
+
+      const htmlContent = this.generateCancellationNotificationHTML(
+        submissionId,
+        businessName,
+        email,
+        subscriptionId,
+        cancelledAt
+      )
+
+      const textContent = this.generateCancellationNotificationText(
+        submissionId,
+        businessName,
+        email,
+        subscriptionId,
+        cancelledAt
+      )
+
+      // Skip sending emails in test mode
+      if (IS_TEST_MODE) {
+        console.log('[TEST MODE] Skipping cancellation notification email:', {
+          to: ADMIN_EMAIL,
+          subject,
+          submissionId,
+          businessName
+        })
+        return true
+      }
+
+      const { data, error } = await resend.emails.send({
+        from: `${FROM_NAME} <${FROM_EMAIL}>`,
+        to: [ADMIN_EMAIL],
+        subject,
+        html: htmlContent,
+        text: textContent,
+        tags: [
+          { name: 'category', value: 'cancellation_notification' },
+          { name: 'business_name', value: sanitizeTagValue(businessName) }
+        ]
+      })
+
+      if (error) {
+        console.error('Failed to send cancellation notification:', error)
+        return false
+      }
+
+      console.log('Cancellation notification sent:', data)
+      return true
+    } catch (error) {
+      console.error('Send cancellation notification error:', error)
+      return false
+    }
+  }
+
+  /**
    * Send custom software inquiry notification to admin
    */
   static async sendCustomSoftwareInquiry(
@@ -1721,6 +1845,367 @@ ${content.step3}
 ----
 WhiteBoar - Notification System
 ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}
+    `.trim()
+  }
+
+  private static generateCancellationConfirmationHTML(
+    businessName: string,
+    locale: 'en' | 'it'
+  ): string {
+    const content = locale === 'it' ? {
+      title: 'Abbonamento Cancellato',
+      header: 'Il tuo abbonamento è stato cancellato',
+      greeting: `Ciao ${businessName},`,
+      intro: 'Ci dispiace vederti andare via. Il tuo abbonamento WhiteBoar è stato cancellato con successo.',
+      whatHappens: 'Cosa succede ora:',
+      point1: 'Il tuo abbonamento rimarrà attivo fino alla fine del periodo di fatturazione corrente.',
+      point2: 'Non riceverai ulteriori addebiti da WhiteBoar.',
+      point3: 'Puoi continuare ad accedere ai tuoi servizi fino alla fine del periodo di fatturazione.',
+      feedback: 'Ci piacerebbe sapere perché hai deciso di cancellare. Il tuo feedback ci aiuta a migliorare i nostri servizi.',
+      reactivate: 'Se cambi idea, puoi sempre riattivare il tuo abbonamento contattandoci.',
+      thanks: 'Grazie per aver utilizzato WhiteBoar.',
+      contactUs: 'Contattaci',
+      footerTagline: 'WhiteBoar — Grande presenza per piccole imprese',
+      footerQuestions: 'Domande? Contattaci in qualsiasi momento a'
+    } : {
+      title: 'Subscription Cancelled',
+      header: 'Your subscription has been cancelled',
+      greeting: `Hello ${businessName},`,
+      intro: 'We\'re sorry to see you go. Your WhiteBoar subscription has been successfully cancelled.',
+      whatHappens: 'What happens now:',
+      point1: 'Your subscription will remain active until the end of your current billing period.',
+      point2: 'You won\'t be charged again by WhiteBoar.',
+      point3: 'You can continue to access your services until the end of the billing period.',
+      feedback: 'We\'d love to know why you decided to cancel. Your feedback helps us improve our services.',
+      reactivate: 'If you change your mind, you can always reactivate your subscription by contacting us.',
+      thanks: 'Thank you for using WhiteBoar.',
+      contactUs: 'Contact Us',
+      footerTagline: 'WhiteBoar — Big presence for small business',
+      footerQuestions: 'Questions? Contact us anytime at'
+    }
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${content.title}</title>
+          <style>
+            body {
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              margin: 0;
+              padding: 20px;
+              background-color: #f4f4f4;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              background: white;
+              border-radius: 8px;
+              overflow: hidden;
+              box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }
+            .header {
+              background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+              color: white;
+              padding: 40px 30px;
+              text-align: center;
+            }
+            .header h1 {
+              margin: 0;
+              font-size: 28px;
+              font-weight: bold;
+            }
+            .content {
+              padding: 40px 30px;
+            }
+            .info-box {
+              background: #fef2f2;
+              border-left: 4px solid #ef4444;
+              padding: 20px;
+              margin: 25px 0;
+              border-radius: 4px;
+            }
+            .info-box h3 {
+              margin-top: 0;
+              color: #991b1b;
+            }
+            .info-box ul {
+              margin: 15px 0;
+              padding-left: 20px;
+            }
+            .info-box li {
+              margin: 10px 0;
+              color: #7f1d1d;
+            }
+            .feedback-box {
+              background: #eff6ff;
+              border-left: 4px solid #3b82f6;
+              padding: 20px;
+              margin: 25px 0;
+              border-radius: 4px;
+            }
+            .button {
+              display: inline-block;
+              background: #3b82f6;
+              color: white;
+              padding: 12px 24px;
+              text-decoration: none;
+              border-radius: 4px;
+              margin: 10px 0;
+            }
+            .footer {
+              background: #f8f9fa;
+              padding: 30px;
+              text-align: center;
+              color: #666;
+            }
+            .footer-tagline {
+              font-weight: bold;
+              color: #1f2937;
+              margin-bottom: 10px;
+            }
+            .footer a {
+              color: #3b82f6;
+              text-decoration: none;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div style="font-size: 48px; margin-bottom: 15px;">👋</div>
+              <h1>${content.header}</h1>
+            </div>
+
+            <div class="content">
+              <p style="font-size: 18px; margin-bottom: 20px;">${content.greeting}</p>
+
+              <p style="font-size: 16px;">${content.intro}</p>
+
+              <div class="info-box">
+                <h3>${content.whatHappens}</h3>
+                <ul>
+                  <li>${content.point1}</li>
+                  <li>${content.point2}</li>
+                  <li>${content.point3}</li>
+                </ul>
+              </div>
+
+              <div class="feedback-box">
+                <p>${content.feedback}</p>
+                <p>${content.reactivate}</p>
+              </div>
+
+              <p style="text-align: center;">
+                <a href="mailto:${SUPPORT_EMAIL}" class="button">${content.contactUs}</a>
+              </p>
+
+              <p style="font-size: 16px; margin-top: 30px;">${content.thanks}</p>
+            </div>
+
+            <div class="footer">
+              <p class="footer-tagline">${content.footerTagline}</p>
+              <p>${content.footerQuestions} <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>
+              <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">
+                <a href="${APP_URL}">${APP_URL}</a>
+              </p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+  }
+
+  private static generateCancellationConfirmationText(
+    businessName: string,
+    locale: 'en' | 'it'
+  ): string {
+    const content = locale === 'it' ? {
+      header: 'IL TUO ABBONAMENTO È STATO CANCELLATO',
+      greeting: `Ciao ${businessName},`,
+      intro: 'Ci dispiace vederti andare via. Il tuo abbonamento WhiteBoar è stato cancellato con successo.',
+      whatHappens: 'COSA SUCCEDE ORA:',
+      point1: '• Il tuo abbonamento rimarrà attivo fino alla fine del periodo di fatturazione corrente.',
+      point2: '• Non riceverai ulteriori addebiti da WhiteBoar.',
+      point3: '• Puoi continuare ad accedere ai tuoi servizi fino alla fine del periodo di fatturazione.',
+      feedback: 'Ci piacerebbe sapere perché hai deciso di cancellare. Il tuo feedback ci aiuta a migliorare i nostri servizi.',
+      reactivate: 'Se cambi idea, puoi sempre riattivare il tuo abbonamento contattandoci.',
+      thanks: 'Grazie per aver utilizzato WhiteBoar.',
+      contact: 'Contattaci: ' + SUPPORT_EMAIL,
+      footerTagline: 'WhiteBoar — Grande presenza per piccole imprese'
+    } : {
+      header: 'YOUR SUBSCRIPTION HAS BEEN CANCELLED',
+      greeting: `Hello ${businessName},`,
+      intro: 'We\'re sorry to see you go. Your WhiteBoar subscription has been successfully cancelled.',
+      whatHappens: 'WHAT HAPPENS NOW:',
+      point1: '• Your subscription will remain active until the end of your current billing period.',
+      point2: '• You won\'t be charged again by WhiteBoar.',
+      point3: '• You can continue to access your services until the end of the billing period.',
+      feedback: 'We\'d love to know why you decided to cancel. Your feedback helps us improve our services.',
+      reactivate: 'If you change your mind, you can always reactivate your subscription by contacting us.',
+      thanks: 'Thank you for using WhiteBoar.',
+      contact: 'Contact us: ' + SUPPORT_EMAIL,
+      footerTagline: 'WhiteBoar — Big presence for small business'
+    }
+
+    return `
+${content.header}
+${'='.repeat(60)}
+
+${content.greeting}
+
+${content.intro}
+
+${content.whatHappens}
+
+${content.point1}
+${content.point2}
+${content.point3}
+
+${content.feedback}
+
+${content.reactivate}
+
+${content.thanks}
+
+---
+
+${content.contact}
+
+${content.footerTagline}
+${APP_URL}
+    `.trim()
+  }
+
+  private static generateCancellationNotificationHTML(
+    submissionId: string,
+    businessName: string,
+    email: string,
+    subscriptionId: string,
+    cancelledAt: number
+  ): string {
+    const adminUrl = `${APP_URL}/admin/submissions/${submissionId}`
+    const stripeUrl = `https://dashboard.stripe.com/subscriptions/${subscriptionId}`
+    const cancelledDate = new Date(cancelledAt * 1000).toLocaleString('en-US')
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Subscription Cancelled</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
+            .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; }
+            .content { padding: 30px; }
+            .warning-badge { background: #fef2f2; color: #991b1b; padding: 10px 20px; border-radius: 20px; display: inline-block; font-weight: bold; margin-bottom: 20px; border: 2px solid #ef4444; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+            .info-item { background: #f8f9fa; padding: 15px; border-radius: 4px; }
+            .info-label { font-weight: bold; color: #374151; font-size: 12px; text-transform: uppercase; margin-bottom: 5px; }
+            .info-value { color: #1f2937; font-size: 16px; }
+            .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 10px 5px; }
+            .button-stripe { background: #635bff; }
+            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1 style="margin: 0; font-size: 24px;">⚠️ Subscription Cancelled</h1>
+              <p style="margin: 10px 0 0; opacity: 0.9;">A customer has cancelled their subscription</p>
+            </div>
+            <div class="content">
+              <div class="warning-badge">SUBSCRIPTION CANCELLED</div>
+
+              <h2 style="color: #1f2937; margin-top: 30px;">Customer Details</h2>
+              <div class="info-grid">
+                <div class="info-item">
+                  <div class="info-label">Business Name</div>
+                  <div class="info-value">${businessName}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Email</div>
+                  <div class="info-value"><a href="mailto:${email}">${email}</a></div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Submission ID</div>
+                  <div class="info-value" style="font-size: 12px; font-family: monospace;">${submissionId}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Subscription ID</div>
+                  <div class="info-value" style="font-size: 12px; font-family: monospace;">${subscriptionId}</div>
+                </div>
+                <div class="info-item">
+                  <div class="info-label">Cancelled At</div>
+                  <div class="info-value">${cancelledDate}</div>
+                </div>
+              </div>
+
+              <h2 style="color: #1f2937; margin-top: 30px;">Recommended Actions</h2>
+              <ol>
+                <li>Review the customer's submission details</li>
+                <li>Consider reaching out to understand why they cancelled</li>
+                <li>Update any internal records or project status</li>
+                <li>Verify cancellation in Stripe dashboard</li>
+              </ol>
+
+              <p style="text-align: center; margin-top: 30px;">
+                <a href="${adminUrl}" class="button">View Submission</a>
+                <a href="${stripeUrl}" class="button button-stripe">View in Stripe</a>
+              </p>
+            </div>
+            <div class="footer">
+              <p>WhiteBoar Admin Panel<br>
+              Cancellation processed at ${new Date().toLocaleString('en-US')}</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `
+  }
+
+  private static generateCancellationNotificationText(
+    submissionId: string,
+    businessName: string,
+    email: string,
+    subscriptionId: string,
+    cancelledAt: number
+  ): string {
+    const adminUrl = `${APP_URL}/admin/submissions/${submissionId}`
+    const stripeUrl = `https://dashboard.stripe.com/subscriptions/${subscriptionId}`
+    const cancelledDate = new Date(cancelledAt * 1000).toLocaleString('en-US')
+
+    return `
+⚠️ SUBSCRIPTION CANCELLED
+${'='.repeat(50)}
+
+SUBSCRIPTION CANCELLED
+
+CUSTOMER DETAILS:
+Business Name: ${businessName}
+Email: ${email}
+Submission ID: ${submissionId}
+Subscription ID: ${subscriptionId}
+Cancelled At: ${cancelledDate}
+
+RECOMMENDED ACTIONS:
+1. Review the customer's submission details
+2. Consider reaching out to understand why they cancelled
+3. Update any internal records or project status
+4. Verify cancellation in Stripe dashboard
+
+View Submission: ${adminUrl}
+View in Stripe: ${stripeUrl}
+
+---
+WhiteBoar Admin Panel
+Cancellation processed at ${new Date().toLocaleString('en-US')}
     `.trim()
   }
 }
