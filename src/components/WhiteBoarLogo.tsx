@@ -51,7 +51,7 @@ export function WhiteBoarLogo({
     // Return default logo during server-side rendering and initial client render
     return (
       <Image
-        src="/images/logo.png"
+        src="/images/logo-whiteboar-black.png"
         alt="WhiteBoar Logo"
         width={width}
         height={height}
@@ -60,8 +60,8 @@ export function WhiteBoarLogo({
     )
   }
 
-  // Use white logo for dark theme, default logo for light theme
-  const logoSrc = resolvedTheme === 'dark' ? '/images/logo-white.png' : '/images/logo.png'
+  // Use white logo for dark theme, black logo for light theme
+  const logoSrc = resolvedTheme === 'dark' ? '/images/logo-whiteboar-white.png' : '/images/logo-whiteboar-black.png'
 
   return (
     <Image

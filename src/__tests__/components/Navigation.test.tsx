@@ -23,7 +23,7 @@ describe('Navigation', () => {
   it('renders navigation elements', () => {
     render(<Navigation />)
 
-    expect(screen.getByText('WhiteBoar')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /whiteboar logo/i })).toBeInTheDocument()
     expect(screen.getByText('services')).toBeInTheDocument()
     expect(screen.getByText('clients')).toBeInTheDocument()
     expect(screen.getByText('start')).toBeInTheDocument()

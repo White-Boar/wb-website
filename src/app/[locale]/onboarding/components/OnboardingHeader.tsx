@@ -75,17 +75,12 @@ export function OnboardingHeader() {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link href="/" className="flex items-center space-x-3 focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2">
-                <div className="h-20 w-20 flex items-center justify-center">
-                  <WhiteBoarLogo
-                    width={100}
-                    height={100}
-                    className="text-accent dark:text-accent"
-                  />
-                </div>
-                <span className="font-heading font-bold text-lg text-gray-900 dark:text-white">
-                  WhiteBoar
-                </span>
+              <Link href="/" className="flex items-center focus-visible:outline-none focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2">
+                <WhiteBoarLogo
+                  width={175}
+                  height={175}
+                  className="text-accent dark:text-accent"
+                />
               </Link>
             </div>
 

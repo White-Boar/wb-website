@@ -32,7 +32,7 @@ jest.mock('next-intl', () => ({
       'nav.theme.system': 'System',
       'nav.language.english': 'English',
       'nav.language.italian': 'Italian',
-      'hero.title': 'Your business. Selling globally. All year.',
+      'hero.title': 'Grow Your Business Online',
       'hero.subtitle': 'Sell to international customers even after the holiday season: a multilingual website that keeps you in touch.',
       'hero.cta': 'Start now!',
       'steps.title': 'Three simple steps',

@@ -17,7 +17,7 @@ declare const messages: {
     }
   },
   "hero": {
-    "title": "Your business. Selling globally. All year.",
+    "title": "Grow Your Business Online",
     "subtitle": "Sell to international customers even after the holiday season: a multilingual website that keeps you in touch.",
     "cta": "Start now!"
   },
@@ -111,7 +111,7 @@ declare const messages: {
       "description": "Create your perfect website in 15 minutes."
     },
     "welcome": {
-      "title": "Get Your Business Online",
+      "title": "Your business. Selling globally. All year.",
       "subtitle": "Create your perfect website in 15 minutes. Our unique process captures the essence of your brand to build a custom website ready to impress your customers.",
       "features": {
         "fast": {
