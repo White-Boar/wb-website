@@ -174,13 +174,17 @@ export function Step3BusinessBasics({ form, errors, isLoading }: StepComponentPr
       setValue('businessPostalCode', address.postal_code || '', { shouldValidate: true })
 
       // Find matching province code from administrative_area_level_1
-      // Use exact match first, then fallback to region matching to avoid false positives
+      // Use exact match first, then fallback to word boundary matching to avoid false positives
       const provinceName = address.administrative_area_level_1 || address.administrative_area_level_2 || ''
       const matchingProvince = italianProvinces.find(
         p => p.label.toLowerCase() === provinceName.toLowerCase()
-      ) || italianProvinces.find(
-        p => p.description.toLowerCase().includes(provinceName.toLowerCase())
-      )
+      ) || italianProvinces.find(p => {
+        // Use word boundary match to prevent "Roma" from matching "Emilia-Romagna"
+        const description = p.description.toLowerCase()
+        const searchTerm = provinceName.toLowerCase()
+        const regex = new RegExp(`\\b${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`)
+        return regex.test(description)
+      })
       setValue('businessProvince', matchingProvince?.value || '', { shouldValidate: true })
       setValue('businessCountry', 'Italy', { shouldValidate: true })
 
