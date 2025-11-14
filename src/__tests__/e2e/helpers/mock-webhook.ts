@@ -115,6 +115,7 @@ export async function triggerMockWebhookForPayment(submissionId: string, expecte
       {
         submission_id: submissionId,
         session_id: submission.session_id || '',
+        subscription_id: subscriptionId || ''
       }
     )
 
