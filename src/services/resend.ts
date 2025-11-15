@@ -364,6 +364,48 @@ export class EmailService {
   // HTML EMAIL TEMPLATES
   // ===========================================================================
 
+  /**
+   * Generate common email header with WhiteBoar logo
+   */
+  private static generateEmailHeader(locale: 'en' | 'it' = 'en'): string {
+    const logoUrl = `${APP_URL}/images/logo-whiteboar-black.png`
+
+    return `
+      <div style="background: white; padding: 30px 20px; text-align: center; border-bottom: 1px solid #e5e7eb;">
+        <img src="${logoUrl}" alt="WhiteBoar" style="height: 50px; width: auto;" />
+      </div>
+    `
+  }
+
+  /**
+   * Generate common email footer with branding
+   */
+  private static generateEmailFooter(locale: 'en' | 'it' = 'en'): string {
+    const content = locale === 'it' ? {
+      support: 'Hai bisogno di aiuto?',
+      contactUs: 'Contattaci',
+      copyright: '© 2025 WhiteBoar. Tutti i diritti riservati.',
+      unsubscribe: 'Non vuoi più ricevere queste email?'
+    } : {
+      support: 'Need help?',
+      contactUs: 'Contact us',
+      copyright: '© 2025 WhiteBoar. All rights reserved.',
+      unsubscribe: 'Don\'t want to receive these emails?'
+    }
+
+    return `
+      <div style="background: #f8f9fa; padding: 30px 20px; text-align: center; color: #666; font-size: 14px; border-top: 1px solid #e5e7eb;">
+        <p style="margin: 0 0 15px 0;">
+          <strong>${content.support}</strong><br>
+          <a href="${SUPPORT_EMAIL}" style="color: #667eea; text-decoration: none;">${content.contactUs}</a>
+        </p>
+        <p style="margin: 0; color: #999; font-size: 12px;">
+          ${content.copyright}
+        </p>
+      </div>
+    `
+  }
+
   private static generateVerificationEmailHTML(
     name: string,
     code: string,
@@ -399,43 +441,34 @@ export class EmailService {
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
             .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
-            .logo { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
             .content { padding: 40px 30px; }
             .code-container { text-align: center; margin: 30px 0; }
             .code { display: inline-block; background: #f8f9fa; border: 2px dashed #667eea; padding: 20px 30px; font-size: 32px; font-weight: bold; letter-spacing: 4px; color: #667eea; border-radius: 8px; }
-            .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #666; font-size: 14px; }
             .button { display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 10px 0; }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">
-              <div class="logo">🐗 WhiteBoar</div>
-              <div>${locale === 'it' ? 'Codice di Verifica' : 'Verification Code'}</div>
-            </div>
+            ${this.generateEmailHeader(locale)}
             <div class="content">
               <p>${content.greeting}</p>
               <p>${content.message}</p>
-              
+
               <div class="code-container">
                 <div style="font-weight: bold; margin-bottom: 10px; color: #667eea;">${content.codeLabel}</div>
                 <div class="code">${code}</div>
               </div>
-              
+
               <p>${content.instructions}</p>
               <p style="color: #666; font-size: 14px;"><em>${content.expires}</em></p>
-              
+
               <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-              
+
               <p>${content.support} <a href="mailto:${SUPPORT_EMAIL}" class="button">${content.contactUs}</a></p>
-              
+
               <p>${content.thanks}</p>
             </div>
-            <div class="footer">
-              <p>WhiteBoar - AI-driven digital agency<br>
-              <a href="${APP_URL}">${APP_URL}</a></p>
-            </div>
+            ${this.generateEmailFooter(locale)}
           </div>
         </body>
       </html>
@@ -476,42 +509,33 @@ export class EmailService {
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
             .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px 30px; text-align: center; }
-            .logo { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
             .content { padding: 40px 30px; }
             .highlight { background: #10b981; color: white; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0; }
-            .footer { background: #f8f9fa; padding: 20px 30px; text-align: center; color: #666; font-size: 14px; }
             .button { display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 10px 0; }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">
-              <div class="logo">🐗 WhiteBoar</div>
-              <div>${content.title}</div>
-            </div>
+            ${this.generateEmailHeader(locale)}
             <div class="content">
               <p style="font-size: 18px;">${content.greeting}</p>
-              
+
               <p>${content.message}</p>
-              
+
               <div class="highlight">
                 <p style="margin: 0; font-size: 18px;">${content.timeline}</p>
               </div>
-              
+
               <p>${content.notification}</p>
               <p>${content.payment}</p>
-              
+
               <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-              
+
               <p>${content.questions} <a href="mailto:${SUPPORT_EMAIL}" class="button">${locale === 'it' ? 'Contattaci' : 'Contact Us'}</a></p>
-              
+
               <p style="font-size: 18px; color: #10b981;"><strong>${content.thanks}</strong></p>
             </div>
-            <div class="footer">
-              <p>WhiteBoar - AI-driven digital agency<br>
-              <a href="${APP_URL}">${APP_URL}</a></p>
-            </div>
+            ${this.generateEmailFooter(locale)}
           </div>
         </body>
       </html>
@@ -523,7 +547,7 @@ export class EmailService {
     submissionId: string
   ): string {
     const adminUrl = `${APP_URL}/admin/submissions/${submissionId}`
-    
+
     return `
       <!DOCTYPE html>
       <html>
@@ -534,20 +558,19 @@ export class EmailService {
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
             .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .header { background: #1f2937; color: white; padding: 30px; }
             .content { padding: 30px; }
             .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
             .info-item { background: #f8f9fa; padding: 15px; border-radius: 4px; }
             .info-label { font-weight: bold; color: #374151; }
             .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 10px 0; }
-            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">
-              <h1>🚀 New Onboarding Submission</h1>
-              <p>A new business has completed the onboarding process!</p>
+            ${this.generateEmailHeader('en')}
+            <div style="background: #1f2937; color: white; padding: 30px; text-align: center;">
+              <h1 style="margin: 0 0 10px 0;">🚀 New Onboarding Submission</h1>
+              <p style="margin: 0;">A new business has completed the onboarding process!</p>
             </div>
             <div class="content">
               <div class="info-grid">
@@ -576,27 +599,28 @@ export class EmailService {
                   <div>${formData.primaryGoal}</div>
                 </div>
               </div>
-              
+
               <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
                 <strong>Business Offer:</strong><br>
                 ${formData.businessDescription}
               </div>
-              
+
               <p><strong>Next Steps:</strong></p>
               <ol>
                 <li>Review the complete submission in the admin panel</li>
                 <li>Begin creating the website preview</li>
                 <li>Send preview notification when ready</li>
               </ol>
-              
+
               <p style="text-align: center;">
                 <a href="${adminUrl}" class="button">View Full Submission</a>
               </p>
+
+              <p style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
+                Submission ID: ${submissionId}
+              </p>
             </div>
-            <div class="footer">
-              <p>WhiteBoar Admin Panel<br>
-              Submission ID: ${submissionId}</p>
-            </div>
+            ${this.generateEmailFooter('en')}
           </div>
         </body>
       </html>
@@ -659,20 +683,25 @@ export class EmailService {
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>${content.title}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
+            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .content { padding: 40px; }
+            .button { display: inline-block; background: #3b82f6; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; }
+          </style>
         </head>
         <body>
-          <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-            <div style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; padding: 40px; text-align: center;">
-              <h1>🚀 ${content.title}</h1>
-            </div>
-            <div style="padding: 40px;">
+          <div class="container">
+            ${this.generateEmailHeader(locale)}
+            <div class="content">
               <p style="font-size: 18px;">${content.message}</p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${previewUrl}" style="display: inline-block; background: #3b82f6; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold;">${content.cta}</a>
+                <a href="${previewUrl}" class="button">${content.cta}</a>
               </div>
               <p>${content.instructions}</p>
               <p style="color: #059669;"><strong>${content.satisfaction}</strong></p>
             </div>
+            ${this.generateEmailFooter(locale)}
           </div>
         </body>
       </html>
@@ -716,20 +745,25 @@ export class EmailService {
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>${content.title}</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
+            .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+            .content { padding: 40px; }
+            .button { display: inline-block; background: #f59e0b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; }
+          </style>
         </head>
         <body>
-          <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-            <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 40px; text-align: center;">
-              <h1>⏰ ${content.title}</h1>
-            </div>
-            <div style="padding: 40px;">
+          <div class="container">
+            ${this.generateEmailHeader(locale)}
+            <div class="content">
               <p>${content.message}</p>
               <p><strong>${content.progress}</strong></p>
               <div style="text-align: center; margin: 30px 0;">
-                <a href="${recoveryUrl}" style="display: inline-block; background: #f59e0b; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold;">${content.cta}</a>
+                <a href="${recoveryUrl}" class="button">${content.cta}</a>
               </div>
               <p style="color: #dc2626;"><em>${content.urgency}</em></p>
             </div>
+            ${this.generateEmailFooter(locale)}
           </div>
         </body>
       </html>
@@ -1137,7 +1171,6 @@ export class EmailService {
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
             .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; }
             .content { padding: 30px; }
             .success-badge { background: #d1fae5; color: #065f46; padding: 10px 20px; border-radius: 20px; display: inline-block; font-weight: bold; margin-bottom: 20px; }
             .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
@@ -1150,12 +1183,12 @@ export class EmailService {
             .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 10px 5px; }
             .button-stripe { background: #635bff; }
             .languages-list { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
-            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">
+            ${this.generateEmailHeader('en')}
+            <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center;">
               <h1 style="margin: 0; font-size: 24px;">💳 Payment Received!</h1>
               <p style="margin: 10px 0 0; opacity: 0.9;">A customer has successfully completed payment</p>
             </div>
@@ -1207,11 +1240,12 @@ export class EmailService {
                 <a href="${adminUrl}" class="button">View Submission</a>
                 <a href="${stripeUrl}" class="button button-stripe">View in Stripe</a>
               </p>
+
+              <p style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
+                Payment received at ${new Date().toLocaleString('en-US')}
+              </p>
             </div>
-            <div class="footer">
-              <p>WhiteBoar Admin Panel<br>
-              Payment received at ${new Date().toLocaleString('en-US')}</p>
-            </div>
+            ${this.generateEmailFooter('en')}
           </div>
         </body>
       </html>
@@ -1423,21 +1457,6 @@ Payment received at ${new Date().toLocaleString('en-US')}
             .btn-linkedin { background: #0077b5; }
             .btn-whatsapp { background: #25d366; }
             .btn-email { background: #6b7280; }
-            .footer {
-              background: #f8f9fa;
-              padding: 30px;
-              text-align: center;
-              color: #666;
-            }
-            .footer-tagline {
-              font-weight: bold;
-              color: #1f2937;
-              margin-bottom: 10px;
-            }
-            .footer a {
-              color: #3b82f6;
-              text-decoration: none;
-            }
             @media only screen and (max-width: 600px) {
               .share-buttons {
                 gap: 15px;
@@ -1447,10 +1466,7 @@ Payment received at ${new Date().toLocaleString('en-US')}
         </head>
         <body>
           <div class="container">
-            <div class="header">
-              <div style="font-size: 48px; margin-bottom: 15px;">🎉</div>
-              <h1>${content.header}</h1>
-            </div>
+            ${this.generateEmailHeader(locale)}
 
             <div class="content">
               <p style="font-size: 18px; margin-bottom: 20px;">${content.greeting}</p>
@@ -1483,13 +1499,7 @@ Payment received at ${new Date().toLocaleString('en-US')}
               </div>
             </div>
 
-            <div class="footer">
-              <p class="footer-tagline">${content.footerTagline}</p>
-              <p>${content.footerQuestions} <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>
-              <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">
-                <a href="${APP_URL}">${APP_URL}</a>
-              </p>
-            </div>
+            ${this.generateEmailFooter(locale)}
           </div>
         </body>
       </html>
@@ -1596,7 +1606,6 @@ ${APP_URL}
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
             .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 30px; }
             .content { padding: 30px; }
             .info-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0; }
             .info-item { background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #6366f1; }
@@ -1605,12 +1614,12 @@ ${APP_URL}
             .description-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
             .steps { background: #eff6ff; padding: 20px; border-radius: 4px; margin: 20px 0; }
             .steps ol { margin: 10px 0; padding-left: 20px; }
-            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">
+            ${this.generateEmailHeader(locale)}
+            <div style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 30px; text-align: center;">
               <h1 style="margin: 0; font-size: 24px;">🚀 ${content.title}</h1>
               <p style="margin: 10px 0 0; opacity: 0.9;">${content.intro}</p>
             </div>
@@ -1644,11 +1653,13 @@ ${APP_URL}
                   <li>${content.step3}</li>
                 </ol>
               </div>
+
+              <p style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
+                ${content.footer}<br>
+                ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}
+              </p>
             </div>
-            <div class="footer">
-              <p>${content.footer}<br>
-              ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}</p>
-            </div>
+            ${this.generateEmailFooter(locale)}
           </div>
         </body>
       </html>
@@ -1740,7 +1751,6 @@ ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
             .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 30px; }
             .content { padding: 30px; }
             .info-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin: 20px 0; }
             .info-item { background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #3b82f6; }
@@ -1749,12 +1759,12 @@ ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}
             .details-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
             .steps { background: #eff6ff; padding: 20px; border-radius: 4px; margin: 20px 0; }
             .steps ol { margin: 10px 0; padding-left: 20px; }
-            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">
+            ${this.generateEmailHeader(locale)}
+            <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 30px; text-align: center;">
               <h1 style="margin: 0; font-size: 24px;">📧 ${content.title}</h1>
               <p style="margin: 10px 0 0; opacity: 0.9;">${content.intro}</p>
             </div>
@@ -1788,11 +1798,13 @@ ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}
                   <li>${content.step3}</li>
                 </ol>
               </div>
+
+              <p style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
+                ${content.footer}<br>
+                ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}
+              </p>
             </div>
-            <div class="footer">
-              <p>${content.footer}<br>
-              ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}</p>
-            </div>
+            ${this.generateEmailFooter(locale)}
           </div>
         </body>
       </html>
@@ -1957,29 +1969,11 @@ ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}
               border-radius: 4px;
               margin: 10px 0;
             }
-            .footer {
-              background: #f8f9fa;
-              padding: 30px;
-              text-align: center;
-              color: #666;
-            }
-            .footer-tagline {
-              font-weight: bold;
-              color: #1f2937;
-              margin-bottom: 10px;
-            }
-            .footer a {
-              color: #3b82f6;
-              text-decoration: none;
-            }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">
-              <div style="font-size: 48px; margin-bottom: 15px;">👋</div>
-              <h1>${content.header}</h1>
-            </div>
+            ${this.generateEmailHeader(locale)}
 
             <div class="content">
               <p style="font-size: 18px; margin-bottom: 20px;">${content.greeting}</p>
@@ -2007,13 +2001,7 @@ ${new Date().toLocaleString(locale === 'it' ? 'it-IT' : 'en-US')}
               <p style="font-size: 16px; margin-top: 30px;">${content.thanks}</p>
             </div>
 
-            <div class="footer">
-              <p class="footer-tagline">${content.footerTagline}</p>
-              <p>${content.footerQuestions} <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a></p>
-              <p style="font-size: 12px; color: #9ca3af; margin-top: 20px;">
-                <a href="${APP_URL}">${APP_URL}</a>
-              </p>
-            </div>
+            ${this.generateEmailFooter(locale)}
           </div>
         </body>
       </html>
@@ -2102,7 +2090,6 @@ ${APP_URL}
           <style>
             body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
             .container { max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; }
             .content { padding: 30px; }
             .warning-badge { background: #fef2f2; color: #991b1b; padding: 10px 20px; border-radius: 20px; display: inline-block; font-weight: bold; margin-bottom: 20px; border: 2px solid #ef4444; }
             .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
@@ -2111,12 +2098,12 @@ ${APP_URL}
             .info-value { color: #1f2937; font-size: 16px; }
             .button { display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 10px 5px; }
             .button-stripe { background: #635bff; }
-            .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
           </style>
         </head>
         <body>
           <div class="container">
-            <div class="header">
+            ${this.generateEmailHeader('en')}
+            <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; text-align: center;">
               <h1 style="margin: 0; font-size: 24px;">⚠️ Subscription Cancelled</h1>
               <p style="margin: 10px 0 0; opacity: 0.9;">A customer has cancelled their subscription</p>
             </div>
@@ -2159,11 +2146,13 @@ ${APP_URL}
                 <a href="${adminUrl}" class="button">View Submission</a>
                 <a href="${stripeUrl}" class="button button-stripe">View in Stripe</a>
               </p>
+
+              <p style="text-align: center; color: #999; font-size: 12px; margin-top: 30px;">
+                WhiteBoar Admin Panel<br>
+                Cancellation processed at ${new Date().toLocaleString('en-US')}
+              </p>
             </div>
-            <div class="footer">
-              <p>WhiteBoar Admin Panel<br>
-              Cancellation processed at ${new Date().toLocaleString('en-US')}</p>
-            </div>
+            ${this.generateEmailFooter('en')}
           </div>
         </body>
       </html>
